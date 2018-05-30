@@ -1,0 +1,15 @@
+<p id="notice"><%= notice %></p>
+
+<h1>Visualização de Relato</h1>
+<hr>
+
+<p><h3><strong><%="Título: #{@relato.titulo}" %></p></strong></h3>
+<hr>
+<strong><p>Relato:</strong><%= @relato.relato %></p>
+<strong><p>Sentimento:</strong><%= @relato.Sentimento %></p>
+<strong><p>Sintomas:</strong><%= @relato.Sintoma %></p>
+
+<%= link_to "Home", root_path %> |
+<%= link_to "Editar", edit_relato_path(@relato) %> |
+<%= link_to "Relatos", relatos_path %> |
+<%= link_to "Apagar", relato_path(@relato), method: :delete %>

@@ -1,0 +1,35 @@
+
+<div class="row">
+
+   
+
+
+    <div div style="width:280px; margin-right:auto; margin-left: auto; margin-top: auto; margin-bottom: auto">
+
+
+<h1>Contato</h1>
+<%= form_for @message, url: create_message_url do |f| %>
+  <%= notice %>
+  <%= @message.errors.full_messages.join(', ') %>
+
+  <p>
+  	<%=f.label :nome %>
+ 	<%= f.text_field :name, placeholder: 'name' %>
+ </p>
+
+ <p>
+ 	<%=f.label :email %>
+  	<%= f.email_field :clientemail, placeholder: 'email' %>
+ </p>
+
+ <p>
+ 	<%=f.label :mensagem %>
+	<%= f.text_area :body, placeholder: 'body' %>
+</p>
+
+  <%= f.submit 'Enviar' %>
+<% end %>
+
+</div>
+
+</div>

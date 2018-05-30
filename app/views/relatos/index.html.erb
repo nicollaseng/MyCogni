@@ -1,0 +1,11 @@
+<h1>Relatos Diários</h1>
+
+
+<% @relatos.each do |rel| %>
+<hr>
+<p>Título: <%= link_to rel.titulo, relato_path(rel) %> | created at	<%= time_ago_in_words(rel.created_at) %> </p>
+<p>Relato: <%=truncate(rel.relato, lenght: 50) %></p>
+<%= link_to "Apagar", relato_path(rel), method: :delete %>
+
+<% end %>
+

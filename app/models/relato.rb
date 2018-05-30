@@ -1,0 +1,2 @@
+class Relato < ApplicationRecord
+end

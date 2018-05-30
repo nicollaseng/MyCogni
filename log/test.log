@@ -1,0 +1,216 @@
+  [1m[35m (356.2ms)[0m  [1m[35mDROP DATABASE IF EXISTS "teste1_test"[0m
+  [1m[35m (910.0ms)[0m  [1m[35mCREATE DATABASE "teste1_test" ENCODING = 'unicode'[0m
+  [1m[35mSQL (0.4ms)[0m  [1m[35mCREATE EXTENSION IF NOT EXISTS "plpgsql"[0m
+  [1m[35m (0.3ms)[0m  [1m[35mDROP TABLE IF EXISTS "installs" CASCADE[0m
+  [1m[35m (104.3ms)[0m  [1m[35mCREATE TABLE "installs" ("id" bigserial primary key, "email" character varying DEFAULT '' NOT NULL, "encrypted_password" character varying DEFAULT '' NOT NULL, "reset_password_token" character varying, "reset_password_sent_at" timestamp, "remember_created_at" timestamp, "sign_in_count" integer DEFAULT 0 NOT NULL, "current_sign_in_at" timestamp, "last_sign_in_at" timestamp, "current_sign_in_ip" inet, "last_sign_in_ip" inet, "created_at" timestamp NOT NULL, "updated_at" timestamp NOT NULL)[0m
+  [1m[35m (49.5ms)[0m  [1m[35mCREATE UNIQUE INDEX  "index_installs_on_email" ON "installs"  ("email")[0m
+  [1m[35m (51.8ms)[0m  [1m[35mCREATE UNIQUE INDEX  "index_installs_on_reset_password_token" ON "installs"  ("reset_password_token")[0m
+  [1m[35m (0.3ms)[0m  [1m[35mDROP TABLE IF EXISTS "relatos" CASCADE[0m
+  [1m[35m (88.5ms)[0m  [1m[35mCREATE TABLE "relatos" ("id" bigserial primary key, "titulo" character varying, "relato" text, "created_at" timestamp NOT NULL, "updated_at" timestamp NOT NULL, "Sentimento" character varying, "Sintoma" character varying)[0m
+  [1m[35m (0.3ms)[0m  [1m[35mDROP TABLE IF EXISTS "users" CASCADE[0m
+  [1m[35m (88.7ms)[0m  [1m[35mCREATE TABLE "users" ("id" bigserial primary key, "email" character varying DEFAULT '' NOT NULL, "encrypted_password" character varying DEFAULT '' NOT NULL, "reset_password_token" character varying, "reset_password_sent_at" timestamp, "remember_created_at" timestamp, "sign_in_count" integer DEFAULT 0 NOT NULL, "current_sign_in_at" timestamp, "last_sign_in_at" timestamp, "current_sign_in_ip" inet, "last_sign_in_ip" inet, "created_at" timestamp NOT NULL, "updated_at" timestamp NOT NULL)[0m
+  [1m[35m (42.2ms)[0m  [1m[35mCREATE UNIQUE INDEX  "index_users_on_email" ON "users"  ("email")[0m
+  [1m[35m (52.3ms)[0m  [1m[35mCREATE UNIQUE INDEX  "index_users_on_reset_password_token" ON "users"  ("reset_password_token")[0m
+  [1m[35m (87.0ms)[0m  [1m[35mCREATE TABLE "schema_migrations" ("version" character varying NOT NULL PRIMARY KEY)[0m
+  [1m[35m (0.5ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+  [1m[35m (13.1ms)[0m  [1m[32mINSERT INTO "schema_migrations" (version) VALUES (20180523031633)[0m
+  [1m[35m (10.8ms)[0m  [1m[32mINSERT INTO "schema_migrations" (version) VALUES
+(20180522175349),
+(20180522234559),
+(20180522233700),
+(20180522180346),
+(20180522121310);
+
+[0m
+  [1m[35m (86.8ms)[0m  [1m[35mCREATE TABLE "ar_internal_metadata" ("key" character varying NOT NULL PRIMARY KEY, "value" character varying, "created_at" timestamp NOT NULL, "updated_at" timestamp NOT NULL)[0m
+  [1m[36mActiveRecord::InternalMetadata Load (0.4ms)[0m  [1m[34mSELECT  "ar_internal_metadata".* FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = $1 LIMIT $2[0m  [["key", "environment"], ["LIMIT", 1]]
+  [1m[35m (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mActiveRecord::InternalMetadata Create (0.3ms)[0m  [1m[32mINSERT INTO "ar_internal_metadata" ("key", "value", "created_at", "updated_at") VALUES ($1, $2, $3, $4) RETURNING "key"[0m  [["key", "environment"], ["value", "test"], ["created_at", "2018-05-23 16:38:54.447385"], ["updated_at", "2018-05-23 16:38:54.447385"]]
+  [1m[35m (6.8ms)[0m  [1m[35mCOMMIT[0m
+  [1m[36mActiveRecord::InternalMetadata Load (0.2ms)[0m  [1m[34mSELECT  "ar_internal_metadata".* FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = $1 LIMIT $2[0m  [["key", "environment"], ["LIMIT", 1]]
+  [1m[35m (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCOMMIT[0m
+  [1m[35m (0.7ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+  [1m[35m (0.3ms)[0m  [1m[35mBEGIN[0m
+  [1m[35m (0.6ms)[0m  [1m[35mALTER TABLE "installs" DISABLE TRIGGER ALL;ALTER TABLE "relatos" DISABLE TRIGGER ALL;ALTER TABLE "users" DISABLE TRIGGER ALL;ALTER TABLE "schema_migrations" DISABLE TRIGGER ALL;ALTER TABLE "ar_internal_metadata" DISABLE TRIGGER ALL[0m
+  [1m[35m (0.2ms)[0m  [1m[35mCOMMIT[0m
+  [1m[35m (0.2ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mFixtures Load (2.6ms)[0m  [1m[31mDELETE FROM "relatos";
+DELETE FROM "users";
+DELETE FROM "installs";
+INSERT INTO "relatos" ("id", "titulo", "relato", "created_at", "updated_at", "Sentimento", "Sintoma") VALUES (980190962, 'MyString', 'MyText', '2018-05-23 16:38:54.664205', '2018-05-23 16:38:54.664205', DEFAULT, DEFAULT), (298486374, 'MyString', 'MyText', '2018-05-23 16:38:54.664205', '2018-05-23 16:38:54.664205', DEFAULT, DEFAULT);
+INSERT INTO "users" ("id", "email", "encrypted_password", "reset_password_token", "reset_password_sent_at", "remember_created_at", "sign_in_count", "current_sign_in_at", "last_sign_in_at", "current_sign_in_ip", "last_sign_in_ip", "created_at", "updated_at") VALUES (980190962, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, '2018-05-23 16:38:54.675450', '2018-05-23 16:38:54.675450'), (298486374, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, '2018-05-23 16:38:54.675450', '2018-05-23 16:38:54.675450');
+INSERT INTO "installs" ("id", "email", "encrypted_password", "reset_password_token", "reset_password_sent_at", "remember_created_at", "sign_in_count", "current_sign_in_at", "last_sign_in_at", "current_sign_in_ip", "last_sign_in_ip", "created_at", "updated_at") VALUES (980190962, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, '2018-05-23 16:38:54.683324', '2018-05-23 16:38:54.683324'), (298486374, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, '2018-05-23 16:38:54.683324', '2018-05-23 16:38:54.683324')[0m
+  [1m[35m (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[35m (0.2ms)[0m  [1m[35mBEGIN[0m
+  [1m[35m (0.3ms)[0m  [1m[35mALTER TABLE "installs" DISABLE TRIGGER ALL;ALTER TABLE "relatos" DISABLE TRIGGER ALL;ALTER TABLE "users" DISABLE TRIGGER ALL;ALTER TABLE "schema_migrations" DISABLE TRIGGER ALL;ALTER TABLE "ar_internal_metadata" DISABLE TRIGGER ALL[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCOMMIT[0m
+  [1m[35m (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mFixtures Load (1.1ms)[0m  [1m[31mDELETE FROM "relatos";
+DELETE FROM "users";
+DELETE FROM "installs";
+INSERT INTO "relatos" ("id", "titulo", "relato", "created_at", "updated_at", "Sentimento", "Sintoma") VALUES (980190962, 'MyString', 'MyText', '2018-05-23 16:38:54.703303', '2018-05-23 16:38:54.703303', DEFAULT, DEFAULT), (298486374, 'MyString', 'MyText', '2018-05-23 16:38:54.703303', '2018-05-23 16:38:54.703303', DEFAULT, DEFAULT);
+INSERT INTO "users" ("id", "email", "encrypted_password", "reset_password_token", "reset_password_sent_at", "remember_created_at", "sign_in_count", "current_sign_in_at", "last_sign_in_at", "current_sign_in_ip", "last_sign_in_ip", "created_at", "updated_at") VALUES (980190962, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, '2018-05-23 16:38:54.705684', '2018-05-23 16:38:54.705684'), (298486374, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, '2018-05-23 16:38:54.705684', '2018-05-23 16:38:54.705684');
+INSERT INTO "installs" ("id", "email", "encrypted_password", "reset_password_token", "reset_password_sent_at", "remember_created_at", "sign_in_count", "current_sign_in_at", "last_sign_in_at", "current_sign_in_ip", "last_sign_in_ip", "created_at", "updated_at") VALUES (980190962, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, '2018-05-23 16:38:54.708327', '2018-05-23 16:38:54.708327'), (298486374, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, '2018-05-23 16:38:54.708327', '2018-05-23 16:38:54.708327')[0m
+  [1m[35m (0.3ms)[0m  [1m[31mROLLBACK[0m
+  [1m[35m (0.9ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+  [1m[35m (0.2ms)[0m  [1m[35mBEGIN[0m
+  [1m[35m (0.5ms)[0m  [1m[35mALTER TABLE "installs" DISABLE TRIGGER ALL;ALTER TABLE "relatos" DISABLE TRIGGER ALL;ALTER TABLE "users" DISABLE TRIGGER ALL;ALTER TABLE "schema_migrations" DISABLE TRIGGER ALL;ALTER TABLE "ar_internal_metadata" DISABLE TRIGGER ALL[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCOMMIT[0m
+  [1m[35m (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mFixtures Load (2.5ms)[0m  [1m[31mDELETE FROM "relatos";
+DELETE FROM "users";
+DELETE FROM "installs";
+INSERT INTO "relatos" ("id", "titulo", "relato", "created_at", "updated_at", "Sentimento", "Sintoma") VALUES (980190962, 'MyString', 'MyText', '2018-05-23 16:40:52.436415', '2018-05-23 16:40:52.436415', DEFAULT, DEFAULT), (298486374, 'MyString', 'MyText', '2018-05-23 16:40:52.436415', '2018-05-23 16:40:52.436415', DEFAULT, DEFAULT);
+INSERT INTO "users" ("id", "email", "encrypted_password", "reset_password_token", "reset_password_sent_at", "remember_created_at", "sign_in_count", "current_sign_in_at", "last_sign_in_at", "current_sign_in_ip", "last_sign_in_ip", "created_at", "updated_at") VALUES (980190962, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, '2018-05-23 16:40:52.444571', '2018-05-23 16:40:52.444571'), (298486374, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, '2018-05-23 16:40:52.444571', '2018-05-23 16:40:52.444571');
+INSERT INTO "installs" ("id", "email", "encrypted_password", "reset_password_token", "reset_password_sent_at", "remember_created_at", "sign_in_count", "current_sign_in_at", "last_sign_in_at", "current_sign_in_ip", "last_sign_in_ip", "created_at", "updated_at") VALUES (980190962, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, '2018-05-23 16:40:52.452418', '2018-05-23 16:40:52.452418'), (298486374, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, '2018-05-23 16:40:52.452418', '2018-05-23 16:40:52.452418')[0m
+  [1m[35m (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[35m (0.2ms)[0m  [1m[35mBEGIN[0m
+  [1m[35m (0.3ms)[0m  [1m[35mALTER TABLE "installs" DISABLE TRIGGER ALL;ALTER TABLE "relatos" DISABLE TRIGGER ALL;ALTER TABLE "users" DISABLE TRIGGER ALL;ALTER TABLE "schema_migrations" DISABLE TRIGGER ALL;ALTER TABLE "ar_internal_metadata" DISABLE TRIGGER ALL[0m
+  [1m[35m (0.2ms)[0m  [1m[35mCOMMIT[0m
+  [1m[35m (0.2ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mFixtures Load (0.9ms)[0m  [1m[31mDELETE FROM "relatos";
+DELETE FROM "users";
+DELETE FROM "installs";
+INSERT INTO "relatos" ("id", "titulo", "relato", "created_at", "updated_at", "Sentimento", "Sintoma") VALUES (980190962, 'MyString', 'MyText', '2018-05-23 16:40:52.505876', '2018-05-23 16:40:52.505876', DEFAULT, DEFAULT), (298486374, 'MyString', 'MyText', '2018-05-23 16:40:52.505876', '2018-05-23 16:40:52.505876', DEFAULT, DEFAULT);
+INSERT INTO "users" ("id", "email", "encrypted_password", "reset_password_token", "reset_password_sent_at", "remember_created_at", "sign_in_count", "current_sign_in_at", "last_sign_in_at", "current_sign_in_ip", "last_sign_in_ip", "created_at", "updated_at") VALUES (980190962, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, '2018-05-23 16:40:52.507863', '2018-05-23 16:40:52.507863'), (298486374, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, '2018-05-23 16:40:52.507863', '2018-05-23 16:40:52.507863');
+INSERT INTO "installs" ("id", "email", "encrypted_password", "reset_password_token", "reset_password_sent_at", "remember_created_at", "sign_in_count", "current_sign_in_at", "last_sign_in_at", "current_sign_in_ip", "last_sign_in_ip", "created_at", "updated_at") VALUES (980190962, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, '2018-05-23 16:40:52.509911', '2018-05-23 16:40:52.509911'), (298486374, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, '2018-05-23 16:40:52.509911', '2018-05-23 16:40:52.509911')[0m
+  [1m[35m (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[35m (0.8ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+  [1m[35m (0.2ms)[0m  [1m[35mBEGIN[0m
+  [1m[35m (0.5ms)[0m  [1m[35mALTER TABLE "installs" DISABLE TRIGGER ALL;ALTER TABLE "relatos" DISABLE TRIGGER ALL;ALTER TABLE "users" DISABLE TRIGGER ALL;ALTER TABLE "schema_migrations" DISABLE TRIGGER ALL;ALTER TABLE "ar_internal_metadata" DISABLE TRIGGER ALL[0m
+  [1m[35m (0.2ms)[0m  [1m[35mCOMMIT[0m
+  [1m[35m (0.2ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mFixtures Load (1.5ms)[0m  [1m[31mDELETE FROM "relatos";
+DELETE FROM "users";
+DELETE FROM "installs";
+INSERT INTO "relatos" ("id", "titulo", "relato", "created_at", "updated_at", "Sentimento", "Sintoma") VALUES (980190962, 'MyString', 'MyText', '2018-05-23 16:41:29.044731', '2018-05-23 16:41:29.044731', DEFAULT, DEFAULT), (298486374, 'MyString', 'MyText', '2018-05-23 16:41:29.044731', '2018-05-23 16:41:29.044731', DEFAULT, DEFAULT);
+INSERT INTO "users" ("id", "email", "encrypted_password", "reset_password_token", "reset_password_sent_at", "remember_created_at", "sign_in_count", "current_sign_in_at", "last_sign_in_at", "current_sign_in_ip", "last_sign_in_ip", "created_at", "updated_at") VALUES (980190962, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, '2018-05-23 16:41:29.054698', '2018-05-23 16:41:29.054698'), (298486374, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, '2018-05-23 16:41:29.054698', '2018-05-23 16:41:29.054698');
+INSERT INTO "installs" ("id", "email", "encrypted_password", "reset_password_token", "reset_password_sent_at", "remember_created_at", "sign_in_count", "current_sign_in_at", "last_sign_in_at", "current_sign_in_ip", "last_sign_in_ip", "created_at", "updated_at") VALUES (980190962, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, '2018-05-23 16:41:29.062809', '2018-05-23 16:41:29.062809'), (298486374, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, '2018-05-23 16:41:29.062809', '2018-05-23 16:41:29.062809')[0m
+  [1m[35m (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[35m (0.3ms)[0m  [1m[35mBEGIN[0m
+  [1m[35m (0.3ms)[0m  [1m[35mALTER TABLE "installs" DISABLE TRIGGER ALL;ALTER TABLE "relatos" DISABLE TRIGGER ALL;ALTER TABLE "users" DISABLE TRIGGER ALL;ALTER TABLE "schema_migrations" DISABLE TRIGGER ALL;ALTER TABLE "ar_internal_metadata" DISABLE TRIGGER ALL[0m
+  [1m[35m (0.2ms)[0m  [1m[35mCOMMIT[0m
+  [1m[35m (0.2ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mFixtures Load (1.1ms)[0m  [1m[31mDELETE FROM "relatos";
+DELETE FROM "users";
+DELETE FROM "installs";
+INSERT INTO "relatos" ("id", "titulo", "relato", "created_at", "updated_at", "Sentimento", "Sintoma") VALUES (980190962, 'MyString', 'MyText', '2018-05-23 16:41:29.106868', '2018-05-23 16:41:29.106868', DEFAULT, DEFAULT), (298486374, 'MyString', 'MyText', '2018-05-23 16:41:29.106868', '2018-05-23 16:41:29.106868', DEFAULT, DEFAULT);
+INSERT INTO "users" ("id", "email", "encrypted_password", "reset_password_token", "reset_password_sent_at", "remember_created_at", "sign_in_count", "current_sign_in_at", "last_sign_in_at", "current_sign_in_ip", "last_sign_in_ip", "created_at", "updated_at") VALUES (980190962, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, '2018-05-23 16:41:29.109113', '2018-05-23 16:41:29.109113'), (298486374, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, '2018-05-23 16:41:29.109113', '2018-05-23 16:41:29.109113');
+INSERT INTO "installs" ("id", "email", "encrypted_password", "reset_password_token", "reset_password_sent_at", "remember_created_at", "sign_in_count", "current_sign_in_at", "last_sign_in_at", "current_sign_in_ip", "last_sign_in_ip", "created_at", "updated_at") VALUES (980190962, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, '2018-05-23 16:41:29.111702', '2018-05-23 16:41:29.111702'), (298486374, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, '2018-05-23 16:41:29.111702', '2018-05-23 16:41:29.111702')[0m
+  [1m[35m (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[35m (0.9ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+  [1m[35m (0.2ms)[0m  [1m[35mBEGIN[0m
+  [1m[35m (0.3ms)[0m  [1m[35mALTER TABLE "installs" DISABLE TRIGGER ALL;ALTER TABLE "relatos" DISABLE TRIGGER ALL;ALTER TABLE "users" DISABLE TRIGGER ALL;ALTER TABLE "schema_migrations" DISABLE TRIGGER ALL;ALTER TABLE "ar_internal_metadata" DISABLE TRIGGER ALL[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCOMMIT[0m
+  [1m[35m (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mFixtures Load (1.3ms)[0m  [1m[31mDELETE FROM "relatos";
+DELETE FROM "users";
+DELETE FROM "installs";
+INSERT INTO "relatos" ("id", "titulo", "relato", "created_at", "updated_at", "Sentimento", "Sintoma") VALUES (980190962, 'MyString', 'MyText', '2018-05-23 16:42:02.902244', '2018-05-23 16:42:02.902244', DEFAULT, DEFAULT), (298486374, 'MyString', 'MyText', '2018-05-23 16:42:02.902244', '2018-05-23 16:42:02.902244', DEFAULT, DEFAULT);
+INSERT INTO "users" ("id", "email", "encrypted_password", "reset_password_token", "reset_password_sent_at", "remember_created_at", "sign_in_count", "current_sign_in_at", "last_sign_in_at", "current_sign_in_ip", "last_sign_in_ip", "created_at", "updated_at") VALUES (980190962, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, '2018-05-23 16:42:02.909231', '2018-05-23 16:42:02.909231'), (298486374, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, '2018-05-23 16:42:02.909231', '2018-05-23 16:42:02.909231');
+INSERT INTO "installs" ("id", "email", "encrypted_password", "reset_password_token", "reset_password_sent_at", "remember_created_at", "sign_in_count", "current_sign_in_at", "last_sign_in_at", "current_sign_in_ip", "last_sign_in_ip", "created_at", "updated_at") VALUES (980190962, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, '2018-05-23 16:42:02.916004', '2018-05-23 16:42:02.916004'), (298486374, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, '2018-05-23 16:42:02.916004', '2018-05-23 16:42:02.916004')[0m
+  [1m[35m (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[35m (0.3ms)[0m  [1m[35mBEGIN[0m
+  [1m[35m (0.2ms)[0m  [1m[35mALTER TABLE "installs" DISABLE TRIGGER ALL;ALTER TABLE "relatos" DISABLE TRIGGER ALL;ALTER TABLE "users" DISABLE TRIGGER ALL;ALTER TABLE "schema_migrations" DISABLE TRIGGER ALL;ALTER TABLE "ar_internal_metadata" DISABLE TRIGGER ALL[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCOMMIT[0m
+  [1m[35m (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mFixtures Load (0.8ms)[0m  [1m[31mDELETE FROM "relatos";
+DELETE FROM "users";
+DELETE FROM "installs";
+INSERT INTO "relatos" ("id", "titulo", "relato", "created_at", "updated_at", "Sentimento", "Sintoma") VALUES (980190962, 'MyString', 'MyText', '2018-05-23 16:42:02.932646', '2018-05-23 16:42:02.932646', DEFAULT, DEFAULT), (298486374, 'MyString', 'MyText', '2018-05-23 16:42:02.932646', '2018-05-23 16:42:02.932646', DEFAULT, DEFAULT);
+INSERT INTO "users" ("id", "email", "encrypted_password", "reset_password_token", "reset_password_sent_at", "remember_created_at", "sign_in_count", "current_sign_in_at", "last_sign_in_at", "current_sign_in_ip", "last_sign_in_ip", "created_at", "updated_at") VALUES (980190962, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, '2018-05-23 16:42:02.934332', '2018-05-23 16:42:02.934332'), (298486374, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, '2018-05-23 16:42:02.934332', '2018-05-23 16:42:02.934332');
+INSERT INTO "installs" ("id", "email", "encrypted_password", "reset_password_token", "reset_password_sent_at", "remember_created_at", "sign_in_count", "current_sign_in_at", "last_sign_in_at", "current_sign_in_ip", "last_sign_in_ip", "created_at", "updated_at") VALUES (980190962, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, '2018-05-23 16:42:02.936270', '2018-05-23 16:42:02.936270'), (298486374, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, '2018-05-23 16:42:02.936270', '2018-05-23 16:42:02.936270')[0m
+  [1m[35m (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[35m (0.5ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+  [1m[35m (0.3ms)[0m  [1m[35mBEGIN[0m
+  [1m[35m (0.5ms)[0m  [1m[35mALTER TABLE "installs" DISABLE TRIGGER ALL;ALTER TABLE "relatos" DISABLE TRIGGER ALL;ALTER TABLE "users" DISABLE TRIGGER ALL;ALTER TABLE "schema_migrations" DISABLE TRIGGER ALL;ALTER TABLE "ar_internal_metadata" DISABLE TRIGGER ALL[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCOMMIT[0m
+  [1m[35m (0.2ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mFixtures Load (1.8ms)[0m  [1m[31mDELETE FROM "relatos";
+DELETE FROM "users";
+DELETE FROM "installs";
+INSERT INTO "relatos" ("id", "titulo", "relato", "created_at", "updated_at", "Sentimento", "Sintoma") VALUES (980190962, 'MyString', 'MyText', '2018-05-23 16:42:43.014022', '2018-05-23 16:42:43.014022', DEFAULT, DEFAULT), (298486374, 'MyString', 'MyText', '2018-05-23 16:42:43.014022', '2018-05-23 16:42:43.014022', DEFAULT, DEFAULT);
+INSERT INTO "users" ("id", "email", "encrypted_password", "reset_password_token", "reset_password_sent_at", "remember_created_at", "sign_in_count", "current_sign_in_at", "last_sign_in_at", "current_sign_in_ip", "last_sign_in_ip", "created_at", "updated_at") VALUES (980190962, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, '2018-05-23 16:42:43.024361', '2018-05-23 16:42:43.024361'), (298486374, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, '2018-05-23 16:42:43.024361', '2018-05-23 16:42:43.024361');
+INSERT INTO "installs" ("id", "email", "encrypted_password", "reset_password_token", "reset_password_sent_at", "remember_created_at", "sign_in_count", "current_sign_in_at", "last_sign_in_at", "current_sign_in_ip", "last_sign_in_ip", "created_at", "updated_at") VALUES (980190962, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, '2018-05-23 16:42:43.033067', '2018-05-23 16:42:43.033067'), (298486374, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, '2018-05-23 16:42:43.033067', '2018-05-23 16:42:43.033067')[0m
+  [1m[35m (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[35m (0.2ms)[0m  [1m[35mBEGIN[0m
+  [1m[35m (0.4ms)[0m  [1m[35mALTER TABLE "installs" DISABLE TRIGGER ALL;ALTER TABLE "relatos" DISABLE TRIGGER ALL;ALTER TABLE "users" DISABLE TRIGGER ALL;ALTER TABLE "schema_migrations" DISABLE TRIGGER ALL;ALTER TABLE "ar_internal_metadata" DISABLE TRIGGER ALL[0m
+  [1m[35m (0.2ms)[0m  [1m[35mCOMMIT[0m
+  [1m[35m (0.2ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mFixtures Load (1.5ms)[0m  [1m[31mDELETE FROM "relatos";
+DELETE FROM "users";
+DELETE FROM "installs";
+INSERT INTO "relatos" ("id", "titulo", "relato", "created_at", "updated_at", "Sentimento", "Sintoma") VALUES (980190962, 'MyString', 'MyText', '2018-05-23 16:42:43.101891', '2018-05-23 16:42:43.101891', DEFAULT, DEFAULT), (298486374, 'MyString', 'MyText', '2018-05-23 16:42:43.101891', '2018-05-23 16:42:43.101891', DEFAULT, DEFAULT);
+INSERT INTO "users" ("id", "email", "encrypted_password", "reset_password_token", "reset_password_sent_at", "remember_created_at", "sign_in_count", "current_sign_in_at", "last_sign_in_at", "current_sign_in_ip", "last_sign_in_ip", "created_at", "updated_at") VALUES (980190962, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, '2018-05-23 16:42:43.104175', '2018-05-23 16:42:43.104175'), (298486374, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, '2018-05-23 16:42:43.104175', '2018-05-23 16:42:43.104175');
+INSERT INTO "installs" ("id", "email", "encrypted_password", "reset_password_token", "reset_password_sent_at", "remember_created_at", "sign_in_count", "current_sign_in_at", "last_sign_in_at", "current_sign_in_ip", "last_sign_in_ip", "created_at", "updated_at") VALUES (980190962, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, '2018-05-23 16:42:43.107100', '2018-05-23 16:42:43.107100'), (298486374, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, '2018-05-23 16:42:43.107100', '2018-05-23 16:42:43.107100')[0m
+  [1m[35m (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[35m (0.7ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+  [1m[35m (0.3ms)[0m  [1m[35mBEGIN[0m
+  [1m[35m (0.4ms)[0m  [1m[35mALTER TABLE "installs" DISABLE TRIGGER ALL;ALTER TABLE "relatos" DISABLE TRIGGER ALL;ALTER TABLE "users" DISABLE TRIGGER ALL;ALTER TABLE "schema_migrations" DISABLE TRIGGER ALL;ALTER TABLE "ar_internal_metadata" DISABLE TRIGGER ALL[0m
+  [1m[35m (0.2ms)[0m  [1m[35mCOMMIT[0m
+  [1m[35m (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mFixtures Load (2.7ms)[0m  [1m[31mDELETE FROM "relatos";
+DELETE FROM "users";
+DELETE FROM "installs";
+INSERT INTO "relatos" ("id", "titulo", "relato", "created_at", "updated_at", "Sentimento", "Sintoma") VALUES (980190962, 'MyString', 'MyText', '2018-05-23 16:43:31.004994', '2018-05-23 16:43:31.004994', DEFAULT, DEFAULT), (298486374, 'MyString', 'MyText', '2018-05-23 16:43:31.004994', '2018-05-23 16:43:31.004994', DEFAULT, DEFAULT);
+INSERT INTO "users" ("id", "email", "encrypted_password", "reset_password_token", "reset_password_sent_at", "remember_created_at", "sign_in_count", "current_sign_in_at", "last_sign_in_at", "current_sign_in_ip", "last_sign_in_ip", "created_at", "updated_at") VALUES (980190962, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, '2018-05-23 16:43:31.015324', '2018-05-23 16:43:31.015324'), (298486374, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, '2018-05-23 16:43:31.015324', '2018-05-23 16:43:31.015324');
+INSERT INTO "installs" ("id", "email", "encrypted_password", "reset_password_token", "reset_password_sent_at", "remember_created_at", "sign_in_count", "current_sign_in_at", "last_sign_in_at", "current_sign_in_ip", "last_sign_in_ip", "created_at", "updated_at") VALUES (980190962, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, '2018-05-23 16:43:31.023359', '2018-05-23 16:43:31.023359'), (298486374, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, '2018-05-23 16:43:31.023359', '2018-05-23 16:43:31.023359')[0m
+  [1m[35m (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[35m (0.2ms)[0m  [1m[35mBEGIN[0m
+  [1m[35m (0.4ms)[0m  [1m[35mALTER TABLE "installs" DISABLE TRIGGER ALL;ALTER TABLE "relatos" DISABLE TRIGGER ALL;ALTER TABLE "users" DISABLE TRIGGER ALL;ALTER TABLE "schema_migrations" DISABLE TRIGGER ALL;ALTER TABLE "ar_internal_metadata" DISABLE TRIGGER ALL[0m
+  [1m[35m (0.3ms)[0m  [1m[35mCOMMIT[0m
+  [1m[35m (0.2ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mFixtures Load (1.1ms)[0m  [1m[31mDELETE FROM "relatos";
+DELETE FROM "users";
+DELETE FROM "installs";
+INSERT INTO "relatos" ("id", "titulo", "relato", "created_at", "updated_at", "Sentimento", "Sintoma") VALUES (980190962, 'MyString', 'MyText', '2018-05-23 16:43:31.045783', '2018-05-23 16:43:31.045783', DEFAULT, DEFAULT), (298486374, 'MyString', 'MyText', '2018-05-23 16:43:31.045783', '2018-05-23 16:43:31.045783', DEFAULT, DEFAULT);
+INSERT INTO "users" ("id", "email", "encrypted_password", "reset_password_token", "reset_password_sent_at", "remember_created_at", "sign_in_count", "current_sign_in_at", "last_sign_in_at", "current_sign_in_ip", "last_sign_in_ip", "created_at", "updated_at") VALUES (980190962, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, '2018-05-23 16:43:31.048033', '2018-05-23 16:43:31.048033'), (298486374, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, '2018-05-23 16:43:31.048033', '2018-05-23 16:43:31.048033');
+INSERT INTO "installs" ("id", "email", "encrypted_password", "reset_password_token", "reset_password_sent_at", "remember_created_at", "sign_in_count", "current_sign_in_at", "last_sign_in_at", "current_sign_in_ip", "last_sign_in_ip", "created_at", "updated_at") VALUES (980190962, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, '2018-05-23 16:43:31.050532', '2018-05-23 16:43:31.050532'), (298486374, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, '2018-05-23 16:43:31.050532', '2018-05-23 16:43:31.050532')[0m
+  [1m[35m (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[35m (0.7ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+  [1m[35m (0.2ms)[0m  [1m[35mBEGIN[0m
+  [1m[35m (0.4ms)[0m  [1m[35mALTER TABLE "installs" DISABLE TRIGGER ALL;ALTER TABLE "relatos" DISABLE TRIGGER ALL;ALTER TABLE "users" DISABLE TRIGGER ALL;ALTER TABLE "schema_migrations" DISABLE TRIGGER ALL;ALTER TABLE "ar_internal_metadata" DISABLE TRIGGER ALL[0m
+  [1m[35m (0.2ms)[0m  [1m[35mCOMMIT[0m
+  [1m[35m (0.2ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mFixtures Load (2.3ms)[0m  [1m[31mDELETE FROM "relatos";
+DELETE FROM "users";
+DELETE FROM "installs";
+INSERT INTO "relatos" ("id", "titulo", "relato", "created_at", "updated_at", "Sentimento", "Sintoma") VALUES (980190962, 'MyString', 'MyText', '2018-05-23 16:45:44.611176', '2018-05-23 16:45:44.611176', DEFAULT, DEFAULT), (298486374, 'MyString', 'MyText', '2018-05-23 16:45:44.611176', '2018-05-23 16:45:44.611176', DEFAULT, DEFAULT);
+INSERT INTO "users" ("id", "email", "encrypted_password", "reset_password_token", "reset_password_sent_at", "remember_created_at", "sign_in_count", "current_sign_in_at", "last_sign_in_at", "current_sign_in_ip", "last_sign_in_ip", "created_at", "updated_at") VALUES (980190962, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, '2018-05-23 16:45:44.619904', '2018-05-23 16:45:44.619904'), (298486374, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, '2018-05-23 16:45:44.619904', '2018-05-23 16:45:44.619904');
+INSERT INTO "installs" ("id", "email", "encrypted_password", "reset_password_token", "reset_password_sent_at", "remember_created_at", "sign_in_count", "current_sign_in_at", "last_sign_in_at", "current_sign_in_ip", "last_sign_in_ip", "created_at", "updated_at") VALUES (980190962, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, '2018-05-23 16:45:44.627875', '2018-05-23 16:45:44.627875'), (298486374, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, '2018-05-23 16:45:44.627875', '2018-05-23 16:45:44.627875')[0m
+  [1m[35m (0.3ms)[0m  [1m[31mROLLBACK[0m
+  [1m[35m (0.2ms)[0m  [1m[35mBEGIN[0m
+  [1m[35m (0.4ms)[0m  [1m[35mALTER TABLE "installs" DISABLE TRIGGER ALL;ALTER TABLE "relatos" DISABLE TRIGGER ALL;ALTER TABLE "users" DISABLE TRIGGER ALL;ALTER TABLE "schema_migrations" DISABLE TRIGGER ALL;ALTER TABLE "ar_internal_metadata" DISABLE TRIGGER ALL[0m
+  [1m[35m (0.2ms)[0m  [1m[35mCOMMIT[0m
+  [1m[35m (0.2ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mFixtures Load (1.5ms)[0m  [1m[31mDELETE FROM "relatos";
+DELETE FROM "users";
+DELETE FROM "installs";
+INSERT INTO "relatos" ("id", "titulo", "relato", "created_at", "updated_at", "Sentimento", "Sintoma") VALUES (980190962, 'MyString', 'MyText', '2018-05-23 16:45:44.646971', '2018-05-23 16:45:44.646971', DEFAULT, DEFAULT), (298486374, 'MyString', 'MyText', '2018-05-23 16:45:44.646971', '2018-05-23 16:45:44.646971', DEFAULT, DEFAULT);
+INSERT INTO "users" ("id", "email", "encrypted_password", "reset_password_token", "reset_password_sent_at", "remember_created_at", "sign_in_count", "current_sign_in_at", "last_sign_in_at", "current_sign_in_ip", "last_sign_in_ip", "created_at", "updated_at") VALUES (980190962, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, '2018-05-23 16:45:44.650202', '2018-05-23 16:45:44.650202'), (298486374, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, '2018-05-23 16:45:44.650202', '2018-05-23 16:45:44.650202');
+INSERT INTO "installs" ("id", "email", "encrypted_password", "reset_password_token", "reset_password_sent_at", "remember_created_at", "sign_in_count", "current_sign_in_at", "last_sign_in_at", "current_sign_in_ip", "last_sign_in_ip", "created_at", "updated_at") VALUES (980190962, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, '2018-05-23 16:45:44.653406', '2018-05-23 16:45:44.653406'), (298486374, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, '2018-05-23 16:45:44.653406', '2018-05-23 16:45:44.653406')[0m
+  [1m[35m (0.2ms)[0m  [1m[31mROLLBACK[0m
+  [1m[35m (0.7ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC[0m
+  [1m[35m (0.2ms)[0m  [1m[35mBEGIN[0m
+  [1m[35m (0.4ms)[0m  [1m[35mALTER TABLE "installs" DISABLE TRIGGER ALL;ALTER TABLE "relatos" DISABLE TRIGGER ALL;ALTER TABLE "users" DISABLE TRIGGER ALL;ALTER TABLE "schema_migrations" DISABLE TRIGGER ALL;ALTER TABLE "ar_internal_metadata" DISABLE TRIGGER ALL[0m
+  [1m[35m (0.2ms)[0m  [1m[35mCOMMIT[0m
+  [1m[35m (0.2ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mFixtures Load (1.9ms)[0m  [1m[31mDELETE FROM "relatos";
+DELETE FROM "users";
+DELETE FROM "installs";
+INSERT INTO "relatos" ("id", "titulo", "relato", "created_at", "updated_at", "Sentimento", "Sintoma") VALUES (980190962, 'MyString', 'MyText', '2018-05-23 16:47:47.588805', '2018-05-23 16:47:47.588805', DEFAULT, DEFAULT), (298486374, 'MyString', 'MyText', '2018-05-23 16:47:47.588805', '2018-05-23 16:47:47.588805', DEFAULT, DEFAULT);
+INSERT INTO "users" ("id", "email", "encrypted_password", "reset_password_token", "reset_password_sent_at", "remember_created_at", "sign_in_count", "current_sign_in_at", "last_sign_in_at", "current_sign_in_ip", "last_sign_in_ip", "created_at", "updated_at") VALUES (980190962, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, '2018-05-23 16:47:47.597390', '2018-05-23 16:47:47.597390'), (298486374, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, '2018-05-23 16:47:47.597390', '2018-05-23 16:47:47.597390');
+INSERT INTO "installs" ("id", "email", "encrypted_password", "reset_password_token", "reset_password_sent_at", "remember_created_at", "sign_in_count", "current_sign_in_at", "last_sign_in_at", "current_sign_in_ip", "last_sign_in_ip", "created_at", "updated_at") VALUES (980190962, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, '2018-05-23 16:47:47.608209', '2018-05-23 16:47:47.608209'), (298486374, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, '2018-05-23 16:47:47.608209', '2018-05-23 16:47:47.608209')[0m
+  [1m[35m (0.1ms)[0m  [1m[31mROLLBACK[0m
+  [1m[35m (0.2ms)[0m  [1m[35mBEGIN[0m
+  [1m[35m (0.2ms)[0m  [1m[35mALTER TABLE "installs" DISABLE TRIGGER ALL;ALTER TABLE "relatos" DISABLE TRIGGER ALL;ALTER TABLE "users" DISABLE TRIGGER ALL;ALTER TABLE "schema_migrations" DISABLE TRIGGER ALL;ALTER TABLE "ar_internal_metadata" DISABLE TRIGGER ALL[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCOMMIT[0m
+  [1m[35m (0.1ms)[0m  [1m[35mBEGIN[0m
+  [1m[36mFixtures Load (1.1ms)[0m  [1m[31mDELETE FROM "relatos";
+DELETE FROM "users";
+DELETE FROM "installs";
+INSERT INTO "relatos" ("id", "titulo", "relato", "created_at", "updated_at", "Sentimento", "Sintoma") VALUES (980190962, 'MyString', 'MyText', '2018-05-23 16:47:47.662341', '2018-05-23 16:47:47.662341', DEFAULT, DEFAULT), (298486374, 'MyString', 'MyText', '2018-05-23 16:47:47.662341', '2018-05-23 16:47:47.662341', DEFAULT, DEFAULT);
+INSERT INTO "users" ("id", "email", "encrypted_password", "reset_password_token", "reset_password_sent_at", "remember_created_at", "sign_in_count", "current_sign_in_at", "last_sign_in_at", "current_sign_in_ip", "last_sign_in_ip", "created_at", "updated_at") VALUES (980190962, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, '2018-05-23 16:47:47.664257', '2018-05-23 16:47:47.664257'), (298486374, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, '2018-05-23 16:47:47.664257', '2018-05-23 16:47:47.664257');
+INSERT INTO "installs" ("id", "email", "encrypted_password", "reset_password_token", "reset_password_sent_at", "remember_created_at", "sign_in_count", "current_sign_in_at", "last_sign_in_at", "current_sign_in_ip", "last_sign_in_ip", "created_at", "updated_at") VALUES (980190962, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, '2018-05-23 16:47:47.666410', '2018-05-23 16:47:47.666410'), (298486374, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, '2018-05-23 16:47:47.666410', '2018-05-23 16:47:47.666410')[0m
+  [1m[35m (0.2ms)[0m  [1m[31mROLLBACK[0m

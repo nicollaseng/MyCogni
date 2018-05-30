@@ -1,0 +1,15 @@
+<%=form_for @relato do |rel| %>
+
+<p>
+	<%=rel.label :titulo %>
+	<%=rel.text_field :titulo %>
+</p>
+
+<p>
+	<%= rel.label :relato %>
+	<%= rel.text_area :relato %>
+</p>
+
+<%= rel.submit 'Atualizar' %>
+
+<% end %>

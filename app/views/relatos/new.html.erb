@@ -1,0 +1,28 @@
+<h1>Novo Relato</h1>
+<hr>
+
+<%=form_for (@relato) do |rel| %>
+
+<p>
+	<%=rel.label :titulo %>
+	<%=rel.text_field :titulo %>
+</p>
+
+<p>
+	<%=rel.label :sentimento %>
+	<%=rel.text_field :Sentimento %>
+</p>
+
+<p>
+	<%=rel.label :sintomas %>
+	<%=rel.text_field :Sintoma %>
+</p>
+
+<p>
+	<%= rel.label :relato %>
+	<%= rel.text_area :relato %>
+</p>
+
+<%= rel.submit 'Gravar' %>
+
+<% end %>

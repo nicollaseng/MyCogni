@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Teste1</title>
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+
+
+     <%= stylesheet_link_tag    'https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css' %>
+    <%= stylesheet_link_tag    'application', media: 'all', 'data-turbolinks-track': 'reload' %>
+    <%= javascript_include_tag 'application', 'data-turbolinks-track': 'reload' %>
+  </head>
+
+  <body>
+
+
+    <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
+      <a class="navbar-brand" href="https://github.com/devnicollas">.:MyCogni:.</a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault" aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse" id="navbarsExampleDefault">
+        <ul class="navbar-nav mr-auto">
+          <li class="nav-item active">
+            <a class="nav-link" href="/ ">Home <span class="sr-only">(current)</span></a>
+          </li>
+          <li class="nav-item active">
+            <a class="nav-link" href="/relatos">Relatos <span class="sr-only">(current)</span></a>
+          </li>
+          <li class="nav-item active">
+            <a class="nav-link" href="/relatos/new">Novo Relato  <span class="sr-only">(current)</span></a>
+          </li>
+          <li class="nav-item active">
+            <a class="nav-link" href="/contact-me">Contate-nos <span class="sr-only">(current)</span></a>
+          </li>
+        </ul>
+        <% if user_signed_in? %>
+          <%= form_tag(relatos_path, method: :get) do %>
+          <%= text_field_tag 'search', nil, placeholder: 'Digite aqui o procura' %>
+          <%= submit_tag "Pesquisar" %>
+          <%end%>
+        <% else %>
+          <a><%= link_to "Logar",  user_session_path %></a>
+        <%end%>
+
+      </div>
+    </nav>
+        <br>
+        <br>
+        <br>
+    <%= yield %>
+  </body>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+  <footer>
+    <hr>
+
+    <% if user_signed_in? %>
+
+    MyCogni v1.0 - Todos os direitos rervados - Nicollas Linhares | Logado como: <%= current_user.email %> em <%= Date.today %> | <%= link_to "Encerrar Sessão", destroy_user_session_path, method: :delete %>
+    <% end %>
+  </footer>
+</html>
