@@ -107,12 +107,14 @@ e2e/           Playwright specs, run on a mobile and a desktop profile
 ```
 
 - Behavior tests with Jest and React Testing Library live next to the components (`*.test.tsx`) and query by role and accessible name
-- End-to-end tests: `pnpm --filter @mycogni/web exec playwright install chromium` once, then `pnpm --filter @mycogni/web test:e2e`. They need the local Supabase running: a setup project signs in once for the app tests, auth tests read codes from Mailpit, and every test user is removed at the end
+- End-to-end tests: `pnpm --filter @mycogni/web exec playwright install chromium` once, then `pnpm --filter @mycogni/web test:e2e`. They need the local Supabase running; Playwright starts the API and the web app if they are not up. A setup project signs in once with a person who already finished onboarding, auth tests read codes from Mailpit, and every test user is removed at the end
 - Light and dark themes follow the system preference
 - Crisis help (CVV 188, SAMU 192) is one tap away on every screen
 - Authentication with Supabase Auth: sign up with email and password confirmed by a 6-digit code, sign in, password reset with a code, and sign out. Server actions talk to Supabase, `proxy.ts` refreshes the session cookies, and the app routes check the session on the server. The email being confirmed travels in an `httpOnly` cookie, never in the URL
 - Locally, every auth email lands in Mailpit at `http://127.0.0.1:55324`. Templates live in `supabase/templates`
 - Google sign in is ready but off: create an OAuth client in Google Cloud with `http://127.0.0.1:55321/auth/v1/callback` as redirect URI, add an `[auth.external.google]` block to `supabase/config.toml` reading the client id and secret from environment variables, and set `NEXT_PUBLIC_AUTH_GOOGLE_ENABLED=true`
+- The web server calls the API on behalf of the signed-in person, forwarding the Supabase access token (`API_URL` in `.env.local`, `http://127.0.0.1:3333` locally)
+- Onboarding at `/onboarding`, required before any app route: consents (18+, terms and privacy, health data, and AI as optional), name, then PHQ-9 and GAD-7 one question per screen. A crisis support screen appears right after PHQ-9 when item 9 is above zero. The results explain each score as screening, not diagnosis. Leaving midway resumes at the right step
 - Check-in at `/check-in`: a contour map that tightens on difficult days and loosens on good ones, a 7-level scale, then emotions and context picked from suggestions, groups and search, with no scrolling even on small phones
 - Routes are typed (`typedRoutes`), so links to missing pages fail the typecheck
 
