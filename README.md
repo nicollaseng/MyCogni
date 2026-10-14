@@ -1,24 +1,46 @@
-# README
+# MyCogni
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+Self-tracking app for anxiety and depression: validated screening (PHQ-9, GAD-7, WHO-5), daily mood check-ins and trends over time.
 
-Things you may want to cover:
+> MyCogni is a screening and self-awareness tool, not a diagnostic tool. If you are in crisis in Brazil, call **CVV 188** (24h, free) or **SAMU 192**.
 
-* Ruby version
+## Stack
 
-* System dependencies
+- **Web:** Next.js, TypeScript, Tailwind CSS, shadcn/ui
+- **API:** Node.js, Fastify, Drizzle ORM
+- **Data:** Supabase (Postgres, Auth, Storage) with RLS on every table
+- **Jobs:** Redis and BullMQ
+- **Email:** Resend
+- **Hosting:** Railway (US East) and Supabase (us-east-1)
 
-* Configuration
+## Repository
 
-* Database creation
+```
+apps/       deployable applications (web, api)
+packages/   shared code (config, contracts, domain, emails)
+```
 
-* Database initialization
+## Getting started
 
-* How to run the test suite
+Requirements: Node.js 24 and pnpm through Corepack.
 
-* Services (job queues, cache servers, search engines, etc.)
+```bash
+corepack enable
+pnpm install
+pnpm build
+```
 
-* Deployment instructions
+## Branches
 
-* ...
+- `main` deploys to production
+- `staging` deploys to staging; feature branches target `staging`
+
+## Conventions
+
+- One-line Conventional Commits
+- Strict TypeScript, no `any`
+- At most 650 lines per file
+
+## Legacy
+
+The original 2018 Rails app is preserved at the `legacy-rails-2018` tag.
