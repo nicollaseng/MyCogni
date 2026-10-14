@@ -2,7 +2,7 @@ import { afterAll, beforeAll, describe, expect, it } from '@jest/globals'
 import { connectDatabase, type DatabaseConnection } from '../../src/db/client.ts'
 import type { App } from '../../src/shared/http.ts'
 import { testDatabaseUrl } from '../support/database.ts'
-import { createTestUser, deleteTestUser, type TestUser } from '../support/supabase.ts'
+import { bearer, createTestUser, deleteTestUser, type TestUser } from '../support/supabase.ts'
 import { buildTestApp, supabaseVerifier } from '../support/test-app.ts'
 
 describe('/v1/me', () => {
@@ -10,10 +10,6 @@ describe('/v1/me', () => {
   let connection: DatabaseConnection
   let ana: TestUser
   let bruno: TestUser
-
-  function authorized(user: TestUser) {
-    return { authorization: `Bearer ${user.accessToken}` }
-  }
 
   beforeAll(async () => {
     connection = connectDatabase(testDatabaseUrl)
@@ -52,7 +48,7 @@ describe('/v1/me', () => {
   })
 
   it('returns the profile created when the person signed up', async () => {
-    const response = await app.inject({ method: 'GET', url: '/v1/me', headers: authorized(ana) })
+    const response = await app.inject({ method: 'GET', url: '/v1/me', headers: bearer(ana) })
 
     expect(response.statusCode).toBe(200)
     expect(response.json()).toEqual({
@@ -68,7 +64,7 @@ describe('/v1/me', () => {
     const response = await app.inject({
       method: 'PATCH',
       url: '/v1/me',
-      headers: authorized(ana),
+      headers: bearer(ana),
       payload: { displayName: '  Ana  ', timezone: 'America/Manaus' },
     })
 
@@ -82,7 +78,7 @@ describe('/v1/me', () => {
     const response = await app.inject({
       method: 'PATCH',
       url: '/v1/me',
-      headers: authorized(ana),
+      headers: bearer(ana),
       payload: { timezone: 'Mars/Olympus' },
     })
 
@@ -91,7 +87,7 @@ describe('/v1/me', () => {
   })
 
   it('keeps each person to their own profile', async () => {
-    const response = await app.inject({ method: 'GET', url: '/v1/me', headers: authorized(bruno) })
+    const response = await app.inject({ method: 'GET', url: '/v1/me', headers: bearer(bruno) })
 
     expect(response.json()).toEqual(
       expect.objectContaining({

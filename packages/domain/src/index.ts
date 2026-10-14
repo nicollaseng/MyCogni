@@ -1,6 +1,7 @@
 export { frequencyOptions, isAnswer, type Answer } from './assessments/frequency.ts'
 export {
   instrumentIds,
+  severities,
   type Instrument,
   type InstrumentId,
   type Severity,
@@ -15,3 +16,11 @@ export {
   scoreAssessment,
   type AssessmentScore,
 } from './assessments/scoring.ts'
+export {
+  consentKinds,
+  consentVersion,
+  missingConsents,
+  requiredConsentKinds,
+  type ConsentKind,
+} from './consents/consents.ts'
+export { isOnboardingReady, type OnboardingProgress } from './onboarding/onboarding.ts'

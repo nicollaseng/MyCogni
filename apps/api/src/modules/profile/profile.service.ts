@@ -8,7 +8,7 @@ export interface ProfileService {
   update(user: AuthenticatedUser, input: UpdateProfileInput): Promise<Profile>
 }
 
-function toProfile(record: ProfileRecord, user: AuthenticatedUser): Profile {
+export function toProfile(record: ProfileRecord, user: AuthenticatedUser): Profile {
   return {
     id: record.id,
     email: user.email,

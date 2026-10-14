@@ -1,4 +1,4 @@
-import { eq } from 'drizzle-orm'
+import { eq, sql } from 'drizzle-orm'
 import type { Database } from '../../db/client.ts'
 import { withUser } from '../../db/rls.ts'
 import { profiles } from '../../db/schema/index.ts'
@@ -18,6 +18,7 @@ export interface ProfileChanges {
 export interface ProfileRepository {
   findById(userId: string): Promise<ProfileRecord | undefined>
   update(userId: string, changes: ProfileChanges): Promise<ProfileRecord | undefined>
+  completeOnboarding(userId: string): Promise<ProfileRecord | undefined>
 }
 
 const columns = {
@@ -40,6 +41,16 @@ export function createProfileRepository(db: Database): ProfileRepository {
         const [row] = await tx
           .update(profiles)
           .set(changes)
+          .where(eq(profiles.id, userId))
+          .returning(columns)
+        return row
+      })
+    },
+    completeOnboarding(userId) {
+      return withUser(db, userId, async (tx) => {
+        const [row] = await tx
+          .update(profiles)
+          .set({ onboardingCompletedAt: sql`coalesce(${profiles.onboardingCompletedAt}, now())` })
           .where(eq(profiles.id, userId))
           .returning(columns)
         return row
