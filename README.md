@@ -22,16 +22,31 @@ packages/   shared code (config, contracts, domain, emails)
 
 ## Getting started
 
-Requirements: Node.js 24 and pnpm through Corepack.
+Requirements: Node.js 24, pnpm through Corepack, Docker and the Supabase CLI.
 
 ```bash
 corepack enable
 pnpm install
+pnpm db:start
 cp apps/api/.env.example apps/api/.env
+pnpm --filter @mycogni/api db:migrate
 pnpm dev
 ```
 
 The API listens on `http://localhost:3333`, with a health check at `GET /health`.
+
+## Local Supabase
+
+`pnpm db:start` runs Postgres and Auth locally through the Supabase CLI, on ports that do not clash with other Supabase projects:
+
+| Service          | URL                                                       |
+| ---------------- | --------------------------------------------------------- |
+| API (Auth, REST) | `http://127.0.0.1:55321`                                  |
+| Postgres         | `postgresql://postgres:postgres@127.0.0.1:55322/postgres` |
+| Studio           | `http://127.0.0.1:55323`                                  |
+| Mailpit (emails) | `http://127.0.0.1:55324`                                  |
+
+`pnpm db:stop` stops it. The API tests run against this database, so it must be running for `pnpm test`.
 
 ## API
 
@@ -43,14 +58,24 @@ src/
   modules/   one folder per domain module (routes, service, repository)
   plugins/   cross-cutting concerns (security, error handling)
   shared/    errors and HTTP types
+  db/        Drizzle schema, client, RLS helper and migrator
+  scripts/   one-off entrypoints such as migrations
   app.ts     builds the Fastify instance
   server.ts  process entrypoint with graceful shutdown
+drizzle/     generated SQL migrations
 test/
   unit/      pure logic
-  e2e/       HTTP behavior through the full Fastify pipeline
+  e2e/       HTTP and database behavior against real dependencies
 ```
 
 Errors always answer with `{ code, message }`, plus `issues` for validation errors. Unexpected errors are logged and answered with a generic 500 that never leaks details.
+
+### Database and RLS
+
+- Every table holding user data enables row level security, with owner-only policies declared next to the table in the Drizzle schema, so they ship inside the migrations.
+- User queries run through `withUser(db, userId, work)`, which opens a transaction as the `authenticated` role with the user's JWT claims. Postgres enforces the policies even if a query forgets to filter by user.
+- A trigger on `auth.users` creates the `profiles` row on sign up; deleting the account cascades to every user table.
+- `pnpm --filter @mycogni/api db:generate` creates a migration from schema changes; `db:migrate` applies pending migrations.
 
 ## Branches
 
