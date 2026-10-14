@@ -1,12 +1,11 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
-import { signUp } from '@/features/auth/actions'
+import { signUp, signInWithGoogle } from '@/features/auth/actions'
 import { AuthFootnote, authLink } from '@/features/auth/components/auth-footnote'
 import { AuthHeading } from '@/features/auth/components/auth-heading'
 import { CredentialsForm } from '@/features/auth/components/credentials-form'
 import { GoogleSignIn } from '@/features/auth/components/google-sign-in'
 import { redirectSignedInUser } from '@/shared/lib/auth/session'
-import { publicEnv } from '@/shared/lib/env'
 
 export const metadata: Metadata = { title: 'Criar conta' }
 
@@ -18,7 +17,7 @@ export default async function SignUpPage() {
       <AuthHeading title="Criar conta">
         Leva um minuto. Depois, duas avaliações curtas para entender como você está.
       </AuthHeading>
-      {publicEnv().googleAuthEnabled && <GoogleSignIn />}
+      <GoogleSignIn action={signInWithGoogle} />
       <CredentialsForm action={signUp} mode="sign-up" />
       <p className="mt-6 text-sm leading-relaxed text-muted-foreground">
         Ao criar a conta, você concorda com os{' '}

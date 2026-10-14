@@ -3,10 +3,6 @@ import { z } from 'zod'
 const publicSchema = z.object({
   supabaseUrl: z.url(),
   supabaseKey: z.string().min(1),
-  googleAuthEnabled: z
-    .enum(['true', 'false'])
-    .default('false')
-    .transform((value) => value === 'true'),
 })
 
 const withoutTrailingSlash = z.url().transform((value) => value.replace(/\/+$/, ''))
@@ -24,7 +20,6 @@ export function publicEnv(): PublicEnv {
   return publicSchema.parse({
     supabaseUrl: process.env.NEXT_PUBLIC_SUPABASE_URL,
     supabaseKey: process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY,
-    googleAuthEnabled: process.env.NEXT_PUBLIC_AUTH_GOOGLE_ENABLED,
   })
 }
 

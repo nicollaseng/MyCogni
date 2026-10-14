@@ -102,7 +102,10 @@ export async function signInWithGoogle(): Promise<FormState> {
   const supabase = await createSupabaseServerClient('read-write')
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider: 'google',
-    options: { redirectTo: `${serverEnv().siteUrl}/auth/callback` },
+    options: {
+      redirectTo: `${serverEnv().siteUrl}/auth/callback`,
+      queryParams: { prompt: 'select_account' },
+    },
   })
   if (error !== null) {
     return failed(authErrorMessage(error.code))
