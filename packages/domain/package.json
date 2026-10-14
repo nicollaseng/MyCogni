@@ -1,0 +1,26 @@
+{
+  "name": "@mycogni/domain",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "dev": "tsc -p tsconfig.build.json --watch --preserveWatchOutput",
+    "typecheck": "tsc --noEmit",
+    "test": "NODE_OPTIONS='--experimental-vm-modules --disable-warning=ExperimentalWarning' jest --coverage"
+  },
+  "devDependencies": {
+    "@jest/globals": "30.5.2",
+    "@mycogni/config": "workspace:*",
+    "@swc/core": "1.16.18",
+    "@swc/jest": "0.2.39",
+    "jest": "30.5.2",
+    "typescript": "6.0.3"
+  }
+}

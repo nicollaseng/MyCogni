@@ -17,7 +17,8 @@ Self-tracking app for anxiety and depression: validated screening (PHQ-9, GAD-7,
 
 ```
 apps/       deployable applications (web, api)
-packages/   shared code: config (tsconfig) and contracts (Zod schemas shared by the API and the web app)
+packages/   shared code: config (tsconfig), contracts (Zod schemas shared by the API and the web app)
+            and domain (PHQ-9 and GAD-7 forms, scoring and the self-harm risk rule)
 ```
 
 ## Getting started
