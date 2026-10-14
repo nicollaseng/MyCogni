@@ -5,7 +5,7 @@ import { MoodMap } from '@/features/mood/components/mood-map'
 import { Button } from '@/shared/ui/button'
 import type { ChoiceGroup } from '../catalog'
 import { ChoicePicker } from './choice-picker'
-import { StepActions } from './step-actions'
+import { StepActions } from '@/shared/components/step-actions'
 
 interface PickerStepProps {
   title: string

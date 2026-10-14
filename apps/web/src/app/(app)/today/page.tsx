@@ -45,7 +45,7 @@ export default async function TodayPage() {
         <p className="leading-relaxed">
           PHQ-9 e GAD-7{' '}
           <span className="text-muted-foreground">
-            · a primeira avaliação faz parte do cadastro e leva cerca de 3 minutos.
+            · voltam a cada duas semanas para mostrar como você muda.
           </span>
         </p>
       </section>

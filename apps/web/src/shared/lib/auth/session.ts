@@ -1,4 +1,5 @@
 import { redirect } from 'next/navigation'
+import { fetchProfile } from '../api/resources'
 import { createSupabaseServerClient } from '../supabase/server'
 
 export interface SessionUser {
@@ -20,6 +21,15 @@ export async function requireUser(): Promise<SessionUser> {
   const user = await currentUser()
   if (user === null) {
     redirect('/sign-in')
+  }
+  return user
+}
+
+export async function requireOnboardedUser(): Promise<SessionUser> {
+  const user = await requireUser()
+  const profile = await fetchProfile()
+  if (profile.onboardingCompletedAt === null) {
+    redirect('/onboarding')
   }
   return user
 }

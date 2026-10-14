@@ -33,6 +33,7 @@ export const config = {
     '/patterns/:path*',
     '/me/:path*',
     '/check-in/:path*',
+    '/onboarding/:path*',
     '/sign-in',
     '/sign-up',
     '/verify',
