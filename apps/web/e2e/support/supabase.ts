@@ -60,6 +60,13 @@ export async function createUser(
   return createdSchema.parse(await response.json()).id
 }
 
+export async function deleteUser(id: string): Promise<void> {
+  await fetch(`${supabaseUrl}/auth/v1/admin/users/${id}`, {
+    method: 'DELETE',
+    headers: adminHeaders(),
+  })
+}
+
 export async function deleteTestUsers(): Promise<void> {
   const response = await fetch(`${supabaseUrl}/auth/v1/admin/users?per_page=1000`, {
     headers: adminHeaders(),

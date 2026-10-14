@@ -2,7 +2,7 @@ import { expect, test, type Page } from '@playwright/test'
 import { finishOnboarding } from './support/api'
 import { latestCode } from './support/mailpit'
 import { signedOut } from './support/session'
-import { createUser, uniqueEmail } from './support/supabase'
+import { createUser, deleteUser, uniqueEmail } from './support/supabase'
 
 test.use({ storageState: signedOut })
 
@@ -121,4 +121,22 @@ test('keeps the app behind the sign in', async ({ page }) => {
     await page.goto(path)
     await expect(page).toHaveURL('/sign-in')
   }
+})
+
+test('ends the session when the account no longer exists', async ({ page }) => {
+  const email = uniqueEmail('deleted')
+  const id = await createUser(email, password)
+  await finishOnboarding(email, password)
+  await signIn(page, email, password)
+  await expect(page).toHaveURL('/today')
+
+  await deleteUser(id)
+  await page.goto('/today')
+
+  await expect(page).toHaveURL('/sign-in?error=session')
+  await expect(page.getByRole('main').getByRole('alert')).toHaveText(
+    'Sua sessão terminou. Entre de novo para continuar.',
+  )
+  await page.goto('/today')
+  await expect(page).toHaveURL('/sign-in')
 })
