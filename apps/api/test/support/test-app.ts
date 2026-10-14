@@ -1,15 +1,35 @@
 import { buildApp } from '../../src/app.ts'
+import { createSupabaseTokenVerifier, type TokenVerifier } from '../../src/auth/token-verifier.ts'
 import { loadConfig } from '../../src/config/env.ts'
+import type { Database } from '../../src/db/client.ts'
+import { UnauthorizedError } from '../../src/shared/errors.ts'
 import type { App } from '../../src/shared/http.ts'
+import { testDatabaseUrl } from './database.ts'
+import { testSupabaseUrl } from './supabase.ts'
 
 export const allowedOrigin = 'http://localhost:3000'
 
-export function buildTestApp(): Promise<App> {
-  return buildApp(
-    loadConfig({
-      NODE_ENV: 'test',
-      LOG_LEVEL: 'silent',
-      CORS_ORIGINS: allowedOrigin,
-    }),
-  )
+export const testConfig = loadConfig({
+  NODE_ENV: 'test',
+  LOG_LEVEL: 'silent',
+  CORS_ORIGINS: allowedOrigin,
+  DATABASE_URL: testDatabaseUrl,
+  SUPABASE_URL: testSupabaseUrl,
+})
+
+export const rejectingVerifier: TokenVerifier = {
+  verify: () => Promise.reject(new UnauthorizedError()),
+}
+
+export function supabaseVerifier(): TokenVerifier {
+  return createSupabaseTokenVerifier(testConfig.supabaseUrl)
+}
+
+interface TestAppOptions {
+  db: Database
+  verifier?: TokenVerifier
+}
+
+export function buildTestApp({ db, verifier = rejectingVerifier }: TestAppOptions): Promise<App> {
+  return buildApp({ config: testConfig, db, verifier })
 }

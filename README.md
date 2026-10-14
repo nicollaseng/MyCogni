@@ -17,7 +17,7 @@ Self-tracking app for anxiety and depression: validated screening (PHQ-9, GAD-7,
 
 ```
 apps/       deployable applications (web, api)
-packages/   shared code (config, contracts, domain, emails)
+packages/   shared code: config (tsconfig) and contracts (Zod schemas shared by the API and the web app)
 ```
 
 ## Getting started
@@ -67,6 +67,8 @@ test/
   unit/      pure logic
   e2e/       HTTP and database behavior against real dependencies
 ```
+
+Routes under `/v1` require a Supabase access token (`Authorization: Bearer <token>`). The API verifies it against the project's JWKS (`SUPABASE_URL/auth/v1/.well-known/jwks.json`), checking issuer and audience, so no shared secret is needed. `GET /v1/me` and `PATCH /v1/me` read and update the profile.
 
 Errors always answer with `{ code, message }`, plus `issues` for validation errors. Unexpected errors are logged and answered with a generic 500 that never leaks details.
 

@@ -1,8 +1,17 @@
 import { buildApp } from './app.ts'
+import { createSupabaseTokenVerifier } from './auth/token-verifier.ts'
 import { loadConfig } from './config/env.ts'
+import { connectDatabase } from './db/client.ts'
 
 const config = loadConfig(process.env)
-const app = await buildApp(config)
+const database = connectDatabase(config.databaseUrl)
+const app = await buildApp({
+  config,
+  db: database.db,
+  verifier: createSupabaseTokenVerifier(config.supabaseUrl),
+})
+
+app.addHook('onClose', () => database.close())
 
 async function shutdown(signal: NodeJS.Signals): Promise<void> {
   app.log.info({ signal }, 'Shutting down')

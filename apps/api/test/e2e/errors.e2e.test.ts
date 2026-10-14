@@ -1,14 +1,18 @@
 import { afterAll, beforeAll, describe, expect, it } from '@jest/globals'
 import { z } from 'zod'
 import { ConflictError, NotFoundError } from '../../src/shared/errors.ts'
+import { connectDatabase, type DatabaseConnection } from '../../src/db/client.ts'
 import type { App } from '../../src/shared/http.ts'
+import { testDatabaseUrl } from '../support/database.ts'
 import { buildTestApp } from '../support/test-app.ts'
 
 describe('error handling', () => {
   let app: App
+  let connection: DatabaseConnection
 
   beforeAll(async () => {
-    app = await buildTestApp()
+    connection = connectDatabase(testDatabaseUrl)
+    app = await buildTestApp({ db: connection.db })
     app.get('/test/not-found', () => {
       throw new NotFoundError('Check-in not found')
     })
@@ -28,6 +32,7 @@ describe('error handling', () => {
 
   afterAll(async () => {
     await app.close()
+    await connection.close()
   })
 
   it('answers unknown routes with 404', async () => {
