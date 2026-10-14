@@ -2,13 +2,21 @@
   "testEnvironment": "node",
   "roots": ["<rootDir>/test"],
   "testMatch": ["**/*.test.ts"],
+  "globalSetup": "<rootDir>/test/support/global-setup.ts",
   "extensionsToTreatAsEsm": [".ts"],
   "transform": {
     "^.+\\.ts$": [
       "@swc/jest",
       {
-        "jsc": { "target": "es2022", "parser": { "syntax": "typescript" } },
-        "module": { "type": "es6" }
+        "jsc": {
+          "target": "es2022",
+          "parser": {
+            "syntax": "typescript"
+          }
+        },
+        "module": {
+          "type": "es6"
+        }
       }
     ]
   }
