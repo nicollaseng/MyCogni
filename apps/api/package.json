@@ -1,0 +1,29 @@
+{
+  "name": "@mycogni/api",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "node --watch --env-file-if-exists=.env src/server.ts",
+    "build": "tsc -p tsconfig.build.json",
+    "start": "node dist/server.js",
+    "typecheck": "tsc --noEmit",
+    "test": "NODE_OPTIONS='--experimental-vm-modules --disable-warning=ExperimentalWarning' jest"
+  },
+  "dependencies": {
+    "@fastify/cors": "11.3.1",
+    "@fastify/helmet": "13.1.2",
+    "fastify": "5.12.7",
+    "fastify-type-provider-zod": "7.0.0",
+    "zod": "4.6.7"
+  },
+  "devDependencies": {
+    "@jest/globals": "30.5.2",
+    "@mycogni/config": "workspace:*",
+    "@swc/core": "1.16.18",
+    "@swc/jest": "0.2.39",
+    "@types/node": "24.19.2",
+    "jest": "30.5.2",
+    "typescript": "6.0.3"
+  }
+}

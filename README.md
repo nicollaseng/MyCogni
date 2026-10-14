@@ -27,8 +27,30 @@ Requirements: Node.js 24 and pnpm through Corepack.
 ```bash
 corepack enable
 pnpm install
-pnpm build
+cp apps/api/.env.example apps/api/.env
+pnpm dev
 ```
+
+The API listens on `http://localhost:3333`, with a health check at `GET /health`.
+
+## API
+
+`apps/api` is a Fastify modular monolith running TypeScript directly on Node.js 24 in development and compiled to `dist` for production.
+
+```
+src/
+  config/    environment validated with Zod at boot
+  modules/   one folder per domain module (routes, service, repository)
+  plugins/   cross-cutting concerns (security, error handling)
+  shared/    errors and HTTP types
+  app.ts     builds the Fastify instance
+  server.ts  process entrypoint with graceful shutdown
+test/
+  unit/      pure logic
+  e2e/       HTTP behavior through the full Fastify pipeline
+```
+
+Errors always answer with `{ code, message }`, plus `issues` for validation errors. Unexpected errors are logged and answered with a generic 500 that never leaks details.
 
 ## Branches
 
