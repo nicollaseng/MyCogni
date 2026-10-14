@@ -18,7 +18,7 @@ test('starts on the landing page and enters the app', async ({ page }) => {
   await expect(page.getByRole('heading', { level: 1 })).toHaveText('Como você está agora?')
   await expect(page.getByRole('slider', { name: 'Como você está agora?' })).toBeVisible()
 
-  await page.getByRole('link', { name: 'Começar' }).click()
+  await page.getByRole('main').getByRole('link', { name: 'Começar' }).first().click()
 
   await expect(page).toHaveURL('/today')
   await expect(page.getByRole('heading', { level: 1, name: 'Como você está agora?' })).toBeVisible()
