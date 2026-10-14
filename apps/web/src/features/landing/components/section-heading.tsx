@@ -7,7 +7,7 @@ interface SectionHeadingProps {
 
 export function SectionHeading({ id, kicker, title, description }: SectionHeadingProps) {
   return (
-    <header className="max-w-2xl space-y-4">
+    <div className="max-w-2xl space-y-4">
       <p className="text-sm text-muted-foreground">{kicker}</p>
       <h2
         id={id}
@@ -18,6 +18,6 @@ export function SectionHeading({ id, kicker, title, description }: SectionHeadin
       {description !== undefined && (
         <p className="text-lg leading-relaxed text-pretty text-muted-foreground">{description}</p>
       )}
-    </header>
+    </div>
   )
 }

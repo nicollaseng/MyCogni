@@ -32,6 +32,21 @@ enabled = false
 [auth]
 site_url = "http://localhost:3000"
 additional_redirect_urls = ["http://localhost:3000/auth/callback"]
+minimum_password_length = 8
+password_requirements = "letters_digits"
+
+[auth.email]
+enable_confirmations = true
+otp_length = 6
+otp_expiry = 3600
+
+[auth.email.template.confirmation]
+subject = "Seu código de confirmação do MyCogniAI"
+content_path = "./supabase/templates/confirmation.html"
+
+[auth.email.template.recovery]
+subject = "Seu código para criar uma nova senha"
+content_path = "./supabase/templates/recovery.html"
 
 [edge_runtime]
 enabled = false

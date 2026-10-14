@@ -52,7 +52,7 @@ export function MoodDemo() {
         </div>
 
         <Link
-          href="/today"
+          href="/sign-up"
           className={cn(buttonVariants({ size: 'lg', shape: 'pill' }), 'mt-9 px-9')}
         >
           Começar
