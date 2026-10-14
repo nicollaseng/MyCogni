@@ -1,5 +1,7 @@
 import js from '@eslint/js'
+import nextPlugin from '@next/eslint-plugin-next'
 import { defineConfig, globalIgnores } from 'eslint/config'
+import reactHooks from 'eslint-plugin-react-hooks'
 import tseslint from 'typescript-eslint'
 import { noComments } from './tooling/eslint/no-comments.ts'
 
@@ -11,6 +13,8 @@ export default defineConfig(
     '**/.next',
     '**/.turbo',
     '**/coverage',
+    '**/playwright-report',
+    '**/test-results',
     '**/next-env.d.ts',
   ]),
   {
@@ -37,6 +41,11 @@ export default defineConfig(
       '@typescript-eslint/no-explicit-any': 'error',
       '@typescript-eslint/consistent-type-imports': 'error',
     },
+  },
+  {
+    files: ['apps/web/**/*.{ts,tsx}'],
+    extends: [nextPlugin.configs['core-web-vitals'], reactHooks.configs.flat.recommended],
+    settings: { next: { rootDir: 'apps/web' } },
   },
   {
     files: ['**/*.{js,mjs,cjs}'],

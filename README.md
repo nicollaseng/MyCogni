@@ -1,8 +1,8 @@
-# MyCogni
+# MyCogniAI
 
 Self-tracking app for anxiety and depression: validated screening (PHQ-9, GAD-7, WHO-5), daily mood check-ins and trends over time.
 
-> MyCogni is a screening and self-awareness tool, not a diagnostic tool. If you are in crisis in Brazil, call **CVV 188** (24h, free) or **SAMU 192**.
+> MyCogniAI is a screening and self-awareness tool, not a diagnostic tool. If you are in crisis in Brazil, call **CVV 188** (24h, free) or **SAMU 192**.
 
 ## Stack
 
@@ -33,7 +33,7 @@ pnpm --filter @mycogni/api db:migrate
 pnpm dev
 ```
 
-The API listens on `http://localhost:3333`, with a health check at `GET /health`.
+The web app runs on `http://localhost:3000` and the API on `http://localhost:3333`, with a health check at `GET /health`.
 
 ## Local Supabase
 
@@ -76,6 +76,27 @@ Errors always answer with `{ code, message }`, plus `issues` for validation erro
 - User queries run through `withUser(db, userId, work)`, which opens a transaction as the `authenticated` role with the user's JWT claims. Postgres enforces the policies even if a query forgets to filter by user.
 - A trigger on `auth.users` creates the `profiles` row on sign up; deleting the account cascades to every user table.
 - `pnpm --filter @mycogni/api db:generate` creates a migration from schema changes; `db:migrate` applies pending migrations.
+
+## Web
+
+`apps/web` is a Next.js App Router app, mobile first, styled with Tailwind CSS v4 and shadcn/ui conventions.
+
+The visual language is editorial, closer to a notebook than a dashboard: Newsreader for titles and personal content, Schibsted Grotesk for the interface, hairline rules instead of cards, and navigation in words (Hoje, Registros, Padrões, Você). The palette is a sage paper with forest and slate accents. Color carries meaning only for mood, on a diverging scale from blue on difficult days to green on good days, with a neutral gray in the middle.
+
+```
+src/
+  app/         routes only: (marketing) for public pages, (app) for the signed-in shell
+  features/    one folder per feature (components, hooks, data access)
+  shared/      ui primitives, shared components and utilities
+e2e/           Playwright specs, run on a mobile and a desktop profile
+```
+
+- Behavior tests with Jest and React Testing Library live next to the components (`*.test.tsx`) and query by role and accessible name
+- End-to-end tests: `pnpm --filter @mycogni/web exec playwright install chromium` once, then `pnpm --filter @mycogni/web test:e2e`
+- Light and dark themes follow the system preference
+- Crisis help (CVV 188, SAMU 192) is one tap away on every screen
+- Check-in at `/check-in`: a contour map that tightens on difficult days and loosens on good ones, a 7-level scale, then emotions and context picked from suggestions, groups and search, with no scrolling even on small phones
+- Routes are typed (`typedRoutes`), so links to missing pages fail the typecheck
 
 ## Branches
 
