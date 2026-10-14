@@ -48,7 +48,7 @@ pnpm build
 
 ## Conventions
 
-Enforced by tooling through Git hooks:
+Enforced by tooling, locally through Git hooks and on every pull request through CI:
 
 - One-line Conventional Commits, no body or trailers (commitlint)
 - Strict TypeScript, no `any` (typescript-eslint)
