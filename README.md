@@ -35,11 +35,26 @@ pnpm build
 - `main` deploys to production
 - `staging` deploys to staging; feature branches target `staging`
 
+## Scripts
+
+| Command             | Description                                  |
+| ------------------- | -------------------------------------------- |
+| `pnpm lint`         | ESLint with type-aware rules on the monorepo |
+| `pnpm format`       | Prettier on every supported file             |
+| `pnpm format:check` | Prettier check without writing               |
+| `pnpm typecheck`    | TypeScript check on every package            |
+| `pnpm build`        | Build every package                          |
+| `pnpm test`         | Test every package                           |
+
 ## Conventions
 
-- One-line Conventional Commits
-- Strict TypeScript, no `any`
-- At most 650 lines per file
+Enforced by tooling through Git hooks:
+
+- One-line Conventional Commits, no body or trailers (commitlint)
+- Strict TypeScript, no `any` (typescript-eslint)
+- No comments in code, inline ESLint directives disabled (ESLint)
+- At most 650 lines per file (ESLint)
+- Formatting with Prettier (lint-staged)
 
 ## Legacy
 
