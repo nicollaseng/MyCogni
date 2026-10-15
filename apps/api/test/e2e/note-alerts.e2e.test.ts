@@ -247,6 +247,26 @@ describe('professional alerts from written notes', () => {
     ])
   })
 
+  it('keeps the alert without a link when the patient deletes the page', async () => {
+    const [alert] = await alertsOf(paula)
+    const removed = await app.inject({
+      method: 'DELETE',
+      url: `/v1/journal/${alert?.journalEntryId ?? ''}`,
+      headers: bearer(paula),
+    })
+
+    expect(removed.statusCode).toBe(204)
+    expect(summaryOf(await alertsOf(paula))).toEqual([
+      {
+        reason: 'note_risk',
+        level: 'urgent',
+        status: 'open',
+        checkInId: null,
+        journalEntryId: null,
+      },
+    ])
+  })
+
   it('stops raising once the link ends', async () => {
     await send(app, marina, `/v1/care-links/${marinaLink}/end`)
     await checkIn(marina, urgent)
