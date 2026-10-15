@@ -24,13 +24,12 @@ describe('PatternsOverview', () => {
         .getAllByRole('listitem')
         .map((item) => item.textContent),
     ).toEqual([
-      'Resumo automáticoDesligado · Ligar',
       'Dias da semana0 de 14 dias',
       'Emoções e contextos0 de 5 registros',
       'O que acompanha seus dias0 de 8 dias',
       'Questionários1 de 2 respostas',
     ])
-    expect(within(upcoming).getByRole('link', { name: 'Ligar' })).toHaveAttribute('href', '/me')
+    expect(within(upcoming).queryByText('Resumo automático')).not.toBeInTheDocument()
     expect(screen.queryByText(/Não é um diagnóstico/)).not.toBeInTheDocument()
   })
 

@@ -80,7 +80,5 @@ export const patterns: PatternsMessages = {
       answers: '{current} de {required} respostas',
     },
     contexts: 'Assinale contextos nos registos',
-    disabled: 'Desligado',
-    enable: 'Ligar',
   },
 }

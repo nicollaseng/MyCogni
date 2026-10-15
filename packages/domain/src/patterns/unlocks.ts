@@ -13,7 +13,7 @@ export type PatternSection = (typeof patternSections)[number]
 
 export type ProgressUnit = 'records' | 'days' | 'answers'
 
-export type BlockedReason = 'contexts' | 'disabled'
+export type BlockedReason = 'contexts'
 
 export type SectionStatus =
   | { section: PatternSection; state: 'ready' }
@@ -48,20 +48,22 @@ function counted(
     : { section, state: 'progress', current, required, unit }
 }
 
-function summaryStatus({ ready, enabled, recorded }: PatternEvidence['summary']): SectionStatus {
+function summaryStatus({ ready, enabled, recorded }: PatternEvidence['summary']): SectionStatus[] {
   if (ready) {
-    return { section: 'summary', state: 'ready' }
+    return [{ section: 'summary', state: 'ready' }]
   }
   if (!enabled) {
-    return { section: 'summary', state: 'blocked', reason: 'disabled' }
+    return []
   }
-  return {
-    section: 'summary',
-    state: 'progress',
-    current: Math.min(recorded, insightCheckInThreshold),
-    required: insightCheckInThreshold,
-    unit: 'records',
-  }
+  return [
+    {
+      section: 'summary',
+      state: 'progress',
+      current: Math.min(recorded, insightCheckInThreshold),
+      required: insightCheckInThreshold,
+      unit: 'records',
+    },
+  ]
 }
 
 function associationStatus(evidence: PatternEvidence): SectionStatus {
@@ -75,7 +77,7 @@ function associationStatus(evidence: PatternEvidence): SectionStatus {
 
 export function patternUnlocks(evidence: PatternEvidence): SectionStatus[] {
   return [
-    summaryStatus(evidence.summary),
+    ...summaryStatus(evidence.summary),
     ...(evidence.periodDays >= patternRules.minWeekdayDays
       ? [counted('weekdays', evidence.recordedDays, patternRules.minWeekdayDays, 'days')]
       : []),

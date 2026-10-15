@@ -91,6 +91,12 @@ describe('EntryFilters', () => {
     )
   })
 
+  it('reads several emotions as any of them in the summary line', () => {
+    setup({ ...noFilters, emotions: ['anxiety', 'luto'], contexts: ['work'] })
+
+    expect(screen.getByText('Ansiedade ou luto · Trabalho')).toBeVisible()
+  })
+
   it('opens a sheet on small screens where period, mood and note narrow the list', async () => {
     const { record, user } = setup()
 
@@ -182,5 +188,11 @@ describe('EntryFilters', () => {
     setup({ ...noFilters, period: '7', mood: { min: 5, max: 5 }, withNote: true }, 'en-US')
 
     expect(screen.getByText('Last 7 days · Mood good · With a note')).toBeVisible()
+  })
+
+  it('reads several emotions as any of them in English', () => {
+    setup({ ...noFilters, emotions: ['anxiety', 'joy'] }, 'en-US')
+
+    expect(screen.getByText('Anxiety or joy')).toBeVisible()
   })
 })
