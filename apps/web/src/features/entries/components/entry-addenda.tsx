@@ -8,6 +8,7 @@ import { unlessOutdated } from '@/shared/lib/actions/outdated'
 import type { ActionResult } from '@/shared/lib/actions/result'
 import { formatDayMonth, formatTime } from '@/shared/lib/time'
 import { Button } from '@/shared/ui/button'
+import { bindShortWords } from '@/shared/lib/text'
 
 interface EntryAddendaProps {
   addenda: readonly CheckInAddendum[]
@@ -70,7 +71,7 @@ export function EntryAddenda({ addenda, timeZone, append }: EntryAddendaProps) {
                     </time>
                   </p>
                   <p className="font-serif text-[17px] leading-relaxed text-pretty whitespace-pre-line">
-                    {addendum.text}
+                    {bindShortWords(addendum.text)}
                   </p>
                 </li>
               )
