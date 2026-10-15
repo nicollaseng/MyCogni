@@ -74,4 +74,18 @@ export {
   type Locale,
   type LocaleSignals,
 } from './i18n/locales.ts'
+export {
+  excerptOf,
+  isJournalImageType,
+  isOwnJournalPath,
+  isShareActive,
+  journalBucket,
+  journalImageExtension,
+  journalImageTypes,
+  journalLimits,
+  journalShareScopes,
+  type JournalImageType,
+  type JournalShareScope,
+  type ShareWindow,
+} from './journal/journal.ts'
 export { isOnboardingReady, type OnboardingProgress } from './onboarding/onboarding.ts'

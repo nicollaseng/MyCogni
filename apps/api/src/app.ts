@@ -18,6 +18,7 @@ import { checkInModule } from './modules/check-ins/index.ts'
 import { consentModule } from './modules/consents/index.ts'
 import { healthRoutes } from './modules/health/health.routes.ts'
 import { invitationModule, invitationPublicModule } from './modules/invitations/index.ts'
+import { journalModule } from './modules/journal/index.ts'
 import { notificationModule } from './modules/notifications/index.ts'
 import { onboardingModule } from './modules/onboarding/index.ts'
 import { professionalModule } from './modules/professionals/index.ts'
@@ -26,12 +27,14 @@ import { requireAuthentication } from './plugins/authentication.ts'
 import { registerErrorHandler } from './plugins/error-handler.ts'
 import { registerSecurity } from './plugins/security.ts'
 import type { App } from './shared/http.ts'
+import type { JournalImageStore } from './storage/journal-images.ts'
 
 export interface AppDependencies {
   config: AppConfig
   db: Database
   verifier: TokenVerifier
   accountAdmin: AccountAdmin
+  journalImages: JournalImageStore
 }
 
 function publicRoutes({ config, db }: AppDependencies, mailer: Mailer): FastifyPluginAsyncZod {
@@ -41,7 +44,7 @@ function publicRoutes({ config, db }: AppDependencies, mailer: Mailer): FastifyP
 }
 
 function authenticatedRoutes(
-  { config, db, verifier, accountAdmin }: AppDependencies,
+  { config, db, verifier, accountAdmin, journalImages }: AppDependencies,
   mailer: Mailer,
 ): FastifyPluginAsyncZod {
   return async (api) => {
@@ -57,6 +60,7 @@ function authenticatedRoutes(
     await api.register(careLinkModule(db))
     await api.register(notificationModule(db))
     await api.register(adminModule(db))
+    await api.register(journalModule({ db, images: journalImages, log: api.log }))
   }
 }
 
