@@ -10,7 +10,12 @@ import { createSupabaseServerClient } from '@/shared/lib/supabase/server'
 import { emailLinkCallback, type EmailLinkType } from './email-link'
 import { authErrorKey, type AuthErrorKey } from './error-messages'
 import { failed, invalidFields, noticed, type FormState } from './form-state'
-import { forgetPendingEmail, pendingEmail, rememberPendingEmail } from './pending-email'
+import {
+  forgetPendingEmail,
+  pendingEmail,
+  rememberCodeSent,
+  rememberPendingEmail,
+} from './pending-email'
 import { authSchemas } from './schemas'
 
 type ExternalUrl = `${string}:${string}`
@@ -37,12 +42,20 @@ async function authFailure(key: AuthErrorKey): Promise<FormState> {
   return failed(t(key))
 }
 
-async function requirePendingEmail(): Promise<string> {
+async function requirePendingEmail(
+  fallback: '/sign-up' | '/forgot-password' = '/sign-up',
+): Promise<string> {
   const email = await pendingEmail()
   if (email === null) {
-    redirect('/sign-up')
+    redirect(fallback)
   }
   return email
+}
+
+async function codeResent(): Promise<FormState> {
+  await rememberCodeSent()
+  const t = await getTranslations('auth.resend')
+  return noticed(t('sent'))
 }
 
 export async function signUp(_state: FormState, formData: FormData): Promise<FormState> {
@@ -62,6 +75,7 @@ export async function signUp(_state: FormState, formData: FormData): Promise<For
     return authFailure(authErrorKey(error.code))
   }
   await rememberPendingEmail(parsed.data.email)
+  await rememberCodeSent()
   redirect('/verify')
 }
 
@@ -96,8 +110,7 @@ export async function resendCode(): Promise<FormState> {
   if (error !== null) {
     return authFailure(authErrorKey(error.code))
   }
-  const t = await getTranslations('auth.verify')
-  return noticed(t('resent'))
+  return codeResent()
 }
 
 export async function signIn(_state: FormState, formData: FormData): Promise<FormState> {
@@ -117,6 +130,7 @@ export async function signIn(_state: FormState, formData: FormData): Promise<For
       options: { emailRedirectTo: linkCallback('email') },
     })
     await rememberPendingEmail(parsed.data.email)
+    await rememberCodeSent()
     redirect('/verify')
   }
   if (error !== null) {
@@ -160,34 +174,38 @@ export async function requestPasswordReset(
     return authFailure(authErrorKey(error.code))
   }
   await rememberPendingEmail(parsed.data.email)
+  await rememberCodeSent()
   redirect('/reset-password')
 }
 
-export async function resetPassword(_state: FormState, formData: FormData): Promise<FormState> {
-  const email = await requirePendingEmail()
-  const parsed = (await schemas()).resetPassword.safeParse({
-    code: field(formData, 'code'),
-    password: field(formData, 'password'),
+export async function resendResetCode(): Promise<FormState> {
+  const email = await requirePendingEmail('/forgot-password')
+  const supabase = await createSupabaseServerClient('read-write')
+  const { error } = await supabase.auth.resetPasswordForEmail(email, {
+    redirectTo: linkCallback('recovery'),
   })
+  if (error !== null && error.code !== 'user_not_found') {
+    return authFailure(authErrorKey(error.code))
+  }
+  return codeResent()
+}
+
+export async function verifyResetCode(_state: FormState, formData: FormData): Promise<FormState> {
+  const email = await requirePendingEmail('/forgot-password')
+  const parsed = (await schemas()).verify.safeParse({ code: field(formData, 'code') })
   if (!parsed.success) {
     return invalidFields(parsed.error)
   }
   const supabase = await createSupabaseServerClient('read-write')
-  const verified = await supabase.auth.verifyOtp({
+  const { error } = await supabase.auth.verifyOtp({
     email,
     token: parsed.data.code,
     type: 'recovery',
   })
-  if (verified.error !== null) {
-    return authFailure(authErrorKey(verified.error.code))
+  if (error !== null) {
+    return authFailure(authErrorKey(error.code))
   }
-  const updated = await supabase.auth.updateUser({ password: parsed.data.password })
-  if (updated.error !== null) {
-    return authFailure(authErrorKey(updated.error.code))
-  }
-  await forgetPendingEmail()
-  await rememberLocaleOf(updated.data.user.user_metadata)
-  redirect(await afterSignIn())
+  redirect('/new-password')
 }
 
 export async function setNewPassword(_state: FormState, formData: FormData): Promise<FormState> {
