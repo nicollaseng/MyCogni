@@ -1,4 +1,5 @@
 import { randomUUID } from 'node:crypto'
+import { sharingConsentVersion } from '@mycogni/domain'
 import { expect, test, type Page } from '@playwright/test'
 import { z } from 'zod'
 import { apiUrl, finishOnboarding, inviteByLink, verifiedProfessional } from './support/api'
@@ -56,7 +57,7 @@ async function linkedPatient(professionalEmail: string, name: string): Promise<v
   const { id } = claimedSchema.parse(await send('POST', '/v1/invitations/claim', { code }))
   await send('POST', `/v1/invitations/${id}/accept`, {
     sharesHistory: false,
-    consentVersion: '2026-10',
+    consentVersion: sharingConsentVersion,
   })
   await send('POST', '/v1/check-ins', {
     moodLevel: 5,
@@ -150,7 +151,12 @@ test('a verified professional renames the profile from the account menu and sign
 
   if (isCompact(page)) {
     const bottom = page.getByRole('navigation', { name: 'Navegação da área profissional' })
-    await expect(bottom.getByRole('link')).toHaveText(['Visão geral', 'Pacientes', 'Convites'])
+    await expect(bottom.getByRole('link')).toHaveText([
+      'Visão geral',
+      'Pacientes',
+      'Alertas',
+      'Convites',
+    ])
     await page.getByRole('button', { name: 'Abrir menu' }).click()
     const menu = page.getByRole('dialog', { name: 'Área profissional' })
     await expect(menu).toBeVisible()

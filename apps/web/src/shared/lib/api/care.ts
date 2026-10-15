@@ -21,6 +21,7 @@ import {
   type Assessment,
   type CareLink,
   type CheckIn,
+  type ConfirmSharingTermsInput,
   type CreatedInvitation,
   type CreateInvitationInput,
   type DocumentLink,
@@ -120,6 +121,18 @@ export async function endCareLink(id: string): Promise<void> {
     path: `/v1/care-links/${encodeURIComponent(id)}/end`,
     schema: z.null(),
     method: 'POST',
+  })
+}
+
+export async function confirmSharingTerms(
+  id: string,
+  body: ConfirmSharingTermsInput,
+): Promise<void> {
+  await apiRequest({
+    path: `/v1/care-links/${encodeURIComponent(id)}/terms`,
+    schema: z.null(),
+    method: 'POST',
+    body,
   })
 }
 

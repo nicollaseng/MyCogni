@@ -59,6 +59,15 @@ export function PatientHeader({ patient, timeZone, actions }: PatientHeaderProps
                 <AttentionReasons reasons={patient.attention} />
               </div>
             )}
+            {patient.termsOutdated && (
+              <p className="flex items-start gap-1.5 pt-2 text-sm text-muted-foreground">
+                <span
+                  aria-hidden
+                  className="mt-[7px] size-1.5 shrink-0 rounded-full bg-muted-foreground/70"
+                />
+                {t('patient.termsPending')}
+              </p>
+            )}
             <Link
               href={`/pro/patients/${patient.id}/mybook`}
               className="inline-block pt-2 text-sm underline decoration-1 underline-offset-4"

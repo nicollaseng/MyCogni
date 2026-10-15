@@ -1,6 +1,7 @@
 import { moodDays, patternRules } from '@mycogni/domain'
 import type { Metadata } from 'next'
 import { getLocale, getTranslations } from 'next-intl/server'
+import { TermsNotice } from '@/features/care/components/terms-notice'
 import { TodayIntro } from '@/features/check-in/components/today-intro'
 import { ReadingTeaser } from '@/features/insights/components/reading-teaser'
 import { isRecentReading } from '@/features/insights/readings'
@@ -9,6 +10,7 @@ import { LatestScreening } from '@/features/screening/components/latest-screenin
 import { ScreeningSchedule } from '@/features/screening/components/screening-schedule'
 import { latestByInstrument } from '@/features/screening/latest'
 import { PageTitle } from '@/shared/components/page-title'
+import { fetchCareLinks } from '@/shared/lib/api/care'
 import { fetchAssessments, fetchCheckIns, fetchInsights } from '@/shared/lib/api/resources'
 import { requireOnboardedProfile } from '@/shared/lib/auth/session'
 import { guarded } from '@/shared/lib/settled'
@@ -24,7 +26,7 @@ const dayInMs = 24 * 60 * 60 * 1000
 
 export default async function TodayPage() {
   const now = new Date()
-  const [{ timezone }, [t, locale, checkIns, assessments, readings]] = await guarded(
+  const [{ timezone }, [t, locale, checkIns, assessments, readings, careLinks]] = await guarded(
     requireOnboardedProfile(),
     Promise.all([
       getTranslations('today'),
@@ -32,6 +34,7 @@ export default async function TodayPage() {
       fetchCheckIns({ since: new Date(now.getTime() - (windowDays + 1) * dayInMs), limit: 200 }),
       fetchAssessments(),
       fetchInsights(),
+      fetchCareLinks(),
     ]),
   )
   const days = moodDays(
@@ -47,6 +50,8 @@ export default async function TodayPage() {
   return (
     <>
       <PageTitle kicker={formatDayTitle(now, timezone, locale)} title={t('title')} />
+
+      <TermsNotice links={careLinks} />
 
       <TodayIntro />
 

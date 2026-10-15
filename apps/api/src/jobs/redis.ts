@@ -7,3 +7,5 @@ export function createRedis(redisUrl: string): Redis {
 export const insightQueueName = 'insights'
 
 export const maintenanceQueueName = 'maintenance'
+
+export const alertQueueName = 'alerts'

@@ -1,6 +1,7 @@
 import type { Assessment, SubmitAssessmentInput } from '@mycogni/contracts'
 import { instruments, maxScoreOf, scoreAssessment } from '@mycogni/domain'
 import type { AuthenticatedUser } from '../../auth/token-verifier.ts'
+import type { JobScheduler } from '../../jobs/scheduler.ts'
 import type { AssessmentRecord, AssessmentRepository } from './assessment.repository.ts'
 
 export interface AssessmentService {
@@ -20,11 +21,15 @@ export function toAssessment(record: AssessmentRecord): Assessment {
   }
 }
 
-export function createAssessmentService(repository: AssessmentRepository): AssessmentService {
+export function createAssessmentService(
+  repository: AssessmentRepository,
+  jobs: Pick<JobScheduler, 'assessmentCompleted'>,
+): AssessmentService {
   return {
     async submit(user, { instrument, answers }) {
       const score = scoreAssessment(instruments[instrument], answers)
       const record = await repository.create(user.id, { instrument, answers, ...score })
+      await jobs.assessmentCompleted(user.id, record.id)
       return toAssessment(record)
     },
     async list(user) {

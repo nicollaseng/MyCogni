@@ -1,3 +1,12 @@
+export {
+  alertCountSchema,
+  alertQuerySchema,
+  professionalAlertListSchema,
+  professionalAlertSchema,
+  type AlertCount,
+  type AlertQuery,
+  type ProfessionalAlert,
+} from './alerts.ts'
 export { accountExportSchema, exportedAssessmentSchema, type AccountExport } from './account.ts'
 export {
   assessmentListSchema,
@@ -65,6 +74,7 @@ export {
   activityDaySchema,
   careLinkListSchema,
   careLinkSchema,
+  confirmSharingTermsSchema,
   patientSummaryListSchema,
   patientSummarySchema,
   professionalOverviewSchema,
@@ -72,6 +82,7 @@ export {
   screeningSummarySchema,
   type ActivityDay,
   type CareLink,
+  type ConfirmSharingTermsInput,
   type PatientSummary,
   type ProfessionalOverview,
   type RecentCheckIn,

@@ -14,7 +14,11 @@ export type InvitationChannel = (typeof invitationChannels)[number]
 
 export const invitationLifetimeHours = 72
 
-export const sharingConsentVersion = '2026-10'
+export const sharingConsentVersion = '2026-10-15'
+
+export function isSharingConsentCurrent(version: string): boolean {
+  return version === sharingConsentVersion
+}
 
 export const invitationCodeAlphabet = '23456789ABCDEFGHJKMNPQRSTUVWXYZ'
 

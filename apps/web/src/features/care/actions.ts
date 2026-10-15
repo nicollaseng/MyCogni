@@ -2,9 +2,11 @@
 
 import {
   acceptInvitationSchema,
+  confirmSharingTermsSchema,
   invitationCodeSchema,
   markNotificationsReadSchema,
   type AcceptInvitationInput,
+  type ConfirmSharingTermsInput,
   type NotificationList,
 } from '@mycogni/contracts'
 import { revalidatePath } from 'next/cache'
@@ -14,6 +16,7 @@ import { failure, type ActionResult } from '@/shared/lib/actions/result'
 import {
   acceptInvitation,
   claimInvitation,
+  confirmSharingTerms,
   declineInvitation,
   endCareLink,
   fetchNotifications,
@@ -106,6 +109,32 @@ export async function endLink(id: string): Promise<ActionResult<null>> {
   }
   refreshApp()
   return { ok: true, value: null }
+}
+
+export async function endReviewedLink(id: string): Promise<ActionResult<null>> {
+  const ended = await endLink(id)
+  if (!ended.ok) {
+    return ended
+  }
+  refreshApp()
+  redirect('/me#professionals')
+}
+
+export async function confirmTerms(
+  id: string,
+  input: ConfirmSharingTermsInput,
+): Promise<ActionResult<null>> {
+  const t = await getTranslations('care.feedback')
+  const parsed = confirmSharingTermsSchema.safeParse(input)
+  if (!parsed.success) {
+    return failure(t('termsError'))
+  }
+  const confirmed = await settle(() => confirmSharingTerms(id, parsed.data))
+  if (!confirmed.ok) {
+    return failure(confirmed.status === 404 ? t('linkEnded') : t('termsError'))
+  }
+  refreshApp()
+  redirect('/me#professionals')
 }
 
 export async function readNotifications(ids: string[]): Promise<ActionResult<null>> {

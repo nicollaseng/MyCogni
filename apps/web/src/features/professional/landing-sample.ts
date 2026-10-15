@@ -10,8 +10,8 @@ export const sampleKpis: OverviewKpis = {
   engagement: 10 / 12,
   checkIns: 64,
   previousCheckIns: 57,
-  attention: 3,
-  risk: 1,
+  pendingAlerts: 3,
+  urgentAlerts: 1,
   pendingInvitations: 2,
   expiringSoon: 1,
 }
@@ -102,6 +102,7 @@ export function samplePatient(now: Date): PatientSummary {
       },
     ],
     attention: ['risk_item', 'low_mood', 'mood_drop'],
+    termsOutdated: false,
   }
 }
 

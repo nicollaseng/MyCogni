@@ -13,6 +13,7 @@ export interface CareLinkRecord {
   professional: LinkedProfessionalRecord
   sharesHistory: boolean
   startedAt: Date
+  consentVersion: string
 }
 
 export interface PatientLinkRecord {
@@ -22,12 +23,14 @@ export interface PatientLinkRecord {
   avatarPath: string | null
   sharesHistory: boolean
   startedAt: Date
+  consentVersion: string
 }
 
 export interface CareLinkRepository {
   listForPatient(patientId: string): Promise<CareLinkRecord[]>
   findForPatient(patientId: string, linkId: string): Promise<CareLinkRecord | undefined>
   end(userId: string, linkId: string): Promise<boolean>
+  confirmTerms(patientId: string, linkId: string, version: string): Promise<boolean>
   listPatients(professionalId: string): Promise<PatientLinkRecord[]>
 }
 
@@ -41,6 +44,7 @@ const linkColumns = {
   },
   sharesHistory: careLinks.sharesHistory,
   startedAt: careLinks.startedAt,
+  consentVersion: careLinks.consentVersion,
 }
 
 export function createCareLinkRepository(db: Database): CareLinkRepository {
@@ -99,6 +103,14 @@ export function createCareLinkRepository(db: Database): CareLinkRepository {
         return rows.length > 0
       })
     },
+    confirmTerms(patientId, linkId, version) {
+      return withUser(db, patientId, async (tx) => {
+        const rows = await tx.execute<{ confirmed: boolean }>(
+          sql`select public.confirm_sharing_terms(${linkId}, ${version}) as confirmed`,
+        )
+        return Array.from(rows)[0]?.confirmed ?? false
+      })
+    },
     listPatients(professionalId) {
       return withUser(db, professionalId, (tx) =>
         tx
@@ -109,6 +121,7 @@ export function createCareLinkRepository(db: Database): CareLinkRepository {
             avatarPath: profiles.avatarPath,
             sharesHistory: careLinks.sharesHistory,
             startedAt: careLinks.startedAt,
+            consentVersion: careLinks.consentVersion,
           })
           .from(careLinks)
           .innerJoin(profiles, eq(profiles.id, careLinks.patientId))
