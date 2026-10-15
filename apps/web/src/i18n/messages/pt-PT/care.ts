@@ -147,6 +147,8 @@ export const care: CareMessages = {
     title: 'Profissionais',
     empty: 'Nenhum profissional acompanha os seus registos.',
     since: 'Desde {date}',
+    alerts:
+      'Os profissionais ligados à sua conta recebem um alerta em situações específicas, como respostas que indicam risco, uma descida importante do humor ou muitos dias sem registos.',
     history: {
       shared: 'Inclui registos anteriores',
       fromStart: 'Só registos a partir da ligação',

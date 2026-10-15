@@ -150,7 +150,12 @@ test('a verified professional renames the profile from the account menu and sign
 
   if (isCompact(page)) {
     const bottom = page.getByRole('navigation', { name: 'Navegação da área profissional' })
-    await expect(bottom.getByRole('link')).toHaveText(['Visão geral', 'Pacientes', 'Convites'])
+    await expect(bottom.getByRole('link')).toHaveText([
+      'Visão geral',
+      'Pacientes',
+      'Alertas',
+      'Convites',
+    ])
     await page.getByRole('button', { name: 'Abrir menu' }).click()
     const menu = page.getByRole('dialog', { name: 'Área profissional' })
     await expect(menu).toBeVisible()

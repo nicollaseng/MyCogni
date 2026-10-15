@@ -23,6 +23,7 @@ function renderMenu() {
       profession="Psicologia"
       photoUrl={null}
       verified={false}
+      alerts={null}
       signOut={signOut}
     />,
   )

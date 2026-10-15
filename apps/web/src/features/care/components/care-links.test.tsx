@@ -65,6 +65,16 @@ describe('CareLinks', () => {
     expect(screen.getByRole('link', { name: 'Área profissional' })).toHaveAttribute('href', '/pro')
   })
 
+  it('tells the person when the professionals receive an alert', () => {
+    renderWithIntl(
+      <CareLinks links={links} timeZone="America/Sao_Paulo" end={succeed} isProfessional={false} />,
+    )
+
+    expect(
+      screen.getByText(/Quem acompanha você recebe um alerta em situações específicas/),
+    ).toHaveTextContent('como respostas que indicam risco')
+  })
+
   it('asks for confirmation before ending a link', async () => {
     const end = jest.fn<End>(succeed)
     renderWithIntl(
@@ -110,5 +120,6 @@ describe('CareLinks', () => {
     )
 
     expect(screen.getByText('Nenhum profissional acompanha seus registros.')).toBeInTheDocument()
+    expect(screen.queryByText(/recebe um alerta/)).not.toBeInTheDocument()
   })
 })

@@ -147,6 +147,8 @@ export const care = {
     title: 'Profissionais',
     empty: 'Nenhum profissional acompanha seus registros.',
     since: 'Desde {date}',
+    alerts:
+      'Quem acompanha você recebe um alerta em situações específicas, como respostas que indicam risco, uma piora importante do humor ou muitos dias sem registros.',
     history: {
       shared: 'Inclui registros anteriores',
       fromStart: 'Só registros a partir do vínculo',

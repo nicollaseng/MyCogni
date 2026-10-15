@@ -67,6 +67,7 @@ function Gridlines({ count }: { count: number }) {
 
 export function OverviewShot() {
   const t = useTranslations('professional')
+  const alerts = useTranslations('alerts')
   const time = useTranslations('professional.time')
   const top = niceTicks(Math.max(...sampleActivity)).at(-1) ?? 1
 
@@ -75,7 +76,7 @@ export function OverviewShot() {
       <OverviewKpis kpis={sampleKpis} />
       <div className="grid gap-5 lg:grid-cols-[minmax(0,7fr)_minmax(0,5fr)]">
         <div className="space-y-2.5">
-          <ShotHeading>{t('overview.attention.title')}</ShotHeading>
+          <ShotHeading>{alerts('overview.title')}</ShotHeading>
           <ul className="rounded-[8px] bg-surface">
             {sampleAttention.map((patient) => (
               <li

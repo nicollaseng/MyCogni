@@ -1,6 +1,7 @@
 import type {
   ActivityDay,
   PatientSummary,
+  ProfessionalAlert,
   ProfessionalOverview,
   ScreeningSummary,
   SentInvitation,
@@ -81,6 +82,22 @@ export function invitation(overrides: Partial<SentInvitation> = {}): SentInvitat
     expiresAt: '2026-10-18T12:00:00Z',
     respondedAt: null,
     link: 'http://localhost:3000/invite/K7M2X9QA',
+    ...overrides,
+  }
+}
+
+export function alert(overrides: Partial<ProfessionalAlert> = {}): ProfessionalAlert {
+  return {
+    id: nextId(),
+    patientId: nextId(),
+    patientName: 'Marina Costa',
+    patientPhotoUrl: null,
+    reason: 'low_mood',
+    level: 'watch',
+    status: 'open',
+    createdAt: '2026-10-15T12:00:00Z',
+    acknowledgedAt: null,
+    resolvedAt: null,
     ...overrides,
   }
 }
