@@ -1,3 +1,12 @@
+export {
+  accountTypeChoiceMinutes,
+  accountTypes,
+  isAccountType,
+  isBrandNewAccount,
+  signUpAccountType,
+  type AccountFootprint,
+  type AccountType,
+} from './account/account-types.ts'
 export { answerValues, isAnswer, type Answer } from './assessments/frequency.ts'
 export {
   instrumentIds,
@@ -88,8 +97,10 @@ export { dailyMoods, dayKey, previousDays, type DatedMood } from './check-ins/da
 export {
   consentKinds,
   consentVersion,
+  isPatientConsent,
   isRevocable,
   missingConsents,
+  patientConsentKinds,
   requiredConsentKinds,
   type ConsentKind,
 } from './consents/consents.ts'

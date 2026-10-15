@@ -54,10 +54,12 @@ export {
   type UpdateProfessionalInput,
 } from './professionals.ts'
 export {
+  adoptAccountTypeSchema,
   profileSchema,
   providerPhotoImportSchema,
   providerPhotoStatuses,
   updateProfileSchema,
+  type AdoptAccountTypeInput,
   type Profile,
   type ProviderPhotoImport,
   type UpdateProfileInput,
