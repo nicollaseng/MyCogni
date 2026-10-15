@@ -38,8 +38,11 @@ export interface ReportScreening {
   instrument: InstrumentId
   totalScore: number
   severity: Severity
+  hasRiskFlag: boolean
   completedAt: Date
 }
+
+export type ReportAudience = 'patient' | 'professional'
 
 interface ReadingPeriod {
   periodStart: Date
@@ -53,6 +56,7 @@ export type ReportReading = ReadingPeriod &
   )
 
 export interface ReportInput {
+  audience: ReportAudience
   locale: Locale
   timeZone: string
   now: Date
@@ -98,6 +102,7 @@ export interface ScreeningRow {
   severity: string
   date: string
   bands: ScoreBand[]
+  risk: string | null
 }
 
 export interface ReadingItem {
@@ -171,6 +176,16 @@ interface Formatters {
   dayRange: (first: string, last: string) => string
   longDate: (date: Date) => string
   dateTime: (date: Date) => string
+}
+
+function firstNameSlug(name: string | null): string | null {
+  const slug = (name?.trim().split(/\s+/)[0] ?? '')
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+  return slug === '' ? null : slug
 }
 
 function plainSpaces(text: string): string {
@@ -277,6 +292,7 @@ function screeningRowsOf(
   messages: ReportMessages,
   labels: LabelSet,
   format: Formatters,
+  showRisk: boolean,
 ): ScreeningRow[] {
   return instrumentIds.flatMap((id) => {
     const latest = screenings
@@ -298,6 +314,10 @@ function screeningRowsOf(
           share: (range.max - range.min + 1) / total,
           active: range.severity === latest.severity,
         })),
+        risk:
+          showRisk && latest.hasRiskFlag
+            ? messages.screenings.risk(format.longDate(latest.completedAt))
+            : null,
       },
     ]
   })
@@ -387,7 +407,15 @@ export function buildReportModel(input: ReportInput): ReportModel {
       count: tag.count,
       countLabel: messages.frequent.count(tag.count),
     }))
-  const screenings = screeningRowsOf(input.screenings, inPeriod, messages, labels, format)
+  const screenings = screeningRowsOf(
+    input.screenings,
+    inPeriod,
+    messages,
+    labels,
+    format,
+    input.audience === 'professional',
+  )
+  const person = input.audience === 'professional' ? firstNameSlug(input.name) : null
   const notes = checkIns.flatMap((checkIn) =>
     checkIn.note === null
       ? []
@@ -402,7 +430,7 @@ export function buildReportModel(input: ReportInput): ReportModel {
   )
 
   return {
-    fileName: messages.fileName(dayKey(now, timeZone)),
+    fileName: `${[messages.fileStem, person, dayKey(now, timeZone)].filter(Boolean).join('-')}.pdf`,
     language: locale,
     title: messages.title,
     header: {

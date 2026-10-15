@@ -4,7 +4,7 @@ import type { ReportMessages } from './pt-br.ts'
 const plural = pluralizer('en-US')
 
 export const english: ReportMessages = {
-  fileName: (day) => `mycogni-report-${day}.pdf`,
+  fileStem: 'mycogni-report',
   title: 'Mood report',
   lastDays: (days) => `Last ${String(days)} days`,
   generatedOn: (date) => `Generated on ${date}`,
@@ -46,6 +46,8 @@ export const english: ReportMessages = {
     note: 'Latest result of each questionnaire in the period. This is a screening, not a diagnosis.',
     score: (score, max) => `${String(score)} of ${String(max)}`,
     answeredOn: (date) => `Answered on ${date}`,
+    risk: (date) =>
+      `Item 9 (thoughts of death or self-harm) answered above zero on ${date}. Assess the risk.`,
     empty: 'No questionnaire answered in this period.',
   },
   reading: {

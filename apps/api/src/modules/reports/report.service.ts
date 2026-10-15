@@ -12,7 +12,12 @@ import type { CheckInRepository } from '../check-ins/check-in.repository.ts'
 import type { InsightRecord, InsightRepository } from '../insights/insight.repository.ts'
 import type { ProfessionalRepository } from '../professionals/professional.repository.ts'
 import type { ProfileRecord, ProfileRepository } from '../profile/profile.repository.ts'
-import { buildReportModel, type ReportModel, type ReportReading } from './report-model.ts'
+import {
+  buildReportModel,
+  type ReportAudience,
+  type ReportModel,
+  type ReportReading,
+} from './report-model.ts'
 
 export interface ReportFile {
   fileName: string
@@ -36,6 +41,7 @@ export interface ReportDependencies {
 }
 
 interface ReportSubject {
+  audience: ReportAudience
   ownerId: string
   name: string | null
   readings: ReportReading[]
@@ -95,6 +101,7 @@ export function createReportService({
       assessments.list(viewer.id, subject.ownerId),
     ])
     const model = buildReportModel({
+      audience: subject.audience,
       locale: query.locale ?? (isLocale(viewer.locale) ? viewer.locale : defaultLocale),
       timeZone: viewer.timezone,
       now: moment,
@@ -114,7 +121,11 @@ export function createReportService({
       const readings = query.reading
         ? patientReadings(await insights.listForPatient(user.id, readingLimit))
         : []
-      return report(viewer, { ownerId: user.id, name: viewer.displayName, readings }, query)
+      return report(
+        viewer,
+        { audience: 'patient', ownerId: user.id, name: viewer.displayName, readings },
+        query,
+      )
     },
     async ofPatient(user, patientId, query) {
       const professional = await professionals.find(user.id)
@@ -131,7 +142,11 @@ export function createReportService({
       const readings = query.reading
         ? professionalReadings(await insights.listForProfessional(user.id, patientId, readingLimit))
         : []
-      return report(viewer, { ownerId: patientId, name: link.name, readings }, query)
+      return report(
+        viewer,
+        { audience: 'professional', ownerId: patientId, name: link.name, readings },
+        query,
+      )
     },
   }
 }

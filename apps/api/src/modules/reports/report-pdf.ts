@@ -202,12 +202,23 @@ function drawScreening(
     { font: 'sans', size: 8, color: palette.muted },
     { x, y, width, single: true },
   )
-  return y + 12
+  y += 12
+  if (row.risk === null) {
+    return y
+  }
+  y += 6
+  doc.circle(x + 2.5, y + 4.6, 2.5).fill(palette.warn)
+  const height = layout.write(
+    row.risk,
+    { font: 'sansMedium', size: 8.5, color: palette.warn, lineGap: 1.5 },
+    { x: x + 10, y, width: width - 10 },
+  )
+  return y + height
 }
 
 function drawScreenings(layout: Layout, model: ReportModel): void {
   const { screenings } = model
-  sectionTitle(layout, screenings.title, 120)
+  sectionTitle(layout, screenings.title, 150)
   if (screenings.empty !== null) {
     quiet(layout, screenings.empty)
     layout.y += sectionGap

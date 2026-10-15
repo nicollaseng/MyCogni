@@ -101,6 +101,7 @@ describe('/v1/reports/mood', () => {
       sharesHistory: false,
       consentVersion: sharingConsentVersion,
     })
+    await post('/v1/assessments', ana, { instrument: 'phq9', answers: [0, 0, 0, 0, 0, 0, 0, 0, 1] })
     await post('/v1/check-ins', ana, {
       moodLevel: 5,
       emotions: ['joy'],
@@ -161,10 +162,16 @@ describe('/v1/reports/mood', () => {
   })
 
   it('lets a linked professional download the patient’s report', async () => {
-    const response = await get(`/v1/professional/patients/${ana.id}/reports/mood?days=7`, helena)
+    const response = await get(
+      `/v1/professional/patients/${ana.id}/reports/mood?days=7&locale=pt-BR`,
+      helena,
+    )
 
     expect(response.statusCode).toBe(200)
     expect(response.headers['content-type']).toBe('application/pdf')
+    expect(response.headers['content-disposition']).toBe(
+      `attachment; filename="mycogni-relatorio-ana-${dayKey(new Date(), timeZone)}.pdf"`,
+    )
     expect(isPdf(response.rawPayload)).toBe(true)
   })
 
@@ -186,7 +193,7 @@ describe('/v1/reports/mood', () => {
 
     expect(model?.header.name).toBe('Ana Lima')
     expect(model?.kpis[0]?.value).toBe('3 de 30')
-    expect(model?.screenings.rows.map((row) => row.score)).toEqual(['6 de 27'])
+    expect(model?.screenings.rows.map((row) => [row.score, row.risk])).toEqual([['1 de 27', null]])
     expect(model?.reading?.summary).toBe('Leitura para a Ana.')
     expect(model?.notes?.entries.map((entry) => entry.text)).toEqual([
       'Semana pesada no trabalho.',
@@ -200,7 +207,8 @@ describe('/v1/reports/mood', () => {
 
     expect(model?.header.name).toBe('Ana Lima')
     expect(model?.kpis[0]?.value).toBe('1 de 30')
-    expect(model?.screenings.rows).toEqual([])
+    expect(model?.screenings.rows.map((row) => row.score)).toEqual(['1 de 27'])
+    expect(model?.screenings.rows[0]?.risk).toMatch(/^Item 9 \(pensamentos de morte ou autolesão\)/)
     expect(model?.reading?.summary).toBe('Leitura para a Helena.')
     expect(model?.notes?.entries.map((entry) => entry.text)).toEqual(['Almoço com a Júlia.'])
   })

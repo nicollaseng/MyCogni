@@ -3,7 +3,7 @@ import { pluralizer } from './plural.ts'
 const plural = pluralizer('pt-BR')
 
 export const brazilianPortuguese = {
-  fileName: (day: string) => `mycogni-relatorio-${day}.pdf`,
+  fileStem: 'mycogni-relatorio',
   title: 'Relatório de humor',
   lastDays: (days: number) => `Últimos ${String(days)} dias`,
   generatedOn: (date: string) => `Gerado em ${date}`,
@@ -45,6 +45,8 @@ export const brazilianPortuguese = {
     note: 'Resultado mais recente de cada questionário no período. É uma triagem, não um diagnóstico.',
     score: (score: number, max: number) => `${String(score)} de ${String(max)}`,
     answeredOn: (date: string) => `Respondido em ${date}`,
+    risk: (date: string) =>
+      `Item 9 (pensamentos de morte ou autolesão) respondido acima de zero em ${date}. Avaliar o risco.`,
     empty: 'Nenhum questionário respondido neste período.',
   },
   reading: {

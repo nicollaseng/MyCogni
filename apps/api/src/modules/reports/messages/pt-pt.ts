@@ -4,7 +4,7 @@ import type { ReportMessages } from './pt-br.ts'
 const plural = pluralizer('pt-PT')
 
 export const europeanPortuguese: ReportMessages = {
-  fileName: (day) => `mycogni-relatorio-${day}.pdf`,
+  fileStem: 'mycogni-relatorio',
   title: 'Relatório de humor',
   lastDays: (days) => `Últimos ${String(days)} dias`,
   generatedOn: (date) => `Gerado a ${date}`,
@@ -46,6 +46,8 @@ export const europeanPortuguese: ReportMessages = {
     note: 'Resultado mais recente de cada questionário no período. É um rastreio, não um diagnóstico.',
     score: (score, max) => `${String(score)} de ${String(max)}`,
     answeredOn: (date) => `Respondido a ${date}`,
+    risk: (date) =>
+      `Item 9 (pensamentos de morte ou autolesão) respondido acima de zero a ${date}. Avaliar o risco.`,
     empty: 'Nenhum questionário respondido neste período.',
   },
   reading: {

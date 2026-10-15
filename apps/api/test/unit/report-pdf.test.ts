@@ -16,6 +16,7 @@ const month: ReportCheckIn[] = Array.from({ length: 30 }, (_, index) => ({
 function render(includeNotes: boolean, checkIns: readonly ReportCheckIn[] = month) {
   return renderReportPdf(
     buildReportModel({
+      audience: 'patient',
       locale: 'pt-BR',
       timeZone: 'America/Sao_Paulo',
       now,

@@ -33,6 +33,7 @@ function checkIn(
 
 function input(overrides: Partial<ReportInput> = {}): ReportInput {
   return {
+    audience: 'patient',
     locale: 'pt-BR',
     timeZone,
     now,
@@ -163,9 +164,27 @@ describe('buildReportModel', () => {
 
   it('keeps the latest questionnaire of each kind answered within the period', () => {
     const screenings: ReportScreening[] = [
-      { instrument: 'phq9', totalScore: 12, severity: 'moderate', completedAt: daysAgo(6) },
-      { instrument: 'phq9', totalScore: 7, severity: 'mild', completedAt: daysAgo(2) },
-      { instrument: 'gad7', totalScore: 16, severity: 'severe', completedAt: daysAgo(20) },
+      {
+        instrument: 'phq9',
+        totalScore: 12,
+        severity: 'moderate',
+        hasRiskFlag: false,
+        completedAt: daysAgo(6),
+      },
+      {
+        instrument: 'phq9',
+        totalScore: 7,
+        severity: 'mild',
+        hasRiskFlag: false,
+        completedAt: daysAgo(2),
+      },
+      {
+        instrument: 'gad7',
+        totalScore: 16,
+        severity: 'severe',
+        hasRiskFlag: false,
+        completedAt: daysAgo(20),
+      },
     ]
 
     const { screenings: section } = buildReportModel(input({ screenings }))
@@ -185,9 +204,56 @@ describe('buildReportModel', () => {
     expect(row?.bands.reduce((sum, band) => sum + band.share, 0)).toBeCloseTo(1)
   })
 
+  it('flags item 9 of the latest PHQ-9 for professionals only', () => {
+    const screenings: ReportScreening[] = [
+      {
+        instrument: 'phq9',
+        totalScore: 11,
+        severity: 'moderate',
+        hasRiskFlag: true,
+        completedAt: daysAgo(3),
+      },
+    ]
+
+    expect(
+      buildReportModel(input({ audience: 'professional', screenings })).screenings.rows[0]?.risk,
+    ).toBe(
+      'Item 9 (pensamentos de morte ou autolesão) respondido acima de zero em 12 de outubro de 2026. Avaliar o risco.',
+    )
+    expect(
+      buildReportModel(input({ audience: 'professional', locale: 'en-GB', screenings })).screenings
+        .rows[0]?.risk,
+    ).toBe(
+      'Item 9 (thoughts of death or self-harm) answered above zero on 12 October 2026. Assess the risk.',
+    )
+    expect(buildReportModel(input({ screenings })).screenings.rows[0]?.risk).toBeNull()
+  })
+
+  it('names the professional’s file after the patient’s first name', () => {
+    expect(
+      buildReportModel(input({ audience: 'professional', name: '  Márcia Ágata Costa' })).fileName,
+    ).toBe('mycogni-relatorio-marcia-2026-10-15.pdf')
+    expect(
+      buildReportModel(input({ audience: 'professional', locale: 'en-US', name: 'Zoë Hart' }))
+        .fileName,
+    ).toBe('mycogni-report-zoe-2026-10-15.pdf')
+    expect(buildReportModel(input({ audience: 'professional', name: null })).fileName).toBe(
+      'mycogni-relatorio-2026-10-15.pdf',
+    )
+    expect(buildReportModel(input({ name: 'Marina Costa' })).fileName).toBe(
+      'mycogni-relatorio-2026-10-15.pdf',
+    )
+  })
+
   it('uses the official band names of each language', () => {
     const screenings: ReportScreening[] = [
-      { instrument: 'gad7', totalScore: 6, severity: 'mild', completedAt: daysAgo(1) },
+      {
+        instrument: 'gad7',
+        totalScore: 6,
+        severity: 'mild',
+        hasRiskFlag: false,
+        completedAt: daysAgo(1),
+      },
     ]
 
     expect(buildReportModel(input({ locale: 'pt-PT', screenings })).screenings.rows[0]).toEqual(
@@ -271,6 +337,14 @@ describe('buildReportModel', () => {
       expect.objectContaining({ date: 'sáb., 10 de out., 12:00', mood: 'Um pouco bem', level: 4 }),
     )
     expect(notes?.empty).toBeNull()
+  })
+
+  it('counts zero in the plural in Brazilian Portuguese', () => {
+    expect(buildReportModel(input()).kpis[0]).toEqual({
+      label: 'Dias com registro',
+      value: '0 de 7',
+      detail: '0 registros no período',
+    })
   })
 
   it('says plainly when the period has no records', () => {

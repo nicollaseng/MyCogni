@@ -8,5 +8,8 @@ export interface PluralForms {
 export function pluralizer(locale: Locale): (count: number, forms: PluralForms) => string {
   const rules = new Intl.PluralRules(locale)
   return (count, forms) =>
-    (rules.select(count) === 'one' ? forms.one : forms.other).replace('#', String(count))
+    (count !== 0 && rules.select(count) === 'one' ? forms.one : forms.other).replace(
+      '#',
+      String(count),
+    )
 }
