@@ -71,6 +71,20 @@
       "when": 1792036941549,
       "tag": "0009_create_avatars_bucket",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1792038179717,
+      "tag": "0010_add_consent_revocation",
+      "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1792038180336,
+      "tag": "0011_restrict_consent_updates",
+      "breakpoints": true
     }
   ]
 }

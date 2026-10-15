@@ -1,0 +1,2 @@
+ALTER TABLE "consents" ADD COLUMN "revoked_at" timestamp with time zone;--> statement-breakpoint
+CREATE POLICY "consents_update_own" ON "consents" AS PERMISSIVE FOR UPDATE TO "authenticated" USING ("consents"."user_id" = (select auth.uid())) WITH CHECK ("consents"."user_id" = (select auth.uid()));

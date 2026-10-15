@@ -1,5 +1,5 @@
 import { describe, expect, it } from '@jest/globals'
-import { consentKinds, missingConsents, requiredConsentKinds } from './consents.ts'
+import { consentKinds, isRevocable, missingConsents, requiredConsentKinds } from './consents.ts'
 
 describe('consents', () => {
   it('requires everything except the use of AI, which stays optional', () => {
@@ -15,5 +15,9 @@ describe('consents', () => {
 
   it('has nothing missing once the required ones are granted', () => {
     expect(missingConsents(['adult', 'health_data', 'privacy', 'terms'])).toEqual([])
+  })
+
+  it('lets only the optional consents be withdrawn while keeping the account', () => {
+    expect(consentKinds.filter(isRevocable)).toEqual(['ai_processing'])
   })
 })

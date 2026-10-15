@@ -76,6 +76,31 @@ describe('consents and assessments', () => {
     expect(deleted).toHaveLength(0)
   })
 
+  it('lets a user change only the dates of their own consents', async () => {
+    const own = await withUser(connection.db, alice, (tx) =>
+      tx
+        .update(consents)
+        .set({ revokedAt: new Date() })
+        .where(eq(consents.userId, alice))
+        .returning(),
+    )
+    const others = await withUser(connection.db, alice, (tx) =>
+      tx
+        .update(consents)
+        .set({ revokedAt: new Date() })
+        .where(eq(consents.userId, bob))
+        .returning(),
+    )
+
+    expect(own).toHaveLength(1)
+    expect(others).toHaveLength(0)
+    await expect(
+      withUser(connection.db, alice, (tx) =>
+        tx.update(consents).set({ kind: 'privacy' }).where(eq(consents.userId, alice)),
+      ),
+    ).rejects.toMatchObject({ cause: { code: '42501' } })
+  })
+
   it('does not let a user withdraw a consent by erasing it', async () => {
     const deleted = await withUser(connection.db, alice, (tx) =>
       tx.delete(consents).where(eq(consents.userId, alice)).returning(),

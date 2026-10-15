@@ -6,7 +6,13 @@ import { z } from 'zod'
 import { authErrorMessage } from '@/features/auth/error-messages'
 import { emailSchema, newPasswordSchema } from '@/features/auth/schemas'
 import { attempt, failure, type ActionResult } from '@/shared/lib/actions/result'
-import { deleteAccount, fetchProfile, updateProfile } from '@/shared/lib/api/resources'
+import {
+  deleteAccount,
+  fetchProfile,
+  grantConsents,
+  revokeConsent,
+  updateProfile,
+} from '@/shared/lib/api/resources'
 import { serverEnv } from '@/shared/lib/env'
 import { createSupabaseServerClient } from '@/shared/lib/supabase/server'
 import { avatarBucket, avatarExtension, avatarMaxBytes } from './avatar'
@@ -129,4 +135,19 @@ export async function deleteMyAccount(confirmation: string): Promise<ActionResul
   const supabase = await createSupabaseServerClient('read-write')
   await supabase.auth.signOut({ scope: 'local' })
   redirect('/')
+}
+
+export async function setAiConsent(enabled: boolean): Promise<ActionResult<string>> {
+  const result = await attempt(async () => {
+    if (enabled) {
+      await grantConsents({ kinds: ['ai_processing'] })
+    } else {
+      await revokeConsent('ai_processing')
+    }
+    return enabled ? 'Resumos por IA ligados.' : 'Resumos por IA desligados.'
+  }, saveError)
+  if (result.ok) {
+    revalidatePath('/me')
+  }
+  return result
 }

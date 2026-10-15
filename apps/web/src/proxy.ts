@@ -34,6 +34,7 @@ export const config = {
     '/me/:path*',
     '/check-in/:path*',
     '/onboarding/:path*',
+    '/questionnaires/:path*',
     '/sign-in',
     '/sign-up',
     '/verify',

@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import Link from 'next/link'
 import { signOut } from '@/features/auth/actions'
 import {
   changeEmail,
@@ -6,6 +7,7 @@ import {
   deleteMyAccount,
   removeAvatar,
   renameMe,
+  setAiConsent,
   uploadAvatar,
 } from '@/features/account/actions'
 import { avatarUrl } from '@/features/account/avatar-url'
@@ -17,6 +19,8 @@ import { PasswordForm } from '@/features/account/components/password-form'
 import { ProfileHeader } from '@/features/account/components/profile-header'
 import { SettingsRow } from '@/features/account/components/settings-row'
 import { LatestScreening } from '@/features/screening/components/latest-screening'
+import { ScreeningHistory } from '@/features/screening/components/screening-history'
+import { screeningIntervalDays } from '@/features/screening/due'
 import { latestByInstrument } from '@/features/screening/latest'
 import { Panel, Section } from '@/shared/components/section'
 import { fetchAssessments, fetchConsents } from '@/shared/lib/api/resources'
@@ -45,7 +49,17 @@ export default async function MePage() {
         remove={removeAvatar}
       />
 
-      <LatestScreening results={latestByInstrument(assessments)} timeZone={profile.timezone} />
+      <LatestScreening results={latestByInstrument(assessments)} timeZone={profile.timezone}>
+        <ScreeningHistory assessments={assessments} timeZone={profile.timezone} />
+        <div className="space-y-1 px-1">
+          <Link href="/questionnaires" className="underline decoration-1 underline-offset-4">
+            Refazer os questionários
+          </Link>
+          <p className="text-sm text-muted-foreground">
+            Sugerimos a cada {screeningIntervalDays} dias, para ver como você muda.
+          </p>
+        </div>
+      </LatestScreening>
 
       <Section title="Conta">
         <Panel>
@@ -63,8 +77,16 @@ export default async function MePage() {
 
       <Section title="Privacidade">
         <Panel>
-          <ConsentList consents={consents} timeZone={profile.timezone} />
+          <ConsentList
+            consents={consents}
+            timeZone={profile.timezone}
+            setAiConsent={setAiConsent}
+          />
         </Panel>
+        <p className="px-1 text-sm text-pretty text-muted-foreground">
+          Os consentimentos obrigatórios só podem ser retirados com a exclusão da conta, em Seus
+          dados.
+        </p>
       </Section>
 
       <Section title="Seus dados">

@@ -5,6 +5,7 @@ import { MoodMap } from '@/features/mood/components/mood-map'
 import { MoodStrip } from '@/features/mood/components/mood-strip'
 import { isMoodLevel } from '@/features/mood/mood-levels'
 import { LatestScreening } from '@/features/screening/components/latest-screening'
+import { daysSince, isScreeningDue } from '@/features/screening/due'
 import { latestByInstrument } from '@/features/screening/latest'
 import { PageTitle } from '@/shared/components/page-title'
 import { Panel, Section } from '@/shared/components/section'
@@ -35,6 +36,8 @@ export default async function TodayPage() {
     { timeZone: timezone, today: now, days: windowDays },
   ).map((level) => (level !== null && isMoodLevel(level) ? level : null))
   const recordedDays = days.filter((level) => level !== null).length
+  const latest = latestByInstrument(assessments)
+  const lastAnswer = assessments[0]?.completedAt
 
   return (
     <>
@@ -70,7 +73,16 @@ export default async function TodayPage() {
         </Panel>
       </Section>
 
-      <LatestScreening results={latestByInstrument(assessments)} timeZone={timezone} />
+      <LatestScreening results={latest} timeZone={timezone}>
+        {lastAnswer !== undefined && isScreeningDue(lastAnswer, now) && (
+          <Link
+            href="/questionnaires"
+            className="block px-1 underline decoration-1 underline-offset-4"
+          >
+            Já faz {daysSince(lastAnswer, now)} dias. Refazer os questionários
+          </Link>
+        )}
+      </LatestScreening>
     </>
   )
 }

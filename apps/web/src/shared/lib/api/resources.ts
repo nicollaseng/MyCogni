@@ -16,6 +16,7 @@ import {
   type SubmitAssessmentInput,
   type UpdateProfileInput,
 } from '@mycogni/contracts'
+import type { ConsentKind } from '@mycogni/domain'
 import { cache } from 'react'
 import { z } from 'zod'
 import { apiRequest } from './client'
@@ -78,4 +79,8 @@ export function fetchAccountExport(): Promise<AccountExport> {
 
 export async function deleteAccount(): Promise<void> {
   await apiRequest({ path: '/v1/me', schema: z.null(), method: 'DELETE' })
+}
+
+export async function revokeConsent(kind: ConsentKind): Promise<void> {
+  await apiRequest({ path: `/v1/consents/${kind}`, schema: z.null(), method: 'DELETE' })
 }

@@ -121,3 +121,43 @@ test('deletes the account for good', async ({ page }) => {
   await page.getByRole('button', { name: 'Entrar', exact: true }).click()
   await expect(page.getByRole('main').getByRole('alert')).toHaveText('Email ou senha incorretos.')
 })
+
+test('answers the questionnaires again and keeps the history', async ({ page }) => {
+  await signInAsReadyPerson(page)
+
+  await page.getByRole('link', { name: 'Refazer os questionários' }).click()
+  await expect(page).toHaveURL('/questionnaires')
+  await page.getByRole('button', { name: 'Começar' }).click()
+  for (const [form, total] of [
+    ['PHQ-9', 9],
+    ['GAD-7', 7],
+  ] as const) {
+    for (let index = 1; index <= total; index++) {
+      await expect(page.getByText(`${form} · ${String(index)} de ${String(total)}`)).toBeVisible()
+      const choice = form === 'PHQ-9' && index === total ? 'Nenhuma vez' : 'Vários dias'
+      await page.getByRole('button', { name: choice, exact: true }).click()
+    }
+  }
+
+  await expect(page.getByRole('heading', { name: 'Seus resultados de hoje.' })).toBeVisible()
+  await expect(page.getByRole('region', { name: 'Sinais de ansiedade' })).toContainText(
+    '7 pontos a mais que em',
+  )
+  await page.getByRole('link', { name: 'Voltar para Você' }).click()
+  await expect(page.getByRole('region', { name: 'Seus questionários' })).toContainText('8de 27')
+})
+
+test('turns the AI summaries on and off', async ({ page }) => {
+  await signInAsReadyPerson(page)
+  const privacy = page.getByRole('region', { name: 'Privacidade' })
+  const toggle = privacy.getByRole('switch', { name: 'Resumos escritos por IA' })
+
+  await expect(toggle).toHaveAttribute('aria-checked', 'false')
+  await toggle.click()
+  await expect(privacy).toContainText(/Resumos escritos por IAAutorizado em/)
+  await page.reload()
+  await expect(toggle).toHaveAttribute('aria-checked', 'true')
+
+  await toggle.click()
+  await expect(privacy).toContainText('Resumos escritos por IANão autorizado')
+})

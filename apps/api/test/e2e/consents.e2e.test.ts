@@ -105,4 +105,64 @@ describe('/v1/consents', () => {
 
     expect(response.json()).toEqual([])
   })
+
+  it('withdraws the optional AI consent and grants it again later', async () => {
+    const revoked = await app.inject({
+      method: 'DELETE',
+      url: '/v1/consents/ai_processing',
+      headers: bearer(ana),
+    })
+    const afterRevoke = await app.inject({
+      method: 'GET',
+      url: '/v1/consents',
+      headers: bearer(ana),
+    })
+    await grant(ana, ['ai_processing'])
+    const afterGrant = await app.inject({
+      method: 'GET',
+      url: '/v1/consents',
+      headers: bearer(ana),
+    })
+
+    expect(revoked.statusCode).toBe(204)
+    expect(afterRevoke.json<ConsentBody[]>().map((consent) => consent.kind)).not.toContain(
+      'ai_processing',
+    )
+    expect(afterGrant.json<ConsentBody[]>().map((consent) => consent.kind)).toContain(
+      'ai_processing',
+    )
+  })
+
+  it('keeps required consents unless the account is deleted', async () => {
+    const response = await app.inject({
+      method: 'DELETE',
+      url: '/v1/consents/health_data',
+      headers: bearer(ana),
+    })
+
+    expect(response.statusCode).toBe(422)
+    expect(response.json()).toEqual(expect.objectContaining({ code: 'UNPROCESSABLE_ENTITY' }))
+  })
+
+  it('rejects withdrawing a consent that does not exist', async () => {
+    const response = await app.inject({
+      method: 'DELETE',
+      url: '/v1/consents/marketing',
+      headers: bearer(ana),
+    })
+
+    expect(response.statusCode).toBe(400)
+  })
+
+  it('keeps withdrawn consents in the export with the date they were withdrawn', async () => {
+    await app.inject({ method: 'DELETE', url: '/v1/consents/ai_processing', headers: bearer(ana) })
+    const response = await app.inject({ method: 'GET', url: '/v1/me/export', headers: bearer(ana) })
+    const consents = response.json<{ consents: { kind: string; revokedAt: string | null }[] }>()
+      .consents
+
+    expect(consents.find((consent) => consent.kind === 'ai_processing')?.revokedAt).toEqual(
+      expect.any(String),
+    )
+    expect(consents.find((consent) => consent.kind === 'terms')?.revokedAt).toBeNull()
+  })
 })

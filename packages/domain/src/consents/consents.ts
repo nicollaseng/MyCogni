@@ -14,3 +14,7 @@ export const consentVersion = '2026-10'
 export function missingConsents(granted: readonly ConsentKind[]): ConsentKind[] {
   return requiredConsentKinds.filter((kind) => !granted.includes(kind))
 }
+
+export function isRevocable(kind: ConsentKind): boolean {
+  return !requiredConsentKinds.includes(kind)
+}

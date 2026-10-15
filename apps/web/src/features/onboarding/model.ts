@@ -1,6 +1,7 @@
 import type { Assessment, Consent, Profile } from '@mycogni/contracts'
-import { missingConsents, type ConsentKind, type InstrumentId } from '@mycogni/domain'
+import { missingConsents, type ConsentKind } from '@mycogni/domain'
 import { latestByInstrument, type LatestResults } from '@/features/screening/latest'
+import type { SubmitScreening } from '@/features/screening/model'
 import type { ActionResult } from '@/shared/lib/actions/result'
 
 export type Step = 'consents' | 'name' | 'intro' | 'phq9' | 'support' | 'gad7' | 'results'
@@ -22,15 +23,10 @@ export interface NameInput {
   timezone: string
 }
 
-export interface ScreeningInput {
-  instrument: InstrumentId
-  answers: number[]
-}
-
 export interface OnboardingActions {
   acceptConsents: (kinds: ConsentKind[]) => Promise<ActionResult<null>>
   saveName: (input: NameInput) => Promise<ActionResult<null>>
-  submitScreening: (input: ScreeningInput) => Promise<ActionResult<Assessment>>
+  submitScreening: SubmitScreening
   finishOnboarding: () => Promise<ActionResult<null>>
 }
 
