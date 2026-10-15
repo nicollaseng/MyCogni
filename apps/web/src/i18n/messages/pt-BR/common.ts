@@ -18,6 +18,7 @@ export const common = {
     menu: 'Conta',
     profile: 'Perfil e configurações',
     professionals: 'Profissionais',
+    support: 'Suporte',
     help: 'Ajuda agora',
     signOut: 'Sair',
   },

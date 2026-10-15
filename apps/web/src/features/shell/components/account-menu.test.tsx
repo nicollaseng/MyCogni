@@ -63,6 +63,7 @@ describe('AccountMenu', () => {
     expect(screen.getAllByRole('menuitem').map((item) => item.textContent)).toEqual([
       'Perfil e configurações',
       'Profissionais',
+      'Suporte',
       'Ajuda agora',
       'Sair',
     ])
@@ -74,7 +75,20 @@ describe('AccountMenu', () => {
       'href',
       '/me#professionals',
     )
+    expect(screen.getByRole('menuitem', { name: 'Suporte' })).toHaveAttribute('href', '/me#support')
     expect(screen.getByRole('menuitem', { name: 'Perfil e configurações' })).toHaveFocus()
+  })
+
+  it('keeps the photo on the button and leaves it out of the open menu', async () => {
+    const { user } = renderMenu({ photoUrl: 'https://example.com/marina.png' })
+
+    await user.click(trigger())
+
+    const controlled = document.getElementById(trigger().getAttribute('aria-controls') ?? '')
+    expect(trigger().querySelector('img')).toHaveAttribute('src', 'https://example.com/marina.png')
+    expect(controlled?.querySelector('img')).toBeNull()
+    expect(controlled).not.toHaveTextContent('MC')
+    expect(controlled).toHaveTextContent('Marina Alves Costa')
   })
 
   it('moves between entries with the keyboard and opens from the arrow keys', async () => {

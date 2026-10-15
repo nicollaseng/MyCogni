@@ -1,6 +1,6 @@
 {
-  "id": "8951deec-9437-4568-94cf-7397857876ad",
-  "prevId": "279fac3b-e550-4675-befc-2e5259bbb3ae",
+  "id": "6f89110f-81d9-4715-a47d-972e8241bd30",
+  "prevId": "2ae1ab9a-a7db-4c69-a87c-40879280db27",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -1553,6 +1553,19 @@
           "primaryKey": false,
           "notNull": false
         },
+        "support_ticket_id": {
+          "name": "support_ticket_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "support_status": {
+          "name": "support_status",
+          "type": "support_ticket_status",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": false
+        },
         "created_at": {
           "name": "created_at",
           "type": "timestamp with time zone",
@@ -1625,6 +1638,19 @@
             "insight_id"
           ],
           "tableTo": "insights",
+          "columnsTo": [
+            "id"
+          ],
+          "onUpdate": "no action",
+          "onDelete": "cascade"
+        },
+        "notifications_support_ticket_id_support_tickets_id_fk": {
+          "name": "notifications_support_ticket_id_support_tickets_id_fk",
+          "tableFrom": "notifications",
+          "columnsFrom": [
+            "support_ticket_id"
+          ],
+          "tableTo": "support_tickets",
           "columnsTo": [
             "id"
           ],
@@ -2261,41 +2287,190 @@
       },
       "isRLSEnabled": true
     },
-    "public.zen_step_progress": {
-      "name": "zen_step_progress",
+    "public.support_tickets": {
+      "name": "support_tickets",
       "schema": "",
       "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "number": {
+          "name": "number",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "identity": {
+            "name": "support_tickets_number_seq",
+            "increment": "1",
+            "minValue": "1",
+            "maxValue": "2147483647",
+            "startWith": "1001",
+            "cache": "1",
+            "cycle": false,
+            "schema": "public",
+            "type": "always"
+          }
+        },
         "user_id": {
           "name": "user_id",
           "type": "uuid",
           "primaryKey": false,
           "notNull": true
         },
-        "track_id": {
-          "name": "track_id",
+        "requester_role": {
+          "name": "requester_role",
+          "type": "support_requester_role",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "subject": {
+          "name": "subject",
+          "type": "support_subject",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "custom_subject": {
+          "name": "custom_subject",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "message": {
+          "name": "message",
           "type": "text",
           "primaryKey": false,
           "notNull": true
         },
-        "step_id": {
-          "name": "step_id",
+        "attachment_path": {
+          "name": "attachment_path",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "attachment_name": {
+          "name": "attachment_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "attachment_type": {
+          "name": "attachment_type",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "attachment_size": {
+          "name": "attachment_size",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "status": {
+          "name": "status",
+          "type": "support_ticket_status",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'pending'"
+        },
+        "locale": {
+          "name": "locale",
           "type": "text",
           "primaryKey": false,
           "notNull": true
         },
-        "completed_at": {
-          "name": "completed_at",
+        "closing_note": {
+          "name": "closing_note",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
           "type": "timestamp with time zone",
           "primaryKey": false,
           "notNull": true,
           "default": "now()"
+        },
+        "taken_at": {
+          "name": "taken_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "taken_by": {
+          "name": "taken_by",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "closed_at": {
+          "name": "closed_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "closed_by": {
+          "name": "closed_by",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
         }
       },
-      "indexes": {},
+      "indexes": {
+        "support_tickets_user_created_idx": {
+          "name": "support_tickets_user_created_idx",
+          "columns": [
+            {
+              "expression": "user_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "created_at",
+              "isExpression": false,
+              "asc": false,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "with": {},
+          "method": "btree",
+          "concurrently": false
+        },
+        "support_tickets_status_created_idx": {
+          "name": "support_tickets_status_created_idx",
+          "columns": [
+            {
+              "expression": "status",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "created_at",
+              "isExpression": false,
+              "asc": false,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "with": {},
+          "method": "btree",
+          "concurrently": false
+        }
+      },
       "foreignKeys": {
-        "zen_step_progress_user_id_users_id_fk": {
-          "name": "zen_step_progress_user_id_users_id_fk",
-          "tableFrom": "zen_step_progress",
+        "support_tickets_user_id_users_id_fk": {
+          "name": "support_tickets_user_id_users_id_fk",
+          "tableFrom": "support_tickets",
           "columnsFrom": [
             "user_id"
           ],
@@ -2306,56 +2481,118 @@
           ],
           "onUpdate": "no action",
           "onDelete": "cascade"
+        },
+        "support_tickets_taken_by_users_id_fk": {
+          "name": "support_tickets_taken_by_users_id_fk",
+          "tableFrom": "support_tickets",
+          "columnsFrom": [
+            "taken_by"
+          ],
+          "tableTo": "users",
+          "schemaTo": "auth",
+          "columnsTo": [
+            "id"
+          ],
+          "onUpdate": "no action",
+          "onDelete": "set null"
+        },
+        "support_tickets_closed_by_users_id_fk": {
+          "name": "support_tickets_closed_by_users_id_fk",
+          "tableFrom": "support_tickets",
+          "columnsFrom": [
+            "closed_by"
+          ],
+          "tableTo": "users",
+          "schemaTo": "auth",
+          "columnsTo": [
+            "id"
+          ],
+          "onUpdate": "no action",
+          "onDelete": "set null"
         }
       },
-      "compositePrimaryKeys": {
-        "zen_step_progress_user_id_track_id_step_id_pk": {
-          "name": "zen_step_progress_user_id_track_id_step_id_pk",
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "support_tickets_number_unique": {
+          "name": "support_tickets_number_unique",
           "columns": [
-            "user_id",
-            "track_id",
-            "step_id"
-          ]
+            "number"
+          ],
+          "nullsNotDistinct": false
+        },
+        "support_tickets_attachment_path_unique": {
+          "name": "support_tickets_attachment_path_unique",
+          "columns": [
+            "attachment_path"
+          ],
+          "nullsNotDistinct": false
         }
       },
-      "uniqueConstraints": {},
       "policies": {
-        "zen_step_progress_select_own": {
-          "name": "zen_step_progress_select_own",
+        "support_tickets_select_own": {
+          "name": "support_tickets_select_own",
           "as": "PERMISSIVE",
           "for": "SELECT",
           "to": [
             "authenticated"
           ],
-          "using": "\"zen_step_progress\".\"user_id\" = (select auth.uid())"
+          "using": "\"support_tickets\".\"user_id\" = (select auth.uid())"
         },
-        "zen_step_progress_insert_own": {
-          "name": "zen_step_progress_insert_own",
+        "support_tickets_select_admin": {
+          "name": "support_tickets_select_admin",
+          "as": "PERMISSIVE",
+          "for": "SELECT",
+          "to": [
+            "authenticated"
+          ],
+          "using": "public.is_admin()"
+        },
+        "support_tickets_insert_own": {
+          "name": "support_tickets_insert_own",
           "as": "PERMISSIVE",
           "for": "INSERT",
           "to": [
             "authenticated"
           ],
-          "withCheck": "\"zen_step_progress\".\"user_id\" = (select auth.uid())"
-        },
-        "zen_step_progress_delete_own": {
-          "name": "zen_step_progress_delete_own",
-          "as": "PERMISSIVE",
-          "for": "DELETE",
-          "to": [
-            "authenticated"
-          ],
-          "using": "\"zen_step_progress\".\"user_id\" = (select auth.uid())"
+          "withCheck": "\"support_tickets\".\"user_id\" = (select auth.uid())\n        and \"support_tickets\".\"status\" = 'pending'\n        and \"support_tickets\".\"created_at\" = now()\n        and num_nulls(\"support_tickets\".\"taken_at\", \"support_tickets\".\"taken_by\", \"support_tickets\".\"closed_at\", \"support_tickets\".\"closed_by\", \"support_tickets\".\"closing_note\") = 5\n        and (\n          \"support_tickets\".\"requester_role\" = 'patient'\n          or exists (select 1 from public.professional_profiles p where p.user_id = (select auth.uid()))\n        )\n        and (\n          \"support_tickets\".\"attachment_path\" is null\n          or (\n            split_part(\"support_tickets\".\"attachment_path\", '/', 1) = (select auth.uid())::text\n            and exists (\n              select 1 from storage.objects o\n              where o.bucket_id = 'support-attachments'\n                and o.name = \"support_tickets\".\"attachment_path\"\n                and o.metadata ->> 'mimetype' = \"support_tickets\".\"attachment_type\"\n                and (o.metadata ->> 'size')::bigint = \"support_tickets\".\"attachment_size\"\n            )\n          )\n        )"
         }
       },
       "checkConstraints": {
-        "zen_step_progress_track_length": {
-          "name": "zen_step_progress_track_length",
-          "value": "char_length(\"zen_step_progress\".\"track_id\") <= 60"
+        "support_tickets_custom_subject": {
+          "name": "support_tickets_custom_subject",
+          "value": "(\"support_tickets\".\"subject\" = 'other') = (\"support_tickets\".\"custom_subject\" is not null)\n        and char_length(\"support_tickets\".\"custom_subject\") between 3 and 120"
         },
-        "zen_step_progress_step_length": {
-          "name": "zen_step_progress_step_length",
-          "value": "char_length(\"zen_step_progress\".\"step_id\") <= 60"
+        "support_tickets_message_length": {
+          "name": "support_tickets_message_length",
+          "value": "char_length(\"support_tickets\".\"message\") between 10 and 4000"
+        },
+        "support_tickets_attachment_complete": {
+          "name": "support_tickets_attachment_complete",
+          "value": "num_nulls(\"support_tickets\".\"attachment_path\", \"support_tickets\".\"attachment_name\", \"support_tickets\".\"attachment_type\", \"support_tickets\".\"attachment_size\") in (0, 4)"
+        },
+        "support_tickets_attachment_type": {
+          "name": "support_tickets_attachment_type",
+          "value": "\"support_tickets\".\"attachment_type\" in ('image/jpeg', 'image/png', 'image/webp', 'application/pdf', 'text/plain')"
+        },
+        "support_tickets_attachment_size": {
+          "name": "support_tickets_attachment_size",
+          "value": "\"support_tickets\".\"attachment_size\" between 1 and case when \"support_tickets\".\"attachment_type\" like 'image/%' then 5242880 else 2097152 end"
+        },
+        "support_tickets_attachment_name_length": {
+          "name": "support_tickets_attachment_name_length",
+          "value": "char_length(\"support_tickets\".\"attachment_name\") between 1 and 200"
+        },
+        "support_tickets_locale": {
+          "name": "support_tickets_locale",
+          "value": "\"support_tickets\".\"locale\" in ('pt-BR', 'pt-PT', 'en-US', 'en-GB')"
+        },
+        "support_tickets_closing_note_length": {
+          "name": "support_tickets_closing_note_length",
+          "value": "char_length(\"support_tickets\".\"closing_note\") <= 1000"
+        },
+        "support_tickets_closed_at": {
+          "name": "support_tickets_closed_at",
+          "value": "(\"support_tickets\".\"status\" = 'closed') = (\"support_tickets\".\"closed_at\" is not null)"
         }
       },
       "isRLSEnabled": true
@@ -2465,7 +2702,8 @@
         "professional",
         "marketing",
         "system",
-        "insight"
+        "insight",
+        "support"
       ]
     },
     "public.professional_kind": {
@@ -2485,6 +2723,36 @@
         "pending",
         "verified",
         "rejected"
+      ]
+    },
+    "public.support_requester_role": {
+      "name": "support_requester_role",
+      "schema": "public",
+      "values": [
+        "patient",
+        "professional"
+      ]
+    },
+    "public.support_subject": {
+      "name": "support_subject",
+      "schema": "public",
+      "values": [
+        "account",
+        "technical",
+        "privacy",
+        "professional",
+        "billing",
+        "suggestion",
+        "other"
+      ]
+    },
+    "public.support_ticket_status": {
+      "name": "support_ticket_status",
+      "schema": "public",
+      "values": [
+        "pending",
+        "in_progress",
+        "closed"
       ]
     }
   },

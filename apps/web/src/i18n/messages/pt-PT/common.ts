@@ -19,6 +19,7 @@ export const common: CommonMessages = {
     menu: 'Conta',
     profile: 'Perfil e definições',
     professionals: 'Profissionais',
+    support: 'Apoio',
     help: 'Ajuda agora',
     signOut: 'Terminar sessão',
   },

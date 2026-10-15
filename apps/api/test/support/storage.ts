@@ -1,5 +1,10 @@
 import { randomUUID } from 'node:crypto'
-import { avatarBucket, journalBucket, professionalDocumentBucket } from '@mycogni/domain'
+import {
+  avatarBucket,
+  journalBucket,
+  professionalDocumentBucket,
+  supportAttachmentBucket,
+} from '@mycogni/domain'
 import { testSupabaseUrl, type TestUser } from './supabase.ts'
 
 export const tinyPng = Buffer.from(
@@ -77,6 +82,19 @@ export function uploadProfessionalDocument(user: TestUser): Promise<string> {
     `${user.id}/${randomUUID()}.pdf`,
     'application/pdf',
     tinyPdf,
+  )
+}
+
+export function uploadSupportAttachment(
+  user: TestUser,
+  { extension = 'png', contentType = 'image/png', body = tinyPng } = {},
+): Promise<string> {
+  return uploaded(
+    user,
+    supportAttachmentBucket,
+    `${user.id}/${randomUUID()}.${extension}`,
+    contentType,
+    body,
   )
 }
 

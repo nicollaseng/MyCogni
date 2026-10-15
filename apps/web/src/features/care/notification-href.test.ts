@@ -4,6 +4,7 @@ import { notificationHref } from './notification-href'
 
 const invitationId = '7a1c2b3d-0000-4000-8000-000000000010'
 const insightId = '7a1c2b3d-0000-4000-8000-000000000020'
+const ticketId = '7a1c2b3d-0000-4000-8000-000000000030'
 
 function notification(overrides: Partial<Notification>): Notification {
   return {
@@ -12,6 +13,7 @@ function notification(overrides: Partial<Notification>): Notification {
     createdAt: '2026-10-14T15:00:00.000Z',
     readAt: null,
     insightId: null,
+    supportTicket: null,
     invitation: null,
     ...overrides,
   }
@@ -43,6 +45,17 @@ describe('notificationHref', () => {
     )
   })
 
+  it('opens the support ticket a support update is about', () => {
+    expect(
+      notificationHref(
+        notification({
+          kind: 'support',
+          supportTicket: { id: ticketId, number: 1042, status: 'in_progress' },
+        }),
+      ),
+    ).toBe(`/support/${ticketId}`)
+  })
+
   it('keeps notices and news on the notifications page', () => {
     expect(notificationHref(notification({ kind: 'system' }))).toBe('/notifications')
     expect(notificationHref(notification({ kind: 'marketing' }))).toBe('/notifications')
@@ -51,5 +64,6 @@ describe('notificationHref', () => {
   it('falls back to the notifications page when the target is gone', () => {
     expect(notificationHref(notification({ kind: 'invitation' }))).toBe('/notifications')
     expect(notificationHref(notification({ kind: 'insight' }))).toBe('/notifications')
+    expect(notificationHref(notification({ kind: 'support' }))).toBe('/notifications')
   })
 })

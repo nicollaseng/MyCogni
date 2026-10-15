@@ -1,4 +1,4 @@
-import { invitationStatuses, notificationKinds } from '@mycogni/domain'
+import { invitationStatuses, notificationKinds, supportTicketStatuses } from '@mycogni/domain'
 import { z } from 'zod'
 import { professionalSummarySchema } from './invitations.ts'
 
@@ -10,6 +10,13 @@ export const notificationSchema = z.object({
   createdAt: timestamp,
   readAt: timestamp.nullable(),
   insightId: z.uuid().nullable(),
+  supportTicket: z
+    .object({
+      id: z.uuid(),
+      number: z.int().positive(),
+      status: z.enum(supportTicketStatuses),
+    })
+    .nullable(),
   invitation: z
     .object({
       id: z.uuid(),
