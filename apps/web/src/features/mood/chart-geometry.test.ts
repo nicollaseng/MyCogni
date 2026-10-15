@@ -1,5 +1,5 @@
 import { describe, expect, it } from '@jest/globals'
-import { linePaths, moodTop, slotCenter } from './chart-geometry'
+import { isDense, labeledSlots, linePaths, moodTop, slotCenter } from './chart-geometry'
 
 describe('chart geometry', () => {
   it('places the best mood at the top and the worst at the bottom of the plot', () => {
@@ -19,5 +19,13 @@ describe('chart geometry', () => {
       'M5.50 4.00 L6.50 3.50',
     ])
     expect(linePaths([null, 4, null])).toEqual([])
+  })
+
+  it('labels every day of a short chart and a few evenly spaced days of a long one', () => {
+    expect(labeledSlots(7)).toEqual([0, 1, 2, 3, 4, 5, 6])
+    expect(labeledSlots(30)).toEqual([5, 13, 21, 29])
+    expect(labeledSlots(90)).toEqual([20, 43, 66, 89])
+    expect(isDense(14)).toBe(true)
+    expect(isDense(30)).toBe(false)
   })
 })

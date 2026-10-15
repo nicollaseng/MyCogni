@@ -19,12 +19,10 @@ export default function EntriesLoading() {
         description={<LinesSkeleton widths={descriptionWidths} className="pt-1" />}
         action={<Skeleton className="h-10 w-48 rounded-md" />}
       />
-      <div className="space-y-4">
-        <Skeleton className="h-11 w-full rounded-md" />
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-          {Array.from({ length: 4 }, (_, index) => (
-            <Skeleton key={index} className="h-10 rounded-md" />
-          ))}
+      <div className="space-y-6">
+        <div className="flex gap-2">
+          <Skeleton className="h-11 min-w-0 flex-1 rounded-md" />
+          <Skeleton className="h-11 w-28 rounded-md" />
         </div>
         <Skeleton className="h-5 w-32" />
       </div>

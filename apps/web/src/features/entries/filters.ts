@@ -1,26 +1,24 @@
-import { checkInLimits, checkInSearchLength } from '@mycogni/domain'
+import {
+  checkInLimits,
+  checkInSearchLength,
+  moodRangeOf,
+  moodRangeParam,
+  tagListOf,
+  type EntryFilterSelection,
+  type MoodRange,
+} from '@mycogni/domain'
 import type { CheckInFilter } from '@/shared/lib/api/resources'
 
 export const periods = ['7', '30', '90'] as const
 
 export type Period = (typeof periods)[number]
 
-export const moodRanges = {
-  hard: { min: 0, max: 2 },
-  neutral: { min: 3, max: 3 },
-  good: { min: 4, max: 6 },
-} as const
-
-export type MoodRange = keyof typeof moodRanges
-
-export const moodRangeIds: readonly MoodRange[] = ['hard', 'neutral', 'good']
-
 export interface EntryFilters {
   q: string
   period: Period | null
   mood: MoodRange | null
-  emotion: string | null
-  context: string | null
+  emotions: readonly string[]
+  contexts: readonly string[]
   withNote: boolean
 }
 
@@ -32,8 +30,8 @@ export const noFilters: EntryFilters = {
   q: '',
   period: null,
   mood: null,
-  emotion: null,
-  context: null,
+  emotions: [],
+  contexts: [],
   withNote: false,
 }
 
@@ -47,25 +45,26 @@ export function isPeriod(value: string | undefined): value is Period {
   return periods.some((period) => period === value)
 }
 
-export function isMoodRange(value: string | undefined): value is MoodRange {
-  return moodRangeIds.some((range) => range === value)
-}
-
-function tagOf(value: string | undefined): string | null {
-  const tag = value?.trim() ?? ''
-  return tag === '' || tag.length > checkInLimits.tagLength || tag.includes(',') ? null : tag
-}
-
 export function parseEntryFilters(params: SearchParams): EntryFilters {
   const period = firstParam(params.period)
-  const mood = firstParam(params.mood)
+  const emotions = tagListOf(firstParam(params.emotion))
   return {
     q: (firstParam(params.q) ?? '').trim().slice(0, checkInSearchLength),
     period: isPeriod(period) ? period : null,
-    mood: isMoodRange(mood) ? mood : null,
-    emotion: tagOf(firstParam(params.emotion)),
-    context: tagOf(firstParam(params.context)),
+    mood: moodRangeOf(firstParam(params.mood)),
+    emotions,
+    contexts: tagListOf(firstParam(params.context), checkInLimits.tags - emotions.length),
     withNote: firstParam(params.note) === '1',
+  }
+}
+
+export function selectionOf(filters: EntryFilters): EntryFilterSelection {
+  return {
+    period: filters.period === null ? null : Number(filters.period),
+    mood: filters.mood,
+    emotions: filters.emotions,
+    contexts: filters.contexts,
+    withNote: filters.withNote,
   }
 }
 
@@ -74,19 +73,23 @@ export function isFiltered(filters: EntryFilters): boolean {
     filters.q !== '' ||
     filters.period !== null ||
     filters.mood !== null ||
-    filters.emotion !== null ||
-    filters.context !== null ||
+    filters.emotions.length > 0 ||
+    filters.contexts.length > 0 ||
     filters.withNote
   )
+}
+
+function listParam(tags: readonly string[]): string | null {
+  return tags.length === 0 ? null : tags.join(',')
 }
 
 export function entryQuery(filters: EntryFilters, before?: string): Record<string, string> {
   const entries: [string, string | null][] = [
     ['q', filters.q === '' ? null : filters.q],
     ['period', filters.period],
-    ['mood', filters.mood],
-    ['emotion', filters.emotion],
-    ['context', filters.context],
+    ['mood', filters.mood === null ? null : moodRangeParam(filters.mood)],
+    ['emotion', listParam(filters.emotions)],
+    ['context', listParam(filters.contexts)],
     ['note', filters.withNote ? '1' : null],
     ['before', before ?? null],
   ]
@@ -95,16 +98,26 @@ export function entryQuery(filters: EntryFilters, before?: string): Record<strin
   )
 }
 
-export function entriesHref(filters: EntryFilters): EntriesHref {
+function withQuery<Path extends string>(
+  path: Path,
+  filters: EntryFilters,
+): Path | `${Path}?${string}` {
   const query = new URLSearchParams(entryQuery(filters)).toString()
-  return query === '' ? '/entries' : `/entries?${query}`
+  return query === '' ? path : `${path}?${query}`
+}
+
+export function entriesHref(filters: EntryFilters): EntriesHref {
+  return withQuery('/entries', filters)
+}
+
+export function entryHref(id: string, filters: EntryFilters): `/entries/${string}` {
+  return withQuery(`/entries/${id}`, filters)
 }
 
 export function checkInFilterOf(
   filters: EntryFilters,
   { now, qTags }: { now: Date; qTags: readonly string[] },
 ): CheckInFilter {
-  const range = filters.mood === null ? undefined : moodRanges[filters.mood]
   return {
     since:
       filters.period === null
@@ -112,9 +125,9 @@ export function checkInFilterOf(
         : new Date(now.getTime() - Number(filters.period) * dayInMs),
     q: filters.q === '' ? undefined : filters.q,
     qTags: filters.q === '' ? undefined : qTags,
-    tags: [filters.emotion, filters.context].filter((tag) => tag !== null),
-    minMood: range?.min,
-    maxMood: range?.max,
+    tags: [...filters.emotions, ...filters.contexts],
+    minMood: filters.mood?.min,
+    maxMood: filters.mood?.max,
     hasNote: filters.withNote ? true : undefined,
   }
 }

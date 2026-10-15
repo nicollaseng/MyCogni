@@ -1,4 +1,4 @@
-import { contextIds, emotionIds, frequentTags } from '@mycogni/domain'
+import { contextIds, emotionIds, frequentTags, isContextId, isEmotionId } from '@mycogni/domain'
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { getTranslations } from 'next-intl/server'
@@ -86,14 +86,19 @@ export default async function EntriesPage({ searchParams }: PageProps<'/entries'
       ) : (
         <EntriesBrowser
           filters={filters}
-          usedEmotions={frequentTags(
+          total={total}
+          customEmotions={frequentTags(
             recent.map((checkIn) => checkIn.emotions),
             usedTags,
-          ).map((item) => item.tag)}
-          usedContexts={frequentTags(
+          )
+            .map((item) => item.tag)
+            .filter((tag) => !isEmotionId(tag))}
+          customContexts={frequentTags(
             recent.map((checkIn) => checkIn.contexts),
             usedTags,
-          ).map((item) => item.tag)}
+          )
+            .map((item) => item.tag)
+            .filter((tag) => !isContextId(tag))}
         >
           <p role="status" className="text-sm text-muted-foreground">
             {filtered
@@ -111,6 +116,7 @@ export default async function EntriesPage({ searchParams }: PageProps<'/entries'
             <EntryList
               groups={groupByDay(checkIns, { timeZone: timezone, now: new Date() })}
               timeZone={timezone}
+              filters={filters}
             />
           )}
           {checkIns.length === pageSize && oldest !== undefined && (

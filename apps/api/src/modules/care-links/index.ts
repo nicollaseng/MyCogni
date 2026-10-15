@@ -2,6 +2,7 @@ import type { FastifyPluginCallbackZod } from 'fastify-type-provider-zod'
 import type { Database } from '../../db/client.ts'
 import type { BucketStore } from '../../storage/bucket-store.ts'
 import { createAssessmentRepository } from '../assessments/assessment.repository.ts'
+import { createCheckInAddendumRepository } from '../check-ins/check-in-addendum.repository.ts'
 import { createCheckInRepository } from '../check-ins/check-in.repository.ts'
 import { createProfessionalRepository } from '../professionals/professional.repository.ts'
 import { createCareLinkRepository } from './care-link.repository.ts'
@@ -18,6 +19,7 @@ export function careLinkModule(db: Database, photos: BucketStore): FastifyPlugin
       careLinks,
       metrics: createPatientMetricsRepository(db),
       checkIns: createCheckInRepository(db),
+      addenda: createCheckInAddendumRepository(db),
       assessments: createAssessmentRepository(db),
       professionals: createProfessionalRepository(db),
       photos,

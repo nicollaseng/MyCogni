@@ -1,12 +1,18 @@
 import type {
   CheckIn,
+  CheckInAddendum,
   CheckInCount,
+  CheckInDetail,
   CheckInFilter,
   CheckInSearch,
+  CreateCheckInAddendumInput,
   CreateCheckInInput,
 } from '@mycogni/contracts'
 import type { AuthenticatedUser } from '../../auth/token-verifier.ts'
 import type { JobScheduler } from '../../jobs/scheduler.ts'
+import { NotFoundError } from '../../shared/errors.ts'
+import type { CheckInAddendumRepository } from './check-in-addendum.repository.ts'
+import { loadCheckInDetail, toAddendum } from './check-in-detail.ts'
 import type {
   CheckInFilter as RecordFilter,
   CheckInRecord,
@@ -17,6 +23,12 @@ export interface CheckInService {
   record(user: AuthenticatedUser, input: CreateCheckInInput): Promise<CheckIn>
   list(user: AuthenticatedUser, search: CheckInSearch): Promise<CheckIn[]>
   count(user: AuthenticatedUser, filter: CheckInFilter): Promise<CheckInCount>
+  detail(user: AuthenticatedUser, id: string): Promise<CheckInDetail>
+  append(
+    user: AuthenticatedUser,
+    id: string,
+    input: CreateCheckInAddendumInput,
+  ): Promise<CheckInAddendum>
 }
 
 export function toCheckIn(record: CheckInRecord): CheckIn {
@@ -34,6 +46,7 @@ function recordFilterOf({ since, ...filter }: CheckInFilter): RecordFilter {
 export function createCheckInService(
   repository: CheckInRepository,
   jobs: JobScheduler,
+  addenda: CheckInAddendumRepository,
 ): CheckInService {
   return {
     async record(user, input) {
@@ -56,6 +69,19 @@ export function createCheckInService(
     },
     async count(user, filter) {
       return { count: await repository.count(user.id, recordFilterOf(filter)) }
+    },
+    detail(user, id) {
+      return loadCheckInDetail(
+        { checkIns: repository, addenda },
+        { viewerId: user.id, ownerId: user.id, checkInId: id },
+      )
+    },
+    async append(user, id, input) {
+      const record = await repository.find(user.id, id)
+      if (record?.userId !== user.id) {
+        throw new NotFoundError('Check-in not found')
+      }
+      return toAddendum(await addenda.create(user.id, id, input.text))
     },
   }
 }

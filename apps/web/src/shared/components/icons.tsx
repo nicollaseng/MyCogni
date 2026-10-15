@@ -34,3 +34,11 @@ export function DownloadIcon({ className }: IconProps) {
     </svg>
   )
 }
+
+export function FilterIcon({ className }: IconProps) {
+  return (
+    <svg aria-hidden viewBox="0 0 20 20" className={className}>
+      <path d="M3.5 6h13M6 10h8M8.5 14h3" {...stroke} />
+    </svg>
+  )
+}

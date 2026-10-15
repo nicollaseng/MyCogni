@@ -1,6 +1,7 @@
 export const entries = {
   meta: {
     title: 'Registros',
+    detail: 'Registro',
   },
   title: 'Registros',
   description: 'Cada check-in fica guardado aqui, com a data, o humor e o que você quiser anotar.',
@@ -13,38 +14,44 @@ export const entries = {
   },
   search: {
     label: 'Buscar nos registros',
-    placeholder: 'Buscar em notas e emoções',
+    placeholder: 'Buscar',
     submit: 'Buscar',
     clear: 'Limpar busca',
   },
   filters: {
-    label: 'Filtros',
-    clear: 'Limpar filtros',
+    open: 'Filtros',
+    active: '{count, plural, =0 {nenhum ativo} one {# ativo} other {# ativos}}',
+    title: 'Filtros',
+    close: 'Fechar',
+    clear: 'Limpar',
+    show: '{count, plural, =0 {Nenhum registro} one {Ver # registro} other {Ver # registros}}',
+    summary: 'Filtros em uso',
     period: {
       label: 'Período',
-      any: 'Todo o período',
-      week: 'Últimos 7 dias',
-      month: 'Últimos 30 dias',
-      quarter: 'Últimos 90 dias',
+      any: 'Tudo',
+      days: '{days} dias',
+      last: 'Últimos {days} dias',
     },
     mood: {
       label: 'Humor',
       any: 'Qualquer humor',
-      hard: 'Humor difícil',
-      neutral: 'Humor neutro',
-      good: 'Humor bom',
+      single: 'Humor {mood}',
+      range: 'Humor {from} a {to}',
     },
-    emotion: {
-      label: 'Emoção',
-      any: 'Todas as emoções',
-      used: 'Suas mais usadas',
+    emotions: {
+      label: 'Emoções',
+      search: 'Buscar emoção',
+      yours: 'Suas',
+      none: 'Nenhuma emoção com esse nome.',
     },
-    context: {
-      label: 'Contexto',
-      any: 'Todos os contextos',
-      used: 'Seus mais usados',
+    contexts: {
+      label: 'Contextos',
+      search: 'Buscar contexto',
+      yours: 'Seus',
+      none: 'Nenhum contexto com esse nome.',
     },
     withNote: 'Só com nota',
+    noteSummary: 'Com nota',
   },
   results: {
     reset: 'Limpar busca e filtros',
@@ -52,6 +59,23 @@ export const entries = {
     filtered:
       '{count, plural, =0 {Nenhum registro encontrado} one {# registro encontrado} other {# registros encontrados}}',
     none: 'Nada por aqui com essa busca e esses filtros. Tente outra palavra ou outro período.',
+  },
+  detail: {
+    back: 'Registros',
+    open: 'Abrir registro de {when}',
+    emotions: 'Emoções',
+    contexts: 'Contextos',
+    note: 'Nota',
+    addenda: 'Escrito depois',
+    writeMore: 'Escrever mais',
+    label: 'O que você quer acrescentar?',
+    hint: 'O registro não muda. Isto fica guardado abaixo, com a data de hoje.',
+    save: 'Guardar',
+    cancel: 'Cancelar',
+    error: 'Não foi possível guardar. Tente de novo.',
+    remaining:
+      '{count, plural, =0 {Nenhum caractere restante} one {# caractere restante} other {# caracteres restantes}}',
+    readOnly: 'Somente leitura. Só a pessoa pode acrescentar algo ao registro.',
   },
 }
 

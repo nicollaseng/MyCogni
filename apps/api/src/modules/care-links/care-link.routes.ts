@@ -1,6 +1,7 @@
 import {
   assessmentListSchema,
   careLinkListSchema,
+  checkInDetailSchema,
   checkInListSchema,
   checkInQuerySchema,
   confirmSharingTermsSchema,
@@ -63,6 +64,17 @@ export function careLinkRoutes(
         },
       },
       (request) => patients.checkIns(currentUser(request), request.params.patientId, request.query),
+    )
+    app.get(
+      '/professional/patients/:patientId/check-ins/:checkInId',
+      {
+        schema: {
+          params: byPatient.extend({ checkInId: z.uuid() }),
+          response: { 200: checkInDetailSchema },
+        },
+      },
+      (request) =>
+        patients.checkIn(currentUser(request), request.params.patientId, request.params.checkInId),
     )
     app.get(
       '/professional/patients/:patientId/assessments',

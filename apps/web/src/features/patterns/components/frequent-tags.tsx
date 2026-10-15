@@ -1,6 +1,7 @@
 import type { TagCount } from '@mycogni/domain'
 import { useTranslations } from 'next-intl'
 import { useCatalogLabels } from '@/features/check-in/use-catalog-labels'
+import { Section } from '@/shared/components/section'
 
 interface TagListProps {
   title: string
@@ -51,9 +52,11 @@ export function FrequentTags({ emotions, contexts }: FrequentTagsProps) {
   const labels = useCatalogLabels()
 
   return (
-    <div className="grid gap-8 pt-1 md:grid-cols-2 md:gap-10">
-      <TagList title={t('emotions')} tags={emotions} labelOf={labels.emotion} />
-      <TagList title={t('contexts')} tags={contexts} labelOf={labels.context} />
-    </div>
+    <Section title={t('title')}>
+      <div className="grid gap-6 pt-1 sm:grid-cols-2 sm:gap-10">
+        <TagList title={t('emotions')} tags={emotions} labelOf={labels.emotion} />
+        <TagList title={t('contexts')} tags={contexts} labelOf={labels.context} />
+      </div>
+    </Section>
   )
 }

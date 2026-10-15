@@ -12,6 +12,10 @@ export interface CheckInRecord {
   recordedAt: Date
 }
 
+export interface OwnedCheckInRecord extends CheckInRecord {
+  userId: string
+}
+
 export type NewCheckIn = Omit<CheckInRecord, 'id' | 'recordedAt'>
 
 export interface CheckInFilter {
@@ -33,6 +37,7 @@ export interface CheckInRepository {
   create(userId: string, checkIn: NewCheckIn): Promise<CheckInRecord>
   list(viewerId: string, ownerId: string, window: CheckInWindow): Promise<CheckInRecord[]>
   count(userId: string, filter: CheckInFilter): Promise<number>
+  find(viewerId: string, id: string): Promise<OwnedCheckInRecord | null>
 }
 
 const columns = {
@@ -118,6 +123,15 @@ export function createCheckInRepository(db: Database): CheckInRepository {
           .from(checkIns)
           .where(conditionsOf(userId, filter))
         return row?.total ?? 0
+      })
+    },
+    find(viewerId, id) {
+      return withUser(db, viewerId, async (tx) => {
+        const [row] = await tx
+          .select({ ...columns, userId: checkIns.userId })
+          .from(checkIns)
+          .where(eq(checkIns.id, id))
+        return row ?? null
       })
     },
   }
