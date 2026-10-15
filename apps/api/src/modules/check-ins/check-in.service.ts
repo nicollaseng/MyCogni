@@ -1,16 +1,19 @@
 import type {
   CheckIn,
-  CheckInAddendum,
   CheckInCount,
   CheckInDetail,
   CheckInFilter,
   CheckInSearch,
   CreateCheckInAddendumInput,
   CreateCheckInInput,
+  RecordedAddendum,
+  RecordedCheckIn,
 } from '@mycogni/contracts'
+import { noteRisk } from '@mycogni/domain'
 import type { AuthenticatedUser } from '../../auth/token-verifier.ts'
 import type { JobScheduler } from '../../jobs/scheduler.ts'
 import { NotFoundError } from '../../shared/errors.ts'
+import type { NoteSafety } from '../safety/note-safety.ts'
 import type { CheckInAddendumRepository } from './check-in-addendum.repository.ts'
 import { loadCheckInDetail, toAddendum } from './check-in-detail.ts'
 import type {
@@ -20,7 +23,7 @@ import type {
 } from './check-in.repository.ts'
 
 export interface CheckInService {
-  record(user: AuthenticatedUser, input: CreateCheckInInput): Promise<CheckIn>
+  record(user: AuthenticatedUser, input: CreateCheckInInput): Promise<RecordedCheckIn>
   list(user: AuthenticatedUser, search: CheckInSearch): Promise<CheckIn[]>
   count(user: AuthenticatedUser, filter: CheckInFilter): Promise<CheckInCount>
   detail(user: AuthenticatedUser, id: string): Promise<CheckInDetail>
@@ -28,7 +31,14 @@ export interface CheckInService {
     user: AuthenticatedUser,
     id: string,
     input: CreateCheckInAddendumInput,
-  ): Promise<CheckInAddendum>
+  ): Promise<RecordedAddendum>
+}
+
+export interface CheckInServiceDependencies {
+  checkIns: CheckInRepository
+  addenda: CheckInAddendumRepository
+  jobs: JobScheduler
+  safety: NoteSafety
 }
 
 export function toCheckIn(record: CheckInRecord): CheckIn {
@@ -43,21 +53,27 @@ function recordFilterOf({ since, ...filter }: CheckInFilter): RecordFilter {
   return { ...filter, since: optionalDate(since) }
 }
 
-export function createCheckInService(
-  repository: CheckInRepository,
-  jobs: JobScheduler,
-  addenda: CheckInAddendumRepository,
-): CheckInService {
+export function createCheckInService({
+  checkIns: repository,
+  addenda,
+  jobs,
+  safety,
+}: CheckInServiceDependencies): CheckInService {
   return {
     async record(user, input) {
+      const note = input.note === null || input.note === '' ? null : input.note
       const record = await repository.create(user.id, {
         moodLevel: input.moodLevel,
         emotions: [...new Set(input.emotions)],
         contexts: [...new Set(input.contexts)],
-        note: input.note === null || input.note === '' ? null : input.note,
+        note,
       })
       await jobs.checkInRecorded(user.id)
-      return toCheckIn(record)
+      const support = await safety.review(
+        { kind: 'check_in', patientId: user.id, checkInId: record.id },
+        noteRisk(note),
+      )
+      return { ...toCheckIn(record), support }
     },
     async list(user, { before, limit, ...filter }) {
       const records = await repository.list(user.id, user.id, {
@@ -81,7 +97,12 @@ export function createCheckInService(
       if (record?.userId !== user.id) {
         throw new NotFoundError('Check-in not found')
       }
-      return toAddendum(await addenda.create(user.id, id, input.text))
+      const addendum = await addenda.create(user.id, id, input.text)
+      const support = await safety.review(
+        { kind: 'addendum', patientId: user.id, checkInId: id, addendumId: addendum.id },
+        noteRisk(input.text),
+      )
+      return { ...toAddendum(addendum), support }
     },
   }
 }

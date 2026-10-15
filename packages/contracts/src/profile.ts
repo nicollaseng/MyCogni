@@ -1,4 +1,4 @@
-import { locales } from '@mycogni/domain'
+import { accountTypes, locales } from '@mycogni/domain'
 import { z } from 'zod'
 
 function isTimeZone(value: string): boolean {
@@ -13,6 +13,7 @@ function isTimeZone(value: string): boolean {
 export const profileSchema = z.object({
   id: z.uuid(),
   email: z.email().nullable(),
+  accountType: z.enum(accountTypes),
   displayName: z.string().nullable(),
   avatarPath: z.string().nullable(),
   timezone: z.string(),
@@ -32,6 +33,10 @@ export const updateProfileSchema = z.object({
 })
 
 export type UpdateProfileInput = z.infer<typeof updateProfileSchema>
+
+export const adoptAccountTypeSchema = z.object({ accountType: z.literal('professional') })
+
+export type AdoptAccountTypeInput = z.infer<typeof adoptAccountTypeSchema>
 
 export const providerPhotoStatuses = ['imported', 'skipped', 'unavailable'] as const
 

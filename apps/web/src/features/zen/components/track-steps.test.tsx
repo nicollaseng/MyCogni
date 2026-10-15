@@ -19,7 +19,7 @@ const pageId = '8a7d3c1e-0000-4000-8000-000000000001'
 
 function pageClient(
   created: CreateOutcome = { kind: 'created', id: pageId },
-  saved: SaveOutcome = { kind: 'saved', updatedAt: '2026-10-15T12:00:00.000Z' },
+  saved: SaveOutcome = { kind: 'saved', updatedAt: '2026-10-15T12:00:00.000Z', safety: null },
 ) {
   return {
     create: jest.fn<PageClient['create']>().mockResolvedValue(created),

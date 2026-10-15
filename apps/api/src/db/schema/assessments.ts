@@ -51,7 +51,7 @@ export const assessments = pgTable(
     pgPolicy('assessments_insert_own', {
       for: 'insert',
       to: authenticatedRole,
-      withCheck: sql`${table.userId} = ${authUid}`,
+      withCheck: sql`${table.userId} = ${authUid} and public.current_account_type() = 'patient'`,
     }),
   ],
 ).enableRLS()

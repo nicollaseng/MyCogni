@@ -65,8 +65,6 @@ export const zen = {
     open: 'Ajuda agora',
     title: 'Ajuda agora',
     call: 'Em perigo agora? Ligue:',
-    attention: 'Seus resultados pedem atenção. Fale com alguém hoje.',
-    professional: '{name} acompanha seus registros.',
     breathe: 'Respirar 1 min',
     more: 'Quando buscar ajuda',
     close: 'Fechar',

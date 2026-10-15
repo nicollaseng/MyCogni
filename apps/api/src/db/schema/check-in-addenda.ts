@@ -41,6 +41,7 @@ export const checkInAddenda = pgTable(
       for: 'insert',
       to: authenticatedRole,
       withCheck: sql`${table.userId} = ${authUid}
+        and public.current_account_type() = 'patient'
         and exists (
           select 1 from public.check_ins ci
           where ci.id = ${table.checkInId}

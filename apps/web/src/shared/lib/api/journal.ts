@@ -4,11 +4,13 @@ import {
   journalEntrySummaryListSchema,
   journalShareListSchema,
   journalShareSchema,
+  savedJournalEntrySchema,
   type CreateJournalShareInput,
   type JournalAccess,
   type JournalEntry,
   type JournalEntrySummary,
   type JournalShare,
+  type SavedJournalEntry,
   type UpdateJournalEntryInput,
 } from '@mycogni/contracts'
 import { z } from 'zod'
@@ -65,10 +67,10 @@ export function fetchJournalEntry(id: string): Promise<JournalEntry | null> {
 export function updateJournalEntry(
   id: string,
   body: UpdateJournalEntryInput,
-): Promise<JournalEntry> {
+): Promise<SavedJournalEntry> {
   return apiRequest({
     path: `/v1/journal/${encodeURIComponent(id)}`,
-    schema: journalEntrySchema,
+    schema: savedJournalEntrySchema,
     method: 'PUT',
     body,
   })

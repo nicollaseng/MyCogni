@@ -8,12 +8,12 @@ import {
   type Alert,
   type Locale,
 } from '@mycogni/domain'
-import type { AlertTrigger } from '../../jobs/alert-trigger.ts'
+import type { AlertTrigger, SavedNote } from '../../jobs/alert-trigger.ts'
 import type { Mailer } from '../../mail/mailer.ts'
 import { loadPatientSignals } from '../care-links/attention-signals.ts'
 import type { PatientMetricsRepository } from '../care-links/patient-metrics.repository.ts'
 import { alertEmail } from './alert-email.ts'
-import type { AlertLink, AlertStore } from './alert-store.ts'
+import type { AlertLink, AlertStore, AlertSubject } from './alert-store.ts'
 
 export interface AlertOutcome {
   raised: number
@@ -35,11 +35,22 @@ export interface AlertJobDependencies {
 interface Evaluation {
   link: AlertLink
   alerts: Alert[]
+  subject?: AlertSubject
 }
+
+type NoteTrigger = Extract<AlertTrigger, { kind: 'note' }>
 
 const fallbackLocale: Locale = 'pt-BR'
 
 const nothing: AlertOutcome = { raised: 0, emailed: 0 }
+
+const noSubject: AlertSubject = { checkInId: null, journalEntryId: null }
+
+function subjectOf(note: SavedNote): AlertSubject {
+  return note.kind === 'journal'
+    ? { checkInId: null, journalEntryId: note.entryId }
+    : { checkInId: note.checkInId, journalEntryId: null }
+}
 
 function groupByProfessional(links: readonly AlertLink[]): Map<string, AlertLink[]> {
   const groups = new Map<string, AlertLink[]>()
@@ -79,9 +90,9 @@ export function createAlertJob({
 
   async function raise(evaluations: readonly Evaluation[], at: Date): Promise<AlertOutcome> {
     const outcome = { ...nothing }
-    for (const { link, alerts } of evaluations) {
+    for (const { link, alerts, subject = noSubject } of evaluations) {
       for (const alert of alerts) {
-        const id = await store.raise({ link, ...alert }, cooldownStart(alert.reason, at))
+        const id = await store.raise({ link, ...alert, subject }, cooldownStart(alert.reason, at))
         if (id === null) {
           continue
         }
@@ -111,6 +122,20 @@ export function createAlertJob({
       const result = await store.visibleScreening(link, assessmentId)
       if (result !== undefined) {
         evaluations.push({ link, alerts: alertsFor({ kind: 'screening', result }) })
+      }
+    }
+    return evaluations
+  }
+
+  async function note({ note: saved }: NoteTrigger): Promise<Evaluation[]> {
+    const evaluations: Evaluation[] = []
+    for (const link of await store.activeLinks({ patientId: saved.patientId })) {
+      if (await store.visibleNote(link, saved)) {
+        evaluations.push({
+          link,
+          alerts: alertsFor({ kind: 'note' }),
+          subject: subjectOf(saved),
+        })
       }
     }
     return evaluations
@@ -157,6 +182,8 @@ export function createAlertJob({
         return summary(trigger.insightId)
       case 'daily':
         return daily(at)
+      case 'note':
+        return note(trigger)
     }
   }
 

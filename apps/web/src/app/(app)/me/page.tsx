@@ -37,7 +37,7 @@ import { ScreeningSchedule } from '@/features/screening/components/screening-sch
 import { latestByInstrument } from '@/features/screening/latest'
 import { SupportSection } from '@/features/support/components/support-section'
 import { Panel, Section } from '@/shared/components/section'
-import { fetchCareLinks, fetchProfessional } from '@/shared/lib/api/care'
+import { fetchCareLinks } from '@/shared/lib/api/care'
 import { fetchAssessments, fetchConsents } from '@/shared/lib/api/resources'
 import { fetchSupportTickets } from '@/shared/lib/api/support'
 import { requireOnboardedProfile } from '@/shared/lib/auth/session'
@@ -65,23 +65,20 @@ async function voicePreviews(): Promise<Partial<Record<NarrationVoiceId, string>
 }
 
 export default async function MePage() {
-  const [
-    profile,
-    [assessments, consents, photoUrl, careLinks, professional, tickets, t, language, previews],
-  ] = await guarded(
-    requireOnboardedProfile(),
-    Promise.all([
-      fetchAssessments(),
-      fetchConsents(),
-      fetchMyPhotoUrl(),
-      fetchCareLinks(),
-      fetchProfessional(),
-      fetchSupportTickets(),
-      getTranslations('account'),
-      getTranslations('common.language'),
-      voicePreviews(),
-    ]),
-  )
+  const [profile, [assessments, consents, photoUrl, careLinks, tickets, t, language, previews]] =
+    await guarded(
+      requireOnboardedProfile(),
+      Promise.all([
+        fetchAssessments(),
+        fetchConsents(),
+        fetchMyPhotoUrl(),
+        fetchCareLinks(),
+        fetchSupportTickets(),
+        getTranslations('account'),
+        getTranslations('common.language'),
+        voicePreviews(),
+      ]),
+    )
   const lastAnswer = assessments[0]?.completedAt
 
   return (
@@ -105,12 +102,7 @@ export default async function MePage() {
         )}
       </LatestScreening>
 
-      <CareLinks
-        links={careLinks}
-        timeZone={profile.timezone}
-        end={endLink}
-        isProfessional={professional !== null}
-      />
+      <CareLinks links={careLinks} timeZone={profile.timezone} end={endLink} />
 
       <Section title={t('sections.account')}>
         <Panel>

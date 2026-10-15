@@ -26,7 +26,7 @@ export function profileModule({
 }: ProfileModuleOptions): FastifyPluginCallbackZod {
   const repository = createProfileRepository(db)
   return profileRoutes(
-    createProfileService(repository),
+    createProfileService(repository, () => new Date()),
     createProviderPhotoImporter({
       accounts,
       profiles: repository,

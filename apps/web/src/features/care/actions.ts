@@ -24,7 +24,8 @@ import {
   markNotificationsRead,
 } from '@/shared/lib/api/care'
 import { ApiError } from '@/shared/lib/api/client'
-import { forgetContinuePath } from '@/shared/lib/auth/continue-path'
+import { fetchProfile } from '@/shared/lib/api/resources'
+import { forgetContinuePath, rememberContinuePath } from '@/shared/lib/auth/continue-path'
 import { previewOf } from './notification-preview'
 
 type Outcome<T> = { ok: true; value: T } | { ok: false; status: number | null }
@@ -64,6 +65,9 @@ export async function claimInvite(code: string): Promise<ActionResult<null>> {
   const claimed = await settle(() => claimInvitation(parsed.data))
   if (!claimed.ok) {
     return failure(claimed.status === 404 ? t('unavailable') : t('error'))
+  }
+  if ((await fetchProfile()).onboardingCompletedAt === null) {
+    await rememberContinuePath(`/invite/${parsed.data}`)
   }
   refreshApp()
   redirect(`/invites/${claimed.value.id}`)

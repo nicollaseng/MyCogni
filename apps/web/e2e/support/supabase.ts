@@ -1,6 +1,7 @@
 import { execFileSync } from 'node:child_process'
 import { randomUUID } from 'node:crypto'
 import { fileURLToPath } from 'node:url'
+import type { AccountType } from '@mycogni/domain'
 import { z } from 'zod'
 
 const statusSchema = z.object({
@@ -46,15 +47,25 @@ function adminHeaders(): Record<string, string> {
 const createdSchema = z.object({ id: z.uuid() })
 const usersSchema = z.object({ users: z.array(z.object({ id: z.uuid(), email: z.string() })) })
 
+interface NewUser {
+  confirmed?: boolean
+  accountType?: AccountType
+}
+
 export async function createUser(
   email: string,
   password: string,
-  confirmed = true,
+  { confirmed = true, accountType = 'patient' }: NewUser = {},
 ): Promise<string> {
   const response = await fetch(`${supabaseUrl}/auth/v1/admin/users`, {
     method: 'POST',
     headers: adminHeaders(),
-    body: JSON.stringify({ email, password, email_confirm: confirmed }),
+    body: JSON.stringify({
+      email,
+      password,
+      email_confirm: confirmed,
+      user_metadata: { account_type: accountType },
+    }),
   })
   if (!response.ok) {
     throw new Error(`Could not create ${email}: ${await response.text()}`)

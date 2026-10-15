@@ -1,5 +1,6 @@
 import type { InstrumentId, Severity } from '../assessments/instrument.ts'
 import type { InsightAttention } from '../insights/insights.ts'
+import type { RiskLevel } from '../safety/risk.ts'
 import {
   attentionReasonsOf,
   inactiveAfterDays,
@@ -19,6 +20,7 @@ export const alertReasons = [
   'low_mood',
   'mood_drop',
   'inactive',
+  'note_risk',
 ] as const
 
 export type AlertReason = (typeof alertReasons)[number]
@@ -35,6 +37,7 @@ export const alertLevelOf: Readonly<Record<AlertReason, AlertLevel>> = {
   low_mood: 'watch',
   mood_drop: 'watch',
   inactive: 'info',
+  note_risk: 'urgent',
 }
 
 const moodWindowDays = 7
@@ -47,6 +50,7 @@ export const alertCooldownDays: Readonly<Record<AlertReason, number>> = {
   low_mood: moodWindowDays,
   mood_drop: moodWindowDays,
   inactive: inactiveAfterDays,
+  note_risk: 0,
 }
 
 export const alertEmailIntervalHours = 24
@@ -62,13 +66,14 @@ export type AlertEvent =
   | { kind: 'check_in'; signals: AttentionSignals }
   | { kind: 'daily'; signals: AttentionSignals }
   | { kind: 'summary'; attention: InsightAttention }
+  | { kind: 'note' }
 
 export interface Alert {
   reason: AlertReason
   level: AlertLevel
 }
 
-type SignalEvent = Exclude<AlertEvent['kind'], 'summary'>
+type SignalEvent = Exclude<AlertEvent['kind'], 'summary' | 'note'>
 
 const reasonsRaisedBy: Readonly<Record<SignalEvent, readonly AttentionReason[]>> = {
   screening: ['risk_item', 'severe_screening'],
@@ -102,6 +107,9 @@ function screeningSignals({
 }
 
 function reasonsOf(event: AlertEvent): readonly AlertReason[] {
+  if (event.kind === 'note') {
+    return ['note_risk']
+  }
   if (event.kind === 'summary') {
     const reason = summaryReasons[event.attention]
     return reason === null ? [] : [reason]
@@ -109,6 +117,10 @@ function reasonsOf(event: AlertEvent): readonly AlertReason[] {
   const signals = event.kind === 'screening' ? screeningSignals(event.result) : event.signals
   const raised = reasonsRaisedBy[event.kind]
   return attentionReasonsOf(signals).filter((reason) => raised.includes(reason))
+}
+
+export function raisesNoteAlert(level: RiskLevel): boolean {
+  return level === 'urgent'
 }
 
 export function alertsFor(event: AlertEvent): Alert[] {

@@ -112,6 +112,7 @@ describe('/v1/check-ins/:id', () => {
       id: expect.any(String),
       text: 'Relendo: o prazo foi cumprido.',
       createdAt: expect.any(String),
+      support: { level: 'none' },
     })
     expect(second.statusCode).toBe(201)
     const { addenda, note, moodLevel } = (await detail(ana, recent)).json<{
@@ -154,7 +155,7 @@ describe('/v1/check-ins/:id', () => {
     expect(attempts.map((attempt) => attempt.statusCode)).toEqual([404, 404, 404, 404])
   })
 
-  it('answers not found to anyone else, linked professionals included', async () => {
+  it('answers not found to any other patient and refuses professional accounts', async () => {
     const responses = [
       await detail(bruno, recent),
       await append(bruno, recent, 'intruso'),
@@ -162,7 +163,7 @@ describe('/v1/check-ins/:id', () => {
       await append(helena, recent, 'nota da profissional'),
     ]
 
-    expect(responses.map((response) => response.statusCode)).toEqual([404, 404, 404, 404])
+    expect(responses.map((response) => response.statusCode)).toEqual([404, 404, 403, 403])
   })
 
   it('validates the record id', async () => {

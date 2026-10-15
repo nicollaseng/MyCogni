@@ -1,12 +1,13 @@
 import { Queue, type JobsOptions } from 'bullmq'
 import type { ErrorLog } from '../shared/log.ts'
-import type { AlertTrigger } from './alert-trigger.ts'
+import type { AlertTrigger, SavedNote } from './alert-trigger.ts'
 import { alertQueueName, createRedis, insightQueueName } from './redis.ts'
 
 export interface JobScheduler {
   checkInRecorded(patientId: string): Promise<void>
   assessmentCompleted(patientId: string, assessmentId: string): Promise<void>
   summaryCreated(insightId: string): Promise<void>
+  noteSaved(note: SavedNote): Promise<void>
   close(): Promise<void>
 }
 
@@ -19,12 +20,24 @@ const insightBatchingMs = 60_000
 
 const alertBatchingMs = 30_000
 
+function noteJobId(note: SavedNote): string {
+  switch (note.kind) {
+    case 'check_in':
+      return `alert-note-${note.checkInId}`
+    case 'addendum':
+      return `alert-note-${note.addendumId}`
+    case 'journal':
+      return `alert-note-${note.entryId}`
+  }
+}
+
 const cleanup: JobsOptions = { removeOnComplete: true, removeOnFail: 100, attempts: 3 }
 
 const idleScheduler: JobScheduler = {
   checkInRecorded: () => Promise.resolve(),
   assessmentCompleted: () => Promise.resolve(),
   summaryCreated: () => Promise.resolve(),
+  noteSaved: () => Promise.resolve(),
   close: () => Promise.resolve(),
 }
 
@@ -82,6 +95,9 @@ export function createJobScheduler(
     },
     summaryCreated(insightId) {
       return alert({ kind: 'summary', insightId }, `alert-summary-${insightId}`)
+    },
+    noteSaved(note) {
+      return alert({ kind: 'note', note }, noteJobId(note))
     },
     async close() {
       await Promise.all([insights.close(), alerts.close()])

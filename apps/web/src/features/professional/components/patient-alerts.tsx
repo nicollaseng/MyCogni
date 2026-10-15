@@ -8,6 +8,7 @@ import {
   ActionFeedback,
   AlertButtons,
   AlertLevelLabel,
+  AlertReasonLabel,
   AlertStatusLabel,
   useAlertActions,
   type AlertActions,
@@ -76,7 +77,9 @@ export function PatientAlerts({
             <tbody>
               {alerts.map((alert) => (
                 <tr key={alert.id} className={table.row}>
-                  <td className={cn(table.cell, table.first)}>{t(`reasons.${alert.reason}`)}</td>
+                  <td className={cn(table.cell, table.first)}>
+                    <AlertReasonLabel alert={alert} name={name} />
+                  </td>
                   <td className={table.cell}>
                     <AlertLevelLabel level={alert.level} />
                   </td>

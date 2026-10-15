@@ -2,7 +2,7 @@
 
 import { crisisLinesFor } from '@mycogni/domain'
 import Link from 'next/link'
-import { useLocale, useTranslations } from 'next-intl'
+import { useFormatter, useLocale, useTranslations } from 'next-intl'
 import { useState } from 'react'
 import { Sheet } from '@/shared/components/sheet'
 import { Button } from '@/shared/ui/button'
@@ -10,6 +10,8 @@ import { BreathingExercise } from './breathing-exercise'
 
 export function HelpNow({ professionals }: { professionals: readonly string[] }) {
   const t = useTranslations('zen.help')
+  const safety = useTranslations('safety')
+  const format = useFormatter()
   const lines = crisisLinesFor(useLocale())
   const [open, setOpen] = useState(false)
   const [breathing, setBreathing] = useState(false)
@@ -61,11 +63,14 @@ export function HelpNow({ professionals }: { professionals: readonly string[] })
                       ))}
                     </ul>
                   </div>
-                  {professionals.map((name) => (
-                    <p key={name} className="text-[15px] text-muted-foreground">
-                      {t('professional', { name })}
+                  {professionals.length > 0 && (
+                    <p className="text-[15px] text-muted-foreground">
+                      {safety('professionals', {
+                        count: professionals.length,
+                        names: format.list(professionals),
+                      })}
                     </p>
-                  ))}
+                  )}
                   <div className="flex flex-wrap items-center gap-x-5 gap-y-3">
                     <Button
                       variant="outline"

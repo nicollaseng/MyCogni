@@ -14,6 +14,8 @@ export const professionalAlertSchema = z.object({
   createdAt: timestamp,
   acknowledgedAt: timestamp.nullable(),
   resolvedAt: timestamp.nullable(),
+  checkInId: z.uuid().nullable(),
+  journalEntryId: z.uuid().nullable(),
 })
 
 export type ProfessionalAlert = z.infer<typeof professionalAlertSchema>

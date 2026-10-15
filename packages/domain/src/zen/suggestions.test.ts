@@ -3,6 +3,7 @@ import type { InstrumentId, Severity } from '../assessments/instrument.ts'
 import {
   readArticles,
   suggestedArticles,
+  supportLevelOf,
   zenSuggestion,
   type ScreeningSignal,
   type ZenSignals,
@@ -108,5 +109,27 @@ describe('suggestedArticles', () => {
         { trackId: 'sleep-and-rest', stepId: 'gone' },
       ]),
     ).toEqual([])
+  })
+})
+
+describe('supportLevelOf', () => {
+  it('asks for help right away after a risk answer and calmly after a severe result', () => {
+    expect(
+      supportLevelOf(
+        zenSuggestion({
+          latest: [{ instrument: 'phq9', severity: 'mild', hasRiskFlag: true }],
+          moodAverage: null,
+        }),
+      ),
+    ).toBe('urgent')
+    expect(
+      supportLevelOf(
+        zenSuggestion({
+          latest: [{ instrument: 'gad7', severity: 'severe', hasRiskFlag: false }],
+          moodAverage: null,
+        }),
+      ),
+    ).toBe('watch')
+    expect(supportLevelOf(zenSuggestion({ latest: [], moodAverage: null }))).toBeNull()
   })
 })

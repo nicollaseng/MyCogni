@@ -57,6 +57,7 @@ describe('/v1/me', () => {
     expect(response.json()).toEqual({
       id: ana.id,
       email: ana.email,
+      accountType: 'patient',
       displayName: 'Ana Lima',
       avatarPath: null,
       timezone: 'America/Sao_Paulo',

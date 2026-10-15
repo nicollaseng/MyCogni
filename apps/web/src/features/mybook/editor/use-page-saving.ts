@@ -1,5 +1,6 @@
 import type { JournalEntry, JournalNode } from '@mycogni/contracts'
-import { useCallback, useRef } from 'react'
+import { useCallback, useRef, useState } from 'react'
+import type { SafetyPrompt } from '@/features/safety/model'
 import { draftOf, journalDocumentOf, withImageSources } from '../document'
 import { forgetDraft, isNewerDraft, readDraft, writeDraft } from '../drafts'
 import type { PageClient, RemoveOutcome } from '../page-client'
@@ -17,6 +18,7 @@ export interface RestoredPage {
 
 export interface PageSaving {
   autosave: Autosave
+  safety: SafetyPrompt | null
   changed: () => void
   addImage: (path: string, url: string) => void
   takeDraft: () => RestoredPage | null
@@ -31,6 +33,7 @@ export function usePageSaving(
   const base = useRef(entry.updatedAt)
   const revision = useRef(0)
   const sources = useRef<Readonly<Record<string, string>>>(entry.imageUrls)
+  const [safety, setSafety] = useState<SafetyPrompt | null>(null)
 
   const autosave = useAutosave(async () => {
     const { title, body } = read()
@@ -44,6 +47,9 @@ export function usePageSaving(
       return outcome.kind
     }
     base.current = outcome.updatedAt
+    if (outcome.safety !== null) {
+      setSafety(outcome.safety)
+    }
     if (revision.current === started) {
       forgetDraft(entry.id)
     }
@@ -89,5 +95,5 @@ export function usePageSaving(
     return outcome
   }, [client, entry.id])
 
-  return { autosave, changed, addImage, takeDraft, remove }
+  return { autosave, safety, changed, addImage, takeDraft, remove }
 }

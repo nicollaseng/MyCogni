@@ -264,8 +264,36 @@
     {
       "idx": 37,
       "version": "7",
-      "when": 1792101352796,
-      "tag": "0037_narration_bucket",
+      "when": 1792101433107,
+      "tag": "0037_add_profile_account_type",
+      "breakpoints": true
+    },
+    {
+      "idx": 38,
+      "version": "7",
+      "when": 1792101434107,
+      "tag": "0038_account_type_functions_and_backfill",
+      "breakpoints": true
+    },
+    {
+      "idx": 39,
+      "version": "7",
+      "when": 1792101435107,
+      "tag": "0039_account_type_insert_policies",
+      "breakpoints": true
+    },
+    {
+      "idx": 40,
+      "version": "7",
+      "when": 1792104468355,
+      "tag": "0040_note_risk_alerts",
+      "breakpoints": true
+    },
+    {
+      "idx": 41,
+      "version": "7",
+      "when": 1792105156313,
+      "tag": "0041_narration_bucket",
       "breakpoints": true
     }
   ]

@@ -5,13 +5,15 @@ import type {
   JournalEntrySummary,
   JournalQuery,
   JournalShare,
+  SavedJournalEntry,
   UpdateJournalEntryInput,
 } from '@mycogni/contracts'
-import { isOwnJournalPath } from '@mycogni/domain'
+import { isOwnJournalPath, raisedRisk } from '@mycogni/domain'
 import type { FastifyBaseLogger } from 'fastify'
 import type { AuthenticatedUser } from '../../auth/token-verifier.ts'
 import { NotFoundError, UnprocessableError } from '../../shared/errors.ts'
 import type { JournalImageStore } from '../../storage/journal-images.ts'
+import type { NoteSafety } from '../safety/note-safety.ts'
 import { toEntry, toShare, toSummary } from './journal.mapper.ts'
 import { UnknownJournalEntryError, type JournalRepository } from './journal.repository.ts'
 
@@ -19,7 +21,11 @@ export interface JournalService {
   list(user: AuthenticatedUser, query: JournalQuery): Promise<JournalEntrySummary[]>
   create(user: AuthenticatedUser): Promise<JournalEntry>
   get(user: AuthenticatedUser, id: string): Promise<JournalEntry>
-  update(user: AuthenticatedUser, id: string, input: UpdateJournalEntryInput): Promise<JournalEntry>
+  update(
+    user: AuthenticatedUser,
+    id: string,
+    input: UpdateJournalEntryInput,
+  ): Promise<SavedJournalEntry>
   remove(user: AuthenticatedUser, id: string): Promise<void>
   shares(user: AuthenticatedUser): Promise<JournalShare[]>
   share(user: AuthenticatedUser, input: CreateJournalShareInput): Promise<JournalShare>
@@ -30,6 +36,7 @@ export interface JournalService {
 export interface JournalDependencies {
   journal: JournalRepository
   images: JournalImageStore
+  safety: NoteSafety
   log: Pick<FastifyBaseLogger, 'error'>
   now: () => Date
 }
@@ -37,6 +44,7 @@ export interface JournalDependencies {
 export function createJournalService({
   journal,
   images,
+  safety,
   log,
   now,
 }: JournalDependencies): JournalService {
@@ -81,7 +89,11 @@ export function createJournalService({
         throw new NotFoundError('Journal entry not found')
       }
       await forget(outcome.removedImages)
-      return toEntry(outcome.entry, images)
+      const support = await safety.review(
+        { kind: 'journal', patientId: user.id, entryId: id },
+        raisedRisk(outcome.previousText, outcome.entry.plainText),
+      )
+      return { ...(await toEntry(outcome.entry, images)), support }
     },
     async remove(user, id) {
       const paths = await journal.delete(user.id, id)

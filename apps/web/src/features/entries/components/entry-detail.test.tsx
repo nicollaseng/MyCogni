@@ -1,9 +1,10 @@
 import { describe, expect, it, jest } from '@jest/globals'
-import type { CheckInAddendum, CheckInDetail } from '@mycogni/contracts'
+import type { CheckInDetail } from '@mycogni/contracts'
 import { screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import type { ActionResult } from '@/shared/lib/actions/result'
 import { renderWithIntl } from '@/test/render'
+import type { SavedAddendum } from '../actions'
 import { EntryAddenda } from './entry-addenda'
 import { EntryDetail } from './entry-detail'
 
@@ -25,7 +26,7 @@ const record: CheckInDetail = {
   ],
 }
 
-type Append = jest.Mock<(text: string) => Promise<ActionResult<CheckInAddendum>>>
+type Append = jest.Mock<(text: string) => Promise<ActionResult<SavedAddendum>>>
 
 function renderDetail(append?: Append, detail: CheckInDetail = record) {
   const user = userEvent.setup()
@@ -82,9 +83,12 @@ describe('EntryDetail', () => {
       Promise.resolve({
         ok: true,
         value: {
-          id: '0b7c6c8e-6a8f-4f53-9f4b-000000000032',
-          text: 'Dormi bem depois.',
-          createdAt: '2026-10-16T01:00:00Z',
+          addendum: {
+            id: '0b7c6c8e-6a8f-4f53-9f4b-000000000032',
+            text: 'Dormi bem depois.',
+            createdAt: '2026-10-16T01:00:00Z',
+          },
+          safety: null,
         },
       }),
     )
@@ -107,6 +111,34 @@ describe('EntryDetail', () => {
     ])
     expect(screen.queryByRole('textbox')).not.toBeInTheDocument()
     expect(screen.getByText('Prazo apertado no trabalho.')).toBeVisible()
+  })
+
+  it('offers support right below a note that needs it and keeps help one tap away', async () => {
+    const append: Append = jest.fn(() =>
+      Promise.resolve({
+        ok: true,
+        value: {
+          addendum: {
+            id: '0b7c6c8e-6a8f-4f53-9f4b-000000000033',
+            text: 'Vontade de morrer',
+            createdAt: '2026-10-16T01:00:00Z',
+          },
+          safety: { level: 'urgent', professionals: ['Helena Prado'] },
+        },
+      }),
+    )
+    const { user } = renderDetail(append)
+
+    await user.click(screen.getByRole('button', { name: 'Escrever mais' }))
+    await user.type(screen.getByRole('textbox'), 'Vontade de morrer')
+    await user.click(screen.getByRole('button', { name: 'Guardar' }))
+
+    const panel = screen.getByRole('region', { name: 'Apoio agora' })
+    expect(panel).toHaveTextContent('Helena Prado acompanha você.')
+    expect(within(panel).getByRole('link', { name: '188 CVV' })).toHaveAttribute('href', 'tel:188')
+    await user.click(within(panel).getByRole('button', { name: 'Fechar apoio' }))
+    expect(screen.queryByRole('region', { name: 'Apoio agora' })).not.toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Ajuda agora' })).toHaveFocus()
   })
 
   it('keeps the text and says so when saving fails, and lets the person give up', async () => {

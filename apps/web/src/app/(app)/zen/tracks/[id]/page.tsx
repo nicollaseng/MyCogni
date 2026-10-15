@@ -12,8 +12,8 @@ import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { getLocale, getTranslations } from 'next-intl/server'
 import { fetchNarrationManifest, narrationSources } from '@/features/audio/narration'
+import { SafetyPanel } from '@/features/safety/components/safety-panel'
 import { setStepDone } from '@/features/zen/actions'
-import { CrisisNumbers } from '@/features/zen/components/crisis-numbers'
 import { ProgressLine } from '@/features/zen/components/progress-line'
 import { TrackSteps } from '@/features/zen/components/track-steps'
 import { ZenTopBar } from '@/features/zen/components/zen-top-bar'
@@ -87,16 +87,7 @@ export default async function ZenTrackPage({ params }: PageProps<'/zen/tracks/[i
         })}
         nextId={progress.next?.id ?? null}
         started={progress.started}
-        support={
-          <div className="space-y-1">
-            <CrisisNumbers />
-            {professionals.map((name) => (
-              <p key={name} className="text-sm text-muted-foreground">
-                {t('help.professional', { name })}
-              </p>
-            ))}
-          </div>
-        }
+        support={<SafetyPanel level="watch" professionals={professionals} intro={false} />}
         save={setStepDone}
       />
 

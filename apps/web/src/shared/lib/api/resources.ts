@@ -2,18 +2,17 @@ import {
   accountExportSchema,
   assessmentListSchema,
   assessmentSchema,
-  checkInAddendumSchema,
   checkInCountSchema,
   checkInDetailSchema,
   checkInListSchema,
-  checkInSchema,
   consentListSchema,
   patientInsightListSchema,
   profileSchema,
+  recordedAddendumSchema,
+  recordedCheckInSchema,
   type AccountExport,
   type Assessment,
   type CheckIn,
-  type CheckInAddendum,
   type CheckInDetail,
   type Consent,
   type CreateCheckInAddendumInput,
@@ -21,10 +20,12 @@ import {
   type GrantConsentsInput,
   type PatientInsight,
   type Profile,
+  type RecordedAddendum,
+  type RecordedCheckIn,
   type SubmitAssessmentInput,
   type UpdateProfileInput,
 } from '@mycogni/contracts'
-import type { ConsentKind } from '@mycogni/domain'
+import type { AccountType, ConsentKind } from '@mycogni/domain'
 import { cache } from 'react'
 import { z } from 'zod'
 import { ApiError, apiRequest } from './client'
@@ -33,7 +34,8 @@ export interface CheckInFilter {
   since?: Date
   q?: string
   qTags?: readonly string[]
-  tags?: readonly string[]
+  emotions?: readonly string[]
+  contexts?: readonly string[]
   minMood?: number
   maxMood?: number
   hasNote?: boolean
@@ -53,6 +55,16 @@ export const fetchProfile = cache((): Promise<Profile> =>
 
 export function updateProfile(body: UpdateProfileInput): Promise<Profile> {
   return apiRequest({ path: '/v1/me', schema: profileSchema, method: 'PATCH', body })
+}
+
+export async function adoptProfessionalAccount(): Promise<AccountType> {
+  const profile = await apiRequest({
+    path: '/v1/me/account-type',
+    schema: profileSchema,
+    method: 'POST',
+    body: { accountType: 'professional' },
+  })
+  return profile.accountType
 }
 
 export function fetchConsents(): Promise<Consent[]> {
@@ -75,8 +87,12 @@ export function completeOnboarding(): Promise<Profile> {
   return apiRequest({ path: '/v1/onboarding/complete', schema: profileSchema, method: 'POST' })
 }
 
-export function createCheckIn(body: CreateCheckInInput): Promise<CheckIn> {
-  return apiRequest({ path: '/v1/check-ins', schema: checkInSchema, method: 'POST', body })
+export function createCheckIn(body: CreateCheckInInput): Promise<RecordedCheckIn> {
+  return apiRequest({ path: '/v1/check-ins', schema: recordedCheckInSchema, method: 'POST', body })
+}
+
+function listOf(values: readonly string[] | undefined): string | undefined {
+  return values === undefined || values.length === 0 ? undefined : values.join(',')
 }
 
 function checkInQuery({
@@ -85,7 +101,8 @@ function checkInQuery({
   limit,
   q,
   qTags,
-  tags,
+  emotions,
+  contexts,
   minMood,
   maxMood,
   hasNote,
@@ -96,8 +113,9 @@ function checkInQuery({
     ['before', before],
     ['limit', limit === undefined ? undefined : String(limit)],
     ['q', q === undefined || q === '' ? undefined : q],
-    ['qTags', qTags === undefined || qTags.length === 0 ? undefined : qTags.join(',')],
-    ['tags', tags === undefined || tags.length === 0 ? undefined : tags.join(',')],
+    ['qTags', listOf(qTags)],
+    ['emotions', listOf(emotions)],
+    ['contexts', listOf(contexts)],
     ['minMood', minMood === undefined ? undefined : String(minMood)],
     ['maxMood', maxMood === undefined ? undefined : String(maxMood)],
     ['hasNote', hasNote === undefined ? undefined : String(hasNote)],
@@ -153,10 +171,10 @@ export async function fetchCheckIn(id: string): Promise<CheckInDetail | null> {
 export function appendToCheckIn(
   id: string,
   body: CreateCheckInAddendumInput,
-): Promise<CheckInAddendum> {
+): Promise<RecordedAddendum> {
   return apiRequest({
     path: `/v1/check-ins/${encodeURIComponent(id)}/addenda`,
-    schema: checkInAddendumSchema,
+    schema: recordedAddendumSchema,
     method: 'POST',
     body,
   })

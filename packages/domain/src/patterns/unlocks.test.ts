@@ -62,8 +62,8 @@ describe('patternUnlocks', () => {
     expect(associations).toEqual({ section: 'associations', state: 'blocked', reason: 'contexts' })
   })
 
-  it('tells when automatic summaries are off and caps the progress at the threshold', () => {
-    const [off] = patternUnlocks({
+  it('leaves automatic summaries out when they are off and caps the progress at the threshold', () => {
+    const off = patternUnlocks({
       ...newcomer,
       summary: { ready: false, enabled: false, recorded: 9 },
     })
@@ -72,7 +72,7 @@ describe('patternUnlocks', () => {
       summary: { ready: false, enabled: true, recorded: 9 },
     })
 
-    expect(off).toEqual({ section: 'summary', state: 'blocked', reason: 'disabled' })
+    expect(off.map((status) => status.section)).not.toContain('summary')
     expect(waiting).toEqual(expect.objectContaining({ current: 7, required: 7 }))
   })
 })

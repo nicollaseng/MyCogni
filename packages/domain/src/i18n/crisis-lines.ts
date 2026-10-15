@@ -16,7 +16,7 @@ const crisisLinesByLocale: Readonly<Record<Locale, readonly CrisisLine[]>> = {
     {
       phone: '808242424',
       display: '808 24 24 24',
-      name: 'SNS 24',
+      name: 'SNS 24, opção 4',
       description: 'SNS 24, opção 4: aconselhamento psicológico, 24 horas',
     },
     {
@@ -31,7 +31,7 @@ const crisisLinesByLocale: Readonly<Record<Locale, readonly CrisisLine[]>> = {
     {
       phone: '988',
       display: '988',
-      name: 'Lifeline',
+      name: 'Crisis Lifeline',
       description: 'Suicide & Crisis Lifeline, call or text, free, 24/7',
     },
     { phone: '911', display: '911', name: 'Emergency', description: 'Emergency' },

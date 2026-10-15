@@ -172,7 +172,6 @@ export const care: CareMessages = {
       cancel: 'Cancel',
     },
     invites: 'See invitations',
-    professionalArea: 'Professional area',
   },
   terms: {
     meta: { title: 'Updated terms' },

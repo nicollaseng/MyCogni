@@ -2,15 +2,16 @@ import {
   articleIds,
   averageOf,
   contentLanguageOf,
+  supportLevelOf,
   todayPick,
   trackIds,
   zenSuggestion,
 } from '@mycogni/domain'
 import type { Metadata } from 'next'
 import { getLocale, getTranslations } from 'next-intl/server'
+import { SafetyPanel } from '@/features/safety/components/safety-panel'
 import { latestByInstrument } from '@/features/screening/latest'
 import { HelpNow } from '@/features/zen/components/help-now'
-import { HelpPanel } from '@/features/zen/components/help-panel'
 import { ReadingRows, TrackRows } from '@/features/zen/components/library'
 import { TodayCard } from '@/features/zen/components/today-card'
 import { TopicTiles } from '@/features/zen/components/topic-tiles'
@@ -47,12 +48,13 @@ export default async function ZenPage() {
     moodAverage: averageOf(checkIns.map((checkIn) => checkIn.moodLevel)),
   })
   const professionals = careLinks.map((link) => link.professional.name)
+  const support = supportLevelOf(suggestion)
 
   return (
     <>
       <PageTitle title={t('title')} action={<HelpNow professionals={professionals} />} />
 
-      {suggestion.seekHelpFirst && <HelpPanel professionals={professionals} />}
+      {support !== null && <SafetyPanel level={support} professionals={professionals} />}
 
       <TodayCard
         pick={todayPick(suggestion.tracks, doneSteps)}

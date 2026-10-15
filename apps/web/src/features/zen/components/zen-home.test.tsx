@@ -5,7 +5,6 @@ import userEvent from '@testing-library/user-event'
 import { renderWithIntl } from '@/test/render'
 import { fakeRouter, WithRouter } from '@/test/router'
 import { HelpNow } from './help-now'
-import { HelpPanel } from './help-panel'
 import { ReadingRows, TrackRows } from './library'
 import { TodayCard } from './today-card'
 import { TopicTiles } from './topic-tiles'
@@ -98,16 +97,6 @@ describe('TopicTiles', () => {
 })
 
 describe('compact help', () => {
-  it('fits the call for help, the numbers and the professional in a few lines', () => {
-    renderWithIntl(<HelpPanel professionals={['Dra. Helena Prado']} />)
-
-    const panel = screen.getByRole('region', { name: 'Ajuda agora' })
-    expect(panel).toHaveTextContent('Seus resultados pedem atenção. Fale com alguém hoje.')
-    expect(within(panel).getByRole('link', { name: '188 CVV' })).toHaveAttribute('href', 'tel:188')
-    expect(within(panel).getByRole('link', { name: '192 SAMU' })).toHaveAttribute('href', 'tel:192')
-    expect(panel).toHaveTextContent('Dra. Helena Prado acompanha seus registros.')
-  })
-
   it('keeps help one tap away with the lines, the professional and a breathing minute', async () => {
     const user = userEvent.setup()
     renderWithIntl(<HelpNow professionals={['Dra. Helena Prado']} />)
@@ -116,7 +105,7 @@ describe('compact help', () => {
 
     const sheet = within(screen.getByRole('dialog', { name: 'Ajuda agora' }))
     expect(sheet.getByRole('link', { name: /188/ })).toHaveAttribute('href', 'tel:188')
-    expect(sheet.getByText('Dra. Helena Prado acompanha seus registros.')).toBeVisible()
+    expect(sheet.getByText('Dra. Helena Prado acompanha você.')).toBeVisible()
     expect(sheet.getByRole('link', { name: 'Quando buscar ajuda' })).toHaveAttribute(
       'href',
       '/zen/topics/help',
@@ -135,7 +124,7 @@ describe('compact help', () => {
 
     const sheet = within(screen.getByRole('dialog', { name: 'Help now' }))
     expect(sheet.getByRole('link', { name: /116 123/ })).toHaveAttribute('href', 'tel:116123')
-    expect(sheet.queryByText(/is following your check-ins/)).not.toBeInTheDocument()
+    expect(sheet.queryByText(/is following|are following/)).not.toBeInTheDocument()
   })
 })
 

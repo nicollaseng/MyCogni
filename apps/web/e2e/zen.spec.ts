@@ -154,8 +154,8 @@ test('keeps help compact and one tap away when the results call for it', async (
   await signInAsReadyPerson(page, true)
   await page.goto('/zen')
 
-  const panel = page.getByRole('region', { name: 'Ajuda agora' })
-  await expect(panel).toContainText('Seus resultados pedem atenção.')
+  const panel = page.getByRole('region', { name: 'Apoio agora' })
+  await expect(panel).toContainText('Você não precisa passar por isso sem apoio')
   await expect(panel.getByRole('link', { name: '188 CVV' })).toHaveAttribute('href', 'tel:188')
   await expect(today(page).getByRole('heading', { name: 'Quando buscar ajuda' })).toBeVisible()
 

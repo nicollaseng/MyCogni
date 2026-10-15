@@ -1,3 +1,11 @@
+export {
+  accountTypeChoiceMinutes,
+  accountTypes,
+  isBrandNewAccount,
+  signUpAccountType,
+  type AccountFootprint,
+  type AccountType,
+} from './account/account-types.ts'
 export { answerValues, isAnswer, type Answer } from './assessments/frequency.ts'
 export {
   instrumentIds,
@@ -30,6 +38,7 @@ export {
   cooldownStart,
   emailsRightAway,
   emailWindowStart,
+  raisesNoteAlert,
   type Alert,
   type AlertEvent,
   type AlertLevel,
@@ -99,6 +108,7 @@ export { dailyMoods, dayKey, previousDays, type DatedMood } from './check-ins/da
 export {
   consentKinds,
   consentVersion,
+  isPatientConsent,
   isRevocable,
   missingConsents,
   requiredConsentKinds,
@@ -170,29 +180,33 @@ export {
   assistantLimits,
   assistantModes,
   assistantRoles,
+  riskForMode,
+  type AssistantMode,
+  type AssistantRole,
+} from './assistant/assistant.ts'
+export {
   mergeRisk,
   needsSupport,
   riskLevels,
-  type AssistantMode,
-  type AssistantRole,
   type RiskLevel,
-} from './assistant/assistant.ts'
+  type SupportLevel,
+} from './safety/risk.ts'
 export {
   conversationRisk,
   messageRisk,
   normalizeText,
-  riskForMode,
   riskSignals,
   type ConversationRiskInput,
   type RiskAssessment,
   type RiskSignal,
-} from './assistant/crisis-detector.ts'
+} from './safety/crisis-detector.ts'
 export {
   concernCategories,
   crisisCategories,
   type ConcernCategory,
   type CrisisCategory,
-} from './assistant/crisis-phrases.ts'
+} from './safety/crisis-phrases.ts'
+export { noteRisk, raisedRisk } from './safety/notes.ts'
 export { assistantNotice, noticeKinds, type NoticeKind } from './assistant/notices.ts'
 export { filterReply, repeatsPassage, type ReplyFilterOptions } from './assistant/reply-filter.ts'
 export { consistencyOf, type Consistency } from './patterns/consistency.ts'
@@ -304,6 +318,7 @@ export {
   readArticles,
   suggestedArticles,
   suggestionReasons,
+  supportLevelOf,
   zenSuggestion,
   type ScreeningSignal,
   type SuggestionReason,

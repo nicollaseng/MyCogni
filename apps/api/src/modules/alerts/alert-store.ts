@@ -1,16 +1,20 @@
 import type { AlertLevel, AlertReason, ScreeningResult } from '@mycogni/domain'
 import { and, eq, gt, isNull, sql } from 'drizzle-orm'
 import { authUsers } from 'drizzle-orm/supabase'
-import type { Database } from '../../db/client.ts'
+import type { Database, Transaction } from '../../db/client.ts'
 import { withUser } from '../../db/rls.ts'
 import {
   assessments,
   careLinks,
+  checkInAddenda,
+  checkIns,
   insights,
+  journalEntries,
   professionalAlerts,
   professionalProfiles,
   profiles,
 } from '../../db/schema/index.ts'
+import type { SavedNote } from '../../jobs/alert-trigger.ts'
 
 export interface AlertLink {
   careLinkId: string
@@ -19,10 +23,16 @@ export interface AlertLink {
   startedAt: Date
 }
 
+export interface AlertSubject {
+  checkInId: string | null
+  journalEntryId: string | null
+}
+
 export interface NewAlert {
   link: AlertLink
   reason: AlertReason
   level: AlertLevel
+  subject: AlertSubject
 }
 
 export interface ProfessionalSummaryRecord {
@@ -45,11 +55,38 @@ export interface EmailWindow {
 export interface AlertStore {
   activeLinks(filter: { patientId?: string; professionalId?: string }): Promise<AlertLink[]>
   visibleScreening(link: AlertLink, assessmentId: string): Promise<ScreeningResult | undefined>
+  visibleNote(link: AlertLink, note: SavedNote): Promise<boolean>
   professionalSummary(insightId: string): Promise<ProfessionalSummaryRecord | undefined>
   raise(alert: NewAlert, cooldownSince: Date | null): Promise<string | null>
   claimEmail(alertId: string, link: AlertLink, window: EmailWindow): Promise<boolean>
   releaseEmail(alertId: string): Promise<void>
   recipient(link: AlertLink): Promise<AlertRecipient | undefined>
+}
+
+function readableNote(tx: Transaction, patientId: string, note: SavedNote) {
+  switch (note.kind) {
+    case 'check_in':
+      return tx
+        .select({ id: checkIns.id })
+        .from(checkIns)
+        .where(and(eq(checkIns.id, note.checkInId), eq(checkIns.userId, patientId)))
+    case 'addendum':
+      return tx
+        .select({ id: checkInAddenda.id })
+        .from(checkInAddenda)
+        .where(
+          and(
+            eq(checkInAddenda.id, note.addendumId),
+            eq(checkInAddenda.checkInId, note.checkInId),
+            eq(checkInAddenda.userId, patientId),
+          ),
+        )
+    case 'journal':
+      return tx
+        .select({ id: journalEntries.id })
+        .from(journalEntries)
+        .where(and(eq(journalEntries.id, note.entryId), eq(journalEntries.userId, patientId)))
+  }
 }
 
 export function createAlertStore(db: Database): AlertStore {
@@ -92,6 +129,12 @@ export function createAlertStore(db: Database): AlertStore {
         return row
       })
     },
+    visibleNote(link, note) {
+      return withUser(db, link.professionalId, async (tx) => {
+        const rows = await readableNote(tx, link.patientId, note)
+        return rows.length > 0
+      })
+    },
     async professionalSummary(insightId) {
       const [row] = await db
         .select({
@@ -106,7 +149,7 @@ export function createAlertStore(db: Database): AlertStore {
       }
       return { ...row, professionalId: row.professionalId }
     },
-    raise({ link, reason, level }, cooldownSince) {
+    raise({ link, reason, level, subject }, cooldownSince) {
       return db.transaction(async (tx) => {
         if (cooldownSince !== null) {
           const [recent] = await tx
@@ -132,6 +175,7 @@ export function createAlertStore(db: Database): AlertStore {
             patientId: link.patientId,
             reason,
             level,
+            ...subject,
           })
           .onConflictDoNothing({
             target: [professionalAlerts.careLinkId, professionalAlerts.reason],

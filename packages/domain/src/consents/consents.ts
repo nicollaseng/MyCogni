@@ -17,6 +17,13 @@ export const requiredConsentKinds: readonly ConsentKind[] = [
   'adult',
 ]
 
+export const patientConsentKinds: readonly ConsentKind[] = [
+  'health_data',
+  'ai_processing',
+  'assistant_data',
+  'assistant_journal',
+]
+
 export const consentVersion = '2026-10'
 
 export function missingConsents(granted: readonly ConsentKind[]): ConsentKind[] {
@@ -25,4 +32,8 @@ export function missingConsents(granted: readonly ConsentKind[]): ConsentKind[] 
 
 export function isRevocable(kind: ConsentKind): boolean {
   return !requiredConsentKinds.includes(kind)
+}
+
+export function isPatientConsent(kind: ConsentKind): boolean {
+  return patientConsentKinds.includes(kind)
 }

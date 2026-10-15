@@ -10,7 +10,7 @@ type Notices = Readonly<Record<NoticeKind, string>>
 const brazilian: Readonly<Record<AssistantMode, Notices>> = {
   personal: {
     crisis:
-      'Que bom que você me contou. O que você está sentindo importa, e você merece o apoio de uma pessoa agora. Se puder, ligue para um dos contatos abaixo ou fale com o profissional que acompanha você. Se estiver em perigo neste momento, ligue para a emergência. Eu continuo aqui para conversar, mas não substituo esse apoio.',
+      'Que bom que você me contou. Você merece o apoio de uma pessoa agora: ligue para um dos contatos abaixo.',
     refusal:
       'Não posso ajudar com esse pedido. Posso conversar sobre como você está e sobre os seus registros. Se precisar de apoio agora, os contatos abaixo atendem a qualquer hora.',
     unavailable:
@@ -28,7 +28,7 @@ const brazilian: Readonly<Record<AssistantMode, Notices>> = {
 const european: Readonly<Record<AssistantMode, Notices>> = {
   personal: {
     crisis:
-      'Ainda bem que me contou. O que está a sentir importa e merece o apoio de uma pessoa agora. Se puder, ligue para um dos contactos abaixo ou fale com o profissional que segue o seu caso. Se estiver em perigo neste momento, ligue para a emergência. Continuo aqui para conversar, mas não substituo esse apoio.',
+      'Ainda bem que me contou. Merece o apoio de uma pessoa agora: ligue para um dos contactos abaixo.',
     refusal:
       'Não posso ajudar com esse pedido. Posso conversar sobre como está e sobre os seus registos. Se precisar de apoio agora, os contactos abaixo atendem a qualquer hora.',
     unavailable:
@@ -46,7 +46,7 @@ const european: Readonly<Record<AssistantMode, Notices>> = {
 const english: Readonly<Record<AssistantMode, Notices>> = {
   personal: {
     crisis:
-      'I’m glad you told me. What you are feeling matters, and you deserve support from a person right now. If you can, call one of the contacts below or reach out to the professional who supports you. If you are in danger right now, call emergency services. I’m still here to talk, but I can’t replace that support.',
+      'I’m glad you told me. You deserve support from a person right now: call one of the contacts below.',
     refusal:
       'I can’t help with that request. I can talk about how you are doing and about your records. If you need support now, the contacts below answer at any time.',
     unavailable:

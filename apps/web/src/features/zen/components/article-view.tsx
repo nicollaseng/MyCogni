@@ -11,8 +11,8 @@ import Link from 'next/link'
 import { useLocale, useTranslations } from 'next-intl'
 import { NarrationPlayer } from '@/features/audio/components/narration-player'
 import type { NarrationSource } from '@/features/audio/narration'
+import { SafetyPanel } from '@/features/safety/components/safety-panel'
 import { Disclosure } from '@/shared/components/disclosure'
-import { CrisisNumbers } from './crisis-numbers'
 
 const textLink = 'underline decoration-1 underline-offset-4'
 
@@ -71,15 +71,7 @@ export function ArticleView({ id, narration = [] }: ArticleViewProps) {
       </div>
 
       {id === 'when-to-seek-help' && (
-        <section
-          aria-labelledby="article-help"
-          className="max-w-[38rem] space-y-1 border-l-2 border-help pl-4"
-        >
-          <h2 id="article-help" className="text-[15px]">
-            {t('help.call')}
-          </h2>
-          <CrisisNumbers />
-        </section>
+        <SafetyPanel level="watch" professionals={[]} className="max-w-[38rem]" />
       )}
 
       <div className="max-w-[38rem] space-y-5">

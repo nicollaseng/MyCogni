@@ -2,6 +2,7 @@ import { patientInsightListSchema, professionalInsightListSchema } from '@mycogn
 import type { FastifyPluginCallbackZod } from 'fastify-type-provider-zod'
 import { z } from 'zod'
 import type { Database } from '../../db/client.ts'
+import { forPatients, forProfessionals } from '../../plugins/account-type.ts'
 import { currentUser } from '../../plugins/authentication.ts'
 import { createCareLinkRepository } from '../care-links/care-link.repository.ts'
 import { createProfessionalRepository } from '../professionals/professional.repository.ts'
@@ -15,12 +16,15 @@ export function insightModule(db: Database): FastifyPluginCallbackZod {
     professionals: createProfessionalRepository(db),
   })
   return (app, _options, done) => {
-    app.get('/insights', { schema: { response: { 200: patientInsightListSchema } } }, (request) =>
-      service.mine(currentUser(request)),
+    app.get(
+      '/insights',
+      { config: forPatients, schema: { response: { 200: patientInsightListSchema } } },
+      (request) => service.mine(currentUser(request)),
     )
     app.get(
       '/professional/patients/:patientId/insights',
       {
+        config: forProfessionals,
         schema: {
           params: z.object({ patientId: z.uuid() }),
           response: { 200: professionalInsightListSchema },

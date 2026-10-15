@@ -67,8 +67,6 @@ export const zen: ZenMessages = {
     open: 'Ajuda agora',
     title: 'Ajuda agora',
     call: 'Em perigo agora? Ligue:',
-    attention: 'Os seus resultados pedem atenção. Fale com alguém hoje.',
-    professional: '{name} acompanha os seus registos.',
     breathe: 'Respirar 1 min',
     more: 'Quando procurar ajuda',
     close: 'Fechar',

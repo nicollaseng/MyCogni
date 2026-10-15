@@ -1,6 +1,4 @@
-export const riskLevels = ['none', 'watch', 'urgent'] as const
-
-export type RiskLevel = (typeof riskLevels)[number]
+import type { RiskLevel } from '../safety/risk.ts'
 
 export const assistantModes = ['personal', 'professional'] as const
 
@@ -27,13 +25,6 @@ export const assistantLimits = {
   screeningRiskDays: 30,
 } as const
 
-export function mergeRisk(...levels: readonly RiskLevel[]): RiskLevel {
-  return levels.reduce<RiskLevel>(
-    (highest, level) => (riskLevels.indexOf(level) > riskLevels.indexOf(highest) ? level : highest),
-    'none',
-  )
-}
-
-export function needsSupport(level: RiskLevel): boolean {
-  return level !== 'none'
+export function riskForMode(level: RiskLevel, mode: AssistantMode): RiskLevel {
+  return mode === 'professional' && level === 'urgent' ? 'watch' : level
 }

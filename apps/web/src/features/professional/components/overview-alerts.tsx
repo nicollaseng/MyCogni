@@ -4,7 +4,7 @@ import { useTranslations } from 'next-intl'
 import { Avatar } from '@/shared/components/avatar'
 import { initialsOf } from '@/shared/lib/initials'
 import { cn } from '@/shared/lib/utils'
-import { AlertLevelLabel } from './alert-cells'
+import { AlertLevelLabel, AlertReasonLabel } from './alert-cells'
 import { centeredTable as table, TableScroll } from './data-table'
 import { RelativeTime } from './patient-cells'
 import { Quiet } from './workspace'
@@ -62,7 +62,9 @@ export function OverviewAlerts({ alerts, now, timeZone }: OverviewAlertsProps) {
                   </Link>
                 </span>
               </td>
-              <td className={table.cell}>{t(`reasons.${alert.reason}`)}</td>
+              <td className={table.cell}>
+                <AlertReasonLabel alert={alert} name={alert.patientName ?? t('unnamed')} />
+              </td>
               <td className={table.cell}>
                 <AlertLevelLabel level={alert.level} />
               </td>

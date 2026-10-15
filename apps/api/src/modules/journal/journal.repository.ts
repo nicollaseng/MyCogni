@@ -71,7 +71,8 @@ export interface JournalAccessRecord {
 }
 
 export type UpdateOutcome =
-  { kind: 'updated'; entry: JournalEntryRecord; removedImages: string[] } | { kind: 'not_found' }
+  | { kind: 'updated'; entry: JournalEntryRecord; removedImages: string[]; previousText: string }
+  | { kind: 'not_found' }
 
 export interface JournalRepository {
   list(
@@ -201,7 +202,7 @@ export function createJournalRepository(db: Database): JournalRepository {
     update(userId, entryId, changes) {
       return withUser(db, userId, async (tx): Promise<UpdateOutcome> => {
         const [previous] = await tx
-          .select({ imagePaths: journalEntries.imagePaths })
+          .select({ imagePaths: journalEntries.imagePaths, plainText: journalEntries.plainText })
           .from(journalEntries)
           .where(and(eq(journalEntries.id, entryId), eq(journalEntries.userId, userId)))
           .for('update')
@@ -220,6 +221,7 @@ export function createJournalRepository(db: Database): JournalRepository {
           kind: 'updated',
           entry,
           removedImages: previous.imagePaths.filter((path) => !changes.imagePaths.includes(path)),
+          previousText: previous.plainText,
         }
       })
     },

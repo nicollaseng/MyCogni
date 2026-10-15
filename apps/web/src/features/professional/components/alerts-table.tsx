@@ -26,6 +26,7 @@ import {
   ActionFeedback,
   AlertButtons,
   AlertLevelLabel,
+  AlertReasonLabel,
   AlertStatusLabel,
   useAlertActions,
   type AlertActions,
@@ -231,7 +232,7 @@ export function AlertsTable({ alerts, now, timeZone, acknowledge, resolve }: Ale
                           alert.status === 'resolved' && 'text-muted-foreground',
                         )}
                       >
-                        {t(`reasons.${alert.reason}`)}
+                        <AlertReasonLabel alert={alert} name={name} />
                       </td>
                       <td className={table.cell}>
                         <AlertLevelLabel level={alert.level} />

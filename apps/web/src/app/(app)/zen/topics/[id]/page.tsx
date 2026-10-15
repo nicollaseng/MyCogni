@@ -2,8 +2,8 @@ import { contentLanguageOf, isTopicId, topics } from '@mycogni/domain'
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { getLocale, getTranslations } from 'next-intl/server'
+import { SafetyPanel } from '@/features/safety/components/safety-panel'
 import { BreatheButton } from '@/features/zen/components/breathe-button'
-import { HelpPanel } from '@/features/zen/components/help-panel'
 import { ReadingRows, TrackRows } from '@/features/zen/components/library'
 import { ZenTopBar } from '@/features/zen/components/zen-top-bar'
 import { fetchCareLinks } from '@/shared/lib/api/care'
@@ -36,7 +36,7 @@ export default async function ZenTopicPage({ params }: PageProps<'/zen/topics/[i
       <h1 className="font-serif text-[40px] leading-[1.04] tracking-[-0.02em] text-balance sm:text-5xl">
         {t(`topics.names.${id}`)}
       </h1>
-      {id === 'help' && <HelpPanel professionals={professionals} />}
+      {id === 'help' && <SafetyPanel level="watch" professionals={professionals} />}
       <TrackRows
         ids={[topic.track]}
         doneSteps={doneSteps}

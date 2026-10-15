@@ -58,7 +58,7 @@ describe('ArticleView', () => {
     renderWithIntl(<ArticleView id="when-to-seek-help" />, { locale: 'pt-PT' })
 
     expect(screen.getByRole('heading', { level: 1, name: 'Quando procurar ajuda' })).toBeVisible()
-    const help = within(screen.getByRole('region', { name: 'Em perigo agora? Ligue:' }))
+    const help = within(screen.getByRole('region', { name: 'Apoio agora' }))
     expect(help.getByRole('link', { name: /808 24 24 24/ })).toHaveAttribute(
       'href',
       'tel:808242424',

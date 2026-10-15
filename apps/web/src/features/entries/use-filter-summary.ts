@@ -46,5 +46,16 @@ export function useFilterSummary(filters: EntryFilters): string[] {
     }
   }
 
-  return filterParts(selectionOf(filters)).map((part) => capitalize(textOf(part), locale))
+  const parts = filterParts(selectionOf(filters))
+  const anyOf = new Intl.ListFormat(locale, { type: 'disjunction' })
+  const texts = parts.flatMap((part, index) => {
+    if (part.kind !== 'emotion' && part.kind !== 'context') {
+      return [textOf(part)]
+    }
+    const first = parts.findIndex((other) => other.kind === part.kind) === index
+    return first
+      ? [anyOf.format(parts.filter((other) => other.kind === part.kind).map(textOf))]
+      : []
+  })
+  return texts.map((text) => capitalize(text, locale))
 }

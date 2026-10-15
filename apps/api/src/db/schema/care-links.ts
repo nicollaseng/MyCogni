@@ -52,6 +52,7 @@ export const careLinks = pgTable(
       to: authenticatedRole,
       withCheck: sql`${table.patientId} = ${authUid}
         and ${table.endedAt} is null
+        and public.current_account_type() = 'patient'
         and exists (
           select 1 from public.invitations i
           where i.id = ${table.invitationId}
