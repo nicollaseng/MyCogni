@@ -1,8 +1,9 @@
-import { NextResponse, type NextRequest } from 'next/server'
+import type { NextRequest } from 'next/server'
 import { afterEmailLink } from '@/features/auth/after-sign-in'
 import { emailLinkFailedPath, emailLinkTypeOf } from '@/features/auth/email-link'
 import { adoptLocaleOf } from '@/features/locale/adopt-locale'
 import { createSupabaseServerClient } from '@/shared/lib/supabase/server'
+import { siteRedirect } from '@/shared/lib/site-redirect'
 
 export async function GET(request: NextRequest) {
   const { searchParams } = request.nextUrl
@@ -13,8 +14,8 @@ export async function GET(request: NextRequest) {
     const { data, error } = await supabase.auth.verifyOtp({ token_hash: tokenHash, type })
     if (error === null) {
       await adoptLocaleOf(data.user?.user_metadata)
-      return NextResponse.redirect(new URL(await afterEmailLink(type), request.url))
+      return siteRedirect(await afterEmailLink(type))
     }
   }
-  return NextResponse.redirect(new URL(emailLinkFailedPath, request.url))
+  return siteRedirect(emailLinkFailedPath)
 }
