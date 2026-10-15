@@ -1,12 +1,16 @@
-import { and, desc, eq, isNull } from 'drizzle-orm'
+import { and, desc, eq, isNull, sql } from 'drizzle-orm'
 import type { Database } from '../../db/client.ts'
 import { withUser } from '../../db/rls.ts'
 import { careLinks, professionalProfiles, profiles } from '../../db/schema/index.ts'
 import type { ProfessionalSummaryRecord } from '../invitations/invitation.repository.ts'
 
+export interface LinkedProfessionalRecord extends ProfessionalSummaryRecord {
+  avatarPath: string | null
+}
+
 export interface CareLinkRecord {
   id: string
-  professional: ProfessionalSummaryRecord
+  professional: LinkedProfessionalRecord
   sharesHistory: boolean
   startedAt: Date
 }
@@ -15,6 +19,7 @@ export interface PatientLinkRecord {
   linkId: string
   patientId: string
   name: string | null
+  avatarPath: string | null
   sharesHistory: boolean
   startedAt: Date
 }
@@ -28,6 +33,7 @@ export interface CareLinkRepository {
 
 const linkColumns = {
   id: careLinks.id,
+  professionalId: careLinks.professionalId,
   professional: {
     name: professionalProfiles.fullName,
     kind: professionalProfiles.kind,
@@ -38,9 +44,9 @@ const linkColumns = {
 }
 
 export function createCareLinkRepository(db: Database): CareLinkRepository {
-  function activeLinksOf(patientId: string, linkId?: string) {
-    return withUser(db, patientId, (tx) =>
-      tx
+  function activeLinksOf(patientId: string, linkId?: string): Promise<CareLinkRecord[]> {
+    return withUser(db, patientId, async (tx) => {
+      const links = await tx
         .select(linkColumns)
         .from(careLinks)
         .innerJoin(professionalProfiles, eq(professionalProfiles.userId, careLinks.professionalId))
@@ -51,8 +57,18 @@ export function createCareLinkRepository(db: Database): CareLinkRepository {
             linkId === undefined ? undefined : eq(careLinks.id, linkId),
           ),
         )
-        .orderBy(desc(careLinks.startedAt)),
-    )
+        .orderBy(desc(careLinks.startedAt))
+      const avatars = await tx.execute<{ professional_id: string; avatar_path: string }>(
+        sql`select * from public.linked_professional_avatars()`,
+      )
+      const avatarOf = new Map(
+        Array.from(avatars).map((row) => [row.professional_id, row.avatar_path]),
+      )
+      return links.map(({ professionalId, professional, ...link }) => ({
+        ...link,
+        professional: { ...professional, avatarPath: avatarOf.get(professionalId) ?? null },
+      }))
+    })
   }
 
   return {
@@ -90,6 +106,7 @@ export function createCareLinkRepository(db: Database): CareLinkRepository {
             linkId: careLinks.id,
             patientId: careLinks.patientId,
             name: profiles.displayName,
+            avatarPath: profiles.avatarPath,
             sharesHistory: careLinks.sharesHistory,
             startedAt: careLinks.startedAt,
           })

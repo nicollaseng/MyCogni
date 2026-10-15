@@ -16,8 +16,10 @@ import {
 import type { AuthenticatedUser } from '../../auth/token-verifier.ts'
 import type { Mailer } from '../../mail/mailer.ts'
 import { ConflictError, ForbiddenError, NotFoundError } from '../../shared/errors.ts'
+import type { BucketStore } from '../../storage/bucket-store.ts'
+import { signedUrlOf } from '../../storage/profile-files.ts'
+import { toCareLinks } from '../care-links/care-link.mapper.ts'
 import type { CareLinkRepository } from '../care-links/care-link.repository.ts'
-import { toCareLink } from '../care-links/care-link.service.ts'
 import type { ProfessionalRepository } from '../professionals/professional.repository.ts'
 import { invitationEmail } from './invitation-email.ts'
 import {
@@ -46,6 +48,7 @@ export interface InvitationDependencies {
   invitations: InvitationRepository
   professionals: ProfessionalRepository
   careLinks: CareLinkRepository
+  photos: BucketStore
   mailer: Mailer
   webUrl: string
   pickIndex: (size: number) => number
@@ -58,6 +61,7 @@ export function createInvitationService({
   invitations,
   professionals,
   careLinks,
+  photos,
   mailer,
   webUrl,
   pickIndex,
@@ -178,7 +182,11 @@ export function createInvitationService({
         throw new NotFoundError('Invitation not found')
       }
       return {
-        professional: { name: record.professionalName, kind: record.professionalKind },
+        professional: {
+          name: record.professionalName,
+          kind: record.professionalKind,
+          photoUrl: await signedUrlOf(photos, record.professionalAvatarPath),
+        },
         status: record.status,
         expiresAt: record.expiresAt.toISOString(),
       }
@@ -210,10 +218,11 @@ export function createInvitationService({
           throw new ConflictError('You already share your records with this professional')
         case 'accepted': {
           const link = await careLinks.findForPatient(user.id, outcome.linkId)
-          if (link === undefined) {
+          const [careLink] = await toCareLinks(link === undefined ? [] : [link], photos)
+          if (careLink === undefined) {
             throw new NotFoundError('Care link not found')
           }
-          return toCareLink(link)
+          return careLink
         }
       }
     },

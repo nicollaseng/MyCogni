@@ -4,6 +4,7 @@ import { createSupabaseTokenVerifier } from './auth/token-verifier.ts'
 import { loadConfig } from './config/env.ts'
 import { connectDatabase } from './db/client.ts'
 import { createJournalImageStore } from './storage/journal-images.ts'
+import { createProfileFileStores } from './storage/profile-files.ts'
 
 const config = loadConfig(process.env)
 const database = connectDatabase(config.databaseUrl)
@@ -13,6 +14,7 @@ const app = await buildApp({
   verifier: createSupabaseTokenVerifier(config.supabaseUrl),
   accountAdmin: createSupabaseAccountAdmin(config.supabaseUrl, config.supabaseSecretKey),
   journalImages: createJournalImageStore(config.supabaseUrl, config.supabaseSecretKey),
+  profileFiles: createProfileFileStores(config.supabaseUrl, config.supabaseSecretKey),
 })
 
 app.addHook('onClose', () => database.close())

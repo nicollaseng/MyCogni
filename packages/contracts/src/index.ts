@@ -32,12 +32,16 @@ export {
   type GrantConsentsInput,
 } from './consents.ts'
 export {
+  professionalDocumentSchema,
   professionalKindSchema,
   professionalProfileSchema,
   registerProfessionalSchema,
+  submitProfessionalDocumentSchema,
   updateProfessionalSchema,
+  type ProfessionalDocument,
   type ProfessionalProfile,
   type RegisterProfessionalInput,
+  type SubmitProfessionalDocumentInput,
   type UpdateProfessionalInput,
 } from './professionals.ts'
 export {
@@ -47,10 +51,12 @@ export {
   type UpdateProfileInput,
 } from './profile.ts'
 export {
+  documentLinkSchema,
   professionalForReviewListSchema,
   professionalForReviewSchema,
   professionalReviewQuerySchema,
   reviewProfessionalSchema,
+  type DocumentLink,
   type ProfessionalForReview,
   type ProfessionalReviewQuery,
   type ReviewProfessionalInput,
@@ -79,6 +85,7 @@ export {
   createInvitationSchema,
   invitationCodeSchema,
   invitationPreviewSchema,
+  linkedProfessionalSchema,
   professionalSummarySchema,
   receivedInvitationListSchema,
   receivedInvitationSchema,
@@ -90,6 +97,7 @@ export {
   type CreatedInvitation,
   type CreateInvitationInput,
   type InvitationPreview,
+  type LinkedProfessional,
   type ProfessionalSummary,
   type ReceivedInvitation,
   type ResendInvitationInput,

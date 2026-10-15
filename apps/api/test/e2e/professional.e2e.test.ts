@@ -84,8 +84,11 @@ describe('/v1/professional', () => {
       fullName: 'Helena Prado',
       registration: 'CRP 06/123456',
       status: 'pending',
+      reviewNote: null,
       createdAt: expect.any(String),
       verifiedAt: null,
+      reviewedAt: null,
+      document: null,
     })
   })
 
@@ -146,8 +149,11 @@ describe('/v1/professional', () => {
       fullName: 'Dra. Helena Prado Lima',
       registration: 'CRP 06/123456',
       status: 'pending',
+      reviewNote: null,
       createdAt: expect.any(String),
       verifiedAt: null,
+      reviewedAt: null,
+      document: null,
     })
     expect(await profileOf(helena)).toEqual(
       expect.objectContaining({ fullName: 'Dra. Helena Prado Lima' }),

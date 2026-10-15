@@ -68,6 +68,8 @@ describe('professional profiles', () => {
     ['registration', { registration: 'CRM-SP 99999' }],
     ['status', { status: 'verified' }],
     ['verification date', { verifiedAt: new Date() }],
+    ['review note', { reviewNote: 'Aprovado' }],
+    ['review date', { reviewedAt: new Date() }],
     ['account', { userId: randomUUID() }],
   ])('does not let a professional change their own %s', async (_, changes) => {
     await expect(

@@ -1,5 +1,6 @@
 import type { FastifyPluginCallbackZod } from 'fastify-type-provider-zod'
 import type { Database } from '../../db/client.ts'
+import type { BucketStore } from '../../storage/bucket-store.ts'
 import { createAssessmentRepository } from '../assessments/assessment.repository.ts'
 import { createCheckInRepository } from '../check-ins/check-in.repository.ts'
 import { createProfessionalRepository } from '../professionals/professional.repository.ts'
@@ -9,16 +10,17 @@ import { createCareLinkService } from './care-link.service.ts'
 import { createPatientMetricsRepository } from './patient-metrics.repository.ts'
 import { createPatientService } from './patient.service.ts'
 
-export function careLinkModule(db: Database): FastifyPluginCallbackZod {
+export function careLinkModule(db: Database, photos: BucketStore): FastifyPluginCallbackZod {
   const careLinks = createCareLinkRepository(db)
   return careLinkRoutes(
-    createCareLinkService(careLinks),
+    createCareLinkService(careLinks, photos),
     createPatientService({
       careLinks,
       metrics: createPatientMetricsRepository(db),
       checkIns: createCheckInRepository(db),
       assessments: createAssessmentRepository(db),
       professionals: createProfessionalRepository(db),
+      photos,
       now: () => new Date(),
     }),
   )

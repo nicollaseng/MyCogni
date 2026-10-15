@@ -1,6 +1,7 @@
 import {
   professionalProfileSchema,
   registerProfessionalSchema,
+  submitProfessionalDocumentSchema,
   updateProfessionalSchema,
 } from '@mycogni/contracts'
 import type { FastifyPluginCallbackZod } from 'fastify-type-provider-zod'
@@ -26,6 +27,17 @@ export function professionalRoutes(service: ProfessionalService): FastifyPluginC
       '/professional',
       { schema: { body: updateProfessionalSchema, response: { 200: professionalProfileSchema } } },
       (request) => service.rename(currentUser(request), request.body),
+    )
+    app.post(
+      '/professional/documents',
+      {
+        schema: {
+          body: submitProfessionalDocumentSchema,
+          response: { 201: professionalProfileSchema },
+        },
+      },
+      async (request, reply) =>
+        reply.status(201).send(await service.submitDocument(currentUser(request), request.body)),
     )
     done()
   }

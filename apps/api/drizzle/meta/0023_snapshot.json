@@ -1,0 +1,2162 @@
+{
+  "id": "cf95565f-72db-435b-9a0a-904d6830cb24",
+  "prevId": "7884e37e-a0e9-43d3-8772-5dd9c6b0737a",
+  "version": "7",
+  "dialect": "postgresql",
+  "tables": {
+    "public.assessments": {
+      "name": "assessments",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "instrument": {
+          "name": "instrument",
+          "type": "assessment_instrument",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "answers": {
+          "name": "answers",
+          "type": "smallint[]",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "total_score": {
+          "name": "total_score",
+          "type": "smallint",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "severity": {
+          "name": "severity",
+          "type": "assessment_severity",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "has_risk_flag": {
+          "name": "has_risk_flag",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "completed_at": {
+          "name": "completed_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "assessments_user_completed_idx": {
+          "name": "assessments_user_completed_idx",
+          "columns": [
+            {
+              "expression": "user_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "completed_at",
+              "isExpression": false,
+              "asc": false,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "assessments_user_id_users_id_fk": {
+          "name": "assessments_user_id_users_id_fk",
+          "tableFrom": "assessments",
+          "tableTo": "users",
+          "schemaTo": "auth",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {
+        "assessments_select_own": {
+          "name": "assessments_select_own",
+          "as": "PERMISSIVE",
+          "for": "SELECT",
+          "to": [
+            "authenticated"
+          ],
+          "using": "\"assessments\".\"user_id\" = (select auth.uid())"
+        },
+        "assessments_select_linked_professional": {
+          "name": "assessments_select_linked_professional",
+          "as": "PERMISSIVE",
+          "for": "SELECT",
+          "to": [
+            "authenticated"
+          ],
+          "using": "exists (\n        select 1 from public.care_links cl\n        where cl.patient_id = \"assessments\".\"user_id\"\n          and cl.professional_id = (select auth.uid())\n          and cl.ended_at is null\n          and (cl.shares_history or \"assessments\".\"completed_at\" >= cl.started_at)\n      )"
+        },
+        "assessments_insert_own": {
+          "name": "assessments_insert_own",
+          "as": "PERMISSIVE",
+          "for": "INSERT",
+          "to": [
+            "authenticated"
+          ],
+          "withCheck": "\"assessments\".\"user_id\" = (select auth.uid())"
+        }
+      },
+      "checkConstraints": {},
+      "isRLSEnabled": true
+    },
+    "public.care_links": {
+      "name": "care_links",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "professional_id": {
+          "name": "professional_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "patient_id": {
+          "name": "patient_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "invitation_id": {
+          "name": "invitation_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "shares_history": {
+          "name": "shares_history",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "consent_version": {
+          "name": "consent_version",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "started_at": {
+          "name": "started_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "ended_at": {
+          "name": "ended_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "ended_by": {
+          "name": "ended_by",
+          "type": "care_link_ended_by",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {
+        "care_links_active_pair_key": {
+          "name": "care_links_active_pair_key",
+          "columns": [
+            {
+              "expression": "professional_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "patient_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": true,
+          "where": "ended_at is null",
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "care_links_patient_idx": {
+          "name": "care_links_patient_idx",
+          "columns": [
+            {
+              "expression": "patient_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "care_links_professional_id_users_id_fk": {
+          "name": "care_links_professional_id_users_id_fk",
+          "tableFrom": "care_links",
+          "tableTo": "users",
+          "schemaTo": "auth",
+          "columnsFrom": [
+            "professional_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "care_links_patient_id_users_id_fk": {
+          "name": "care_links_patient_id_users_id_fk",
+          "tableFrom": "care_links",
+          "tableTo": "users",
+          "schemaTo": "auth",
+          "columnsFrom": [
+            "patient_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "care_links_invitation_id_invitations_id_fk": {
+          "name": "care_links_invitation_id_invitations_id_fk",
+          "tableFrom": "care_links",
+          "tableTo": "invitations",
+          "columnsFrom": [
+            "invitation_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "set null",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {
+        "care_links_select_participants": {
+          "name": "care_links_select_participants",
+          "as": "PERMISSIVE",
+          "for": "SELECT",
+          "to": [
+            "authenticated"
+          ],
+          "using": "\"care_links\".\"professional_id\" = (select auth.uid()) or \"care_links\".\"patient_id\" = (select auth.uid())"
+        },
+        "care_links_insert_by_patient": {
+          "name": "care_links_insert_by_patient",
+          "as": "PERMISSIVE",
+          "for": "INSERT",
+          "to": [
+            "authenticated"
+          ],
+          "withCheck": "\"care_links\".\"patient_id\" = (select auth.uid())\n        and \"care_links\".\"ended_at\" is null\n        and exists (\n          select 1 from public.invitations i\n          where i.id = \"care_links\".\"invitation_id\"\n            and i.patient_id = (select auth.uid())\n            and i.professional_id = \"care_links\".\"professional_id\"\n            and i.status = 'accepted'\n        )"
+        },
+        "care_links_end_by_participant": {
+          "name": "care_links_end_by_participant",
+          "as": "PERMISSIVE",
+          "for": "UPDATE",
+          "to": [
+            "authenticated"
+          ],
+          "using": "(\"care_links\".\"professional_id\" = (select auth.uid()) or \"care_links\".\"patient_id\" = (select auth.uid())) and \"care_links\".\"ended_at\" is null",
+          "withCheck": "(\"care_links\".\"professional_id\" = (select auth.uid()) or \"care_links\".\"patient_id\" = (select auth.uid())) and \"care_links\".\"ended_at\" is not null"
+        }
+      },
+      "checkConstraints": {},
+      "isRLSEnabled": true
+    },
+    "public.check_ins": {
+      "name": "check_ins",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "mood_level": {
+          "name": "mood_level",
+          "type": "smallint",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "emotions": {
+          "name": "emotions",
+          "type": "text[]",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'{}'::text[]"
+        },
+        "contexts": {
+          "name": "contexts",
+          "type": "text[]",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'{}'::text[]"
+        },
+        "note": {
+          "name": "note",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "recorded_at": {
+          "name": "recorded_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "check_ins_user_recorded_idx": {
+          "name": "check_ins_user_recorded_idx",
+          "columns": [
+            {
+              "expression": "user_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "recorded_at",
+              "isExpression": false,
+              "asc": false,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "check_ins_user_id_users_id_fk": {
+          "name": "check_ins_user_id_users_id_fk",
+          "tableFrom": "check_ins",
+          "tableTo": "users",
+          "schemaTo": "auth",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {
+        "check_ins_select_own": {
+          "name": "check_ins_select_own",
+          "as": "PERMISSIVE",
+          "for": "SELECT",
+          "to": [
+            "authenticated"
+          ],
+          "using": "\"check_ins\".\"user_id\" = (select auth.uid())"
+        },
+        "check_ins_select_linked_professional": {
+          "name": "check_ins_select_linked_professional",
+          "as": "PERMISSIVE",
+          "for": "SELECT",
+          "to": [
+            "authenticated"
+          ],
+          "using": "exists (\n        select 1 from public.care_links cl\n        where cl.patient_id = \"check_ins\".\"user_id\"\n          and cl.professional_id = (select auth.uid())\n          and cl.ended_at is null\n          and (cl.shares_history or \"check_ins\".\"recorded_at\" >= cl.started_at)\n      )"
+        },
+        "check_ins_insert_own": {
+          "name": "check_ins_insert_own",
+          "as": "PERMISSIVE",
+          "for": "INSERT",
+          "to": [
+            "authenticated"
+          ],
+          "withCheck": "\"check_ins\".\"user_id\" = (select auth.uid())"
+        }
+      },
+      "checkConstraints": {
+        "check_ins_mood_level_range": {
+          "name": "check_ins_mood_level_range",
+          "value": "\"check_ins\".\"mood_level\" between 0 and 6"
+        }
+      },
+      "isRLSEnabled": true
+    },
+    "public.consents": {
+      "name": "consents",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "kind": {
+          "name": "kind",
+          "type": "consent_kind",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "version": {
+          "name": "version",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "granted_at": {
+          "name": "granted_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "revoked_at": {
+          "name": "revoked_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {
+        "consents_user_kind_version_key": {
+          "name": "consents_user_kind_version_key",
+          "columns": [
+            {
+              "expression": "user_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "kind",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "version",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": true,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "consents_user_id_users_id_fk": {
+          "name": "consents_user_id_users_id_fk",
+          "tableFrom": "consents",
+          "tableTo": "users",
+          "schemaTo": "auth",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {
+        "consents_select_own": {
+          "name": "consents_select_own",
+          "as": "PERMISSIVE",
+          "for": "SELECT",
+          "to": [
+            "authenticated"
+          ],
+          "using": "\"consents\".\"user_id\" = (select auth.uid())"
+        },
+        "consents_insert_own": {
+          "name": "consents_insert_own",
+          "as": "PERMISSIVE",
+          "for": "INSERT",
+          "to": [
+            "authenticated"
+          ],
+          "withCheck": "\"consents\".\"user_id\" = (select auth.uid())"
+        },
+        "consents_update_own": {
+          "name": "consents_update_own",
+          "as": "PERMISSIVE",
+          "for": "UPDATE",
+          "to": [
+            "authenticated"
+          ],
+          "using": "\"consents\".\"user_id\" = (select auth.uid())",
+          "withCheck": "\"consents\".\"user_id\" = (select auth.uid())"
+        }
+      },
+      "checkConstraints": {},
+      "isRLSEnabled": true
+    },
+    "public.insights": {
+      "name": "insights",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "patient_id": {
+          "name": "patient_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "audience": {
+          "name": "audience",
+          "type": "insight_audience",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "professional_id": {
+          "name": "professional_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "period_start": {
+          "name": "period_start",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "period_end": {
+          "name": "period_end",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "check_in_count": {
+          "name": "check_in_count",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "content": {
+          "name": "content",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "model": {
+          "name": "model",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "insights_patient_created_idx": {
+          "name": "insights_patient_created_idx",
+          "columns": [
+            {
+              "expression": "patient_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "created_at",
+              "isExpression": false,
+              "asc": false,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "insights_professional_idx": {
+          "name": "insights_professional_idx",
+          "columns": [
+            {
+              "expression": "professional_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "created_at",
+              "isExpression": false,
+              "asc": false,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "insights_patient_id_users_id_fk": {
+          "name": "insights_patient_id_users_id_fk",
+          "tableFrom": "insights",
+          "tableTo": "users",
+          "schemaTo": "auth",
+          "columnsFrom": [
+            "patient_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "insights_professional_id_users_id_fk": {
+          "name": "insights_professional_id_users_id_fk",
+          "tableFrom": "insights",
+          "tableTo": "users",
+          "schemaTo": "auth",
+          "columnsFrom": [
+            "professional_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {
+        "insights_select_own": {
+          "name": "insights_select_own",
+          "as": "PERMISSIVE",
+          "for": "SELECT",
+          "to": [
+            "authenticated"
+          ],
+          "using": "\"insights\".\"audience\" = 'patient' and \"insights\".\"patient_id\" = (select auth.uid())"
+        },
+        "insights_select_linked_professional": {
+          "name": "insights_select_linked_professional",
+          "as": "PERMISSIVE",
+          "for": "SELECT",
+          "to": [
+            "authenticated"
+          ],
+          "using": "\"insights\".\"audience\" = 'professional'\n        and \"insights\".\"professional_id\" = (select auth.uid())\n        and exists (\n          select 1 from public.care_links cl\n          where cl.patient_id = \"insights\".\"patient_id\"\n            and cl.professional_id = (select auth.uid())\n            and cl.ended_at is null\n        )"
+        }
+      },
+      "checkConstraints": {
+        "insights_audience_target": {
+          "name": "insights_audience_target",
+          "value": "(\"insights\".\"audience\" = 'professional') = (\"insights\".\"professional_id\" is not null)"
+        }
+      },
+      "isRLSEnabled": true
+    },
+    "public.invitations": {
+      "name": "invitations",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "code": {
+          "name": "code",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "professional_id": {
+          "name": "professional_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "channel": {
+          "name": "channel",
+          "type": "invitation_channel",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "recipient_email": {
+          "name": "recipient_email",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "patient_id": {
+          "name": "patient_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "status": {
+          "name": "status",
+          "type": "invitation_status",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'pending'"
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "expires_at": {
+          "name": "expires_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "responded_at": {
+          "name": "responded_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {
+        "invitations_professional_idx": {
+          "name": "invitations_professional_idx",
+          "columns": [
+            {
+              "expression": "professional_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "created_at",
+              "isExpression": false,
+              "asc": false,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "invitations_patient_idx": {
+          "name": "invitations_patient_idx",
+          "columns": [
+            {
+              "expression": "patient_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "invitations_recipient_email_idx": {
+          "name": "invitations_recipient_email_idx",
+          "columns": [
+            {
+              "expression": "lower(\"recipient_email\")",
+              "asc": true,
+              "isExpression": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "invitations_professional_id_users_id_fk": {
+          "name": "invitations_professional_id_users_id_fk",
+          "tableFrom": "invitations",
+          "tableTo": "users",
+          "schemaTo": "auth",
+          "columnsFrom": [
+            "professional_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "invitations_patient_id_users_id_fk": {
+          "name": "invitations_patient_id_users_id_fk",
+          "tableFrom": "invitations",
+          "tableTo": "users",
+          "schemaTo": "auth",
+          "columnsFrom": [
+            "patient_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "set null",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "invitations_code_unique": {
+          "name": "invitations_code_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "code"
+          ]
+        }
+      },
+      "policies": {
+        "invitations_select_participants": {
+          "name": "invitations_select_participants",
+          "as": "PERMISSIVE",
+          "for": "SELECT",
+          "to": [
+            "authenticated"
+          ],
+          "using": "\"invitations\".\"professional_id\" = (select auth.uid()) or \"invitations\".\"patient_id\" = (select auth.uid())"
+        },
+        "invitations_insert_verified_professional": {
+          "name": "invitations_insert_verified_professional",
+          "as": "PERMISSIVE",
+          "for": "INSERT",
+          "to": [
+            "authenticated"
+          ],
+          "withCheck": "\"invitations\".\"professional_id\" = (select auth.uid())\n        and \"invitations\".\"patient_id\" is null\n        and \"invitations\".\"status\" = 'pending'\n        and public.is_verified_professional()"
+        },
+        "invitations_cancel_by_professional": {
+          "name": "invitations_cancel_by_professional",
+          "as": "PERMISSIVE",
+          "for": "UPDATE",
+          "to": [
+            "authenticated"
+          ],
+          "using": "\"invitations\".\"professional_id\" = (select auth.uid()) and \"invitations\".\"status\" = 'pending'",
+          "withCheck": "\"invitations\".\"professional_id\" = (select auth.uid()) and \"invitations\".\"status\" = 'canceled'"
+        },
+        "invitations_respond_by_patient": {
+          "name": "invitations_respond_by_patient",
+          "as": "PERMISSIVE",
+          "for": "UPDATE",
+          "to": [
+            "authenticated"
+          ],
+          "using": "\"invitations\".\"patient_id\" = (select auth.uid()) and \"invitations\".\"status\" = 'pending' and \"invitations\".\"expires_at\" > now()",
+          "withCheck": "\"invitations\".\"patient_id\" = (select auth.uid()) and \"invitations\".\"status\" in ('accepted', 'declined')"
+        }
+      },
+      "checkConstraints": {
+        "invitations_lifetime": {
+          "name": "invitations_lifetime",
+          "value": "\"invitations\".\"expires_at\" <= \"invitations\".\"created_at\" + interval '72 hours'"
+        },
+        "invitations_email_channel": {
+          "name": "invitations_email_channel",
+          "value": "\"invitations\".\"channel\" <> 'email' or \"invitations\".\"recipient_email\" is not null"
+        }
+      },
+      "isRLSEnabled": true
+    },
+    "public.journal_access_log": {
+      "name": "journal_access_log",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "share_id": {
+          "name": "share_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "entry_id": {
+          "name": "entry_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "professional_id": {
+          "name": "professional_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "accessed_at": {
+          "name": "accessed_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "journal_access_log_share_idx": {
+          "name": "journal_access_log_share_idx",
+          "columns": [
+            {
+              "expression": "share_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "accessed_at",
+              "isExpression": false,
+              "asc": false,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "journal_access_log_share_id_journal_shares_id_fk": {
+          "name": "journal_access_log_share_id_journal_shares_id_fk",
+          "tableFrom": "journal_access_log",
+          "tableTo": "journal_shares",
+          "columnsFrom": [
+            "share_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "journal_access_log_entry_id_journal_entries_id_fk": {
+          "name": "journal_access_log_entry_id_journal_entries_id_fk",
+          "tableFrom": "journal_access_log",
+          "tableTo": "journal_entries",
+          "columnsFrom": [
+            "entry_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "journal_access_log_professional_id_users_id_fk": {
+          "name": "journal_access_log_professional_id_users_id_fk",
+          "tableFrom": "journal_access_log",
+          "tableTo": "users",
+          "schemaTo": "auth",
+          "columnsFrom": [
+            "professional_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {
+        "journal_access_log_select_participants": {
+          "name": "journal_access_log_select_participants",
+          "as": "PERMISSIVE",
+          "for": "SELECT",
+          "to": [
+            "authenticated"
+          ],
+          "using": "\"journal_access_log\".\"professional_id\" = (select auth.uid()) or exists (\n        select 1 from public.journal_shares s\n        where s.id = \"journal_access_log\".\"share_id\" and s.patient_id = (select auth.uid())\n      )"
+        },
+        "journal_access_log_insert_by_professional": {
+          "name": "journal_access_log_insert_by_professional",
+          "as": "PERMISSIVE",
+          "for": "INSERT",
+          "to": [
+            "authenticated"
+          ],
+          "withCheck": "\"journal_access_log\".\"professional_id\" = (select auth.uid())\n        and exists (\n          select 1 from public.journal_shares s\n          where s.id = \"journal_access_log\".\"share_id\"\n            and s.professional_id = (select auth.uid())\n            and s.revoked_at is null\n            and (s.expires_at is null or s.expires_at > now())\n        )"
+        }
+      },
+      "checkConstraints": {},
+      "isRLSEnabled": true
+    },
+    "public.journal_entries": {
+      "name": "journal_entries",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "title": {
+          "name": "title",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "body": {
+          "name": "body",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'{\"type\":\"doc\",\"content\":[]}'::jsonb"
+        },
+        "plain_text": {
+          "name": "plain_text",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "''"
+        },
+        "image_paths": {
+          "name": "image_paths",
+          "type": "text[]",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'{}'::text[]"
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "journal_entries_user_updated_idx": {
+          "name": "journal_entries_user_updated_idx",
+          "columns": [
+            {
+              "expression": "user_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "updated_at",
+              "isExpression": false,
+              "asc": false,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "journal_entries_user_id_users_id_fk": {
+          "name": "journal_entries_user_id_users_id_fk",
+          "tableFrom": "journal_entries",
+          "tableTo": "users",
+          "schemaTo": "auth",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {
+        "journal_entries_select_own": {
+          "name": "journal_entries_select_own",
+          "as": "PERMISSIVE",
+          "for": "SELECT",
+          "to": [
+            "authenticated"
+          ],
+          "using": "\"journal_entries\".\"user_id\" = (select auth.uid())"
+        },
+        "journal_entries_select_shared": {
+          "name": "journal_entries_select_shared",
+          "as": "PERMISSIVE",
+          "for": "SELECT",
+          "to": [
+            "authenticated"
+          ],
+          "using": "public.can_read_shared_journal_entry(\"journal_entries\".\"id\", \"journal_entries\".\"user_id\")"
+        },
+        "journal_entries_insert_own": {
+          "name": "journal_entries_insert_own",
+          "as": "PERMISSIVE",
+          "for": "INSERT",
+          "to": [
+            "authenticated"
+          ],
+          "withCheck": "\"journal_entries\".\"user_id\" = (select auth.uid())"
+        },
+        "journal_entries_update_own": {
+          "name": "journal_entries_update_own",
+          "as": "PERMISSIVE",
+          "for": "UPDATE",
+          "to": [
+            "authenticated"
+          ],
+          "using": "\"journal_entries\".\"user_id\" = (select auth.uid())",
+          "withCheck": "\"journal_entries\".\"user_id\" = (select auth.uid())"
+        },
+        "journal_entries_delete_own": {
+          "name": "journal_entries_delete_own",
+          "as": "PERMISSIVE",
+          "for": "DELETE",
+          "to": [
+            "authenticated"
+          ],
+          "using": "\"journal_entries\".\"user_id\" = (select auth.uid())"
+        }
+      },
+      "checkConstraints": {
+        "journal_entries_title_length": {
+          "name": "journal_entries_title_length",
+          "value": "char_length(\"journal_entries\".\"title\") <= 200"
+        },
+        "journal_entries_text_length": {
+          "name": "journal_entries_text_length",
+          "value": "char_length(\"journal_entries\".\"plain_text\") <= 100000"
+        },
+        "journal_entries_body_size": {
+          "name": "journal_entries_body_size",
+          "value": "octet_length(\"journal_entries\".\"body\"::text) <= 600000"
+        },
+        "journal_entries_image_count": {
+          "name": "journal_entries_image_count",
+          "value": "cardinality(\"journal_entries\".\"image_paths\") <= 30"
+        }
+      },
+      "isRLSEnabled": true
+    },
+    "public.journal_share_entries": {
+      "name": "journal_share_entries",
+      "schema": "",
+      "columns": {
+        "share_id": {
+          "name": "share_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "entry_id": {
+          "name": "entry_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {
+        "journal_share_entries_entry_idx": {
+          "name": "journal_share_entries_entry_idx",
+          "columns": [
+            {
+              "expression": "entry_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "journal_share_entries_share_id_journal_shares_id_fk": {
+          "name": "journal_share_entries_share_id_journal_shares_id_fk",
+          "tableFrom": "journal_share_entries",
+          "tableTo": "journal_shares",
+          "columnsFrom": [
+            "share_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "journal_share_entries_entry_id_journal_entries_id_fk": {
+          "name": "journal_share_entries_entry_id_journal_entries_id_fk",
+          "tableFrom": "journal_share_entries",
+          "tableTo": "journal_entries",
+          "columnsFrom": [
+            "entry_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "journal_share_entries_share_id_entry_id_pk": {
+          "name": "journal_share_entries_share_id_entry_id_pk",
+          "columns": [
+            "share_id",
+            "entry_id"
+          ]
+        }
+      },
+      "uniqueConstraints": {},
+      "policies": {
+        "journal_share_entries_select_participants": {
+          "name": "journal_share_entries_select_participants",
+          "as": "PERMISSIVE",
+          "for": "SELECT",
+          "to": [
+            "authenticated"
+          ],
+          "using": "exists (\n        select 1 from public.journal_shares s\n        where s.id = \"journal_share_entries\".\"share_id\"\n          and (s.patient_id = (select auth.uid()) or s.professional_id = (select auth.uid()))\n      )"
+        },
+        "journal_share_entries_insert_by_patient": {
+          "name": "journal_share_entries_insert_by_patient",
+          "as": "PERMISSIVE",
+          "for": "INSERT",
+          "to": [
+            "authenticated"
+          ],
+          "withCheck": "exists (\n          select 1 from public.journal_shares s\n          where s.id = \"journal_share_entries\".\"share_id\" and s.patient_id = (select auth.uid()) and s.scope = 'entries'\n        )\n        and exists (\n          select 1 from public.journal_entries e\n          where e.id = \"journal_share_entries\".\"entry_id\" and e.user_id = (select auth.uid())\n        )"
+        }
+      },
+      "checkConstraints": {},
+      "isRLSEnabled": true
+    },
+    "public.journal_shares": {
+      "name": "journal_shares",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "patient_id": {
+          "name": "patient_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "professional_id": {
+          "name": "professional_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "care_link_id": {
+          "name": "care_link_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "scope": {
+          "name": "scope",
+          "type": "journal_share_scope",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "expires_at": {
+          "name": "expires_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "revoked_at": {
+          "name": "revoked_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "journal_shares_patient_idx": {
+          "name": "journal_shares_patient_idx",
+          "columns": [
+            {
+              "expression": "patient_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "journal_shares_professional_idx": {
+          "name": "journal_shares_professional_idx",
+          "columns": [
+            {
+              "expression": "professional_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "journal_shares_patient_id_users_id_fk": {
+          "name": "journal_shares_patient_id_users_id_fk",
+          "tableFrom": "journal_shares",
+          "tableTo": "users",
+          "schemaTo": "auth",
+          "columnsFrom": [
+            "patient_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "journal_shares_professional_id_users_id_fk": {
+          "name": "journal_shares_professional_id_users_id_fk",
+          "tableFrom": "journal_shares",
+          "tableTo": "users",
+          "schemaTo": "auth",
+          "columnsFrom": [
+            "professional_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "journal_shares_care_link_id_care_links_id_fk": {
+          "name": "journal_shares_care_link_id_care_links_id_fk",
+          "tableFrom": "journal_shares",
+          "tableTo": "care_links",
+          "columnsFrom": [
+            "care_link_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {
+        "journal_shares_select_participants": {
+          "name": "journal_shares_select_participants",
+          "as": "PERMISSIVE",
+          "for": "SELECT",
+          "to": [
+            "authenticated"
+          ],
+          "using": "\"journal_shares\".\"patient_id\" = (select auth.uid()) or \"journal_shares\".\"professional_id\" = (select auth.uid())"
+        },
+        "journal_shares_insert_by_patient": {
+          "name": "journal_shares_insert_by_patient",
+          "as": "PERMISSIVE",
+          "for": "INSERT",
+          "to": [
+            "authenticated"
+          ],
+          "withCheck": "\"journal_shares\".\"patient_id\" = (select auth.uid())\n        and \"journal_shares\".\"revoked_at\" is null\n        and exists (\n          select 1 from public.care_links cl\n          where cl.id = \"journal_shares\".\"care_link_id\"\n            and cl.patient_id = (select auth.uid())\n            and cl.professional_id = \"journal_shares\".\"professional_id\"\n            and cl.ended_at is null\n        )"
+        },
+        "journal_shares_revoke_by_patient": {
+          "name": "journal_shares_revoke_by_patient",
+          "as": "PERMISSIVE",
+          "for": "UPDATE",
+          "to": [
+            "authenticated"
+          ],
+          "using": "\"journal_shares\".\"patient_id\" = (select auth.uid())",
+          "withCheck": "\"journal_shares\".\"patient_id\" = (select auth.uid())"
+        }
+      },
+      "checkConstraints": {},
+      "isRLSEnabled": true
+    },
+    "public.notifications": {
+      "name": "notifications",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "kind": {
+          "name": "kind",
+          "type": "notification_kind",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "invitation_id": {
+          "name": "invitation_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "insight_id": {
+          "name": "insight_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "read_at": {
+          "name": "read_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {
+        "notifications_user_created_idx": {
+          "name": "notifications_user_created_idx",
+          "columns": [
+            {
+              "expression": "user_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "created_at",
+              "isExpression": false,
+              "asc": false,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "notifications_user_id_users_id_fk": {
+          "name": "notifications_user_id_users_id_fk",
+          "tableFrom": "notifications",
+          "tableTo": "users",
+          "schemaTo": "auth",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "notifications_invitation_id_invitations_id_fk": {
+          "name": "notifications_invitation_id_invitations_id_fk",
+          "tableFrom": "notifications",
+          "tableTo": "invitations",
+          "columnsFrom": [
+            "invitation_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "notifications_insight_id_insights_id_fk": {
+          "name": "notifications_insight_id_insights_id_fk",
+          "tableFrom": "notifications",
+          "tableTo": "insights",
+          "columnsFrom": [
+            "insight_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {
+        "notifications_select_own": {
+          "name": "notifications_select_own",
+          "as": "PERMISSIVE",
+          "for": "SELECT",
+          "to": [
+            "authenticated"
+          ],
+          "using": "\"notifications\".\"user_id\" = (select auth.uid())"
+        },
+        "notifications_update_own": {
+          "name": "notifications_update_own",
+          "as": "PERMISSIVE",
+          "for": "UPDATE",
+          "to": [
+            "authenticated"
+          ],
+          "using": "\"notifications\".\"user_id\" = (select auth.uid())",
+          "withCheck": "\"notifications\".\"user_id\" = (select auth.uid())"
+        }
+      },
+      "checkConstraints": {},
+      "isRLSEnabled": true
+    },
+    "public.professional_documents": {
+      "name": "professional_documents",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "path": {
+          "name": "path",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "file_name": {
+          "name": "file_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "content_type": {
+          "name": "content_type",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "size_bytes": {
+          "name": "size_bytes",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "professional_documents_user_created_idx": {
+          "name": "professional_documents_user_created_idx",
+          "columns": [
+            {
+              "expression": "user_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "created_at",
+              "isExpression": false,
+              "asc": false,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "professional_documents_user_id_users_id_fk": {
+          "name": "professional_documents_user_id_users_id_fk",
+          "tableFrom": "professional_documents",
+          "tableTo": "users",
+          "schemaTo": "auth",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "professional_documents_path_unique": {
+          "name": "professional_documents_path_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "path"
+          ]
+        }
+      },
+      "policies": {
+        "professional_documents_select_own": {
+          "name": "professional_documents_select_own",
+          "as": "PERMISSIVE",
+          "for": "SELECT",
+          "to": [
+            "authenticated"
+          ],
+          "using": "\"professional_documents\".\"user_id\" = (select auth.uid())"
+        },
+        "professional_documents_select_admin": {
+          "name": "professional_documents_select_admin",
+          "as": "PERMISSIVE",
+          "for": "SELECT",
+          "to": [
+            "authenticated"
+          ],
+          "using": "public.is_admin()"
+        },
+        "professional_documents_insert_own": {
+          "name": "professional_documents_insert_own",
+          "as": "PERMISSIVE",
+          "for": "INSERT",
+          "to": [
+            "authenticated"
+          ],
+          "withCheck": "\"professional_documents\".\"user_id\" = (select auth.uid())\n        and split_part(\"professional_documents\".\"path\", '/', 1) = (select auth.uid())::text\n        and exists (\n          select 1 from public.professional_profiles p\n          where p.user_id = (select auth.uid()) and p.status <> 'verified'\n        )\n        and exists (\n          select 1 from storage.objects o\n          where o.bucket_id = 'professional-documents' and o.name = \"professional_documents\".\"path\"\n        )"
+        }
+      },
+      "checkConstraints": {
+        "professional_documents_content_type": {
+          "name": "professional_documents_content_type",
+          "value": "\"professional_documents\".\"content_type\" in ('application/pdf', 'image/jpeg', 'image/png')"
+        },
+        "professional_documents_size": {
+          "name": "professional_documents_size",
+          "value": "\"professional_documents\".\"size_bytes\" between 1 and 10485760"
+        },
+        "professional_documents_file_name_length": {
+          "name": "professional_documents_file_name_length",
+          "value": "char_length(\"professional_documents\".\"file_name\") between 1 and 200"
+        }
+      },
+      "isRLSEnabled": true
+    },
+    "public.professional_profiles": {
+      "name": "professional_profiles",
+      "schema": "",
+      "columns": {
+        "user_id": {
+          "name": "user_id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "kind": {
+          "name": "kind",
+          "type": "professional_kind",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "full_name": {
+          "name": "full_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "registration": {
+          "name": "registration",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "status": {
+          "name": "status",
+          "type": "professional_status",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'pending'"
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "verified_at": {
+          "name": "verified_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "review_note": {
+          "name": "review_note",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "reviewed_at": {
+          "name": "reviewed_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "professional_profiles_user_id_users_id_fk": {
+          "name": "professional_profiles_user_id_users_id_fk",
+          "tableFrom": "professional_profiles",
+          "tableTo": "users",
+          "schemaTo": "auth",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {
+        "professional_profiles_select_own": {
+          "name": "professional_profiles_select_own",
+          "as": "PERMISSIVE",
+          "for": "SELECT",
+          "to": [
+            "authenticated"
+          ],
+          "using": "\"professional_profiles\".\"user_id\" = (select auth.uid())"
+        },
+        "professional_profiles_select_by_invited_patients": {
+          "name": "professional_profiles_select_by_invited_patients",
+          "as": "PERMISSIVE",
+          "for": "SELECT",
+          "to": [
+            "authenticated"
+          ],
+          "using": "exists (select 1 from public.invitations i where i.professional_id = \"professional_profiles\".\"user_id\" and i.patient_id = (select auth.uid()))\n        or exists (select 1 from public.care_links cl where cl.professional_id = \"professional_profiles\".\"user_id\" and cl.patient_id = (select auth.uid()))"
+        },
+        "professional_profiles_insert_own_pending": {
+          "name": "professional_profiles_insert_own_pending",
+          "as": "PERMISSIVE",
+          "for": "INSERT",
+          "to": [
+            "authenticated"
+          ],
+          "withCheck": "\"professional_profiles\".\"user_id\" = (select auth.uid()) and \"professional_profiles\".\"status\" = 'pending' and \"professional_profiles\".\"verified_at\" is null"
+        },
+        "professional_profiles_update_own_name": {
+          "name": "professional_profiles_update_own_name",
+          "as": "PERMISSIVE",
+          "for": "UPDATE",
+          "to": [
+            "authenticated"
+          ],
+          "using": "\"professional_profiles\".\"user_id\" = (select auth.uid())",
+          "withCheck": "\"professional_profiles\".\"user_id\" = (select auth.uid())"
+        }
+      },
+      "checkConstraints": {
+        "professional_profiles_review_note_length": {
+          "name": "professional_profiles_review_note_length",
+          "value": "char_length(\"professional_profiles\".\"review_note\") <= 500"
+        }
+      },
+      "isRLSEnabled": true
+    },
+    "public.profiles": {
+      "name": "profiles",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "display_name": {
+          "name": "display_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "avatar_path": {
+          "name": "avatar_path",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "timezone": {
+          "name": "timezone",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'America/Sao_Paulo'"
+        },
+        "locale": {
+          "name": "locale",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "journal_in_insights": {
+          "name": "journal_in_insights",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "onboarding_completed_at": {
+          "name": "onboarding_completed_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "profiles_id_users_id_fk": {
+          "name": "profiles_id_users_id_fk",
+          "tableFrom": "profiles",
+          "tableTo": "users",
+          "schemaTo": "auth",
+          "columnsFrom": [
+            "id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {
+        "profiles_select_own": {
+          "name": "profiles_select_own",
+          "as": "PERMISSIVE",
+          "for": "SELECT",
+          "to": [
+            "authenticated"
+          ],
+          "using": "\"profiles\".\"id\" = (select auth.uid())"
+        },
+        "profiles_select_linked_professional": {
+          "name": "profiles_select_linked_professional",
+          "as": "PERMISSIVE",
+          "for": "SELECT",
+          "to": [
+            "authenticated"
+          ],
+          "using": "exists (\n        select 1 from public.care_links cl\n        where cl.patient_id = \"profiles\".\"id\"\n          and cl.professional_id = (select auth.uid())\n          and cl.ended_at is null\n      )"
+        },
+        "profiles_update_own": {
+          "name": "profiles_update_own",
+          "as": "PERMISSIVE",
+          "for": "UPDATE",
+          "to": [
+            "authenticated"
+          ],
+          "using": "\"profiles\".\"id\" = (select auth.uid())",
+          "withCheck": "\"profiles\".\"id\" = (select auth.uid())"
+        }
+      },
+      "checkConstraints": {
+        "profiles_locale_check": {
+          "name": "profiles_locale_check",
+          "value": "\"profiles\".\"locale\" in ('pt-BR', 'pt-PT', 'en-US', 'en-GB')"
+        }
+      },
+      "isRLSEnabled": true
+    }
+  },
+  "enums": {
+    "public.assessment_instrument": {
+      "name": "assessment_instrument",
+      "schema": "public",
+      "values": [
+        "phq9",
+        "gad7"
+      ]
+    },
+    "public.assessment_severity": {
+      "name": "assessment_severity",
+      "schema": "public",
+      "values": [
+        "minimal",
+        "mild",
+        "moderate",
+        "moderately_severe",
+        "severe"
+      ]
+    },
+    "public.care_link_ended_by": {
+      "name": "care_link_ended_by",
+      "schema": "public",
+      "values": [
+        "patient",
+        "professional"
+      ]
+    },
+    "public.consent_kind": {
+      "name": "consent_kind",
+      "schema": "public",
+      "values": [
+        "terms",
+        "privacy",
+        "health_data",
+        "ai_processing",
+        "adult"
+      ]
+    },
+    "public.insight_audience": {
+      "name": "insight_audience",
+      "schema": "public",
+      "values": [
+        "patient",
+        "professional"
+      ]
+    },
+    "public.invitation_channel": {
+      "name": "invitation_channel",
+      "schema": "public",
+      "values": [
+        "email",
+        "link"
+      ]
+    },
+    "public.invitation_status": {
+      "name": "invitation_status",
+      "schema": "public",
+      "values": [
+        "pending",
+        "accepted",
+        "declined",
+        "canceled",
+        "expired"
+      ]
+    },
+    "public.journal_share_scope": {
+      "name": "journal_share_scope",
+      "schema": "public",
+      "values": [
+        "all",
+        "entries"
+      ]
+    },
+    "public.notification_kind": {
+      "name": "notification_kind",
+      "schema": "public",
+      "values": [
+        "invitation",
+        "professional",
+        "marketing",
+        "system",
+        "insight"
+      ]
+    },
+    "public.professional_kind": {
+      "name": "professional_kind",
+      "schema": "public",
+      "values": [
+        "psychologist",
+        "psychiatrist",
+        "physician",
+        "psychoanalyst"
+      ]
+    },
+    "public.professional_status": {
+      "name": "professional_status",
+      "schema": "public",
+      "values": [
+        "pending",
+        "verified",
+        "rejected"
+      ]
+    }
+  },
+  "schemas": {},
+  "sequences": {},
+  "roles": {},
+  "policies": {},
+  "views": {},
+  "_meta": {
+    "columns": {},
+    "schemas": {},
+    "tables": {}
+  }
+}

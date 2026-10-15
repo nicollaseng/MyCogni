@@ -1,12 +1,12 @@
 import { attentionReasons, instrumentIds, severities } from '@mycogni/domain'
 import { z } from 'zod'
-import { professionalSummarySchema } from './invitations.ts'
+import { linkedProfessionalSchema } from './invitations.ts'
 
 const timestamp = z.iso.datetime({ offset: true })
 
 export const careLinkSchema = z.object({
   id: z.uuid(),
-  professional: professionalSummarySchema,
+  professional: linkedProfessionalSchema,
   sharesHistory: z.boolean(),
   startedAt: timestamp,
 })
@@ -29,6 +29,7 @@ export const patientSummarySchema = z.object({
   id: z.uuid(),
   linkId: z.uuid(),
   name: z.string().nullable(),
+  photoUrl: z.url().nullable(),
   startedAt: timestamp,
   sharesHistory: z.boolean(),
   lastCheckIn: z.object({ moodLevel: z.int(), recordedAt: timestamp }).nullable(),
