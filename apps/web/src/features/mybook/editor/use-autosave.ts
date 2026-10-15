@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 
-export type SaveStatus = 'idle' | 'pending' | 'saving' | 'saved' | 'failed'
+export type SaveResult = 'saved' | 'failed' | 'outdated'
+
+export type SaveStatus = 'idle' | 'pending' | 'saving' | SaveResult
 
 export interface Autosave {
   status: SaveStatus
@@ -11,11 +13,12 @@ export interface Autosave {
 
 export const autosaveDelay = 800
 
-export function useAutosave(save: () => Promise<boolean>, delay = autosaveDelay): Autosave {
+export function useAutosave(save: () => Promise<SaveResult>, delay = autosaveDelay): Autosave {
   const [status, setStatus] = useState<SaveStatus>('idle')
   const latestSave = useRef(save)
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null)
   const dirty = useRef(false)
+  const outdated = useRef(false)
   const running = useRef<Promise<boolean> | null>(null)
 
   useEffect(() => {
@@ -30,15 +33,19 @@ export function useAutosave(save: () => Promise<boolean>, delay = autosaveDelay)
   }, [])
 
   const drain = useCallback(async (): Promise<boolean> => {
-    while (dirty.current && timer.current === null) {
+    while (dirty.current && timer.current === null && !outdated.current) {
       dirty.current = false
       setStatus('saving')
-      const saved = await latestSave.current().catch(() => false)
-      if (!saved) {
+      const result = await latestSave.current().catch((): SaveResult => 'failed')
+      if (result !== 'saved') {
         dirty.current = true
-        setStatus('failed')
+        outdated.current = result === 'outdated'
+        setStatus(result)
         return false
       }
+    }
+    if (outdated.current) {
+      return false
     }
     setStatus(dirty.current ? 'pending' : 'saved')
     return !dirty.current
@@ -54,6 +61,9 @@ export function useAutosave(save: () => Promise<boolean>, delay = autosaveDelay)
 
   const touch = useCallback(() => {
     dirty.current = true
+    if (outdated.current) {
+      return
+    }
     setStatus((current) => (current === 'saving' ? current : 'pending'))
     clearTimer()
     timer.current = setTimeout(() => {
@@ -65,7 +75,7 @@ export function useAutosave(save: () => Promise<boolean>, delay = autosaveDelay)
   const cancel = useCallback(() => {
     clearTimer()
     dirty.current = false
-    setStatus('idle')
+    setStatus((current) => (current === 'outdated' ? current : 'idle'))
   }, [clearTimer])
 
   useEffect(() => {

@@ -47,6 +47,8 @@ export const mybook: MybookMessages = {
       failed: 'Não foi possível guardar.',
       retry: 'Tentar novamente',
       uploading: 'A enviar fotografia…',
+      outdated:
+        'A aplicação foi atualizada. Recarregue para continuar — o seu texto está guardado.',
     },
     menu: {
       open: 'Mais opções',
@@ -80,14 +82,39 @@ export const mybook: MybookMessages = {
     photo: {
       alt: 'Fotografia',
       notImage: 'Escolha uma fotografia em JPG, PNG, WebP ou GIF.',
-      tooLarge: 'A fotografia tem mais de 10 MB. Escolha uma mais pequena.',
+      tooLarge: 'A fotografia tem mais de {max} MB. Escolha uma mais pequena.',
       tooMany: 'Uma página guarda até {max} fotografias.',
       failed: 'Não foi possível enviar a fotografia. Tente novamente.',
       dismiss: 'Fechar aviso',
     },
+    photoSheet: {
+      title:
+        '{count, plural, =0 {Adicionar fotografias} one {Adicionar fotografia} other {Adicionar # fotografias}}',
+      close: 'Fechar',
+      preview: 'Fotografia escolhida',
+      more: '{count, plural, =0 {e nenhuma outra} one {e mais # fotografia} other {e mais # fotografias}}',
+      legend: 'Tamanho',
+      sizes: {
+        low: 'Baixa',
+        medium: 'Média',
+        high: 'Alta',
+        original: 'Original',
+      },
+      hints: {
+        resized: 'Até {pixels} px',
+        original: 'O ficheiro tal como está',
+        originalTooLarge: 'Tem mais de {max} MB. Use Alta.',
+        originalFormat: 'Tem de ser convertida. Use Alta.',
+      },
+      reading: 'A calcular…',
+      estimate: '≈ {size}',
+      heic: 'Este navegador não abre fotografias HEIC. Converta a fotografia para JPG e tente novamente.',
+      unreadable: 'Não foi possível abrir esta fotografia. Escolha outra.',
+      cancel: 'Cancelar',
+      add: 'Adicionar',
+    },
   },
   feedback: {
-    saveError: 'Não foi possível guardar.',
     deleteError: 'Não foi possível apagar a página. Tente novamente.',
     shareError: 'Não foi possível partilhar agora. Tente novamente.',
     revokeError: 'Não foi possível terminar a partilha agora. Tente novamente.',
