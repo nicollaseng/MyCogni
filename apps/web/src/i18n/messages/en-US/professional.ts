@@ -389,6 +389,7 @@ export const professional: ProfessionalMessages = {
     since: 'Sharing entries with you since {date}',
     fromLink: 'Entries since the link started',
     withHistory: 'Includes entries from before the link',
+    mybook: 'Shared MyBook pages',
     kpis: {
       mood: 'Avg. mood 7 d',
       noPrevious: 'No entries in the previous 7 days',

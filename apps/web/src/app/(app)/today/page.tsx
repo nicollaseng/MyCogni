@@ -46,9 +46,14 @@ export default async function TodayPage() {
         <MoodMap valence={0.5} rings={9} className="size-32 shrink-0 sm:size-40" />
         <div className="space-y-4">
           <p className="leading-relaxed text-muted-foreground">{t('intro')}</p>
-          <Link href="/check-in" className={buttonVariants()}>
-            {t('checkIn')}
-          </Link>
+          <div className="flex flex-wrap items-center gap-3">
+            <Link href="/check-in" className={buttonVariants()}>
+              {t('checkIn')}
+            </Link>
+            <Link href="/mybook" className={buttonVariants({ variant: 'outline' })}>
+              {t('writeMyBook')}
+            </Link>
+          </div>
         </div>
       </section>
 

@@ -7,6 +7,7 @@ export const today: TodayMessages = {
   title: 'How are you feeling right now?',
   intro: 'It takes less than a minute. On a hard day, your mood alone is enough.',
   checkIn: 'Log how I feel',
+  writeMyBook: 'Write in MyBook',
   recent: {
     title: 'Last {days} days',
     average: 'Over the last 7 days, your average mood was {average} out of 6 ({mood}).',

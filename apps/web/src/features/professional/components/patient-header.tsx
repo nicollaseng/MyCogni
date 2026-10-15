@@ -45,6 +45,12 @@ export function PatientHeader({ patient, timeZone }: PatientHeaderProps) {
             <AttentionReasons reasons={patient.attention} />
           </div>
         )}
+        <Link
+          href={`/pro/patients/${patient.id}/mybook`}
+          className="inline-block pt-2 text-sm underline decoration-1 underline-offset-4"
+        >
+          {t('patient.mybook')}
+        </Link>
       </WorkspaceHeader>
       {flagged?.hasRiskFlag === true && (
         <div className="flex max-w-3xl gap-3 rounded-[8px] bg-(--warn-soft) px-4 py-3.5">
