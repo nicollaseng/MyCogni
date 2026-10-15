@@ -123,7 +123,13 @@ function drawTagColumn(
   y += 18
   const most = Math.max(1, ...column.rows.map((row) => row.count))
   for (const row of column.rows) {
-    layout.write(row.label, { font: 'sans', size: 10 }, { x, y, width: width - 70, single: true })
+    const labelStyle = { font: 'sans', size: 10 } as const
+    layout.write(layout.fit(row.label, labelStyle, width - 96), labelStyle, {
+      x,
+      y,
+      width: width - 90,
+      single: true,
+    })
     layout.write(
       row.countLabel,
       { font: 'sans', size: 8.5, color: palette.muted },
@@ -301,9 +307,10 @@ function drawRunningHead(layout: Layout, model: ReportModel): number {
     { font: 'displayMedium', size: 10.5, tracking: -0.2 },
     { y: top, single: true },
   )
+  const headStyle = { font: 'sans', size: 8, color: palette.muted } as const
   layout.write(
-    `${model.header.name} · ${model.header.scope}`,
-    { font: 'sans', size: 8, color: palette.muted },
+    layout.fit(`${model.header.name} · ${model.header.scope}`, headStyle, layout.width - 120),
+    headStyle,
     { y: top + 2, align: 'right', single: true },
   )
   layout.rule(top + 18)

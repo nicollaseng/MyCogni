@@ -325,8 +325,8 @@ function readingOf(
   if (latest.audience === 'patient') {
     const { summary, highlights, suggestions } = latest.content
     return {
-      title: reading.patientTitle,
-      notice: reading.notice,
+      title: reading.title,
+      notice: reading.patientNotice,
       covers,
       summary,
       attention: null,
@@ -344,14 +344,14 @@ function readingOf(
   }
   const { summary, trends, themes, attention, attentionReason } = latest.content
   return {
-    title: reading.professionalTitle,
-    notice: reading.notice,
+    title: reading.title,
+    notice: reading.professionalNotice,
     covers,
     summary,
     attention:
       attention === 'none'
         ? null
-        : [reading.attention[attention], attentionReason].filter(Boolean).join('. '),
+        : reading.attention(reading.attentionLevels[attention], attentionReason),
     sections: [
       { title: reading.trends, items: plain(trends) },
       { title: reading.themes, items: plain(themes) },

@@ -49,17 +49,20 @@ export const europeanPortuguese: ReportMessages = {
     empty: 'Nenhum questionário respondido neste período.',
   },
   reading: {
-    patientTitle: 'Leitura do período',
-    professionalTitle: 'Leitura do período para profissionais',
-    notice: 'Gerada automaticamente a partir dos registos. Não é um diagnóstico.',
+    title: 'Resumo do período',
+    patientNotice: 'Escrito automaticamente a partir dos registos. Não é um diagnóstico.',
+    professionalNotice:
+      'Escrito automaticamente a partir dos registos partilhados consigo, sem o MyBook. Não faz diagnósticos.',
     covers: (period) => `Sobre os registos de ${period}`,
-    highlights: 'Destaques',
-    suggestions: 'Sugestões',
+    highlights: 'O que se destacou',
+    suggestions: 'Para os próximos dias',
     trends: 'Tendências',
     themes: 'Temas',
-    attention: {
-      watch: 'Pede acompanhamento',
-      urgent: 'Pede atenção imediata',
+    attention: (level, reason) =>
+      reason === null ? `Atenção: ${level}.` : `Atenção: ${level}. ${reason}`,
+    attentionLevels: {
+      watch: 'observar',
+      urgent: 'urgente',
     },
   },
   notes: {

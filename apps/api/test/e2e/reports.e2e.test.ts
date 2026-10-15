@@ -180,7 +180,7 @@ describe('/v1/reports/mood', () => {
     ).toBe(403)
   })
 
-  it('builds the patient report from all of the person’s records and the patient reading', async () => {
+  it('builds the patient report from all of the person’s records and the patient summary', async () => {
     await service.mine({ id: ana.id, email: ana.email }, query({ notes: true }))
     const model = rendered.at(-1)
 
@@ -205,7 +205,7 @@ describe('/v1/reports/mood', () => {
     expect(model?.notes?.entries.map((entry) => entry.text)).toEqual(['Almoço com a Júlia.'])
   })
 
-  it('leaves notes and the reading out when they are not asked for', async () => {
+  it('leaves notes and the summary out when they are not asked for', async () => {
     await service.ofPatient(
       { id: helena.id, email: helena.email },
       ana.id,

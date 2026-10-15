@@ -49,17 +49,20 @@ export const english: ReportMessages = {
     empty: 'No questionnaire answered in this period.',
   },
   reading: {
-    patientTitle: 'Reading of the period',
-    professionalTitle: 'Reading of the period for professionals',
-    notice: 'Generated automatically from the check-ins. It is not a diagnosis.',
+    title: 'Summary of the period',
+    patientNotice: 'Written automatically from the check-ins. It is not a diagnosis.',
+    professionalNotice:
+      'Written automatically from the check-ins shared with you, without MyBook. It is not a diagnosis.',
     covers: (period) => `Covers the check-ins from ${period}`,
-    highlights: 'Highlights',
-    suggestions: 'Suggestions',
+    highlights: 'What stood out',
+    suggestions: 'For the coming days',
     trends: 'Trends',
     themes: 'Themes',
-    attention: {
-      watch: 'Worth following closely',
-      urgent: 'Needs prompt attention',
+    attention: (level, reason) =>
+      reason === null ? `Attention: ${level}.` : `Attention: ${level}. ${reason}`,
+    attentionLevels: {
+      watch: 'watch',
+      urgent: 'urgent',
     },
   },
   notes: {

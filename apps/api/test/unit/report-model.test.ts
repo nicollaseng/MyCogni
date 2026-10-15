@@ -198,7 +198,7 @@ describe('buildReportModel', () => {
     )
   })
 
-  it('brings the latest reading that ends within the period, marked as automatic', () => {
+  it('brings the latest summary that ends within the period, marked as automatic', () => {
     const older: ReportReading = {
       ...patientReading,
       periodEnd: daysAgo(4),
@@ -209,18 +209,18 @@ describe('buildReportModel', () => {
     const { reading } = buildReportModel(input({ readings: [older, patientReading, outside] }))
 
     expect(reading).toEqual({
-      title: 'Leitura do período',
-      notice: 'Gerada automaticamente a partir dos registros. Não é um diagnóstico.',
+      title: 'Resumo do período',
+      notice: 'Escrito automaticamente a partir dos registros. Não é um diagnóstico.',
       covers: 'Sobre os registros de 6 – 13 de outubro de 2026',
       summary: 'Uma semana mais leve que a anterior.',
       attention: null,
       sections: [
         {
-          title: 'Destaques',
+          title: 'O que se destacou',
           items: [{ lead: null, text: 'Os dias com exercício foram os melhores.' }],
         },
         {
-          title: 'Sugestões',
+          title: 'Para os próximos dias',
           items: [{ lead: 'Caminhar cedo', text: 'Repita nas manhãs de semana.' }],
         },
       ],
@@ -228,7 +228,7 @@ describe('buildReportModel', () => {
     expect(buildReportModel(input({ readings: [outside] })).reading).toBeNull()
   })
 
-  it('shows the professional reading with its attention level', () => {
+  it('shows the professional summary with its attention level', () => {
     const reading: ReportReading = {
       audience: 'professional',
       periodStart: daysAgo(9),
@@ -244,8 +244,10 @@ describe('buildReportModel', () => {
 
     expect(buildReportModel(input({ readings: [reading] })).reading).toEqual(
       expect.objectContaining({
-        title: 'Leitura do período para profissionais',
-        attention: 'Pede acompanhamento. GAD-7 subiu.',
+        title: 'Resumo do período',
+        notice:
+          'Escrito automaticamente a partir dos registros compartilhados com você, sem o MyBook. Não faz diagnóstico.',
+        attention: 'Atenção: observar. GAD-7 subiu.',
         sections: [{ title: 'Tendências', items: [{ lead: null, text: 'Média 4,1.' }] }],
       }),
     )

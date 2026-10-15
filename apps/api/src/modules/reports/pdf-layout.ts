@@ -67,6 +67,7 @@ export interface Layout {
   y: number
   ensure: (height: number) => void
   measure: (text: string, style: TextStyle, width?: number) => number
+  fit: (text: string, style: TextStyle, width: number) => string
   write: (text: string, style: TextStyle, box?: TextBox) => number
   rule: (y: number, color?: string) => void
 }
@@ -131,6 +132,16 @@ export function createLayout(doc: PDFKit.PDFDocument, startPage: () => number): 
     measure(text, style, boxWidth = width) {
       apply(style)
       return doc.heightOfString(text, options(style, {}, boxWidth))
+    },
+    fit(text, style, boxWidth) {
+      apply(style)
+      const fits = (candidate: string) =>
+        doc.widthOfString(candidate, { characterSpacing: style.tracking ?? 0 }) <= boxWidth
+      let fitted = text
+      while (!fits(fitted) && fitted.length > 1) {
+        fitted = `${fitted.slice(0, -2).trimEnd()}…`
+      }
+      return fitted
     },
     write(text, style, box = {}) {
       const boxWidth = box.width ?? width

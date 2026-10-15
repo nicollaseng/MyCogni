@@ -48,17 +48,20 @@ export const brazilianPortuguese = {
     empty: 'Nenhum questionário respondido neste período.',
   },
   reading: {
-    patientTitle: 'Leitura do período',
-    professionalTitle: 'Leitura do período para profissionais',
-    notice: 'Gerada automaticamente a partir dos registros. Não é um diagnóstico.',
+    title: 'Resumo do período',
+    patientNotice: 'Escrito automaticamente a partir dos registros. Não é um diagnóstico.',
+    professionalNotice:
+      'Escrito automaticamente a partir dos registros compartilhados com você, sem o MyBook. Não faz diagnóstico.',
     covers: (period: string) => `Sobre os registros de ${period}`,
-    highlights: 'Destaques',
-    suggestions: 'Sugestões',
+    highlights: 'O que se destacou',
+    suggestions: 'Para os próximos dias',
     trends: 'Tendências',
     themes: 'Temas',
-    attention: {
-      watch: 'Pede acompanhamento',
-      urgent: 'Pede atenção imediata',
+    attention: (level: string, reason: string | null) =>
+      reason === null ? `Atenção: ${level}.` : `Atenção: ${level}. ${reason}`,
+    attentionLevels: {
+      watch: 'observar',
+      urgent: 'urgente',
     },
   },
   notes: {
