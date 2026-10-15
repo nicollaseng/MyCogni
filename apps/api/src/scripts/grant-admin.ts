@@ -9,7 +9,11 @@ const env = z
 
 const email = z.email().parse(process.argv[2]?.trim().toLowerCase())
 
-const headers = { apikey: env.SUPABASE_SECRET_KEY, 'content-type': 'application/json' }
+const headers = {
+  apikey: env.SUPABASE_SECRET_KEY,
+  authorization: `Bearer ${env.SUPABASE_SECRET_KEY}`,
+  'content-type': 'application/json',
+}
 
 const pageSchema = z.object({
   users: z.array(
