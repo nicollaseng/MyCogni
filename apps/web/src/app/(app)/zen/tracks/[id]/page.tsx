@@ -1,12 +1,22 @@
-import { contentLanguageOf, isTrackId, progressOf, trackText, tracks } from '@mycogni/domain'
+import {
+  contentLanguageOf,
+  isTrackId,
+  progressOf,
+  stepMinutes,
+  stepNarration,
+  trackMinutes,
+  trackText,
+  tracks,
+} from '@mycogni/domain'
 import type { Metadata } from 'next'
-import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { getLocale, getTranslations } from 'next-intl/server'
+import { fetchNarrationManifest, narrationSources } from '@/features/audio/narration'
 import { setStepDone } from '@/features/zen/actions'
-import { HelpLines } from '@/features/zen/components/help-lines'
+import { CrisisNumbers } from '@/features/zen/components/crisis-numbers'
 import { ProgressLine } from '@/features/zen/components/progress-line'
 import { TrackSteps } from '@/features/zen/components/track-steps'
+import { ZenTopBar } from '@/features/zen/components/zen-top-bar'
 import { fetchCareLinks } from '@/shared/lib/api/care'
 import { fetchStepProgress } from '@/shared/lib/api/zen'
 import { requireOnboardedProfile } from '@/shared/lib/auth/session'
@@ -24,27 +34,24 @@ export default async function ZenTrackPage({ params }: PageProps<'/zen/tracks/[i
   if (!isTrackId(id)) {
     notFound()
   }
-  const [t, locale, doneSteps, careLinks] = await Promise.all([
+  const [t, locale, doneSteps, careLinks, manifest] = await Promise.all([
     getTranslations('zen'),
     getLocale(),
     fetchStepProgress(),
     fetchCareLinks(),
+    fetchNarrationManifest(),
   ])
-  const text = trackText(contentLanguageOf(locale), id)
+  const language = contentLanguageOf(locale)
+  const text = trackText(language, id)
   const progress = progressOf(id, doneSteps)
   const professionals = careLinks.map((link) => link.professional.name)
 
   return (
     <>
+      <ZenTopBar professionals={professionals} />
       <header className="space-y-4">
-        <Link
-          href="/zen"
-          className="inline-block pb-2 text-sm text-muted-foreground hover:text-foreground"
-        >
-          ← {t('track.back')}
-        </Link>
         <p className="text-sm text-muted-foreground">
-          {t('track.kicker', { count: progress.total })}
+          {t('track.kicker', { count: progress.total, minutes: trackMinutes(id, language) })}
         </p>
         <h1 className="font-serif text-[40px] leading-[1.04] tracking-[-0.02em] text-balance sm:text-5xl">
           {text.title}
@@ -52,42 +59,44 @@ export default async function ZenTrackPage({ params }: PageProps<'/zen/tracks/[i
         <p className="max-w-[36rem] leading-relaxed text-pretty text-muted-foreground">
           {text.summary}
         </p>
-        <div className="max-w-[36rem] space-y-2 pt-2">
+        <div className="max-w-[36rem] space-y-2 pt-1">
           <p className="text-sm">
-            {t('track.progress', { done: progress.done.length, total: progress.total })}
+            {progress.complete
+              ? t('track.complete')
+              : t('track.progress', { done: progress.done.length, total: progress.total })}
           </p>
           <ProgressLine done={progress.done.length} total={progress.total} />
         </div>
       </header>
 
-      <div className="-mx-5 sm:-mx-6">
-        <TrackSteps
-          trackId={id}
-          steps={tracks[id].steps.map((step) => ({
+      <TrackSteps
+        trackId={id}
+        steps={tracks[id].steps.map((step) => {
+          const stepText = text.steps[step.id] ?? { title: step.id, body: '' }
+          return {
             step,
-            text: text.steps[step.id] ?? { title: step.id, body: '' },
+            text: stepText,
             done: progress.done.includes(step.id),
-          }))}
-          nextId={progress.next?.id ?? null}
-          support={
-            <div className="space-y-3">
-              <HelpLines />
-              {professionals.map((name) => (
-                <p key={name} className="leading-relaxed text-muted-foreground">
-                  {t('help.professional', { name })}
-                </p>
-              ))}
-            </div>
+            minutes: stepMinutes(step, language),
+            narration: narrationSources(manifest, language, stepNarration(stepText)),
           }
-          save={setStepDone}
-        />
-      </div>
+        })}
+        nextId={progress.next?.id ?? null}
+        started={progress.started}
+        support={
+          <div className="space-y-1">
+            <CrisisNumbers />
+            {professionals.map((name) => (
+              <p key={name} className="text-sm text-muted-foreground">
+                {t('help.professional', { name })}
+              </p>
+            ))}
+          </div>
+        }
+        save={setStepDone}
+      />
 
-      {progress.complete && <p className="leading-relaxed">{t('track.complete')}</p>}
-
-      <p className="max-w-[36rem] border-l-2 border-rule pl-4 text-sm leading-relaxed text-muted-foreground">
-        {t('disclaimer')}
-      </p>
+      <p className="text-sm text-muted-foreground">{t('disclaimer')}</p>
     </>
   )
 }
