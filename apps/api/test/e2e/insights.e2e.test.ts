@@ -50,6 +50,7 @@ describe('insights', () => {
   let bruno: TestUser
   let writer: RecordingWriter
   let job: InsightJob
+  const summaries: string[] = []
 
   async function checkInsDaysAgo(user: TestUser, days: number[]): Promise<void> {
     for (const daysAgo of days) {
@@ -84,6 +85,12 @@ describe('insights', () => {
       checkIns: createCheckInRepository(connection.db),
       assessments: createAssessmentRepository(connection.db),
       writer,
+      alerts: {
+        summaryCreated: (insightId) => {
+          summaries.push(insightId)
+          return Promise.resolve()
+        },
+      },
       now: () => new Date(),
     })
   })
@@ -132,6 +139,7 @@ describe('insights', () => {
     expect(writer.patient.at(-1)?.locale).toBe('pt-BR')
     expect(writer.professional.at(-1)?.checkIns).toHaveLength(1)
     expect(writer.professional.at(-1)?.journal).toEqual([])
+    expect(summaries).toHaveLength(1)
     const bell = await connection.db
       .select()
       .from(notifications)

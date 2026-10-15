@@ -13,6 +13,7 @@ import { createJobScheduler, type JobScheduler } from './jobs/scheduler.ts'
 import { createMailer, type Mailer } from './mail/mailer.ts'
 import { accountModule } from './modules/account/index.ts'
 import { adminModule } from './modules/admin/index.ts'
+import { alertModule } from './modules/alerts/index.ts'
 import { assessmentModule } from './modules/assessments/index.ts'
 import { careLinkModule } from './modules/care-links/index.ts'
 import { checkInModule } from './modules/check-ins/index.ts'
@@ -55,7 +56,7 @@ function authenticatedRoutes(
     requireAuthentication(api, verifier)
     await api.register(profileModule(db))
     await api.register(consentModule(db))
-    await api.register(assessmentModule(db))
+    await api.register(assessmentModule(db, jobs))
     await api.register(checkInModule(db, jobs))
     await api.register(onboardingModule(db))
     await api.register(professionalModule(db))
@@ -67,6 +68,7 @@ function authenticatedRoutes(
     await api.register(journalModule({ db, images: journalImages, log: api.log }))
     await api.register(insightModule(db))
     await api.register(reportModule(db))
+    await api.register(alertModule(db))
   }
 }
 
@@ -86,7 +88,10 @@ export async function buildApp(dependencies: AppDependencies): Promise<App> {
   await app.register(healthRoutes)
   const mailer = createMailer(dependencies.config.mail, app.log)
   await app.register(publicRoutes(dependencies, mailer), { prefix: '/v1/public' })
-  const jobs = createJobScheduler(dependencies.config.redisUrl, app.log)
+  const jobs = createJobScheduler(
+    { redisUrl: dependencies.config.redisUrl, prefix: dependencies.config.queuePrefix },
+    app.log,
+  )
   app.addHook('onClose', () => jobs.close())
   await app.register(authenticatedRoutes(dependencies, mailer, jobs), { prefix: '/v1' })
 

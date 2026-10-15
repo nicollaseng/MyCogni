@@ -14,7 +14,8 @@ import type { CheckInRepository } from '../check-ins/check-in.repository.ts'
 import { toCheckIn } from '../check-ins/check-in.service.ts'
 import type { ProfessionalRepository } from '../professionals/professional.repository.ts'
 import type { CareLinkRepository, PatientLinkRecord } from './care-link.repository.ts'
-import type { PatientMetricsRepository, ScreeningRecord } from './patient-metrics.repository.ts'
+import { loadPatientSignals } from './attention-signals.ts'
+import type { PatientMetricsRepository } from './patient-metrics.repository.ts'
 
 export interface PatientService {
   list(user: AuthenticatedUser): Promise<PatientSummary[]>
@@ -39,10 +40,6 @@ const recentLimit = 8
 
 const dayInMilliseconds = 24 * 60 * 60 * 1000
 
-function latestOf(screenings: ScreeningRecord[], instrument: ScreeningRecord['instrument']) {
-  return screenings.find((screening) => screening.instrument === instrument) ?? null
-}
-
 export function createPatientService({
   careLinks,
   metrics,
@@ -62,51 +59,30 @@ export function createPatientService({
     professionalId: string,
     links: PatientLinkRecord[],
   ): Promise<PatientSummary[]> {
-    const ids = links.map((link) => link.patientId)
-    const moment = now()
-    const [lastCheckIns, stats, screenings] = await Promise.all([
-      metrics.lastCheckIns(professionalId, ids),
-      metrics.checkInStats(professionalId, ids, moment),
-      metrics.latestScreenings(professionalId, ids),
-    ])
-    return links.map((link) => {
-      const last = lastCheckIns.find((checkIn) => checkIn.patientId === link.patientId)
-      const own = screenings.filter((screening) => screening.patientId === link.patientId)
-      const patientStats = stats.get(link.patientId)
-      const moodAverage = patientStats?.moodAverage ?? null
-      const previousMoodAverage = patientStats?.previousMoodAverage ?? null
-      return {
-        id: link.patientId,
-        linkId: link.linkId,
-        name: link.name,
-        startedAt: link.startedAt.toISOString(),
-        sharesHistory: link.sharesHistory,
-        lastCheckIn:
-          last === undefined
-            ? null
-            : { moodLevel: last.moodLevel, recordedAt: last.recordedAt.toISOString() },
-        checkInsLastWeek: patientStats?.lastWeek ?? 0,
-        checkInsLast30Days: patientStats?.lastMonth ?? 0,
-        moodAverage,
-        previousMoodAverage,
-        screenings: own.map((screening) => ({
-          instrument: screening.instrument,
-          totalScore: screening.totalScore,
-          severity: screening.severity,
-          hasRiskFlag: screening.hasRiskFlag,
-          completedAt: screening.completedAt.toISOString(),
-        })),
-        attention: attentionReasonsOf({
-          latestPhq9: latestOf(own, 'phq9'),
-          latestGad7: latestOf(own, 'gad7'),
-          moodAverage,
-          previousMoodAverage,
-          lastCheckInAt: last?.recordedAt ?? null,
-          linkedAt: link.startedAt,
-          now: moment,
-        }),
-      }
-    })
+    const loaded = await loadPatientSignals(metrics, professionalId, links, now())
+    return loaded.map(({ link, last, stats, screenings, signals }) => ({
+      id: link.patientId,
+      linkId: link.linkId,
+      name: link.name,
+      startedAt: link.startedAt.toISOString(),
+      sharesHistory: link.sharesHistory,
+      lastCheckIn:
+        last === undefined
+          ? null
+          : { moodLevel: last.moodLevel, recordedAt: last.recordedAt.toISOString() },
+      checkInsLastWeek: stats?.lastWeek ?? 0,
+      checkInsLast30Days: stats?.lastMonth ?? 0,
+      moodAverage: signals.moodAverage,
+      previousMoodAverage: signals.previousMoodAverage,
+      screenings: screenings.map((screening) => ({
+        instrument: screening.instrument,
+        totalScore: screening.totalScore,
+        severity: screening.severity,
+        hasRiskFlag: screening.hasRiskFlag,
+        completedAt: screening.completedAt.toISOString(),
+      })),
+      attention: attentionReasonsOf(signals),
+    }))
   }
 
   async function linkOrFail(

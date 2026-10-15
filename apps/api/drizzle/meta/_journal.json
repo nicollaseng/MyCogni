@@ -162,6 +162,20 @@
       "when": 1792075094194,
       "tag": "0022_grant_professional_name_update",
       "breakpoints": true
+    },
+    {
+      "idx": 23,
+      "version": "7",
+      "when": 1792079740848,
+      "tag": "0023_create_professional_alerts",
+      "breakpoints": true
+    },
+    {
+      "idx": 24,
+      "version": "7",
+      "when": 1792079747138,
+      "tag": "0024_professional_alerts_grants",
+      "breakpoints": true
     }
   ]
 }
