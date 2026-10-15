@@ -51,7 +51,6 @@ export const alerts = {
   acknowledged: 'Alerta marcado como visto.',
   resolved: 'Alerta resolvido.',
   error: 'Não conseguimos atualizar o alerta agora. Tente de novo em instantes.',
-  resolvedAt: 'Resolvido em {date}',
   navigation: {
     pending:
       '{count, plural, =0 {nenhum alerta pendente} one {# alerta pendente} other {# alertas pendentes}}',

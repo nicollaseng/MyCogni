@@ -48,7 +48,6 @@ export const alerts: AlertsMessages = {
   acknowledged: 'Alert marked as seen.',
   resolved: 'Alert resolved.',
   error: 'We could not update the alert right now. Please try again in a moment.',
-  resolvedAt: 'Resolved on {date}',
   navigation: {
     pending:
       '{count, plural, =0 {no pending alerts} one {# pending alert} other {# pending alerts}}',
