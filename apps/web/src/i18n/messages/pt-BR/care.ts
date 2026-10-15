@@ -128,6 +128,7 @@ export const care = {
       professional: 'Mensagem de um profissional',
       marketing: 'Novidade do MyCogniAI',
       system: 'Aviso do MyCogniAI',
+      insight: 'Seu resumo da semana está pronto.',
     },
   },
   bell: {

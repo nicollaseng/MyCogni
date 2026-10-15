@@ -110,3 +110,15 @@ export {
   type JournalShare,
   type UpdateJournalEntryInput,
 } from './journal.ts'
+export {
+  patientInsightContentSchema,
+  patientInsightListSchema,
+  patientInsightSchema,
+  professionalInsightContentSchema,
+  professionalInsightListSchema,
+  professionalInsightSchema,
+  type PatientInsight,
+  type PatientInsightContent,
+  type ProfessionalInsight,
+  type ProfessionalInsightContent,
+} from './insights.ts'

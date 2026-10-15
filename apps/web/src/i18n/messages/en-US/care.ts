@@ -132,6 +132,7 @@ export const care: CareMessages = {
       professional: 'A message from a professional',
       marketing: 'News from MyCogniAI',
       system: 'A notice from MyCogniAI',
+      insight: 'Your weekly summary is ready.',
     },
   },
   bell: {

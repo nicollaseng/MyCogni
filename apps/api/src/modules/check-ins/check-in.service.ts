@@ -1,5 +1,6 @@
 import type { CheckIn, CheckInQuery, CreateCheckInInput } from '@mycogni/contracts'
 import type { AuthenticatedUser } from '../../auth/token-verifier.ts'
+import type { JobScheduler } from '../../jobs/scheduler.ts'
 import type { CheckInRecord, CheckInRepository } from './check-in.repository.ts'
 
 export interface CheckInService {
@@ -15,7 +16,10 @@ function optionalDate(value: string | undefined): Date | undefined {
   return value === undefined ? undefined : new Date(value)
 }
 
-export function createCheckInService(repository: CheckInRepository): CheckInService {
+export function createCheckInService(
+  repository: CheckInRepository,
+  jobs: JobScheduler,
+): CheckInService {
   return {
     async record(user, input) {
       const record = await repository.create(user.id, {
@@ -24,6 +28,7 @@ export function createCheckInService(repository: CheckInRepository): CheckInServ
         contexts: [...new Set(input.contexts)],
         note: input.note === null || input.note === '' ? null : input.note,
       })
+      await jobs.checkInRecorded(user.id)
       return toCheckIn(record)
     },
     async list(user, query) {

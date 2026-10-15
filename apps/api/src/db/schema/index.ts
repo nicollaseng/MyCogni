@@ -2,6 +2,7 @@ export { assessmentInstrument, assessments, assessmentSeverity } from './assessm
 export { careLinkEndedBy, careLinks } from './care-links.ts'
 export { checkIns } from './check-ins.ts'
 export { consentKind, consents } from './consents.ts'
+export { insightAudience, insights } from './insights.ts'
 export { invitationChannel, invitations, invitationStatus } from './invitations.ts'
 export {
   journalAccessLog,
