@@ -8,12 +8,14 @@ export interface ProfileRecord {
   displayName: string | null
   avatarPath: string | null
   timezone: string
+  locale: string | null
   onboardingCompletedAt: Date | null
 }
 
 export interface ProfileChanges {
   displayName?: string
   timezone?: string
+  locale?: string
   avatarPath?: string | null
 }
 
@@ -23,11 +25,12 @@ export interface ProfileRepository {
   completeOnboarding(userId: string): Promise<ProfileRecord | undefined>
 }
 
-const columns = {
+export const profileColumns = {
   id: profiles.id,
   displayName: profiles.displayName,
   avatarPath: profiles.avatarPath,
   timezone: profiles.timezone,
+  locale: profiles.locale,
   onboardingCompletedAt: profiles.onboardingCompletedAt,
 }
 
@@ -35,7 +38,7 @@ export function createProfileRepository(db: Database): ProfileRepository {
   return {
     findById(userId) {
       return withUser(db, userId, async (tx) => {
-        const [row] = await tx.select(columns).from(profiles).where(eq(profiles.id, userId))
+        const [row] = await tx.select(profileColumns).from(profiles).where(eq(profiles.id, userId))
         return row
       })
     },
@@ -45,7 +48,7 @@ export function createProfileRepository(db: Database): ProfileRepository {
           .update(profiles)
           .set(changes)
           .where(eq(profiles.id, userId))
-          .returning(columns)
+          .returning(profileColumns)
         return row
       })
     },
@@ -55,7 +58,7 @@ export function createProfileRepository(db: Database): ProfileRepository {
           .update(profiles)
           .set({ onboardingCompletedAt: sql`coalesce(${profiles.onboardingCompletedAt}, now())` })
           .where(eq(profiles.id, userId))
-          .returning(columns)
+          .returning(profileColumns)
         return row
       })
     },

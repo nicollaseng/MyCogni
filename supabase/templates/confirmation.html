@@ -1,5 +1,7 @@
+{{ $locale := printf "%v" .Data.locale }}{{ $lang := "pt-BR" }}{{ if or (eq $locale "en-US") (eq
+$locale "en-GB") (eq $locale "pt-PT") }}{{ $lang = $locale }}{{ end -}}
 <!doctype html>
-<html lang="pt-BR">
+<html lang="{{ $lang }}">
   <body style="margin: 0; padding: 32px 16px; background: #eef1ea; color: #1e2925">
     <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
       <tr>
@@ -25,7 +27,9 @@
                   line-height: 1.2;
                 "
               >
-                Seu código de confirmação
+                {{ if or (eq $locale "en-US") (eq $locale "en-GB") }}Your confirmation code{{ else
+                if eq $locale "pt-PT" }}O seu código de confirmação{{ else }}Seu código de
+                confirmação{{ end }}
               </td>
             </tr>
             <tr>
@@ -38,7 +42,11 @@
                   color: #5b6762;
                 "
               >
-                Digite este código no MyCogniAI para confirmar seu email. Ele vale por 1 hora.
+                {{ if or (eq $locale "en-US") (eq $locale "en-GB") }}Enter this code in MyCogniAI to
+                confirm your email. It is valid for 1 hour.{{ else if eq $locale "pt-PT" }}Introduza
+                este código no MyCogniAI para confirmar o seu email. É válido durante 1 hora.{{ else
+                }}Digite este código no MyCogniAI para confirmar seu email. Ele vale por 1 hora.{{
+                end }}
               </td>
             </tr>
             <tr>
@@ -66,7 +74,10 @@
                   color: #5b6762;
                 "
               >
-                Se você não criou uma conta no MyCogniAI, ignore este email.
+                {{ if or (eq $locale "en-US") (eq $locale "en-GB") }}If you did not create a
+                MyCogniAI account, you can ignore this email.{{ else if eq $locale "pt-PT" }}Se não
+                criou uma conta no MyCogniAI, ignore este email.{{ else }}Se você não criou uma
+                conta no MyCogniAI, ignore este email.{{ end }}
               </td>
             </tr>
           </table>

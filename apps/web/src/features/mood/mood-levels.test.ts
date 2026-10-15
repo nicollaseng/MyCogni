@@ -1,12 +1,12 @@
 import { describe, expect, it } from '@jest/globals'
-import { isMoodLevel, labelOf, moodColor, moodLabels, valenceOf } from './mood-levels'
+import { isMoodLevel, moodColor, moodKeyOf, moodKeys, valenceOf } from './mood-levels'
 
 describe('mood levels', () => {
   it('names seven levels from the worst to the best', () => {
-    expect(moodLabels).toHaveLength(7)
-    expect(labelOf(0)).toBe('Muito mal')
-    expect(labelOf(3)).toBe('Neutro')
-    expect(labelOf(6)).toBe('Muito bem')
+    expect(moodKeys).toHaveLength(7)
+    expect(moodKeyOf(0)).toBe('veryBad')
+    expect(moodKeyOf(3)).toBe('neutral')
+    expect(moodKeyOf(6)).toBe('veryGood')
   })
 
   it('places each level on a scale from 0 to 1', () => {

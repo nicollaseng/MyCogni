@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
+import { getTranslations } from 'next-intl/server'
 import { signOut } from '@/features/auth/actions'
 import {
   changeEmail,
@@ -18,6 +19,8 @@ import { NameForm } from '@/features/account/components/name-form'
 import { PasswordForm } from '@/features/account/components/password-form'
 import { ProfileHeader } from '@/features/account/components/profile-header'
 import { SettingsRow } from '@/features/account/components/settings-row'
+import { chooseLocale } from '@/features/locale/actions'
+import { LocaleSelect } from '@/features/locale/components/locale-select'
 import { LatestScreening } from '@/features/screening/components/latest-screening'
 import { ScreeningHistory } from '@/features/screening/components/screening-history'
 import { screeningIntervalDays } from '@/features/screening/due'
@@ -27,16 +30,22 @@ import { fetchAssessments, fetchConsents } from '@/shared/lib/api/resources'
 import { requireOnboardedProfile } from '@/shared/lib/auth/session'
 import { Button } from '@/shared/ui/button'
 
-export const metadata: Metadata = { title: 'Você' }
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations('account')
+  return { title: t('title') }
+}
 
 const rowLink = 'block py-3.5 underline decoration-1 underline-offset-4'
 
 export default async function MePage() {
   const profile = await requireOnboardedProfile()
-  const [assessments, consents, photoUrl] = await Promise.all([
+  const [assessments, consents, photoUrl, t, screening, language] = await Promise.all([
     fetchAssessments(),
     fetchConsents(),
     avatarUrl(profile.avatarPath),
+    getTranslations('account'),
+    getTranslations('screening.latest'),
+    getTranslations('common.language'),
   ])
 
   return (
@@ -53,29 +62,36 @@ export default async function MePage() {
         <ScreeningHistory assessments={assessments} timeZone={profile.timezone} />
         <div className="space-y-1 px-1">
           <Link href="/questionnaires" className="underline decoration-1 underline-offset-4">
-            Refazer os questionários
+            {screening('retake')}
           </Link>
           <p className="text-sm text-muted-foreground">
-            Sugerimos a cada {screeningIntervalDays} dias, para ver como você muda.
+            {screening('cadence', { days: screeningIntervalDays })}
           </p>
         </div>
       </LatestScreening>
 
-      <Section title="Conta">
+      <Section title={t('sections.account')}>
         <Panel>
-          <SettingsRow label="Nome" value={profile.displayName ?? 'Sem nome'}>
+          <SettingsRow label={t('name.label')} value={profile.displayName ?? t('name.empty')}>
             <NameForm initialName={profile.displayName ?? ''} rename={renameMe} />
           </SettingsRow>
-          <SettingsRow label="Email" value={profile.email ?? ''}>
+          <SettingsRow label={t('email.label')} value={profile.email ?? ''}>
             <EmailForm changeEmail={changeEmail} />
           </SettingsRow>
-          <SettingsRow label="Senha" value="••••••••">
+          <SettingsRow label={t('password.label')} value="••••••••">
             <PasswordForm changePassword={changePassword} />
           </SettingsRow>
         </Panel>
       </Section>
 
-      <Section title="Privacidade">
+      <Section title={t('sections.preferences')}>
+        <Panel>
+          <LocaleSelect choose={chooseLocale} showLabel className="justify-between py-3.5" />
+        </Panel>
+        <p className="px-1 text-sm text-pretty text-muted-foreground">{language('hint')}</p>
+      </Section>
+
+      <Section title={t('sections.privacy')}>
         <Panel>
           <ConsentList
             consents={consents}
@@ -83,16 +99,13 @@ export default async function MePage() {
             setAiConsent={setAiConsent}
           />
         </Panel>
-        <p className="px-1 text-sm text-pretty text-muted-foreground">
-          Os consentimentos obrigatórios só podem ser retirados com a exclusão da conta, em Seus
-          dados.
-        </p>
+        <p className="px-1 text-sm text-pretty text-muted-foreground">{t('consents.note')}</p>
       </Section>
 
-      <Section title="Seus dados">
+      <Section title={t('sections.data')}>
         <Panel>
           <a href="/me/export" download className={rowLink}>
-            Baixar meus dados
+            {t('data.export')}
           </a>
           <DeleteAccount remove={deleteMyAccount} />
         </Panel>
@@ -100,7 +113,7 @@ export default async function MePage() {
 
       <form action={signOut}>
         <Button type="submit" variant="outline" shape="pill">
-          Sair
+          {t('signOut')}
         </Button>
       </form>
     </div>

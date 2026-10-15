@@ -1,4 +1,4 @@
-export { frequencyOptions, isAnswer, type Answer } from './assessments/frequency.ts'
+export { answerValues, isAnswer, type Answer } from './assessments/frequency.ts'
 export {
   instrumentIds,
   severities,
@@ -9,6 +9,8 @@ export {
 } from './assessments/instrument.ts'
 export { gad7 } from './assessments/gad7.ts'
 export { phq9 } from './assessments/phq9.ts'
+export type { InstrumentText } from './assessments/texts/instrument-text.ts'
+export { instrumentText } from './assessments/texts/texts.ts'
 export {
   instruments,
   InvalidAnswersError,
@@ -37,6 +39,19 @@ export {
   type ProfessionalKind,
   type ProfessionalStatus,
 } from './care/professionals.ts'
+export {
+  contextGroups,
+  contextIds,
+  emotionFamilies,
+  emotionIds,
+  isContextId,
+  isEmotionId,
+  suggestedContexts,
+  type ContextGroupId,
+  type ContextId,
+  type EmotionFamilyId,
+  type EmotionId,
+} from './check-ins/catalog.ts'
 export { checkInLimits, maxMoodLevel } from './check-ins/check-ins.ts'
 export { dailyMoods, dayKey, previousDays, type DatedMood } from './check-ins/days.ts'
 export {
@@ -47,4 +62,14 @@ export {
   requiredConsentKinds,
   type ConsentKind,
 } from './consents/consents.ts'
+export {
+  defaultLocale,
+  isLocale,
+  localeForCountry,
+  localeFromAcceptLanguage,
+  locales,
+  resolveLocale,
+  type Locale,
+  type LocaleSignals,
+} from './i18n/locales.ts'
 export { isOnboardingReady, type OnboardingProgress } from './onboarding/onboarding.ts'

@@ -1,5 +1,6 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
 import { useState, type SubmitEvent } from 'react'
 import { useSubmit } from '@/shared/hooks/use-submit'
 import type { ActionResult } from '@/shared/lib/actions/result'
@@ -14,6 +15,7 @@ interface NameFormProps {
 }
 
 export function NameForm({ initialName, rename }: NameFormProps) {
+  const t = useTranslations('account.name')
   const close = useCloseRow()
   const [name, setName] = useState(initialName)
   const { submit, pending, error } = useSubmit(rename, close)
@@ -26,7 +28,7 @@ export function NameForm({ initialName, rename }: NameFormProps) {
   return (
     <form onSubmit={handleSubmit} className="space-y-3">
       <TextField
-        label="Novo nome"
+        label={t('field')}
         autoComplete="given-name"
         maxLength={80}
         value={name}
@@ -36,7 +38,7 @@ export function NameForm({ initialName, rename }: NameFormProps) {
       />
       <FormMessage error={error} notice={null} />
       <Button type="submit" size="sm" shape="pill" disabled={pending || name.trim() === ''}>
-        {pending ? 'Salvando…' : 'Salvar nome'}
+        {pending ? t('saving') : t('save')}
       </Button>
     </form>
   )

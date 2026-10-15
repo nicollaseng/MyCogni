@@ -1,7 +1,8 @@
 import { describe, expect, it, jest } from '@jest/globals'
-import { render, screen } from '@testing-library/react'
+import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import type { ActionResult } from '@/shared/lib/actions/result'
+import { renderWithIntl } from '@/test/render'
 import { DeleteAccount } from './delete-account'
 import { EmailForm } from './email-form'
 import { NameForm } from './name-form'
@@ -14,7 +15,7 @@ function done(message: string): Promise<ActionResult<string>> {
 
 describe('SettingsRow', () => {
   it('shows the current value and opens the form only when asked', async () => {
-    render(
+    renderWithIntl(
       <SettingsRow label="Nome" value="Marina">
         <p>formulário</p>
       </SettingsRow>,
@@ -36,7 +37,7 @@ describe('SettingsRow', () => {
 describe('NameForm', () => {
   it('saves the new name and closes the row', async () => {
     const rename = jest.fn((name: string) => done(`ok ${name}`))
-    render(
+    renderWithIntl(
       <SettingsRow label="Nome" value="Marina">
         <NameForm initialName="Marina" rename={rename} />
       </SettingsRow>,
@@ -57,7 +58,7 @@ describe('EmailForm', () => {
     const changeEmail = jest.fn<(email: string) => Promise<ActionResult<string>>>(() =>
       done('Enviamos um link para o novo email.'),
     )
-    render(<EmailForm changeEmail={changeEmail} />)
+    renderWithIntl(<EmailForm changeEmail={changeEmail} />)
 
     await userEvent.type(screen.getByLabelText('Novo email'), 'nova@exemplo.com')
     await userEvent.click(screen.getByRole('button', { name: 'Enviar confirmação' }))
@@ -74,7 +75,7 @@ describe('PasswordForm', () => {
     const changePassword = jest.fn<
       (input: { current: string; next: string }) => Promise<ActionResult<string>>
     >(() => done('Senha alterada.'))
-    render(<PasswordForm changePassword={changePassword} />)
+    renderWithIntl(<PasswordForm changePassword={changePassword} />)
 
     await userEvent.type(screen.getByLabelText('Senha atual'), 'antiga-2026')
     await userEvent.type(screen.getByLabelText('Nova senha'), 'nova-senha-2026')
@@ -89,7 +90,7 @@ describe('PasswordForm', () => {
     const changePassword = jest.fn<
       (input: { current: string; next: string }) => Promise<ActionResult<string>>
     >(() => Promise.resolve({ ok: false, error: 'A senha atual não confere.' }))
-    render(<PasswordForm changePassword={changePassword} />)
+    renderWithIntl(<PasswordForm changePassword={changePassword} />)
 
     await userEvent.type(screen.getByLabelText('Senha atual'), 'errada')
     await userEvent.type(screen.getByLabelText('Nova senha'), 'nova-senha-2026')
@@ -104,7 +105,7 @@ describe('DeleteAccount', () => {
     const remove = jest.fn<(confirmation: string) => Promise<ActionResult<null>>>(() =>
       Promise.resolve({ ok: true, value: null }),
     )
-    render(<DeleteAccount remove={remove} />)
+    renderWithIntl(<DeleteAccount remove={remove} />)
 
     await userEvent.click(screen.getByRole('button', { name: 'Excluir minha conta' }))
     const confirm = screen.getByRole('button', { name: 'Excluir para sempre' })
@@ -117,11 +118,66 @@ describe('DeleteAccount', () => {
   })
 
   it('can be called off', async () => {
-    render(<DeleteAccount remove={jest.fn<(value: string) => Promise<ActionResult<null>>>()} />)
+    renderWithIntl(
+      <DeleteAccount remove={jest.fn<(value: string) => Promise<ActionResult<null>>>()} />,
+    )
 
     await userEvent.click(screen.getByRole('button', { name: 'Excluir minha conta' }))
     await userEvent.click(screen.getByRole('button', { name: 'Cancelar' }))
 
     expect(screen.getByRole('button', { name: 'Excluir minha conta' })).toBeInTheDocument()
+  })
+})
+
+describe('in other languages', () => {
+  it('uses the European Portuguese words for the password and the deletion', async () => {
+    const remove = jest.fn<(confirmation: string) => Promise<ActionResult<null>>>(() =>
+      Promise.resolve({ ok: true, value: null }),
+    )
+    renderWithIntl(
+      <>
+        <SettingsRow label="Palavra-passe" value="••••••••">
+          <PasswordForm changePassword={() => done('Palavra-passe alterada.')} />
+        </SettingsRow>
+        <DeleteAccount remove={remove} />
+      </>,
+      { locale: 'pt-PT' },
+    )
+
+    await userEvent.click(screen.getByRole('button', { name: 'Alterar palavra-passe' }))
+    expect(screen.getByLabelText('Palavra-passe atual')).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Guardar nova palavra-passe' })).toBeDisabled()
+
+    await userEvent.click(screen.getByRole('button', { name: 'Eliminar a minha conta' }))
+    const confirm = screen.getByRole('button', { name: 'Eliminar para sempre' })
+    await userEvent.type(screen.getByLabelText('Escreva ELIMINAR para confirmar'), 'excluir')
+    expect(confirm).toBeDisabled()
+
+    await userEvent.clear(screen.getByLabelText('Escreva ELIMINAR para confirmar'))
+    await userEvent.type(screen.getByLabelText('Escreva ELIMINAR para confirmar'), 'eliminar')
+    await userEvent.click(confirm)
+
+    expect(remove).toHaveBeenCalledWith('eliminar')
+  })
+
+  it('speaks English when renaming', async () => {
+    const rename = jest.fn((name: string) => done(`ok ${name}`))
+    renderWithIntl(
+      <SettingsRow label="Name" value="Marina">
+        <NameForm initialName="Marina" rename={rename} />
+      </SettingsRow>,
+      { locale: 'en-US' },
+    )
+
+    await userEvent.click(screen.getByRole('button', { name: 'Change name' }))
+    await userEvent.clear(screen.getByLabelText('New name'))
+    await userEvent.type(screen.getByLabelText('New name'), 'Mari')
+    await userEvent.click(screen.getByRole('button', { name: 'Save name' }))
+
+    expect(rename).toHaveBeenCalledWith('Mari')
+    expect(screen.getByRole('button', { name: 'Change name' })).toHaveAttribute(
+      'aria-expanded',
+      'false',
+    )
   })
 })

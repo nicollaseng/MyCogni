@@ -1,12 +1,14 @@
 import { describe, expect, it, jest } from '@jest/globals'
-import { render, screen } from '@testing-library/react'
+import type { Locale } from '@mycogni/domain'
+import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import { renderWithIntl } from '@/test/render'
 import { fakeActions } from '../test/fixtures'
 import { ConsentStep } from './consent-step'
 
-function renderStep(actions = fakeActions()) {
+function renderStep(actions = fakeActions(), locale: Locale = 'pt-BR') {
   const onDone = jest.fn()
-  render(<ConsentStep accept={actions.acceptConsents} onDone={onDone} />)
+  renderWithIntl(<ConsentStep accept={actions.acceptConsents} onDone={onDone} />, { locale })
   return { actions, onDone }
 }
 
@@ -91,5 +93,27 @@ describe('ConsentStep', () => {
 
     expect(await screen.findByRole('alert')).toHaveTextContent('Falhou.')
     expect(onDone).not.toHaveBeenCalled()
+  })
+
+  it('asks for the consents in the visitor language', async () => {
+    const user = userEvent.setup()
+    const { actions } = renderStep(fakeActions(), 'en-US')
+
+    for (const label of [
+      'I am 18 or older.',
+      /I have read and accept the Terms of use/,
+      /health data/,
+    ]) {
+      await user.click(screen.getByRole('checkbox', { name: label }))
+    }
+    expect(screen.getByRole('link', { name: 'Privacy policy' })).toHaveAttribute('href', '/privacy')
+    await user.click(screen.getByRole('button', { name: 'Agree and continue' }))
+
+    expect(actions.acceptConsents).toHaveBeenCalledWith([
+      'adult',
+      'terms',
+      'privacy',
+      'health_data',
+    ])
   })
 })

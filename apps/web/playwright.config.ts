@@ -15,19 +15,21 @@ export default defineConfig({
   globalTeardown: './e2e/support/global-teardown.ts',
   use: {
     baseURL,
+    locale: 'pt-BR',
     trace: 'retain-on-failure',
   },
   projects: [
     { name: 'setup', testMatch: /.*\.setup\.ts/ },
     {
       name: 'mobile',
-      use: { ...devices['Pixel 7'], storageState: signedInState },
+      use: { ...devices['Pixel 7'], locale: 'pt-BR', storageState: signedInState },
       dependencies: ['setup'],
     },
     {
       name: 'desktop',
       use: {
         ...devices['Desktop Chrome'],
+        locale: 'pt-BR',
         viewport: { width: 1440, height: 900 },
         storageState: signedInState,
       },

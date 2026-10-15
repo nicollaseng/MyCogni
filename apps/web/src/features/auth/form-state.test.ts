@@ -1,10 +1,20 @@
 import { describe, expect, it } from '@jest/globals'
+import { createTranslator } from 'next-intl'
+import { messagesFor } from '@/i18n/messages'
 import { failed, initialFormState, invalidFields, noticed } from './form-state'
-import { signUpSchema } from './schemas'
+import { authSchemas } from './schemas'
+
+const { signUp } = authSchemas(
+  createTranslator({
+    locale: 'pt-BR',
+    messages: messagesFor('pt-BR'),
+    namespace: 'auth.validation',
+  }),
+)
 
 describe('form state', () => {
   it('keeps the first problem of each field', () => {
-    const result = signUpSchema.safeParse({ email: 'ana', password: '1' })
+    const result = signUp.safeParse({ email: 'ana', password: '1' })
     if (result.success) {
       throw new Error('Expected the payload to be invalid')
     }

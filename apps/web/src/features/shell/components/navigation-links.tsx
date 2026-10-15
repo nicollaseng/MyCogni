@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import { useTranslations } from 'next-intl'
 import { cn } from '@/shared/lib/utils'
 import { isActivePath, navigationItems } from '../navigation'
 
@@ -20,9 +21,11 @@ const linkStyles: Record<NavigationVariant, string> = {
 }
 
 export function NavigationLinks({ pathname, variant }: NavigationLinksProps) {
+  const t = useTranslations('common.navigation')
+
   return (
     <ul className={listStyles[variant]}>
-      {navigationItems.map(({ href, label }) => {
+      {navigationItems.map(({ href, key }) => {
         const active = isActivePath(pathname, href)
         return (
           <li key={href}>
@@ -36,7 +39,7 @@ export function NavigationLinks({ pathname, variant }: NavigationLinksProps) {
                   'font-medium text-foreground underline decoration-2 underline-offset-[10px]',
               )}
             >
-              {label}
+              {t(key)}
             </Link>
           </li>
         )

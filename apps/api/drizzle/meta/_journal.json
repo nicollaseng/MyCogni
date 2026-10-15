@@ -85,6 +85,27 @@
       "when": 1792038180336,
       "tag": "0011_restrict_consent_updates",
       "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "7",
+      "when": 1792064191300,
+      "tag": "0012_add_profile_locale",
+      "breakpoints": true
+    },
+    {
+      "idx": 13,
+      "version": "7",
+      "when": 1792064204799,
+      "tag": "0013_profile_locale_from_signup",
+      "breakpoints": true
+    },
+    {
+      "idx": 14,
+      "version": "7",
+      "when": 1792064452618,
+      "tag": "0014_check_in_tags_to_catalog_ids",
+      "breakpoints": true
     }
   ]
 }

@@ -1,11 +1,17 @@
-import { describe, expect, it } from '@jest/globals'
-import { fireEvent, render, screen, within } from '@testing-library/react'
+import { describe, expect, it, jest } from '@jest/globals'
+import type { Locale } from '@mycogni/domain'
+import { fireEvent, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import { renderWithIntl } from '@/test/render'
 import { LandingPage } from './landing-page'
+
+function chooseLocale() {
+  return jest.fn<(locale: Locale) => Promise<void>>().mockResolvedValue()
+}
 
 describe('LandingPage', () => {
   it('opens with the question the app asks every day', () => {
-    render(<LandingPage />)
+    renderWithIntl(<LandingPage chooseLocale={chooseLocale()} />)
 
     expect(
       screen.getByRole('heading', { level: 1, name: 'Como você está agora?' }),
@@ -13,7 +19,7 @@ describe('LandingPage', () => {
   })
 
   it('lets the visitor try the mood scale right away', () => {
-    render(<LandingPage />)
+    renderWithIntl(<LandingPage chooseLocale={chooseLocale()} />)
 
     const slider = screen.getByRole('slider', { name: 'Como você está agora?' })
     fireEvent.change(slider, { target: { value: '6' } })
@@ -22,7 +28,7 @@ describe('LandingPage', () => {
   })
 
   it('tells the story in sections the header links to', () => {
-    render(<LandingPage />)
+    renderWithIntl(<LandingPage chooseLocale={chooseLocale()} />)
 
     const sections = screen.getByRole('navigation', { name: 'Seções' })
 
@@ -47,7 +53,7 @@ describe('LandingPage', () => {
   })
 
   it('shows what the AI writes and where the numbers come from', () => {
-    render(<LandingPage />)
+    renderWithIntl(<LandingPage chooseLocale={chooseLocale()} />)
 
     const ai = screen.getByRole('region', { name: 'A IA escreve. Os números vêm de você.' })
 
@@ -55,9 +61,16 @@ describe('LandingPage', () => {
     expect(within(ai).getByText('Não diagnostica e não fala de remédio.')).toBeInTheDocument()
   })
 
+  it('previews the PHQ-9 with its validated answer options', () => {
+    renderWithIntl(<LandingPage chooseLocale={chooseLocale()} />)
+
+    expect(screen.getByText('PHQ-9 · pergunta 2 de 9')).toBeInTheDocument()
+    expect(screen.getByText('Mais da metade dos dias')).toBeInTheDocument()
+  })
+
   it('answers a question when it is opened', async () => {
     const user = userEvent.setup()
-    render(<LandingPage />)
+    renderWithIntl(<LandingPage chooseLocale={chooseLocale()} />)
 
     const question = screen.getByText('O MyCogniAI substitui terapia?')
     const details = question.closest('details')
@@ -70,7 +83,7 @@ describe('LandingPage', () => {
   })
 
   it('leads to creating an account from the hero and the end of the page', () => {
-    render(<LandingPage />)
+    renderWithIntl(<LandingPage chooseLocale={chooseLocale()} />)
 
     const links = screen.getAllByRole('link', { name: 'Começar' })
 
@@ -81,7 +94,7 @@ describe('LandingPage', () => {
   })
 
   it('lets returning people sign in from the header', () => {
-    render(<LandingPage />)
+    renderWithIntl(<LandingPage chooseLocale={chooseLocale()} />)
 
     const header = screen.getByRole('banner')
 
@@ -92,19 +105,27 @@ describe('LandingPage', () => {
     )
   })
 
+  it('lets the visitor switch the language from the header', async () => {
+    const choose = chooseLocale()
+    renderWithIntl(<LandingPage chooseLocale={choose} />)
+
+    const language = within(screen.getByRole('banner')).getByRole('combobox', { name: 'Idioma' })
+
+    expect(language).toHaveValue('pt-BR')
+
+    await userEvent.selectOptions(language, 'English (US)')
+
+    expect(choose).toHaveBeenCalledWith('en-US')
+  })
+
   it('has a footer with crisis lines and legal pages', () => {
-    render(<LandingPage />)
+    renderWithIntl(<LandingPage chooseLocale={chooseLocale()} />)
 
     const footer = screen.getByRole('contentinfo')
 
-    expect(within(footer).getByRole('link', { name: 'CVV · 188' })).toHaveAttribute(
-      'href',
-      'tel:188',
-    )
-    expect(within(footer).getByRole('link', { name: 'SAMU · 192' })).toHaveAttribute(
-      'href',
-      'tel:192',
-    )
+    expect(within(footer).getByRole('link', { name: '188' })).toHaveAttribute('href', 'tel:188')
+    expect(within(footer).getByText('CVV, 24 horas, gratuito')).toBeInTheDocument()
+    expect(within(footer).getByRole('link', { name: '192' })).toHaveAttribute('href', 'tel:192')
     expect(within(footer).getByRole('link', { name: 'Termos de uso' })).toHaveAttribute(
       'href',
       '/terms',
@@ -113,5 +134,43 @@ describe('LandingPage', () => {
       'href',
       '/privacy',
     )
+    expect(
+      within(footer).getByText(`© ${String(new Date().getFullYear())} MyCogniAI. Feito no Brasil.`),
+    ).toBeInTheDocument()
+  })
+
+  it('speaks American English with US crisis lines', () => {
+    renderWithIntl(<LandingPage chooseLocale={chooseLocale()} />, { locale: 'en-US' })
+
+    expect(
+      screen.getByRole('heading', { level: 1, name: 'How are you feeling right now?' }),
+    ).toBeInTheDocument()
+    expect(
+      within(screen.getByRole('navigation', { name: 'Sections' })).getByRole('link', {
+        name: 'Artificial intelligence',
+      }),
+    ).toHaveAttribute('href', '/#ia')
+    expect(screen.getAllByRole('link', { name: 'Get started' })).toHaveLength(2)
+    expect(screen.getByText('More than half the days')).toBeInTheDocument()
+    expect(
+      within(screen.getByRole('contentinfo')).getByRole('link', { name: '988' }),
+    ).toHaveAttribute('href', 'tel:988')
+  })
+
+  it('speaks European Portuguese with Portuguese crisis lines', () => {
+    renderWithIntl(<LandingPage chooseLocale={chooseLocale()} />, { locale: 'pt-PT' })
+
+    const header = screen.getByRole('banner')
+
+    expect(screen.getByRole('slider', { name: 'Como se sente agora?' })).toBeInTheDocument()
+    expect(within(header).getByRole('link', { name: 'Iniciar sessão' })).toHaveAttribute(
+      'href',
+      '/sign-in',
+    )
+    expect(screen.getByRole('region', { name: 'Os seus dados são seus.' })).toBeInTheDocument()
+    expect(screen.getByText('Funciona no telemóvel?')).toBeInTheDocument()
+    expect(
+      within(screen.getByRole('contentinfo')).getByRole('link', { name: '808 24 24 24' }),
+    ).toHaveAttribute('href', 'tel:808242424')
   })
 })

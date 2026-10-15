@@ -1,7 +1,9 @@
 import Link from 'next/link'
+import { useLocale, useTranslations } from 'next-intl'
 import type { ReactNode } from 'react'
+import { crisisLinesFor } from '@/i18n/crisis-lines'
 import { Wordmark } from '@/shared/components/wordmark'
-import { sectionLinks } from '../content'
+import { sectionKeys, sections } from '../content'
 
 const linkStyles = 'text-muted-foreground transition-colors hover:text-foreground'
 
@@ -15,6 +17,9 @@ function FooterColumn({ title, children }: { title: string; children: ReactNode 
 }
 
 export function SiteFooter() {
+  const t = useTranslations('landing')
+  const legal = useTranslations('legal')
+  const crisisLines = crisisLinesFor(useLocale())
   const year = new Date().getFullYear()
 
   return (
@@ -22,47 +27,43 @@ export function SiteFooter() {
       <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-[1.6fr_1fr_1fr_1fr]">
         <div className="space-y-3">
           <Wordmark />
-          <p className="max-w-xs leading-relaxed text-muted-foreground">
-            Diário de humor com PHQ-9, GAD-7 e resumos semanais escritos por IA.
-          </p>
+          <p className="max-w-xs leading-relaxed text-muted-foreground">{t('footer.tagline')}</p>
         </div>
-        <FooterColumn title="Produto">
-          {sectionLinks.map((link) => (
-            <li key={link.id}>
-              <a href={`/#${link.id}`} className={linkStyles}>
-                {link.label}
+        <FooterColumn title={t('footer.product')}>
+          {sectionKeys.map((key) => (
+            <li key={key}>
+              <a href={`/#${sections[key]}`} className={linkStyles}>
+                {t(`sections.${key}`)}
               </a>
             </li>
           ))}
         </FooterColumn>
-        <FooterColumn title="Ajuda agora">
-          <li>
-            <a href="tel:188" className={linkStyles}>
-              CVV · 188
-            </a>
-          </li>
-          <li>
-            <a href="tel:192" className={linkStyles}>
-              SAMU · 192
-            </a>
-          </li>
+        <FooterColumn title={t('footer.help')}>
+          {crisisLines.map((line) => (
+            <li key={line.phone} className="leading-relaxed">
+              <a href={`tel:${line.phone}`} className="font-medium hover:underline">
+                {line.display}
+              </a>{' '}
+              <span className="text-muted-foreground">{line.description}</span>
+            </li>
+          ))}
         </FooterColumn>
-        <FooterColumn title="Legal">
+        <FooterColumn title={t('footer.legal')}>
           <li>
             <Link href="/terms" className={linkStyles}>
-              Termos de uso
+              {legal('terms.title')}
             </Link>
           </li>
           <li>
             <Link href="/privacy" className={linkStyles}>
-              Política de privacidade
+              {legal('privacy.title')}
             </Link>
           </li>
         </FooterColumn>
       </div>
       <div className="mt-12 flex flex-col gap-2 border-t border-rule pt-6 text-muted-foreground sm:flex-row sm:justify-between">
-        <p>{`© ${String(year)} MyCogniAI. Feito no Brasil.`}</p>
-        <p>Não é terapia nem diagnóstico. Em crise, ligue 188.</p>
+        <p>{t('footer.copyright', { year })}</p>
+        <p>{t('footer.disclaimer')}</p>
       </div>
     </footer>
   )

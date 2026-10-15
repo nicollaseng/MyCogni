@@ -5,17 +5,19 @@ import { phq9 } from './phq9.ts'
 import { instruments, InvalidAnswersError, maxScoreOf, scoreAssessment } from './scoring.ts'
 
 function answersTotaling(instrument: Instrument, total: number): number[] {
-  return instrument.items.map((_, index) => Math.min(3, Math.max(0, total - index * 3)))
+  return Array.from({ length: instrument.itemCount }, (_, index) =>
+    Math.min(3, Math.max(0, total - index * 3)),
+  )
 }
 
 function answersWith(instrument: Instrument, value: number, at: number): number[] {
-  return instrument.items.map((_, index) => (index === at ? value : 0))
+  return Array.from({ length: instrument.itemCount }, (_, index) => (index === at ? value : 0))
 }
 
 describe('instruments', () => {
   it('has nine PHQ-9 items and seven GAD-7 items', () => {
-    expect(phq9.items).toHaveLength(9)
-    expect(gad7.items).toHaveLength(7)
+    expect(phq9.itemCount).toBe(9)
+    expect(gad7.itemCount).toBe(7)
     expect(instruments).toEqual({ phq9, gad7 })
     expect(instrumentIds.map((id) => instruments[id].id)).toEqual(['phq9', 'gad7'])
   })
@@ -27,9 +29,6 @@ describe('instruments', () => {
 
   it('watches PHQ-9 item 9, the one about self-harm', () => {
     expect(phq9.riskItemIndex).toBe(8)
-    expect(phq9.items[8]).toBe(
-      'Pensar em se ferir de alguma maneira ou que seria melhor estar morto/a',
-    )
     expect(gad7.riskItemIndex).toBeNull()
   })
 })

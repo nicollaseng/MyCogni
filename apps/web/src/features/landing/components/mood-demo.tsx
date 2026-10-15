@@ -1,12 +1,13 @@
 'use client'
 
 import Link from 'next/link'
+import { useTranslations } from 'next-intl'
 import { useId, useState } from 'react'
 import { MoodMap } from '@/features/mood/components/mood-map'
 import { MoodSlider } from '@/features/mood/components/mood-slider'
 import {
-  labelOf,
   moodColor,
+  moodKeyOf,
   neutralMood,
   valenceOf,
   type MoodLevel,
@@ -15,6 +16,8 @@ import { cn } from '@/shared/lib/utils'
 import { buttonVariants } from '@/shared/ui/button'
 
 export function MoodDemo() {
+  const t = useTranslations('landing')
+  const mood = useTranslations('common.mood')
   const [level, setLevel] = useState<MoodLevel>(neutralMood)
   const questionId = useId()
   const valence = valenceOf(level)
@@ -26,18 +29,17 @@ export function MoodDemo() {
       </div>
 
       <div className="lg:order-1">
-        <p className="text-sm text-muted-foreground">Diário de humor</p>
+        <p className="text-sm text-muted-foreground">{t('hero.kicker')}</p>
         <h1
           id={questionId}
           className="mt-3 font-serif text-[44px] leading-[1.04] tracking-[-0.02em] sm:text-[58px]"
         >
-          Como você está agora?
+          {t('hero.question')}
         </h1>
         <p className="mt-5 max-w-[30rem] text-lg leading-relaxed text-muted-foreground">
-          Arraste e veja o mapa responder. Um registro leva menos de um minuto, e a cada duas
-          semanas o <span className="whitespace-nowrap">PHQ-9</span> e o{' '}
-          <span className="whitespace-nowrap">GAD-7</span> mostram como ansiedade e humor mudam com
-          o tempo.
+          {t.rich('hero.intro', {
+            nowrap: (chunks) => <span className="whitespace-nowrap">{chunks}</span>,
+          })}
         </p>
 
         <div className="mt-8 max-w-[26rem]">
@@ -46,7 +48,7 @@ export function MoodDemo() {
             className="font-serif text-[28px] italic tracking-[-0.01em]"
             style={{ color: `color-mix(in oklab, ${moodColor(valence)} 70%, var(--foreground))` }}
           >
-            {labelOf(level)}
+            {mood(moodKeyOf(level))}
           </p>
           <MoodSlider level={level} labelledBy={questionId} onChange={setLevel} />
         </div>
@@ -55,7 +57,7 @@ export function MoodDemo() {
           href="/sign-up"
           className={cn(buttonVariants({ size: 'lg', shape: 'pill' }), 'mt-9 px-9')}
         >
-          Começar
+          {t('cta.start')}
         </Link>
       </div>
     </div>

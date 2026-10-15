@@ -1,5 +1,6 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
 import { useState } from 'react'
 import { useSubmit } from '@/shared/hooks/use-submit'
 import type { ActionResult } from '@/shared/lib/actions/result'
@@ -12,6 +13,7 @@ interface AiConsentSwitchProps {
 }
 
 export function AiConsentSwitch({ enabled, setAiConsent }: AiConsentSwitchProps) {
+  const t = useTranslations('account.consents.kinds')
   const [checked, setChecked] = useState(enabled)
   const { submit, pending, error } = useSubmit(setAiConsent, () => undefined)
 
@@ -19,7 +21,7 @@ export function AiConsentSwitch({ enabled, setAiConsent }: AiConsentSwitchProps)
     <div className="flex flex-col items-end gap-1">
       <Switch
         checked={checked}
-        label="Resumos escritos por IA"
+        label={t('ai_processing')}
         disabled={pending}
         onChange={(next) => {
           setChecked(next)

@@ -1,5 +1,7 @@
+{{ $locale := printf "%v" .Data.locale }}{{ $lang := "pt-BR" }}{{ if or (eq $locale "en-US") (eq
+$locale "en-GB") (eq $locale "pt-PT") }}{{ $lang = $locale }}{{ end -}}
 <!doctype html>
-<html lang="pt-BR">
+<html lang="{{ $lang }}">
   <body style="margin: 0; padding: 32px 16px; background: #eef1ea; color: #1e2925">
     <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
       <tr>
@@ -25,7 +27,9 @@
                   line-height: 1.2;
                 "
               >
-                Seu código para criar uma nova senha
+                {{ if or (eq $locale "en-US") (eq $locale "en-GB") }}Your code to choose a new
+                password{{ else if eq $locale "pt-PT" }}O seu código para criar uma nova
+                palavra-passe{{ else }}Seu código para criar uma nova senha{{ end }}
               </td>
             </tr>
             <tr>
@@ -38,7 +42,11 @@
                   color: #5b6762;
                 "
               >
-                Digite este código no MyCogniAI para escolher uma nova senha. Ele vale por 1 hora.
+                {{ if or (eq $locale "en-US") (eq $locale "en-GB") }}Enter this code in MyCogniAI to
+                choose a new password. It is valid for 1 hour.{{ else if eq $locale "pt-PT"
+                }}Introduza este código no MyCogniAI para escolher uma nova palavra-passe. É válido
+                durante 1 hora.{{ else }}Digite este código no MyCogniAI para escolher uma nova
+                senha. Ele vale por 1 hora.{{ end }}
               </td>
             </tr>
             <tr>
@@ -66,8 +74,11 @@
                   color: #5b6762;
                 "
               >
-                Se você não pediu para trocar a senha, ignore este email. Sua senha atual continua
-                valendo.
+                {{ if or (eq $locale "en-US") (eq $locale "en-GB") }}If you did not ask to change
+                your password, you can ignore this email. Your current password still works.{{ else
+                if eq $locale "pt-PT" }}Se não pediu para alterar a palavra-passe, ignore este
+                email. A sua palavra-passe atual continua válida.{{ else }}Se você não pediu para
+                trocar a senha, ignore este email. Sua senha atual continua valendo.{{ end }}
               </td>
             </tr>
           </table>

@@ -2,7 +2,8 @@
 
 import { requiredConsentKinds, type ConsentKind } from '@mycogni/domain'
 import Link from 'next/link'
-import { useState, type ReactNode } from 'react'
+import { useTranslations } from 'next-intl'
+import { useState } from 'react'
 import { StepActions } from '@/shared/components/step-actions'
 import { Button } from '@/shared/ui/button'
 import type { OnboardingActions } from '../model'
@@ -10,48 +11,43 @@ import { useSubmit } from '@/shared/hooks/use-submit'
 import { ActionError } from '@/shared/components/action-error'
 import { StepHeading } from '@/shared/components/step-heading'
 
+type ConsentOptionId = 'adult' | 'documents' | 'health' | 'ai'
+
 interface ConsentOption {
-  id: string
+  id: ConsentOptionId
   kinds: readonly ConsentKind[]
-  label: ReactNode
 }
 
 const documentLink = 'underline decoration-1 underline-offset-4'
 
 const options: readonly ConsentOption[] = [
-  { id: 'adult', kinds: ['adult'], label: 'Tenho 18 anos ou mais.' },
-  {
-    id: 'documents',
-    kinds: ['terms', 'privacy'],
-    label: (
-      <>
-        Li e aceito os{' '}
-        <Link href="/terms" target="_blank" className={documentLink}>
-          Termos de uso
-        </Link>{' '}
-        e a{' '}
-        <Link href="/privacy" target="_blank" className={documentLink}>
-          Política de privacidade
-        </Link>
-        .
-      </>
-    ),
-  },
-  {
-    id: 'health',
-    kinds: ['health_data'],
-    label:
-      'Autorizo o tratamento dos meus registros de humor e das minhas respostas aos questionários. São dados de saúde, usados só para mostrar meus padrões.',
-  },
-  {
-    id: 'ai',
-    kinds: ['ai_processing'],
-    label: 'Opcional: quero que a IA escreva resumos a partir dos meus registros.',
-  },
+  { id: 'adult', kinds: ['adult'] },
+  { id: 'documents', kinds: ['terms', 'privacy'] },
+  { id: 'health', kinds: ['health_data'] },
+  { id: 'ai', kinds: ['ai_processing'] },
 ]
 
 function isRequired(option: ConsentOption): boolean {
   return option.kinds.every((kind) => requiredConsentKinds.includes(kind))
+}
+
+function ConsentLabel({ id }: { id: ConsentOptionId }) {
+  const t = useTranslations('onboarding.consents')
+  if (id !== 'documents') {
+    return t(id)
+  }
+  return t.rich('documents', {
+    terms: (chunks) => (
+      <Link href="/terms" target="_blank" className={documentLink}>
+        {chunks}
+      </Link>
+    ),
+    privacy: (chunks) => (
+      <Link href="/privacy" target="_blank" className={documentLink}>
+        {chunks}
+      </Link>
+    ),
+  })
 }
 
 interface ConsentStepProps {
@@ -60,6 +56,7 @@ interface ConsentStepProps {
 }
 
 export function ConsentStep({ accept, onDone }: ConsentStepProps) {
+  const t = useTranslations('onboarding.consents')
   const [checked, setChecked] = useState<readonly string[]>([])
   const { submit, pending, error } = useSubmit(accept, onDone)
   const ready = options.filter(isRequired).every((option) => checked.includes(option.id))
@@ -72,12 +69,9 @@ export function ConsentStep({ accept, onDone }: ConsentStepProps) {
 
   return (
     <section className="flex min-h-0 flex-1 flex-col">
-      <StepHeading title="Antes de começar">
-        Você vai registrar como se sente, e isso é dado de saúde. Por isso pedimos sua permissão,
-        item por item.
-      </StepHeading>
+      <StepHeading title={t('title')}>{t('lead')}</StepHeading>
       <fieldset className="mt-7 border-t border-rule">
-        <legend className="sr-only">Permissões</legend>
+        <legend className="sr-only">{t('legend')}</legend>
         {options.map((option) => (
           <label
             key={option.id}
@@ -107,7 +101,9 @@ export function ConsentStep({ accept, onDone }: ConsentStepProps) {
                 />
               </svg>
             </span>
-            <span>{option.label}</span>
+            <span>
+              <ConsentLabel id={option.id} />
+            </span>
           </label>
         ))}
       </fieldset>
@@ -125,7 +121,7 @@ export function ConsentStep({ accept, onDone }: ConsentStepProps) {
             )
           }}
         >
-          {pending ? 'Salvando…' : 'Concordar e continuar'}
+          {pending ? t('saving') : t('submit')}
         </Button>
       </StepActions>
     </section>

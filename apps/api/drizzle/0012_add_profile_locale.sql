@@ -1,0 +1,2 @@
+ALTER TABLE "profiles" ADD COLUMN "locale" text;--> statement-breakpoint
+ALTER TABLE "profiles" ADD CONSTRAINT "profiles_locale_check" CHECK ("profiles"."locale" in ('pt-BR', 'pt-PT', 'en-US', 'en-GB'));

@@ -1,6 +1,7 @@
 import { dailyMoods } from '@mycogni/domain'
 import type { Metadata } from 'next'
 import Link from 'next/link'
+import { getLocale, getTranslations } from 'next-intl/server'
 import { MoodMap } from '@/features/mood/components/mood-map'
 import { MoodStrip } from '@/features/mood/components/mood-strip'
 import { isMoodLevel } from '@/features/mood/mood-levels'
@@ -11,19 +12,22 @@ import { PageTitle } from '@/shared/components/page-title'
 import { Panel, Section } from '@/shared/components/section'
 import { fetchAssessments, fetchCheckIns } from '@/shared/lib/api/resources'
 import { requireOnboardedProfile } from '@/shared/lib/auth/session'
-import { formatLongDate } from '@/shared/lib/time'
+import { formatDayTitle } from '@/shared/lib/time'
 import { cn } from '@/shared/lib/utils'
 import { buttonVariants } from '@/shared/ui/button'
 
-export const metadata: Metadata = { title: 'Hoje' }
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations('today.meta')
+  return { title: t('title') }
+}
 
 const windowDays = 14
 const dayInMs = 24 * 60 * 60 * 1000
 
 export default async function TodayPage() {
   const { timezone } = await requireOnboardedProfile()
+  const [t, locale] = await Promise.all([getTranslations('today'), getLocale()])
   const now = new Date()
-  const today = formatLongDate(now, timezone)
   const [checkIns, assessments] = await Promise.all([
     fetchCheckIns({ since: new Date(now.getTime() - (windowDays + 1) * dayInMs), limit: 200 }),
     fetchAssessments(),
@@ -41,34 +45,32 @@ export default async function TodayPage() {
 
   return (
     <>
-      <PageTitle kicker={today} title="Como você está agora?" />
+      <PageTitle kicker={formatDayTitle(now, timezone, locale)} title={t('title')} />
 
       <section className="flex items-center gap-6 sm:gap-10">
         <MoodMap valence={0.5} rings={9} className="size-32 shrink-0 sm:size-40" />
         <div className="space-y-4">
-          <p className="leading-relaxed text-muted-foreground">
-            Leva menos de um minuto. Num dia difícil, só o humor já basta.
-          </p>
+          <p className="leading-relaxed text-muted-foreground">{t('intro')}</p>
           <Link href="/check-in" className={cn(buttonVariants({ shape: 'pill' }))}>
-            Registrar como estou
+            {t('checkIn')}
           </Link>
         </div>
       </section>
 
-      <Section title="Últimos 14 dias">
+      <Section title={t('recent.title', { days: windowDays })}>
         <Panel className="space-y-4 py-5">
           <MoodStrip
             days={days}
             label={
               recordedDays === 0
-                ? 'Nenhum dia registrado nos últimos 14 dias'
-                : `Humor de ${String(recordedDays)} dos últimos 14 dias`
+                ? t('recent.emptyLabel', { days: windowDays })
+                : t('recent.label', { count: recordedDays, days: windowDays })
             }
           />
           <p className="text-sm text-muted-foreground">
             {recordedDays === 0
-              ? 'Seus dias aparecem aqui conforme você registra.'
-              : `${String(recordedDays)} de 14 dias com registro.`}
+              ? t('recent.emptyHint')
+              : t('recent.summary', { count: recordedDays, days: windowDays })}
           </p>
         </Panel>
       </Section>
@@ -79,7 +81,7 @@ export default async function TodayPage() {
             href="/questionnaires"
             className="block px-1 underline decoration-1 underline-offset-4"
           >
-            Já faz {daysSince(lastAnswer, now)} dias. Refazer os questionários
+            {t('screeningDue', { count: daysSince(lastAnswer, now) })}
           </Link>
         )}
       </LatestScreening>

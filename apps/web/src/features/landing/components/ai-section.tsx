@@ -1,8 +1,10 @@
+import { useTranslations } from 'next-intl'
 import { aiPrinciples, sections } from '../content'
 import { SectionHeading } from './section-heading'
 import { WeeklyNote } from './weekly-note'
 
 export function AiSection() {
+  const t = useTranslations('landing')
   const titleId = `${sections.ai}-title`
 
   return (
@@ -15,14 +17,14 @@ export function AiSection() {
         <div>
           <SectionHeading
             id={titleId}
-            kicker="Inteligência artificial"
-            title="A IA escreve. Os números vêm de você."
-            description="Toda semana, o MyCogniAI encontra padrões nos seus registros e escreve um resumo em linguagem simples, para você entender seus dias e levar para a terapia."
+            kicker={t('sections.ai')}
+            title={t('ai.title')}
+            description={t('ai.description')}
           />
           <ul className="mt-10 divide-y divide-rule border-y border-rule">
             {aiPrinciples.map((principle) => (
               <li key={principle} className="py-4 leading-relaxed">
-                {principle}
+                {t(`ai.principles.${principle}`)}
               </li>
             ))}
           </ul>

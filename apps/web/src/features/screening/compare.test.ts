@@ -1,6 +1,6 @@
 import { describe, expect, it } from '@jest/globals'
 import type { Assessment } from '@mycogni/contracts'
-import { comparedTo } from './compare'
+import { comparisonOf } from './compare'
 
 function result(totalScore: number, completedAt: string): Assessment {
   return {
@@ -17,22 +17,33 @@ function result(totalScore: number, completedAt: string): Assessment {
 const before = result(17, '2026-10-01T13:00:00Z')
 const zone = 'America/Sao_Paulo'
 
-describe('comparedTo', () => {
+describe('comparisonOf', () => {
   it('says how many points went down since the previous time', () => {
-    expect(comparedTo(result(14, '2026-10-15T13:00:00Z'), before, zone)).toBe(
-      '3 pontos a menos que em 1 de outubro',
-    )
+    expect(comparisonOf(result(14, '2026-10-15T13:00:00Z'), before, zone, 'pt-BR')).toEqual({
+      change: 'down',
+      points: 3,
+      day: '1 de outubro',
+    })
   })
 
-  it('says how many points went up, in the singular when it is one', () => {
-    expect(comparedTo(result(18, '2026-10-15T13:00:00Z'), before, zone)).toBe(
-      '1 ponto a mais que em 1 de outubro',
-    )
+  it('says how many points went up', () => {
+    expect(comparisonOf(result(18, '2026-10-15T13:00:00Z'), before, zone, 'pt-BR')).toEqual({
+      change: 'up',
+      points: 1,
+      day: '1 de outubro',
+    })
   })
 
   it('says when nothing changed', () => {
-    expect(comparedTo(result(17, '2026-10-15T13:00:00Z'), before, zone)).toBe(
-      'Igual a 1 de outubro',
+    expect(comparisonOf(result(17, '2026-10-15T13:00:00Z'), before, zone, 'pt-BR').change).toBe(
+      'same',
     )
+  })
+
+  it('writes the day the way each language does', () => {
+    const now = result(17, '2026-10-15T13:00:00Z')
+    expect(comparisonOf(now, before, zone, 'en-US').day).toBe('October 1')
+    expect(comparisonOf(now, before, zone, 'en-GB').day).toBe('1 October')
+    expect(comparisonOf(now, before, zone, 'pt-PT').day).toBe('1 de outubro')
   })
 })

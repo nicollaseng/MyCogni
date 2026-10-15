@@ -10,6 +10,7 @@ describe('/v1/me', () => {
   let connection: DatabaseConnection
   let ana: TestUser
   let bruno: TestUser
+  let carla: TestUser
 
   beforeAll(async () => {
     connection = connectDatabase(testDatabaseUrl)
@@ -17,11 +18,13 @@ describe('/v1/me', () => {
     await app.ready()
     ana = await createTestUser({ full_name: 'Ana Lima' })
     bruno = await createTestUser({ name: 'Bruno' })
+    carla = await createTestUser({ name: 'Carla', locale: 'pt-PT' })
   })
 
   afterAll(async () => {
     await deleteTestUser(ana.id)
     await deleteTestUser(bruno.id)
+    await deleteTestUser(carla.id)
     await app.close()
     await connection.close()
   })
@@ -57,8 +60,38 @@ describe('/v1/me', () => {
       displayName: 'Ana Lima',
       avatarPath: null,
       timezone: 'America/Sao_Paulo',
+      locale: null,
       onboardingCompletedAt: null,
     })
+  })
+
+  it('keeps the language chosen when the person signed up', async () => {
+    const response = await app.inject({ method: 'GET', url: '/v1/me', headers: bearer(carla) })
+
+    expect(response.json()).toEqual(expect.objectContaining({ locale: 'pt-PT' }))
+  })
+
+  it('changes the language of the account', async () => {
+    const response = await app.inject({
+      method: 'PATCH',
+      url: '/v1/me',
+      headers: bearer(bruno),
+      payload: { locale: 'en-GB' },
+    })
+
+    expect(response.statusCode).toBe(200)
+    expect(response.json()).toEqual(expect.objectContaining({ locale: 'en-GB' }))
+  })
+
+  it('rejects a language the app does not speak', async () => {
+    const response = await app.inject({
+      method: 'PATCH',
+      url: '/v1/me',
+      headers: bearer(bruno),
+      payload: { locale: 'fr-FR' },
+    })
+
+    expect(response.statusCode).toBe(400)
   })
 
   it('updates the name and the time zone', async () => {

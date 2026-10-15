@@ -1,5 +1,7 @@
 import type { Metadata, Viewport } from 'next'
 import { Newsreader, Schibsted_Grotesk } from 'next/font/google'
+import { NextIntlClientProvider } from 'next-intl'
+import { getLocale, getTranslations } from 'next-intl/server'
 import type { ReactNode } from 'react'
 import './globals.css'
 
@@ -17,10 +19,12 @@ const sans = Schibsted_Grotesk({
   display: 'swap',
 })
 
-export const metadata: Metadata = {
-  title: { default: 'MyCogniAI', template: '%s · MyCogniAI' },
-  description:
-    'Diário de humor: um registro por dia e PHQ-9 e GAD-7 a cada duas semanas para ver como ansiedade e humor mudam.',
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations('common.meta')
+  return {
+    title: { default: 'MyCogniAI', template: '%s · MyCogniAI' },
+    description: t('description'),
+  }
 }
 
 export const viewport: Viewport = {
@@ -33,10 +37,14 @@ export const viewport: Viewport = {
   ],
 }
 
-export default function RootLayout({ children }: Readonly<{ children: ReactNode }>) {
+export default async function RootLayout({ children }: Readonly<{ children: ReactNode }>) {
+  const locale = await getLocale()
+
   return (
-    <html lang="pt-BR" className={`${serif.variable} ${sans.variable}`}>
-      <body className="min-h-dvh">{children}</body>
+    <html lang={locale} className={`${serif.variable} ${sans.variable}`}>
+      <body className="min-h-dvh">
+        <NextIntlClientProvider>{children}</NextIntlClientProvider>
+      </body>
     </html>
   )
 }

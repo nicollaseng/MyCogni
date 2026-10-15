@@ -1,5 +1,6 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
 import { useActionState, useState } from 'react'
 import { Button } from '@/shared/ui/button'
 import { TextField } from '@/shared/ui/text-field'
@@ -11,30 +12,31 @@ interface CredentialsFormProps {
   mode: 'sign-up' | 'sign-in'
 }
 
-const copy = {
+const modes = {
   'sign-up': {
-    submit: 'Criar conta',
-    pending: 'Criando conta…',
-    passwordHint: 'Pelo menos 8 caracteres, com letras e números.',
+    submit: 'signUp',
+    pending: 'signingUp',
+    withPasswordHint: true,
     autoComplete: 'new-password',
   },
   'sign-in': {
-    submit: 'Entrar',
-    pending: 'Entrando…',
-    passwordHint: undefined,
+    submit: 'signIn',
+    pending: 'signingIn',
+    withPasswordHint: false,
     autoComplete: 'current-password',
   },
 } as const
 
 export function CredentialsForm({ action, mode }: CredentialsFormProps) {
+  const t = useTranslations('auth.form')
   const [state, formAction, pending] = useActionState(action, initialFormState)
   const [email, setEmail] = useState('')
-  const text = copy[mode]
+  const text = modes[mode]
 
   return (
     <form action={formAction} noValidate className="space-y-5">
       <TextField
-        label="Email"
+        label={t('email')}
         name="email"
         type="email"
         autoComplete="email"
@@ -46,17 +48,17 @@ export function CredentialsForm({ action, mode }: CredentialsFormProps) {
         required
       />
       <TextField
-        label="Senha"
+        label={t('password')}
         name="password"
         type="password"
         autoComplete={text.autoComplete}
-        hint={text.passwordHint}
+        hint={text.withPasswordHint ? t('passwordHint') : undefined}
         error={state.fieldErrors.password}
         required
       />
       <FormFeedback state={state} />
       <Button type="submit" size="lg" shape="pill" disabled={pending} className="w-full">
-        {pending ? text.pending : text.submit}
+        {pending ? t(text.pending) : t(text.submit)}
       </Button>
     </form>
   )

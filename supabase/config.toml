@@ -43,11 +43,11 @@ otp_length = 6
 otp_expiry = 3600
 
 [auth.email.template.confirmation]
-subject = "Seu código de confirmação do MyCogniAI"
+subject = "{{ $l := printf \"%v\" .Data.locale }}{{ if or (eq $l \"en-US\") (eq $l \"en-GB\") }}Your MyCogniAI confirmation code{{ else if eq $l \"pt-PT\" }}O seu código de confirmação do MyCogniAI{{ else }}Seu código de confirmação do MyCogniAI{{ end }}"
 content_path = "./supabase/templates/confirmation.html"
 
 [auth.email.template.recovery]
-subject = "Seu código para criar uma nova senha"
+subject = "{{ $l := printf \"%v\" .Data.locale }}{{ if or (eq $l \"en-US\") (eq $l \"en-GB\") }}Your code to choose a new password{{ else if eq $l \"pt-PT\" }}O seu código para criar uma nova palavra-passe{{ else }}Seu código para criar uma nova senha{{ end }}"
 content_path = "./supabase/templates/recovery.html"
 
 [auth.external.google]

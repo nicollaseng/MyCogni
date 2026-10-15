@@ -3,6 +3,7 @@
 import type { Assessment } from '@mycogni/contracts'
 import { gad7, phq9 } from '@mycogni/domain'
 import Link from 'next/link'
+import { useLocale, useTranslations } from 'next-intl'
 import { useState } from 'react'
 import { StepActions } from '@/shared/components/step-actions'
 import { StepHeading } from '@/shared/components/step-heading'
@@ -24,6 +25,8 @@ interface RetakeFlowProps {
 }
 
 export function RetakeFlow({ previous: initial, timeZone, send }: RetakeFlowProps) {
+  const t = useTranslations('screening')
+  const locale = useLocale()
   const [previous] = useState(initial)
   const [step, setStep] = useState<Step>('intro')
   const [depression, setDepression] = useState<Assessment>()
@@ -34,8 +37,8 @@ export function RetakeFlow({ previous: initial, timeZone, send }: RetakeFlowProp
     <div className="flex h-dvh flex-col">
       <div className="mx-auto flex min-h-0 w-full max-w-[460px] flex-1 flex-col px-6 pt-5">
         <header className="flex h-11 shrink-0 items-center justify-between text-sm">
-          <span className="text-muted-foreground">Questionários</span>
-          <Link href="/me">Fechar</Link>
+          <span className="text-muted-foreground">{t('title')}</span>
+          <Link href="/me">{t('retake.close')}</Link>
         </header>
         <main
           key={step}
@@ -43,14 +46,14 @@ export function RetakeFlow({ previous: initial, timeZone, send }: RetakeFlowProp
         >
           {step === 'intro' && (
             <section className="flex min-h-0 flex-1 flex-col">
-              <StepHeading title="Como foram as últimas duas semanas?">
+              <StepHeading title={t('retake.title')}>
                 {last === undefined
-                  ? 'São 16 perguntas do PHQ-9 e do GAD-7, uma por tela.'
-                  : `Da última vez você respondeu em ${formatLongDate(new Date(last.completedAt), timeZone).toLowerCase()}. No fim, você vê o que mudou desde então.`}
+                  ? t('retake.firstTime')
+                  : t('retake.since', {
+                      date: formatLongDate(new Date(last.completedAt), timeZone, locale),
+                    })}
               </StepHeading>
-              <p className="mt-6 text-[15px] leading-relaxed text-pretty">
-                Não existe resposta certa. Responda pensando em como as coisas foram de verdade.
-              </p>
+              <p className="mt-6 text-[15px] leading-relaxed text-pretty">{t('retake.honest')}</p>
               <StepActions>
                 <Button
                   size="lg"
@@ -59,7 +62,7 @@ export function RetakeFlow({ previous: initial, timeZone, send }: RetakeFlowProp
                     setStep('phq9')
                   }}
                 >
-                  Começar
+                  {t('retake.start')}
                 </Button>
               </StepActions>
             </section>
@@ -93,7 +96,7 @@ export function RetakeFlow({ previous: initial, timeZone, send }: RetakeFlowProp
           )}
           {step === 'results' && depression !== undefined && anxiety !== undefined && (
             <section className="flex min-h-0 flex-1 flex-col overflow-y-auto [scrollbar-width:none]">
-              <StepHeading title="Seus resultados de hoje." />
+              <StepHeading title={t('retake.resultsTitle')} />
               <div className="mt-6">
                 <ScreeningResults
                   depression={depression}
@@ -103,13 +106,13 @@ export function RetakeFlow({ previous: initial, timeZone, send }: RetakeFlowProp
               </div>
               <StepActions>
                 <p className="mb-3 text-center text-sm text-balance text-muted-foreground">
-                  É uma triagem, não um diagnóstico. Só um profissional pode avaliar o seu caso.
+                  {t('retake.disclaimer')}
                 </p>
                 <Link
                   href="/me"
                   className={cn(buttonVariants({ size: 'lg', shape: 'pill' }), 'w-full')}
                 >
-                  Voltar para Você
+                  {t('retake.back')}
                 </Link>
               </StepActions>
             </section>

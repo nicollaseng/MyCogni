@@ -1,8 +1,10 @@
 import { describe, expect, it, jest } from '@jest/globals'
 import type { CheckIn, CreateCheckInInput } from '@mycogni/contracts'
-import { fireEvent, render, screen } from '@testing-library/react'
+import type { Locale } from '@mycogni/domain'
+import { fireEvent, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import type { ActionResult } from '@/shared/lib/actions/result'
+import { renderWithIntl } from '@/test/render'
 import { CheckInFlow } from './check-in-flow'
 
 type Save = (input: CreateCheckInInput) => Promise<ActionResult<CheckIn>>
@@ -18,15 +20,16 @@ function savedAs(input: CreateCheckInInput): Promise<ActionResult<CheckIn>> {
   })
 }
 
-function renderFlow(save = jest.fn<Save>(savedAs)) {
-  render(
+function renderFlow(save = jest.fn<Save>(savedAs), locale: Locale = 'pt-BR') {
+  renderWithIntl(
     <CheckInFlow today="Quarta-feira, 14 de outubro" timeZone="America/Sao_Paulo" save={save} />,
+    { locale },
   )
   return save
 }
 
-function slider(): HTMLElement {
-  return screen.getByRole('slider', { name: 'Como você está agora?' })
+function slider(name = 'Como você está agora?'): HTMLElement {
+  return screen.getByRole('slider', { name })
 }
 
 describe('CheckInFlow', () => {
@@ -78,11 +81,58 @@ describe('CheckInFlow', () => {
     expect(await screen.findByText('mal · ansiedade · trabalho')).toBeInTheDocument()
     expect(save).toHaveBeenCalledWith({
       moodLevel: 1,
-      emotions: ['ansiedade'],
-      contexts: ['trabalho'],
+      emotions: ['anxiety'],
+      contexts: ['work'],
       note: 'Prazo apertado',
     })
     expect(screen.getByRole('link', { name: 'Ver meus dias' })).toHaveAttribute('href', '/today')
+  })
+
+  it('stores words the person typed as they were written', async () => {
+    const user = userEvent.setup()
+    const save = renderFlow()
+
+    await user.click(screen.getByRole('button', { name: 'Continuar' }))
+    await user.type(
+      screen.getByRole('searchbox', { name: 'Buscar ou escrever outra' }),
+      'luto{Enter}',
+    )
+    await user.click(screen.getByRole('button', { name: 'Continuar com 1' }))
+    await user.click(screen.getByRole('button', { name: 'Registrar' }))
+
+    expect(await screen.findByText('neutro · luto')).toBeInTheDocument()
+    expect(save).toHaveBeenCalledWith({
+      moodLevel: 3,
+      emotions: ['luto'],
+      contexts: [],
+      note: null,
+    })
+  })
+
+  it('walks the whole check-in in American English', async () => {
+    const user = userEvent.setup()
+    const save = renderFlow(jest.fn<Save>(savedAs), 'en-US')
+    const question = 'How are you feeling right now?'
+
+    fireEvent.change(slider(question), { target: { value: '1' } })
+    expect(slider(question)).toHaveAttribute('aria-valuetext', 'Bad')
+
+    await user.click(screen.getByRole('button', { name: 'Continue' }))
+    expect(screen.getByRole('heading', { name: 'What are you feeling?' })).toBeInTheDocument()
+    await user.click(screen.getByRole('button', { name: 'worry' }))
+    await user.click(screen.getByRole('button', { name: 'Continue with 1' }))
+    await user.click(screen.getByRole('tab', { name: 'people' }))
+    await user.click(screen.getByRole('button', { name: 'coworkers' }))
+    await user.click(screen.getByRole('button', { name: 'Save' }))
+
+    expect(await screen.findByRole('heading', { name: 'Logged at 09:05 AM.' })).toBeInTheDocument()
+    expect(screen.getByText('bad · worry · coworkers')).toBeInTheDocument()
+    expect(save).toHaveBeenCalledWith({
+      moodLevel: 1,
+      emotions: ['worry'],
+      contexts: ['coworkers'],
+      note: null,
+    })
   })
 
   it('goes back without losing the choices', async () => {

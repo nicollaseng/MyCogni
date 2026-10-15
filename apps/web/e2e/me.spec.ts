@@ -147,6 +147,17 @@ test('answers the questionnaires again and keeps the history', async ({ page }) 
   await expect(page.getByRole('region', { name: 'Seus questionários' })).toContainText('8de 27')
 })
 
+test('switches the language from the account page', async ({ page }) => {
+  await signInAsReadyPerson(page)
+
+  await page.getByRole('combobox', { name: 'Idioma' }).selectOption('en-US')
+
+  await expect(page.getByRole('region', { name: 'Your questionnaires' })).toBeVisible()
+  await expect(page.getByRole('combobox', { name: 'Language' })).toHaveValue('en-US')
+  await page.reload()
+  await expect(page.getByRole('region', { name: 'Preferences' })).toBeVisible()
+})
+
 test('turns the AI summaries on and off', async ({ page }) => {
   await signInAsReadyPerson(page)
   const privacy = page.getByRole('region', { name: 'Privacidade' })

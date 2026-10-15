@@ -2,14 +2,14 @@ import type { Route } from 'next'
 
 export interface NavigationItem {
   href: Route
-  label: string
+  key: 'today' | 'entries' | 'patterns' | 'me'
 }
 
 export const navigationItems: readonly NavigationItem[] = [
-  { href: '/today', label: 'Hoje' },
-  { href: '/entries', label: 'Registros' },
-  { href: '/patterns', label: 'Padrões' },
-  { href: '/me', label: 'Você' },
+  { href: '/today', key: 'today' },
+  { href: '/entries', key: 'entries' },
+  { href: '/patterns', key: 'patterns' },
+  { href: '/me', key: 'me' },
 ]
 
 export function isActivePath(pathname: string, href: string): boolean {

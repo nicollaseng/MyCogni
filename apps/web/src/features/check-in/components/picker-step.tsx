@@ -1,5 +1,6 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
 import type { ReactNode } from 'react'
 import { MoodMap } from '@/features/mood/components/mood-map'
 import { ActionError } from '@/shared/components/action-error'
@@ -37,6 +38,8 @@ export function PickerStep({
   error = null,
   children,
 }: PickerStepProps) {
+  const t = useTranslations('checkIn.flow')
+
   return (
     <section className="flex min-h-0 flex-1 flex-col">
       <div className="mt-6 flex items-start justify-between gap-4">
@@ -52,7 +55,7 @@ export function PickerStep({
         </Button>
         {onSkip !== undefined && (
           <Button variant="ghost" size="sm" onClick={onSkip} className="mt-1">
-            Pular
+            {t('skip')}
           </Button>
         )}
       </StepActions>

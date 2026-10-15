@@ -1,7 +1,8 @@
 'use client'
 
 import type { Assessment } from '@mycogni/contracts'
-import { frequencyOptions, type Instrument } from '@mycogni/domain'
+import { answerValues, instrumentText, type Instrument } from '@mycogni/domain'
+import { useLocale, useTranslations } from 'next-intl'
 import { useState } from 'react'
 import { cn } from '@/shared/lib/utils'
 import { Button } from '@/shared/ui/button'
@@ -22,14 +23,16 @@ interface QuestionnaireProps {
 }
 
 export function Questionnaire({ instrument, send, onDone }: QuestionnaireProps) {
-  const total = instrument.items.length
+  const t = useTranslations('screening.questionnaire')
+  const text = instrumentText(useLocale(), instrument.id)
+  const total = instrument.itemCount
   const [index, setIndex] = useState(0)
   const [answers, setAnswers] = useState<readonly (number | null)[]>(() =>
-    instrument.items.map(() => null),
+    Array.from({ length: total }, () => null),
   )
   const [advancing, setAdvancing] = useState(false)
   const { submit, pending, error } = useSubmit(send, onDone)
-  const item = instrument.items[index] ?? ''
+  const item = text.items[index] ?? ''
   const answered = answers.filter(isAnswered)
   const complete = answered.length === total
 
@@ -65,10 +68,10 @@ export function Questionnaire({ instrument, send, onDone }: QuestionnaireProps) 
           disabled={pending}
           className={cn(index === 0 && 'invisible')}
         >
-          Voltar
+          {t('back')}
         </button>
         <p className="text-muted-foreground">
-          {instrument.name} · {index + 1} de {total}
+          {t('progress', { name: instrument.name, current: index + 1, total })}
         </p>
       </div>
       <div aria-hidden className="mt-2 h-[2px] rounded-full bg-rule">
@@ -79,7 +82,7 @@ export function Questionnaire({ instrument, send, onDone }: QuestionnaireProps) 
       </div>
 
       <div key={index} className="mt-8 animate-rise motion-reduce:animate-none">
-        <p className="text-[15px] leading-relaxed text-muted-foreground">{instrument.prompt}</p>
+        <p className="text-[15px] leading-relaxed text-muted-foreground">{text.prompt}</p>
         <h1
           id="question"
           className={cn(
@@ -94,29 +97,31 @@ export function Questionnaire({ instrument, send, onDone }: QuestionnaireProps) 
       <div className="mt-auto pt-6 pb-[calc(1.375rem+env(safe-area-inset-bottom))]">
         {pending && (
           <p role="status" className="mb-3 text-sm text-muted-foreground">
-            Salvando suas respostas…
+            {t('saving')}
           </p>
         )}
         <ActionError error={error} />
         {error !== null && complete ? (
           <Button size="lg" shape="pill" className="w-full" onClick={sendAnswers}>
-            Tentar de novo
+            {t('retry')}
           </Button>
         ) : (
           <div role="group" aria-labelledby="question" className="border-t border-rule">
-            {frequencyOptions.map((option) => {
-              const selected = answers[index] === option.value
+            {answerValues.map((value) => {
+              const selected = answers[index] === value
               return (
                 <button
-                  key={option.value}
+                  key={value}
                   type="button"
                   aria-pressed={selected}
                   onClick={() => {
-                    choose(option.value)
+                    choose(value)
                   }}
                   className="flex h-14 w-full items-center justify-between border-b border-rule text-left text-[17px] transition-colors active:bg-sage/60"
                 >
-                  <span className={cn(!selected && 'text-foreground/85')}>{option.label}</span>
+                  <span className={cn(!selected && 'text-foreground/85')}>
+                    {text.options[value]}
+                  </span>
                   <span
                     aria-hidden
                     className={cn(

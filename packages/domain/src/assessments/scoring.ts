@@ -11,7 +11,7 @@ export interface AssessmentScore {
 
 export class InvalidAnswersError extends Error {
   constructor(instrument: Instrument) {
-    super(`${instrument.name} expects ${String(instrument.items.length)} answers from 0 to 3`)
+    super(`${instrument.name} expects ${String(instrument.itemCount)} answers from 0 to 3`)
     this.name = 'InvalidAnswersError'
   }
 }
@@ -19,14 +19,14 @@ export class InvalidAnswersError extends Error {
 export const instruments: Record<InstrumentId, Instrument> = { phq9, gad7 }
 
 export function maxScoreOf(instrument: Instrument): number {
-  return instrument.items.length * 3
+  return instrument.itemCount * 3
 }
 
 export function scoreAssessment(
   instrument: Instrument,
   answers: readonly number[],
 ): AssessmentScore {
-  if (answers.length !== instrument.items.length || !answers.every(isAnswer)) {
+  if (answers.length !== instrument.itemCount || !answers.every(isAnswer)) {
     throw new InvalidAnswersError(instrument)
   }
 

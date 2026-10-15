@@ -1,5 +1,6 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
 import { useActionState } from 'react'
 import { Button } from '@/shared/ui/button'
 import { TextField } from '@/shared/ui/text-field'
@@ -13,12 +14,13 @@ interface CodeFormProps {
 }
 
 export function CodeForm({ action, withNewPassword = false, submitLabel }: CodeFormProps) {
+  const t = useTranslations('auth.form')
   const [state, formAction, pending] = useActionState(action, initialFormState)
 
   return (
     <form action={formAction} noValidate className="space-y-5">
       <TextField
-        label="Código"
+        label={t('code')}
         name="code"
         inputMode="numeric"
         autoComplete="one-time-code"
@@ -31,18 +33,18 @@ export function CodeForm({ action, withNewPassword = false, submitLabel }: CodeF
       />
       {withNewPassword && (
         <TextField
-          label="Nova senha"
+          label={t('newPassword')}
           name="password"
           type="password"
           autoComplete="new-password"
-          hint="Pelo menos 8 caracteres, com letras e números."
+          hint={t('passwordHint')}
           error={state.fieldErrors.password}
           required
         />
       )}
       <FormFeedback state={state} />
       <Button type="submit" size="lg" shape="pill" disabled={pending} className="w-full">
-        {pending ? 'Confirmando…' : submitLabel}
+        {pending ? t('confirming') : submitLabel}
       </Button>
     </form>
   )

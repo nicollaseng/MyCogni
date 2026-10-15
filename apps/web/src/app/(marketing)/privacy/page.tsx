@@ -1,9 +1,13 @@
 import type { Metadata } from 'next'
-import { LegalPage } from '@/features/legal/components/legal-page'
-import { privacyPolicy } from '@/features/legal/content'
+import { getTranslations } from 'next-intl/server'
+import { PrivacyPolicy } from '@/features/legal/components/privacy-policy'
+import { chooseLocale } from '@/features/locale/actions'
 
-export const metadata: Metadata = { title: privacyPolicy.title }
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations('legal.privacy')
+  return { title: t('title') }
+}
 
 export default function PrivacyPage() {
-  return <LegalPage document={privacyPolicy} />
+  return <PrivacyPolicy chooseLocale={chooseLocale} />
 }

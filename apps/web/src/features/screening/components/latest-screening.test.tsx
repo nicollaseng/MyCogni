@@ -1,6 +1,7 @@
 import { describe, expect, it } from '@jest/globals'
 import type { Assessment } from '@mycogni/contracts'
-import { render, screen, within } from '@testing-library/react'
+import { screen, within } from '@testing-library/react'
+import { renderWithIntl } from '@/test/render'
 import { LatestScreening } from './latest-screening'
 
 const depression: Assessment = {
@@ -24,7 +25,7 @@ const anxiety: Assessment = {
 
 describe('LatestScreening', () => {
   it('shows the last score and band of each form with the day it was answered', () => {
-    render(
+    renderWithIntl(
       <LatestScreening
         results={{ phq9: depression, gad7: anxiety }}
         timeZone="America/Sao_Paulo"
@@ -38,8 +39,37 @@ describe('LatestScreening', () => {
   })
 
   it('says when the forms were never answered', () => {
-    render(<LatestScreening results={{}} timeZone="America/Sao_Paulo" />)
+    renderWithIntl(<LatestScreening results={{}} timeZone="America/Sao_Paulo" />)
 
     expect(screen.getByText('Você ainda não respondeu o PHQ-9 e o GAD-7.')).toBeInTheDocument()
+  })
+
+  it('speaks English with the standard severity names', () => {
+    renderWithIntl(
+      <LatestScreening
+        results={{ phq9: depression, gad7: anxiety }}
+        timeZone="America/Sao_Paulo"
+      />,
+      { locale: 'en-US' },
+    )
+
+    expect(screen.getByRole('region', { name: 'Your questionnaires' })).toBeInTheDocument()
+    const [phq9, gad7] = within(screen.getByRole('list')).getAllByRole('listitem')
+    expect(phq9).toHaveTextContent('Signs of depression · PHQ-917of 27Moderately severe')
+    expect(gad7).toHaveTextContent('Signs of anxiety · GAD-721of 21Severe')
+    expect(screen.getByText(/Answered on Thursday, October 15\./)).toBeInTheDocument()
+  })
+
+  it('uses the European Portuguese severity names in Portugal', () => {
+    renderWithIntl(
+      <LatestScreening
+        results={{ phq9: { ...depression, totalScore: 6, severity: 'mild' } }}
+        timeZone="Europe/Lisbon"
+      />,
+      { locale: 'pt-PT' },
+    )
+
+    expect(screen.getByRole('listitem')).toHaveTextContent('Ligeira')
+    expect(screen.getByText(/É um rastreio, não um diagnóstico\./)).toBeInTheDocument()
   })
 })

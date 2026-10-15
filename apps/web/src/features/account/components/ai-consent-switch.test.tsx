@@ -1,7 +1,8 @@
 import { describe, expect, it, jest } from '@jest/globals'
-import { render, screen } from '@testing-library/react'
+import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import type { ActionResult } from '@/shared/lib/actions/result'
+import { renderWithIntl } from '@/test/render'
 import { AiConsentSwitch } from './ai-consent-switch'
 
 describe('AiConsentSwitch', () => {
@@ -9,7 +10,7 @@ describe('AiConsentSwitch', () => {
     const setAiConsent = jest.fn<(enabled: boolean) => Promise<ActionResult<string>>>(() =>
       Promise.resolve({ ok: true, value: 'ok' }),
     )
-    render(<AiConsentSwitch enabled setAiConsent={setAiConsent} />)
+    renderWithIntl(<AiConsentSwitch enabled setAiConsent={setAiConsent} />)
     const control = screen.getByRole('switch', { name: 'Resumos escritos por IA' })
 
     expect(control).toHaveAttribute('aria-checked', 'true')
@@ -22,7 +23,7 @@ describe('AiConsentSwitch', () => {
   })
 
   it('says when the change could not be saved', async () => {
-    render(
+    renderWithIntl(
       <AiConsentSwitch
         enabled={false}
         setAiConsent={() => Promise.resolve({ ok: false, error: 'Não conseguimos salvar agora.' })}

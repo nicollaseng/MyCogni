@@ -1,14 +1,16 @@
 import { maxMoodLevel } from '@mycogni/domain'
 
-export const moodLabels = [
-  'Muito mal',
-  'Mal',
-  'Um pouco mal',
-  'Neutro',
-  'Um pouco bem',
-  'Bem',
-  'Muito bem',
+export const moodKeys = [
+  'veryBad',
+  'bad',
+  'slightlyBad',
+  'neutral',
+  'slightlyGood',
+  'good',
+  'veryGood',
 ] as const
+
+export type MoodKey = (typeof moodKeys)[number]
 
 export type MoodLevel = 0 | 1 | 2 | 3 | 4 | 5 | 6
 
@@ -24,8 +26,8 @@ export function valenceOf(level: MoodLevel): number {
   return level / maxMoodLevel
 }
 
-export function labelOf(level: MoodLevel): string {
-  return moodLabels[level]
+export function moodKeyOf(level: MoodLevel): MoodKey {
+  return moodKeys[level]
 }
 
 function clamp(value: number): number {

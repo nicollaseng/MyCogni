@@ -32,6 +32,29 @@ describe('profiles', () => {
     expect(await displayNameOf(bob)).toBe('Bob')
   })
 
+  it('keeps only a supported language from the sign up metadata', async () => {
+    const lisbon = await createAuthUser(connection.db, { name: 'Rita', locale: 'pt-PT' })
+    const unknown = await createAuthUser(connection.db, { name: 'Zoe', locale: 'xx-XX' })
+    const rows = await connection.db
+      .select({ id: profiles.id, locale: profiles.locale })
+      .from(profiles)
+      .where(inArray(profiles.id, [lisbon, unknown]))
+    await deleteAuthUsers(connection.db, [lisbon, unknown])
+
+    expect(Object.fromEntries(rows.map((row) => [row.id, row.locale]))).toEqual({
+      [lisbon]: 'pt-PT',
+      [unknown]: null,
+    })
+  })
+
+  it('refuses a language the app does not speak', async () => {
+    await expect(
+      withUser(connection.db, alice, (tx) =>
+        tx.update(profiles).set({ locale: 'fr-FR' }).where(eq(profiles.id, alice)),
+      ),
+    ).rejects.toThrow()
+  })
+
   it('lets a user read only their own profile', async () => {
     const rows = await withUser(connection.db, alice, (tx) => tx.select().from(profiles))
 

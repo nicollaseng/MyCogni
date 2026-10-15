@@ -8,7 +8,7 @@ export const submitAssessmentSchema = z
     instrument: instrumentIdSchema,
     answers: z.array(z.int().min(0).max(3)),
   })
-  .refine(({ instrument, answers }) => answers.length === instruments[instrument].items.length, {
+  .refine(({ instrument, answers }) => answers.length === instruments[instrument].itemCount, {
     message: 'Answer every item of the form',
     path: ['answers'],
   })

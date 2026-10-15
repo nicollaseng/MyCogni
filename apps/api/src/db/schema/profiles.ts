@@ -1,5 +1,5 @@
 import { sql } from 'drizzle-orm'
-import { pgPolicy, pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core'
+import { check, pgPolicy, pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core'
 import { authenticatedRole, authUid, authUsers } from 'drizzle-orm/supabase'
 
 export const profiles = pgTable(
@@ -11,6 +11,7 @@ export const profiles = pgTable(
     displayName: text('display_name'),
     avatarPath: text('avatar_path'),
     timezone: text('timezone').notNull().default('America/Sao_Paulo'),
+    locale: text('locale'),
     onboardingCompletedAt: timestamp('onboarding_completed_at', { withTimezone: true }),
     createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
     updatedAt: timestamp('updated_at', { withTimezone: true })
@@ -19,6 +20,7 @@ export const profiles = pgTable(
       .$onUpdate(() => new Date()),
   },
   (table) => [
+    check('profiles_locale_check', sql`${table.locale} in ('pt-BR', 'pt-PT', 'en-US', 'en-GB')`),
     pgPolicy('profiles_select_own', {
       for: 'select',
       to: authenticatedRole,

@@ -14,8 +14,7 @@ export interface SeverityBand {
 export interface Instrument {
   id: InstrumentId
   name: string
-  prompt: string
-  items: readonly string[]
+  itemCount: number
   bands: readonly [SeverityBand, ...SeverityBand[]]
   riskItemIndex: number | null
 }

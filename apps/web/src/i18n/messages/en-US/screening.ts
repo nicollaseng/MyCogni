@@ -1,0 +1,72 @@
+import type { ScreeningMessages } from '../pt-BR/screening'
+
+export const screening: ScreeningMessages = {
+  title: 'Questionnaires',
+  topics: {
+    phq9: 'Signs of depression',
+    gad7: 'Signs of anxiety',
+  },
+  severity: {
+    minimal: 'Minimal',
+    mild: 'Mild',
+    moderate: 'Moderate',
+    moderately_severe: 'Moderately severe',
+    severe: 'Severe',
+  },
+  guidance: {
+    minimal: 'Nothing that needs attention right now. Keep noticing how your days go.',
+    mild: 'It’s worth watching how this changes over the next few weeks.',
+    moderate: 'It’s worth talking to a health professional about how you’ve been feeling.',
+    moderately_severe: 'We recommend talking to a health professional soon.',
+    severe: 'We recommend seeing a health professional as soon as you can.',
+  },
+  score: {
+    outOf: 'of {max}',
+  },
+  comparison: {
+    same: 'Same as on {day}',
+    up: '{points, plural, one {# point} other {# points}} higher than on {day}',
+    down: '{points, plural, one {# point} other {# points}} lower than on {day}',
+  },
+  questionnaire: {
+    back: 'Back',
+    progress: '{name} · {current} of {total}',
+    saving: 'Saving your answers…',
+    retry: 'Try again',
+  },
+  results: {
+    risk: 'If you think about hurting yourself again, call:',
+  },
+  support: {
+    title: 'Thank you for telling us.',
+    body: 'You said that over the last two weeks you have thought about hurting yourself or that you would be better off dead. This is serious, and you don’t have to go through it without help.',
+    danger: 'In danger right now? Go to the nearest emergency room.',
+    call: 'Call 988',
+    continue: 'Continue the questionnaire',
+  },
+  retake: {
+    close: 'Close',
+    title: 'How have the last two weeks been?',
+    firstTime: 'There are 16 questions from the PHQ-9 and GAD-7, one per screen.',
+    since: 'Last time you answered on {date}. At the end, you’ll see what has changed since then.',
+    honest: 'There are no right answers. Answer based on how things have really been.',
+    start: 'Start',
+    resultsTitle: 'Your results for today.',
+    disclaimer:
+      'This is a screening, not a diagnosis. Only a professional can assess your situation.',
+    back: 'Back to You',
+  },
+  latest: {
+    title: 'Your questionnaires',
+    empty: 'You haven’t answered the PHQ-9 and GAD-7 yet.',
+    answeredOn: 'Answered on {date}. This is a screening, not a diagnosis.',
+    retake: 'Retake the questionnaires',
+    cadence: 'We suggest every {days} days, to see how you change.',
+  },
+  history: {
+    title: 'History',
+  },
+  errors: {
+    save: 'We couldn’t save your answers right now. Please try again in a moment.',
+  },
+}

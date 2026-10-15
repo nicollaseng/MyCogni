@@ -1,21 +1,23 @@
 import type { CheckIn } from '@mycogni/contracts'
 import { dayKey, previousDays } from '@mycogni/domain'
-import { formatLongDate } from '@/shared/lib/time'
+
+export type RelativeDay = 'today' | 'yesterday' | 'earlier'
 
 export interface DayGroup {
   key: string
-  label: string
+  day: RelativeDay
+  date: Date
   checkIns: CheckIn[]
 }
 
-function labelOf(key: string, today: string, recordedAt: Date, timeZone: string): string {
+function relativeDayOf(key: string, today: string): RelativeDay {
   if (key === today) {
-    return 'Hoje'
+    return 'today'
   }
   if (key === previousDays(today, 2)[0]) {
-    return 'Ontem'
+    return 'yesterday'
   }
-  return formatLongDate(recordedAt, timeZone)
+  return 'earlier'
 }
 
 export function groupByDay(
@@ -31,7 +33,12 @@ export function groupByDay(
     if (last?.key === key) {
       last.checkIns.push(checkIn)
     } else {
-      groups.push({ key, label: labelOf(key, today, recordedAt, timeZone), checkIns: [checkIn] })
+      groups.push({
+        key,
+        day: relativeDayOf(key, today),
+        date: recordedAt,
+        checkIns: [checkIn],
+      })
     }
   }
   return groups

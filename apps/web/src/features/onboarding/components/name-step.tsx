@@ -1,5 +1,6 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
 import { useState, type SubmitEvent } from 'react'
 import { StepActions } from '@/shared/components/step-actions'
 import { Button } from '@/shared/ui/button'
@@ -16,6 +17,7 @@ interface NameStepProps {
 }
 
 export function NameStep({ initialName, save, onDone }: NameStepProps) {
+  const t = useTranslations('onboarding.name')
   const [name, setName] = useState(initialName)
   const { submit, pending, error } = useSubmit(save, onDone)
   const displayName = name.trim()
@@ -27,12 +29,10 @@ export function NameStep({ initialName, save, onDone }: NameStepProps) {
 
   return (
     <form onSubmit={handleSubmit} className="flex min-h-0 flex-1 flex-col">
-      <StepHeading title="Como podemos te chamar?">
-        É assim que o app vai falar com você. Aparece só para você.
-      </StepHeading>
+      <StepHeading title={t('title')}>{t('lead')}</StepHeading>
       <div className="mt-8">
         <TextField
-          label="Nome"
+          label={t('label')}
           name="displayName"
           autoComplete="given-name"
           maxLength={80}
@@ -45,7 +45,7 @@ export function NameStep({ initialName, save, onDone }: NameStepProps) {
       <StepActions>
         <ActionError error={error} />
         <Button type="submit" size="lg" shape="pill" disabled={displayName === '' || pending}>
-          {pending ? 'Salvando…' : 'Continuar'}
+          {pending ? t('saving') : t('submit')}
         </Button>
       </StepActions>
     </form>
