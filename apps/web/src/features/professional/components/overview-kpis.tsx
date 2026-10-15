@@ -24,14 +24,8 @@ function CheckInChange({ current, previous }: { current: number; previous: numbe
 
 export function OverviewKpis({ kpis }: { kpis: Kpis }) {
   const t = useTranslations('professional.overview.kpis')
+  const alerts = useTranslations('alerts.kpis')
   const format = useFormatter()
-
-  const attentionCaption =
-    kpis.risk > 0
-      ? t('risk', { count: kpis.risk })
-      : kpis.attention > 0
-        ? t('ofPatients', { count: kpis.patients })
-        : t('calm')
 
   return (
     <StatStrip label={t('label')}>
@@ -50,10 +44,12 @@ export function OverviewKpis({ kpis }: { kpis: Kpis }) {
         caption={<CheckInChange current={kpis.checkIns} previous={kpis.previousCheckIns} />}
       />
       <Stat
-        label={t('attention')}
-        value={format.number(kpis.attention)}
-        tone={kpis.attention > 0 ? 'warn' : 'default'}
-        caption={attentionCaption}
+        label={alerts('label')}
+        value={format.number(kpis.pendingAlerts)}
+        tone={kpis.pendingAlerts > 0 ? 'warn' : 'default'}
+        caption={
+          kpis.pendingAlerts > 0 ? alerts('urgent', { count: kpis.urgentAlerts }) : alerts('calm')
+        }
       />
       <Stat
         label={t('invitations')}

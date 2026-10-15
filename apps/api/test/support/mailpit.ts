@@ -2,6 +2,7 @@ import { z } from 'zod'
 import { testMailpitUrl } from './supabase.ts'
 
 const searchSchema = z.object({
+  messages_count: z.int(),
   messages: z.array(z.object({ ID: z.string(), Subject: z.string() })),
 })
 
@@ -16,13 +17,16 @@ export type MailpitMessage = z.infer<typeof messageSchema>
 
 const attempts = 20
 
-async function firstMatch(query: string): Promise<MailpitMessage | null> {
-  const search = searchSchema.parse(
+async function search(query: string) {
+  return searchSchema.parse(
     await (
       await fetch(`${testMailpitUrl}/api/v1/search?query=${encodeURIComponent(query)}&limit=1`)
     ).json(),
   )
-  const [first] = search.messages
+}
+
+async function firstMatch(query: string): Promise<MailpitMessage | null> {
+  const [first] = (await search(query)).messages
   if (first === undefined) {
     return null
   }
@@ -33,6 +37,10 @@ async function firstMatch(query: string): Promise<MailpitMessage | null> {
 
 export function lastMailTo(address: string): Promise<MailpitMessage | null> {
   return firstMatch(`to:"${address}"`)
+}
+
+export async function mailCountTo(address: string): Promise<number> {
+  return (await search(`to:"${address}"`)).messages_count
 }
 
 export async function mailMatching(address: string, subject: string): Promise<MailpitMessage> {

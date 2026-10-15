@@ -1,5 +1,6 @@
 import { dayKey, insightLookbackDays, isInsightDue, isLocale, type Locale } from '@mycogni/domain'
 import type { InsightRecords, InsightWriter } from '../../ai/insight-writer.ts'
+import type { JobScheduler } from '../../jobs/scheduler.ts'
 import type { AssessmentRepository } from '../assessments/assessment.repository.ts'
 import type { CheckInRecord, CheckInRepository } from '../check-ins/check-in.repository.ts'
 import type { InsightRepository, JournalExcerpt } from './insight.repository.ts'
@@ -17,6 +18,7 @@ export interface InsightJobDependencies {
   checkIns: CheckInRepository
   assessments: AssessmentRepository
   writer: InsightWriter
+  alerts: Pick<JobScheduler, 'summaryCreated'>
   now: () => Date
 }
 
@@ -35,6 +37,7 @@ export function createInsightJob({
   checkIns,
   assessments,
   writer,
+  alerts,
   now,
 }: InsightJobDependencies): InsightJob {
   function toRecords(
@@ -129,7 +132,7 @@ export function createInsightJob({
           toRecords(professionalLocale, subject.timezone, period, visible, theirScreenings, []),
         )
         if (written !== null) {
-          await insights.save({
+          const insightId = await insights.save({
             patientId,
             audience: 'professional',
             professionalId: link.professionalId,
@@ -139,6 +142,7 @@ export function createInsightJob({
             content: written,
             model: writer.model,
           })
+          await alerts.summaryCreated(insightId)
           professionalInsights += 1
         }
       }

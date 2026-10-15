@@ -2,8 +2,11 @@ import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { getTranslations } from 'next-intl/server'
 import { requireVerifiedProfessional } from '@/features/professional/access'
+import { acknowledgeAlert, resolveAlert } from '@/features/professional/alert-actions'
+import { pendingAlerts } from '@/features/professional/alert-table'
 import { CheckInTable } from '@/features/professional/components/check-in-table'
 import { MoodChart } from '@/features/professional/components/mood-chart'
+import { PatientAlerts } from '@/features/professional/components/patient-alerts'
 import { PatientHeader } from '@/features/professional/components/patient-header'
 import { PatientKpis } from '@/features/professional/components/patient-kpis'
 import { QuestionnaireTable } from '@/features/professional/components/questionnaire-table'
@@ -17,6 +20,7 @@ import {
   fetchPatientCheckIns,
   fetchPatientInsights,
 } from '@/shared/lib/api/care'
+import { fetchAlerts } from '@/shared/lib/api/alerts'
 import { requireProfile } from '@/shared/lib/auth/session'
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -35,10 +39,11 @@ export default async function PatientPage({ params }: PageProps<'/pro/patients/[
     notFound()
   }
   const now = new Date()
-  const [checkIns, assessments, readings, t, patients] = await Promise.all([
+  const [checkIns, assessments, readings, alerts, t, patients] = await Promise.all([
     fetchPatientCheckIns(patient.id, new Date(now.getTime() - (windowDays + 1) * dayInMs)),
     fetchPatientAssessments(patient.id),
     fetchPatientInsights(patient.id),
+    fetchAlerts(patient.id),
     getTranslations('professional.patient'),
     getTranslations('professional.patients'),
   ])
@@ -57,6 +62,14 @@ export default async function PatientPage({ params }: PageProps<'/pro/patients/[
             triggerClassName="h-9 px-3.5 text-sm hover:bg-surface"
           />
         }
+      />
+      <PatientAlerts
+        alerts={pendingAlerts(alerts)}
+        name={patient.name ?? patients('unnamed')}
+        now={now}
+        timeZone={timezone}
+        acknowledge={acknowledgeAlert}
+        resolve={resolveAlert}
       />
       <PatientKpis patient={patient} timeZone={timezone} />
       <ReadingsSection readings={readings} timeZone={timezone} />

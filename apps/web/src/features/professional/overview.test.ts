@@ -1,6 +1,6 @@
 import { describe, expect, it } from '@jest/globals'
-import { attentionPatients, overviewKpis, weeklyCheckIns } from './overview'
-import { activity, overview, patient } from './test-data'
+import { overviewKpis, weeklyCheckIns } from './overview'
+import { activity, alert, overview, patient } from './test-data'
 
 describe('weeklyCheckIns', () => {
   it('adds up the last 7 days and the 7 days before them', () => {
@@ -20,7 +20,7 @@ describe('weeklyCheckIns', () => {
 })
 
 describe('overviewKpis', () => {
-  it('sums up engagement, attention and pending invitations', () => {
+  it('sums up engagement, pending alerts and pending invitations', () => {
     const patients = [
       patient({ checkInsLastWeek: 3 }),
       patient({ checkInsLastWeek: 0, attention: ['inactive'] }),
@@ -36,6 +36,12 @@ describe('overviewKpis', () => {
           activity: activity(counts),
           invitations: { pending: 3, expiringSoon: 1 },
         }),
+        [
+          alert({ level: 'urgent', reason: 'risk_item' }),
+          alert({ level: 'urgent', reason: 'summary_urgent', status: 'resolved' }),
+          alert({ level: 'watch', status: 'acknowledged' }),
+          alert({ level: 'info', reason: 'inactive' }),
+        ],
       ),
     ).toEqual({
       patients: 4,
@@ -43,24 +49,14 @@ describe('overviewKpis', () => {
       engagement: 0.75,
       checkIns: 6,
       previousCheckIns: 0,
-      attention: 2,
-      risk: 1,
+      pendingAlerts: 3,
+      urgentAlerts: 1,
       pendingInvitations: 3,
       expiringSoon: 1,
     })
   })
 
   it('has no engagement rate without patients', () => {
-    expect(overviewKpis([], overview()).engagement).toBeNull()
-  })
-})
-
-describe('attentionPatients', () => {
-  it('lists only flagged patients, the most urgent first', () => {
-    const calm = patient({ name: 'Ana Lima' })
-    const inactive = patient({ name: 'Bia Souza', attention: ['inactive'] })
-    const risk = patient({ name: 'Caio Melo', attention: ['risk_item'] })
-
-    expect(attentionPatients([calm, inactive, risk])).toEqual([risk, inactive])
+    expect(overviewKpis([], overview(), []).engagement).toBeNull()
   })
 })

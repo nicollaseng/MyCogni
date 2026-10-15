@@ -1,49 +1,90 @@
-import { Queue } from 'bullmq'
-import type { FastifyBaseLogger } from 'fastify'
-import { createRedis, insightQueueName } from './redis.ts'
+import { Queue, type JobsOptions } from 'bullmq'
+import type { ErrorLog } from '../shared/log.ts'
+import type { AlertTrigger } from './alert-trigger.ts'
+import { alertQueueName, createRedis, insightQueueName } from './redis.ts'
 
 export interface JobScheduler {
   checkInRecorded(patientId: string): Promise<void>
+  assessmentCompleted(patientId: string, assessmentId: string): Promise<void>
+  summaryCreated(insightId: string): Promise<void>
   close(): Promise<void>
 }
 
-const batchingDelayMs = 60_000
+export interface QueueSettings {
+  redisUrl: string | null
+  prefix: string
+}
+
+const insightBatchingMs = 60_000
+
+const alertBatchingMs = 30_000
+
+const cleanup: JobsOptions = { removeOnComplete: true, removeOnFail: 100, attempts: 3 }
 
 const idleScheduler: JobScheduler = {
   checkInRecorded: () => Promise.resolve(),
+  assessmentCompleted: () => Promise.resolve(),
+  summaryCreated: () => Promise.resolve(),
   close: () => Promise.resolve(),
 }
 
 export function createJobScheduler(
-  redisUrl: string | null,
-  log: Pick<FastifyBaseLogger, 'error'>,
+  { redisUrl, prefix }: QueueSettings,
+  log: ErrorLog,
 ): JobScheduler {
   if (redisUrl === null) {
     return idleScheduler
   }
   const redis = createRedis(redisUrl)
-  const queue = new Queue(insightQueueName, { connection: redis })
+  const insights = new Queue(insightQueueName, { connection: redis, prefix })
+  const alerts = new Queue(alertQueueName, { connection: redis, prefix })
+
+  async function enqueue(what: string, work: () => Promise<unknown>): Promise<void> {
+    try {
+      await work()
+    } catch (error) {
+      log.error({ err: error }, `${what} job was not scheduled`)
+    }
+  }
+
+  function alert(trigger: AlertTrigger, jobId: string, delay = 0): Promise<void> {
+    return enqueue('Alert', () =>
+      alerts.add(trigger.kind, trigger, {
+        ...cleanup,
+        jobId,
+        delay,
+        backoff: { type: 'exponential', delay: 5_000 },
+      }),
+    )
+  }
+
   return {
     async checkInRecorded(patientId) {
-      try {
-        await queue.add(
+      await enqueue('Insight', () =>
+        insights.add(
           'check-in-recorded',
           { patientId },
           {
+            ...cleanup,
             jobId: `insight-${patientId}`,
-            delay: batchingDelayMs,
-            removeOnComplete: true,
-            removeOnFail: 100,
-            attempts: 3,
+            delay: insightBatchingMs,
             backoff: { type: 'exponential', delay: 30_000 },
           },
-        )
-      } catch (error) {
-        log.error({ err: error }, 'Insight job was not scheduled')
-      }
+        ),
+      )
+      await alert({ kind: 'check-in', patientId }, `alert-check-in-${patientId}`, alertBatchingMs)
+    },
+    assessmentCompleted(patientId, assessmentId) {
+      return alert(
+        { kind: 'assessment', patientId, assessmentId },
+        `alert-assessment-${assessmentId}`,
+      )
+    },
+    summaryCreated(insightId) {
+      return alert({ kind: 'summary', insightId }, `alert-summary-${insightId}`)
     },
     async close() {
-      await queue.close()
+      await Promise.all([insights.close(), alerts.close()])
       await redis.quit()
     },
   }

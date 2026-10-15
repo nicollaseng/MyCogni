@@ -23,8 +23,16 @@ describe('loadConfig', () => {
       mail: { provider: 'none' },
       supportEmail: 'support@mycogniapp.com',
       redisUrl: null,
+      queuePrefix: 'bull',
       anthropicApiKey: null,
     })
+  })
+
+  it('namespaces the job queues when a prefix is given', () => {
+    expect(loadConfig({ ...required, QUEUE_PREFIX: 'e2e-3336' }).queuePrefix).toBe('e2e-3336')
+    expect(() => loadConfig({ ...required, QUEUE_PREFIX: 'bad:prefix' })).toThrow(
+      InvalidConfigError,
+    )
   })
 
   it('sends email through Resend when there is a key, otherwise through Mailpit', () => {
