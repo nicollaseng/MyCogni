@@ -2,6 +2,13 @@ import type { AssistantModel, AssistantRequest } from './assistant-model.ts'
 
 const countPattern = /"checkInsInLast90Days":(\d+)/
 
+const clinical = {
+  pt: (count: string) =>
+    `Nos registros compartilhados dos últimos 90 dias aparecem ${count} check-ins. O humor fica mais alto nos dias com exercício e sono registrados e mais baixo nos dias com trabalho e deslocamento. Vale explorar em sessão o peso das reuniões longas.`,
+  en: (count: string) =>
+    `The shared records from the last 90 days show ${count} check-ins. Mood is higher on days with exercise and sleep and lower on days with work and commuting. The weight of long meetings may be worth exploring in session.`,
+}
+
 const replies = {
   pt: {
     counted: (count: string) =>
@@ -21,16 +28,18 @@ export function createScriptedAssistantModel(): AssistantModel {
   return {
     model: 'scripted',
     async answer(request: AssistantRequest) {
-      const copy = request.notes.some((note) => note.includes('Locale: en'))
-        ? replies.en
-        : replies.pt
+      const english = request.notes.some((note) => note.includes('Locale: en'))
+      const copy = english ? replies.en : replies.pt
+      const professional = request.system.includes('verified health professional')
       const watch = request.notes.some((note) => note.startsWith('Signs of'))
       const risk = watch ? 'watch' : 'none'
       if (request.tools.length === 0) {
         return { kind: 'answer', text: copy.private, risk }
       }
       const result = await request.runTool({ name: 'read_patterns', input: {} })
-      return { kind: 'answer', text: copy.counted(countPattern.exec(result)?.[1] ?? '0'), risk }
+      const count = countPattern.exec(result)?.[1] ?? '0'
+      const text = professional ? clinical[english ? 'en' : 'pt'](count) : copy.counted(count)
+      return { kind: 'answer', text, risk }
     },
   }
 }
