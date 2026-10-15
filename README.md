@@ -76,17 +76,18 @@ test/
 
 Routes under `/v1` require a Supabase access token (`Authorization: Bearer <token>`). The API verifies it against the project's JWKS (`SUPABASE_URL/auth/v1/.well-known/jwks.json`), checking issuer and audience, so no shared secret is needed.
 
-| Route                                           | Purpose                                                                                                               |
-| ----------------------------------------------- | --------------------------------------------------------------------------------------------------------------------- |
-| `GET /v1/me`, `PATCH /v1/me`                    | Read and update the profile (name, time zone)                                                                         |
-| `GET /v1/consents`                              | Consents granted for the current version of the legal documents                                                       |
-| `POST /v1/consents`                             | Grant consents (`terms`, `privacy`, `health_data`, `adult`, optional `ai_processing`)                                 |
-| `GET /v1/assessments`                           | PHQ-9 and GAD-7 results, newest first                                                                                 |
-| `POST /v1/assessments`                          | Submit answers; the server computes total, severity and the PHQ-9 item 9 risk flag                                    |
-| `POST /v1/onboarding/complete`                  | Marks onboarding as done once the required consents and both screenings exist (422 before)                            |
-| `POST /v1/check-ins`                            | Record mood (0–6), emotions, context and an optional note                                                             |
-| `GET /v1/check-ins`                             | Records, newest first, with optional `since`, `before` and `limit` (up to 200)                                        |
-| `POST /v1/professional`, `GET /v1/professional` | Register and read a professional profile (type, name, council registration), which starts as `pending` until verified |
+| Route                                           | Purpose                                                                                                                                                                                                        |
+| ----------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `GET /v1/me`, `PATCH /v1/me`                    | Read and update the profile (name, time zone)                                                                                                                                                                  |
+| `GET /v1/consents`                              | Consents granted for the current version of the legal documents                                                                                                                                                |
+| `POST /v1/consents`                             | Grant consents (`terms`, `privacy`, `health_data`, `adult`, optional `ai_processing`)                                                                                                                          |
+| `GET /v1/assessments`                           | PHQ-9 and GAD-7 results, newest first                                                                                                                                                                          |
+| `POST /v1/assessments`                          | Submit answers; the server computes total, severity and the PHQ-9 item 9 risk flag                                                                                                                             |
+| `POST /v1/onboarding/complete`                  | Marks onboarding as done once the required consents and both screenings exist (422 before)                                                                                                                     |
+| `POST /v1/check-ins`                            | Record mood (0–6), emotions, context and an optional note                                                                                                                                                      |
+| `GET /v1/check-ins`                             | Records, newest first, with optional `since`, `before` and `limit` (up to 200)                                                                                                                                 |
+| `POST /v1/professional`, `GET /v1/professional` | Register and read a professional profile (type, name, council registration), which starts as `pending` until verified                                                                                          |
+| `GET /v1/reports/mood`                          | Mood report as a PDF for the last 7 or 30 days (`days`, `notes`, `reading`, `locale`); the professional variant is `GET /v1/professional/patients/:patientId/reports/mood` and reads only what the link allows |
 
 Errors always answer with `{ code, message }`, plus `issues` for validation errors. Unexpected errors are logged and answered with a generic 500 that never leaks details.
 
