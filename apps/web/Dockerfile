@@ -8,6 +8,7 @@ ENV NEXT_PUBLIC_SUPABASE_URL=$NEXT_PUBLIC_SUPABASE_URL \
   NEXT_TELEMETRY_DISABLED=1
 COPY . .
 RUN pnpm install --frozen-lockfile --ignore-scripts --filter "@mycogni/web..."
+ARG RAILWAY_GIT_COMMIT_SHA
 RUN pnpm --filter "@mycogni/web..." run build
 
 FROM node:24-slim AS runtime
