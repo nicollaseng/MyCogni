@@ -20,6 +20,7 @@ export const professional: ProfessionalMessages = {
     closeMenu: 'Fechar menu',
     accountMenu: 'Conta',
     settings: 'Definições',
+    support: 'Apoio',
     signOut: 'Terminar sessão',
   },
   join: {

@@ -21,7 +21,6 @@ function renderMenu() {
     <MobileMenu
       name="Helena Duarte"
       profession="Psicologia"
-      photoUrl={null}
       verified={false}
       alerts={null}
       signOut={signOut}
@@ -45,9 +44,15 @@ describe('MobileMenu', () => {
     expect(drawer).toBeVisible()
     expect(screen.getByRole('button', { name: 'Fechar menu' })).toHaveFocus()
     expect(screen.getByText('Helena Duarte')).toBeInTheDocument()
+    expect(drawer.querySelector('img')).toBeNull()
+    expect(drawer).not.toHaveTextContent('HD')
     expect(screen.getByRole('link', { name: 'Configurações' })).toHaveAttribute(
       'href',
       '/pro/settings',
+    )
+    expect(screen.getByRole('link', { name: 'Suporte' })).toHaveAttribute(
+      'href',
+      '/pro/settings#support',
     )
     expect(screen.getByRole('button', { name: 'Sair' })).toBeInTheDocument()
   })
