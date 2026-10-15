@@ -78,4 +78,23 @@ describe('ProfileMenu', () => {
       expect(screen.queryByRole('menu')).not.toBeInTheDocument()
     })
   })
+
+  it('sits in the onboarding header with the name and the same account entries', async () => {
+    const user = userEvent.setup()
+    renderWithIntl(
+      <ProfileMenu
+        name="Helena Duarte"
+        profession="Psicologia"
+        photoUrl={null}
+        signOut={() => Promise.resolve()}
+        placement="header"
+      />,
+    )
+
+    expect(screen.queryByText('Psicologia')).not.toBeInTheDocument()
+    await user.click(trigger())
+
+    expect(screen.getByRole('menuitem', { name: 'Configurações' })).toHaveFocus()
+    expect(screen.getByRole('menuitem', { name: 'Sair' })).toBeInTheDocument()
+  })
 })

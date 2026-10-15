@@ -15,7 +15,6 @@ interface MobileMenuProps {
   name: string
   profession: string
   photoUrl: string | null
-  verified: boolean
   alerts: AlertCount | null
   signOut: () => Promise<void>
 }
@@ -23,14 +22,7 @@ interface MobileMenuProps {
 const entryStyle =
   'flex w-full items-center gap-3 rounded-[6px] px-3 py-2 text-left text-[15px] text-muted-foreground transition-colors hover:bg-foreground/[0.04] hover:text-foreground'
 
-export function MobileMenu({
-  name,
-  profession,
-  photoUrl,
-  verified,
-  alerts,
-  signOut,
-}: MobileMenuProps) {
+export function MobileMenu({ name, profession, photoUrl, alerts, signOut }: MobileMenuProps) {
   const t = useTranslations('professional.shell')
   const closeButton = useRef<HTMLButtonElement>(null)
   const [expanded, setExpanded] = useState(false)
@@ -89,11 +81,9 @@ export function MobileMenu({
               <CloseIcon />
             </button>
           </div>
-          {verified && (
-            <div className="mt-7">
-              <ProfessionalNavigation variant="drawer" alerts={alerts} onNavigate={close} />
-            </div>
-          )}
+          <div className="mt-7">
+            <ProfessionalNavigation variant="drawer" alerts={alerts} onNavigate={close} />
+          </div>
           <div className="mt-auto space-y-1 pt-6">
             <div className="flex items-center gap-3 px-3 pb-2">
               <Avatar src={photoUrl} initials={initialsOf(name)} size="md" />

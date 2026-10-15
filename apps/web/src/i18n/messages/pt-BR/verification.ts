@@ -1,10 +1,36 @@
 export const verification = {
+  steps: {
+    title: 'Cadastro profissional',
+    progress: 'Passo {current} de {total}',
+    back: 'Voltar ao cadastro',
+    done: 'concluído',
+    names: {
+      document: 'Comprovante',
+      photo: 'Foto do perfil',
+      review: 'Em análise',
+    },
+    hints: {
+      photo: 'Opcional. Aparece para seus pacientes.',
+      review: 'A equipe MyCogniAI confere tudo antes de liberar os convites.',
+    },
+  },
   start: {
-    kicker: 'Último passo do cadastro',
     title: 'Envie o comprovante do seu registro.',
     lead: 'Conferimos cada profissional antes de liberar os convites. Seu cadastro entra em análise assim que o comprovante chegar.',
-    photo: 'Foto do perfil',
-    photoHint: 'Opcional. Aparece para seus pacientes e na página dos seus convites.',
+  },
+  photo: {
+    title: 'Adicione uma foto ao seu perfil.',
+    lead: 'É opcional. A foto aparece ao lado do seu nome na página dos seus convites e para os pacientes que acompanham com você.',
+    received: 'Comprovante recebido. A análise já começou.',
+    add: 'Adicionar foto',
+    skip: 'Pular por agora',
+    continue: 'Continuar',
+    saving: 'Salvando…',
+    later: 'Você pode trocar ou remover a foto quando quiser, em Configurações.',
+    failed: 'Não conseguimos seguir agora. Tente de novo em instantes.',
+  },
+  review: {
+    settings: 'Para trocar a foto ou o comprovante, abra <link>Configurações</link>.',
   },
   proofs: {
     crp: {
@@ -22,8 +48,10 @@ export const verification = {
   },
   upload: {
     choose: 'Escolher arquivo',
-    another: 'Escolher outro arquivo',
+    drop: 'ou arraste o arquivo até aqui',
     formats: 'PDF, JPG ou PNG, até 10 MB.',
+    replace: 'Trocar',
+    remove: 'Remover',
     send: 'Enviar comprovante',
     sending: 'Enviando…',
     sent: 'Comprovante enviado. Vamos conferir em breve.',

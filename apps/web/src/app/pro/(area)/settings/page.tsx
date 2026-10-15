@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import Link from 'next/link'
 import { registrationProofOf } from '@mycogni/domain'
 import { getLocale, getTranslations } from 'next-intl/server'
 import type { ReactNode } from 'react'
@@ -16,7 +17,7 @@ import { DocumentReplace } from '@/features/professional/components/document-rep
 import { DocumentSummary } from '@/features/professional/components/document-summary'
 import { DocumentUpload } from '@/features/professional/components/document-upload'
 import { ProfessionalNameForm } from '@/features/professional/components/professional-name-form'
-import { SignOutIcon } from '@/features/professional/components/icons'
+import { BackIcon, SignOutIcon } from '@/features/professional/components/icons'
 import { TeamNote } from '@/features/professional/components/team-note'
 import {
   quietButton,
@@ -45,7 +46,7 @@ function ReadOnlyRow({ label, value }: { label: string; value: string }) {
 }
 
 export default async function ProfessionalSettingsPage() {
-  const [professional, profile, photoUrl, t, account, common, verification, locale] =
+  const [professional, profile, photoUrl, t, account, common, verification, steps, locale] =
     await Promise.all([
       requireProfessional(),
       requireProfile(),
@@ -54,6 +55,7 @@ export default async function ProfessionalSettingsPage() {
       getTranslations('account'),
       getTranslations('common'),
       getTranslations('verification.document'),
+      getTranslations('verification.steps'),
       getLocale(),
     ])
   const mailLink = (chunks: ReactNode) => (
@@ -77,7 +79,21 @@ export default async function ProfessionalSettingsPage() {
 
   return (
     <>
-      <WorkspaceHeader title={t('title')} description={t('description')} />
+      <WorkspaceHeader
+        title={t('title')}
+        description={t('description')}
+        kicker={
+          professional.status === 'verified' ? undefined : (
+            <Link
+              href="/pro"
+              className="inline-flex items-center gap-1.5 transition-colors hover:text-foreground"
+            >
+              <BackIcon className="size-4" />
+              {steps('back')}
+            </Link>
+          )
+        }
+      />
       <WorkspaceSection title={t('profile.title')}>
         <Surface className="max-w-3xl px-4 py-1 sm:px-5">
           <div className="py-4">
@@ -110,15 +126,17 @@ export default async function ProfessionalSettingsPage() {
         </p>
       </WorkspaceSection>
       <WorkspaceSection title={verification('title')}>
-        <Surface className="max-w-3xl space-y-4 px-4 py-4 sm:px-5">
+        <Surface className="max-w-3xl px-4 py-4 sm:px-5">
           <DocumentSummary professional={professional} timeZone={profile.timezone} />
-          {professional.status === 'pending' && professional.document !== null && (
+        </Surface>
+        {professional.status === 'pending' && professional.document !== null && (
+          <div className="max-w-3xl">
             <DocumentReplace
               proof={registrationProofOf(professional.kind)}
               onSent={refreshAfterUpload}
             />
-          )}
-        </Surface>
+          </div>
+        )}
         {professional.status === 'rejected' && <TeamNote note={professional.reviewNote} />}
         {professional.status === 'verified' && (
           <p className="max-w-3xl text-sm leading-relaxed text-muted-foreground">
@@ -127,12 +145,12 @@ export default async function ProfessionalSettingsPage() {
         )}
         {professional.status !== 'verified' &&
           (professional.status === 'rejected' || professional.document === null) && (
-            <Surface className="max-w-3xl px-4 py-5 sm:px-5">
+            <div className="max-w-3xl pt-2">
               <DocumentUpload
                 proof={registrationProofOf(professional.kind)}
                 onSent={refreshAfterUpload}
               />
-            </Surface>
+            </div>
           )}
       </WorkspaceSection>
       <WorkspaceSection title={t('account.title')}>

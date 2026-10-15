@@ -1,13 +1,15 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { getLocale, getTranslations } from 'next-intl/server'
+import { refreshAfterUpload } from '@/features/account/actions'
 import { requireProfessional } from '@/features/professional/access'
+import { finishPhotoStep } from '@/features/professional/actions'
 import { ActivityChart } from '@/features/professional/components/activity-chart'
 import { PlusIcon } from '@/features/professional/components/icons'
 import { OverviewAlerts } from '@/features/professional/components/overview-alerts'
+import { OnboardingScreen } from '@/features/professional/components/onboarding-screen'
 import { OverviewKpis } from '@/features/professional/components/overview-kpis'
 import { RecentCheckIns } from '@/features/professional/components/recent-check-ins'
-import { VerificationNotice } from '@/features/professional/components/verification-notice'
 import {
   compactButton,
   EmptyState,
@@ -17,6 +19,8 @@ import {
   WorkspaceSection,
 } from '@/features/professional/components/workspace'
 import { pendingAlerts } from '@/features/professional/alert-table'
+import { onboardingStepOf } from '@/features/professional/onboarding'
+import { hasFinishedPhotoStep } from '@/features/professional/onboarding-state'
 import { overviewKpis } from '@/features/professional/overview'
 import { fetchAlerts } from '@/shared/lib/api/alerts'
 import { fetchPatients, fetchProfessionalOverview } from '@/shared/lib/api/care'
@@ -34,11 +38,14 @@ const inviteHref = { pathname: '/pro/invites', query: { new: '1' } } as const
 export default async function ProfessionalHomePage() {
   const [professional, { timezone }] = await Promise.all([requireProfessional(), requireProfile()])
   if (professional.status !== 'verified') {
+    const [photoStepDone, photoUrl] = await Promise.all([hasFinishedPhotoStep(), fetchMyPhotoUrl()])
     return (
-      <VerificationNotice
+      <OnboardingScreen
         professional={professional}
+        step={onboardingStepOf(professional, photoStepDone)}
         timeZone={timezone}
-        photoUrl={await fetchMyPhotoUrl()}
+        photoUrl={photoUrl}
+        actions={{ refresh: refreshAfterUpload, finishPhotoStep }}
       />
     )
   }
