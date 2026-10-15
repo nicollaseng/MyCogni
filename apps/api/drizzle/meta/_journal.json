@@ -120,6 +120,27 @@
       "when": 1792067090318,
       "tag": "0016_care_functions_for_review",
       "breakpoints": true
+    },
+    {
+      "idx": 17,
+      "version": "7",
+      "when": 1792071192265,
+      "tag": "0017_journal_shared_read_function",
+      "breakpoints": true
+    },
+    {
+      "idx": 18,
+      "version": "7",
+      "when": 1792071192587,
+      "tag": "0018_create_journal",
+      "breakpoints": true
+    },
+    {
+      "idx": 19,
+      "version": "7",
+      "when": 1792071192906,
+      "tag": "0019_journal_bucket_and_grants",
+      "breakpoints": true
     }
   ]
 }
