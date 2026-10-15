@@ -35,7 +35,7 @@ export function ToolbarButton({
       onMouseDown={keepEditorFocus}
       onClick={onPress}
       className={cn(
-        'inline-flex h-10 min-w-10 items-center justify-center rounded-[10px] px-2 text-foreground transition-colors duration-150 hover:bg-sage disabled:pointer-events-none disabled:opacity-35 aria-expanded:bg-sage aria-pressed:bg-primary aria-pressed:text-primary-foreground motion-reduce:transition-none',
+        'inline-flex h-10 min-w-10 items-center justify-center rounded-[6px] px-2 text-foreground transition-colors duration-150 hover:bg-sage disabled:pointer-events-none disabled:opacity-35 aria-expanded:bg-sage aria-pressed:bg-primary aria-pressed:text-primary-foreground motion-reduce:transition-none',
         className,
       )}
     >

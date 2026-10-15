@@ -159,12 +159,14 @@ test.describe('sharing', () => {
     await expect(page).toHaveURL(`/mybook/sharing?page=${entryId}`)
     const panel = page.getByRole('region', { name: professional })
     await expect(panel.getByText('Nada compartilhado')).toBeVisible()
-    await expect(panel.getByRole('checkbox', { name: new RegExp(title) })).toBeChecked()
-    await panel.getByRole('radio', { name: '30 dias' }).check()
+    const sheet = page.getByRole('dialog', { name: `Compartilhar com ${professional}` })
+    await expect(sheet.getByRole('checkbox', { name: new RegExp(title) })).toBeChecked()
+    await sheet.getByRole('radio', { name: '30 dias' }).check()
     await expect(
-      panel.getByText(`${professional} poderá ler a página “${title}” até`),
+      sheet.getByText(`${professional} poderá ler a página “${title}” até`),
     ).toBeVisible()
-    await panel.getByRole('button', { name: 'Compartilhar', exact: true }).click()
+    await sheet.getByRole('button', { name: 'Compartilhar', exact: true }).click()
+    await expect(sheet).toBeHidden()
     await expect(panel.getByText('Páginas escolhidas (1)')).toBeVisible()
     await expect(panel.getByText('Ainda não abriu nenhuma página.')).toBeVisible()
 

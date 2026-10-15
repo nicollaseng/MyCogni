@@ -20,7 +20,6 @@ export function NewPageButton({ create, label, size = 'sm' }: NewPageButtonProps
   return (
     <div className="space-y-2">
       <Button
-        shape="pill"
         size={size}
         disabled={pending}
         className="gap-1.5 pl-3.5"

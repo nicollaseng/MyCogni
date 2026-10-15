@@ -81,7 +81,7 @@ export function ShareRecord({
     .map((entryId) => titles.get(entryId) ?? t('untitled'))
 
   return (
-    <li className="space-y-2.5 rounded-[16px] bg-background/60 px-4 py-3.5">
+    <li className="space-y-2.5">
       <div className="space-y-0.5">
         {showName && <p className="font-serif text-[19px] leading-snug">{name}</p>}
         <p className="font-medium">

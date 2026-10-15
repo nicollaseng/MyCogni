@@ -17,7 +17,7 @@ interface PageMenuProps {
 }
 
 const item =
-  'flex w-full items-center rounded-[12px] px-3 py-2.5 text-left text-[15px] transition-colors duration-150 hover:bg-sage motion-reduce:transition-none'
+  'flex w-full items-center rounded-[6px] px-3 py-2.5 text-left text-[15px] transition-colors duration-150 hover:bg-sage motion-reduce:transition-none'
 
 export function PageMenu({ entryId, deleting, error, onShare, onDelete }: PageMenuProps) {
   const t = useTranslations('mybook.editor.menu')
@@ -43,12 +43,12 @@ export function PageMenu({ entryId, deleting, error, onShare, onDelete }: PageMe
             setOpen(true)
           }
         }}
-        className="inline-flex size-10 items-center justify-center rounded-full text-foreground transition-colors duration-150 hover:bg-sage aria-expanded:bg-sage motion-reduce:transition-none"
+        className="inline-flex size-10 items-center justify-center rounded-[6px] text-foreground transition-colors duration-150 hover:bg-sage aria-expanded:bg-sage motion-reduce:transition-none"
       >
         <Icon name="more" />
       </button>
       {open && (
-        <div className="absolute top-full right-0 z-30 mt-2 w-72 rounded-[20px] bg-background p-1.5 shadow-[0_12px_40px_rgb(0_0_0/0.16)] ring-1 ring-rule">
+        <div className="absolute top-full right-0 z-30 mt-2 w-72 rounded-[8px] bg-background p-1.5 shadow-[0_4px_14px_rgb(0_0_0/0.08)] ring-1 ring-rule">
           {confirming || error !== null ? (
             <div className="space-y-3 p-2.5">
               <p className="leading-relaxed text-pretty">{t('confirm')}</p>
@@ -56,14 +56,13 @@ export function PageMenu({ entryId, deleting, error, onShare, onDelete }: PageMe
               <div className="flex gap-2">
                 <Button
                   size="sm"
-                  shape="pill"
                   disabled={deleting}
                   onClick={onDelete}
                   className="bg-danger text-background hover:bg-danger/90"
                 >
                   {deleting ? t('deleting') : t('confirmDelete')}
                 </Button>
-                <Button size="sm" shape="pill" variant="ghost" disabled={deleting} onClick={close}>
+                <Button size="sm" variant="ghost" disabled={deleting} onClick={close}>
                   {t('cancel')}
                 </Button>
               </div>

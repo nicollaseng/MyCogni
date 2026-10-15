@@ -29,7 +29,10 @@ describe('journal images', () => {
 
 describe('excerptOf', () => {
   it('shows the beginning of a page on one line', () => {
-    expect(excerptOf('Hoje   acordei\n\ncedo.')).toBe('Hoje acordei cedo.')
+    expect(excerptOf('Hoje   acordei\n\ncedo.')).toBe('Hoje acordei · cedo.')
+    expect(excerptOf('Conversa com a mãe\nA conversa foi boa')).toBe(
+      'Conversa com a mãe · A conversa foi boa',
+    )
     expect(excerptOf('a'.repeat(200), 10)).toBe('aaaaaaaaa…')
   })
 })

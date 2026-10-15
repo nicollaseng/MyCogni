@@ -27,7 +27,7 @@ export const mybook = {
     privacy: {
       private: 'Só você lê o seu MyBook.',
       shared: 'Você compartilha páginas com {names}.',
-      manage: 'Gerenciar compartilhamento',
+      manage: 'Gerenciar',
     },
   },
   editor: {
@@ -107,6 +107,8 @@ export const mybook = {
     flow: {
       open: 'Compartilhar',
       openMore: 'Compartilhar mais',
+      title: 'Compartilhar com {name}',
+      close: 'Fechar',
       scope: {
         legend: 'O que compartilhar',
         entries: 'Páginas escolhidas',

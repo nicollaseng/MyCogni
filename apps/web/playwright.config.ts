@@ -59,7 +59,7 @@ export default defineConfig({
       url: baseURL,
       reuseExistingServer: true,
       timeout: 120_000,
-      env: { API_URL: apiUrl },
+      env: { API_URL: apiUrl, SITE_URL: baseURL },
     },
   ],
 })

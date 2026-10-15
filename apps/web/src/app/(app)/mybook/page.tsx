@@ -9,7 +9,6 @@ import { PageList } from '@/features/mybook/components/page-list'
 import { PageSearch } from '@/features/mybook/components/page-search'
 import { groupByMonth } from '@/features/mybook/months'
 import { isLive } from '@/features/mybook/sharing'
-import { Panel } from '@/shared/components/section'
 import { fetchJournal, fetchJournalShares } from '@/shared/lib/api/journal'
 import { requireOnboardedProfile } from '@/shared/lib/auth/session'
 
@@ -59,40 +58,36 @@ export default async function MybookPage({ searchParams }: PageProps<'/mybook'>)
           </div>
         </div>
         <p className="max-w-[36rem] leading-relaxed text-muted-foreground">{t('description')}</p>
-      </header>
-
-      <Link
-        href="/mybook/sharing"
-        className="flex items-center gap-3.5 rounded-[18px] bg-surface px-4 py-3.5 transition-colors duration-150 hover:bg-sage motion-reduce:transition-none"
-      >
-        <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-background/70 text-muted-foreground">
-          <Icon name="lock" className="size-[18px]" />
-        </span>
-        <span className="min-w-0 flex-1">
-          <span className="block text-[15px] leading-snug">
+        <p className="flex flex-wrap items-center gap-x-2 gap-y-1 pt-1 text-sm text-muted-foreground">
+          <Icon name="lock" className="size-4" />
+          <span>
             {names.length === 0
               ? t('privacy.private')
               : t('privacy.shared', {
                   names: new Intl.ListFormat(locale, { type: 'conjunction' }).format(names),
                 })}
           </span>
-          <span className="block text-sm text-muted-foreground">{t('privacy.manage')}</span>
-        </span>
-        <Icon name="forward" className="size-[18px] text-muted-foreground" />
-      </Link>
+          <Link
+            href="/mybook/sharing"
+            className="text-foreground underline decoration-1 underline-offset-4"
+          >
+            {t('privacy.manage')}
+          </Link>
+        </p>
+      </header>
 
       {blankBook ? (
-        <Panel className="space-y-4 px-6 py-8 text-center sm:py-10">
-          <p className="font-serif text-[26px] leading-tight tracking-[-0.01em]">
+        <section aria-labelledby="mybook-empty" className="space-y-3 pt-4">
+          <h2 id="mybook-empty" className="font-serif text-[26px] leading-tight tracking-[-0.01em]">
             {t('empty.title')}
-          </p>
-          <p className="mx-auto max-w-[28rem] leading-relaxed text-pretty text-muted-foreground">
+          </h2>
+          <p className="max-w-[30rem] leading-relaxed text-pretty text-muted-foreground">
             {t('empty.body')}
           </p>
-          <div className="flex justify-center pt-2">
+          <div className="pt-3">
             <NewPageButton create={createPage} label={t('empty.action')} size="default" />
           </div>
-        </Panel>
+        </section>
       ) : (
         <div className="space-y-8">
           <PageSearch query={query} />

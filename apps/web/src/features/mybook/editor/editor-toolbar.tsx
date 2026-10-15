@@ -61,7 +61,7 @@ const listIcons: Readonly<Record<ListKind, IconName>> = {
 
 const compactLists: readonly ListKind[] = ['bulletList', 'dashList', 'orderedList']
 
-const segment = 'rounded-[12px] bg-background/70 p-0.5'
+const segment = 'rounded-[6px] bg-background p-0.5'
 
 function useToolbarState(editor: Editor): ToolbarState {
   return useEditorState({
@@ -205,7 +205,7 @@ function WideToolbar({ editor, onPhotos, photosDisabled }: EditorToolbarProps) {
     <div
       role="toolbar"
       aria-label={t('label')}
-      className="sticky top-3 z-20 -mx-3 flex flex-wrap items-center gap-y-1 rounded-[18px] bg-surface/95 px-1.5 py-1.5 backdrop-blur"
+      className="sticky top-3 z-20 -mx-3 flex flex-wrap items-center gap-y-1 rounded-[8px] bg-surface px-1.5 py-1.5"
     >
       <TextStyleMenu editor={editor} current={state.style} />
       <Divider />
@@ -236,7 +236,7 @@ function CompactToolbar({ editor, onPhotos, photosDisabled }: EditorToolbarProps
           <div
             role="group"
             aria-label={t('format')}
-            className="space-y-2 rounded-[22px] bg-surface p-2 shadow-[0_10px_34px_rgb(0_0_0/0.14)]"
+            className="space-y-2 rounded-[10px] bg-surface p-2 shadow-[0_0_0_1px_var(--rule),0_4px_14px_rgb(0_0_0/0.06)]"
           >
             <TextStyleOptions
               editor={editor}
@@ -265,7 +265,7 @@ function CompactToolbar({ editor, onPhotos, photosDisabled }: EditorToolbarProps
         <div
           role="toolbar"
           aria-label={t('label')}
-          className="flex items-center justify-around rounded-full bg-surface/95 px-3 py-1 shadow-[0_6px_24px_rgb(0_0_0/0.12)] backdrop-blur"
+          className="flex items-center justify-around rounded-[10px] bg-surface px-3 py-1 shadow-[0_0_0_1px_var(--rule),0_4px_14px_rgb(0_0_0/0.06)]"
         >
           <ToolbarButton
             label={t('format')}

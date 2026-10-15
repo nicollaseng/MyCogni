@@ -5,7 +5,7 @@ import { supabaseUrl } from './support/supabase'
 test.use({ storageState: signedOut })
 
 for (const path of ['/sign-in', '/sign-up']) {
-  test(`sends ${path} to the Google account picker through Supabase`, async ({ page }) => {
+  test(`sends ${path} to the Google account picker through Supabase`, async ({ page, baseURL }) => {
     let authorize: URL | undefined
     let google: URL | undefined
     await page.route(`${supabaseUrl}/auth/v1/authorize**`, async (route) => {
@@ -20,7 +20,7 @@ for (const path of ['/sign-in', '/sign-up']) {
 
     await expect.poll(() => google?.origin).toBe('https://accounts.google.com')
     expect(authorize?.searchParams.get('provider')).toBe('google')
-    expect(authorize?.searchParams.get('redirect_to')).toBe('http://localhost:3000/auth/callback')
+    expect(authorize?.searchParams.get('redirect_to')).toBe(`${baseURL ?? ''}/auth/callback`)
     expect(google?.pathname).toBe('/o/oauth2/v2/auth')
     expect(google?.searchParams.get('redirect_uri')).toBe(`${supabaseUrl}/auth/v1/callback`)
     expect(google?.searchParams.get('prompt')).toBe('select_account')

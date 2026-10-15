@@ -58,7 +58,7 @@ export function SearchField({
         <span className="sr-only">{label}</span>
         <Icon
           name="search"
-          className="pointer-events-none absolute top-1/2 left-4 -translate-y-1/2 text-muted-foreground"
+          className="pointer-events-none absolute top-1/2 left-3.5 size-[18px] -translate-y-1/2 text-muted-foreground"
         />
         <input
           type="search"
@@ -69,7 +69,7 @@ export function SearchField({
           onChange={(event) => {
             setValue(event.target.value)
           }}
-          className="h-12 w-full rounded-full bg-surface pr-4 pl-11 text-base transition-shadow outline-none placeholder:text-muted-foreground focus:ring-2 focus:ring-foreground/25"
+          className="h-12 w-full rounded-[6px] border border-rule bg-white/60 pr-4 pl-10 text-base transition-colors outline-none placeholder:text-muted-foreground focus:border-foreground dark:bg-white/5"
         />
       </label>
     </form>

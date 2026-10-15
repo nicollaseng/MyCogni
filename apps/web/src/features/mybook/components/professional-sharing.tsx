@@ -6,12 +6,10 @@ import type {
   JournalShare,
 } from '@mycogni/contracts'
 import { useLocale, useTranslations } from 'next-intl'
-import { Panel } from '@/shared/components/section'
 import type { ActionResult } from '@/shared/lib/actions/result'
 import { cn } from '@/shared/lib/utils'
 import { formatDay } from '../dates'
 import { isLive, shareStateOf, type ShareState } from '../sharing'
-import { Icon } from './icon'
 import { ShareFlow } from './share-flow'
 import { ShareRecord } from './share-record'
 
@@ -56,15 +54,17 @@ export function ShareStateLabel({
   return (
     <p
       className={cn(
-        'inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-sm',
-        state.kind === 'none' ? 'bg-background/70 text-muted-foreground' : 'bg-sage',
+        'flex items-center gap-2 text-sm',
+        state.kind === 'none' ? 'text-muted-foreground' : 'text-foreground',
       )}
     >
-      {state.kind === 'none' ? (
-        <Icon name="lock" className="size-4" />
-      ) : (
-        <span aria-hidden className="size-2 rounded-full bg-emphasis" />
-      )}
+      <span
+        aria-hidden
+        className={cn(
+          'size-2 shrink-0 rounded-full',
+          state.kind === 'none' ? 'bg-muted-foreground/45' : 'bg-emphasis',
+        )}
+      />
       {label()}
     </p>
   )
@@ -102,16 +102,15 @@ export function ProfessionalSharing({
   )
 
   return (
-    <section aria-label={name}>
-      <Panel className="space-y-5 px-4 py-5 sm:px-6">
-        <div className="flex flex-col items-start gap-3 sm:flex-row sm:justify-between sm:gap-4">
-          <div className="min-w-0">
-            <h2 className="font-serif text-[23px] leading-tight tracking-[-0.01em]">{name}</h2>
-            <p className="text-sm text-muted-foreground">{kinds(link.professional.kind)}</p>
+    <section aria-label={name} className="space-y-6">
+      <div className="flex flex-col items-start gap-4 sm:flex-row sm:justify-between sm:gap-6">
+        <div className="min-w-0 space-y-1">
+          <h2 className="font-serif text-[24px] leading-tight tracking-[-0.01em]">{name}</h2>
+          <p className="text-sm text-muted-foreground">{kinds(link.professional.kind)}</p>
+          <div className="pt-2">
+            <ShareStateLabel state={shareStateOf(shares, now)} now={now} timeZone={timeZone} />
           </div>
-          <ShareStateLabel state={shareStateOf(shares, now)} now={now} timeZone={timeZone} />
         </div>
-
         <ShareFlow
           careLinkId={link.id}
           name={name}
@@ -123,23 +122,23 @@ export function ProfessionalSharing({
           timeZone={timeZone}
           share={share}
         />
+      </div>
 
-        {live.length > 0 && (
-          <div className="space-y-2">
-            <h3 className="px-1 text-sm text-muted-foreground">{t('shares.active')}</h3>
-            <ul className="space-y-2">{live.map((item) => record(item, revoke))}</ul>
-          </div>
-        )}
+      {live.length > 0 && (
+        <div className="space-y-4">
+          <h3 className="text-sm font-medium">{t('shares.active')}</h3>
+          <ul className="space-y-6">{live.map((item) => record(item, revoke))}</ul>
+        </div>
+      )}
 
-        {past.length > 0 && (
-          <details className="group">
-            <summary className="w-fit cursor-pointer list-none px-1 text-sm text-muted-foreground underline decoration-1 underline-offset-4 [&::-webkit-details-marker]:hidden">
-              {t('shares.history')} ({past.length})
-            </summary>
-            <ul className="mt-3 space-y-2">{past.map((item) => record(item, null))}</ul>
-          </details>
-        )}
-      </Panel>
+      {past.length > 0 && (
+        <details className="group space-y-4">
+          <summary className="w-fit cursor-pointer list-none text-sm text-muted-foreground underline decoration-1 underline-offset-4 [&::-webkit-details-marker]:hidden">
+            {t('shares.history')} ({past.length})
+          </summary>
+          <ul className="space-y-6 pt-4">{past.map((item) => record(item, null))}</ul>
+        </details>
+      )}
     </section>
   )
 }

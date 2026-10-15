@@ -190,7 +190,7 @@ export function JournalEditor({ entry, timeZone, save, remove }: JournalEditorPr
             event.preventDefault()
             leave()
           }}
-          className="-ml-2 inline-flex h-10 shrink-0 items-center gap-1 rounded-full pr-3 pl-1 text-[15px] text-muted-foreground transition-colors hover:text-foreground"
+          className="-ml-1 inline-flex h-10 shrink-0 items-center gap-1 pr-2 text-[15px] text-muted-foreground transition-colors hover:text-foreground"
         >
           <Icon name="back" />
           {t('back')}

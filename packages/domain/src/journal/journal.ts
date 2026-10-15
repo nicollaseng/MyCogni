@@ -33,7 +33,11 @@ export function isOwnJournalPath(path: string, userId: string, entryId: string):
 }
 
 export function excerptOf(plainText: string, length: number = journalLimits.excerpt): string {
-  const compact = plainText.replace(/\s+/g, ' ').trim()
+  const compact = plainText
+    .split(/\n+/)
+    .map((line) => line.replace(/\s+/g, ' ').trim())
+    .filter((line) => line !== '')
+    .join(' · ')
   return compact.length <= length ? compact : `${compact.slice(0, length - 1).trimEnd()}…`
 }
 

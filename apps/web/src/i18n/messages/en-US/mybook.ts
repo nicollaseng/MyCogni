@@ -29,7 +29,7 @@ export const mybook: MybookMessages = {
     privacy: {
       private: 'Only you read your MyBook.',
       shared: 'You share pages with {names}.',
-      manage: 'Manage sharing',
+      manage: 'Manage',
     },
   },
   editor: {
@@ -109,6 +109,8 @@ export const mybook: MybookMessages = {
     flow: {
       open: 'Share',
       openMore: 'Share more',
+      title: 'Share with {name}',
+      close: 'Close',
       scope: {
         legend: 'What to share',
         entries: 'Chosen pages',

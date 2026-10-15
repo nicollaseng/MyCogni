@@ -39,7 +39,7 @@ export default async function SharedPagePage({
     <article className="max-w-3xl space-y-8">
       <Link
         href={`/pro/patients/${patient.id}/mybook`}
-        className="-ml-2 inline-flex h-10 items-center gap-1 rounded-full pr-3 pl-1 text-sm text-muted-foreground transition-colors hover:text-foreground"
+        className="-ml-1 inline-flex h-10 items-center gap-1 pr-2 text-sm text-muted-foreground transition-colors hover:text-foreground"
       >
         <Icon name="back" />
         {t('backToList')}
@@ -56,9 +56,7 @@ export default async function SharedPagePage({
         </p>
       </header>
       <JournalViewer body={entry.body} imageUrls={entry.imageUrls} />
-      <p className="rounded-[18px] bg-surface px-4 py-3 text-sm text-muted-foreground">
-        {t('readNotice')}
-      </p>
+      <p className="text-sm text-muted-foreground">{t('readNotice')}</p>
     </article>
   )
 }

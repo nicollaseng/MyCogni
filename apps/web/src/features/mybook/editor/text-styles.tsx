@@ -47,7 +47,7 @@ export function TextStyleOptions({ editor, current, layout, onChosen }: TextStyl
             onChosen()
           }}
           className={cn(
-            'shrink-0 rounded-[10px] px-2.5 py-2 text-left whitespace-nowrap transition-colors duration-150 hover:bg-sage aria-pressed:bg-primary aria-pressed:text-primary-foreground motion-reduce:transition-none',
+            'shrink-0 rounded-[6px] px-2.5 py-2 text-left whitespace-nowrap transition-colors duration-150 hover:bg-sage aria-pressed:bg-primary aria-pressed:text-primary-foreground motion-reduce:transition-none',
             styleLooks[style],
           )}
         >
@@ -77,7 +77,7 @@ export function TextStyleMenu({ editor, current }: { editor: Editor; current: Te
         onClick={() => {
           setOpen((value) => !value)
         }}
-        className="inline-flex h-10 items-center gap-2 rounded-[10px] pr-2 pl-3 text-[15px] transition-colors duration-150 hover:bg-sage aria-expanded:bg-sage motion-reduce:transition-none"
+        className="inline-flex h-10 items-center gap-2 rounded-[6px] pr-2 pl-3 text-[15px] transition-colors duration-150 hover:bg-sage aria-expanded:bg-sage motion-reduce:transition-none"
       >
         <span aria-hidden className="font-serif text-[18px] leading-none">
           Aa
@@ -86,7 +86,7 @@ export function TextStyleMenu({ editor, current }: { editor: Editor; current: Te
         <Icon name="chevron" className="size-4 text-muted-foreground" />
       </button>
       {open && (
-        <div className="absolute top-full left-0 z-30 mt-1.5 w-56 rounded-[16px] bg-background p-1.5 shadow-[0_12px_40px_rgb(0_0_0/0.14)] ring-1 ring-rule">
+        <div className="absolute top-full left-0 z-30 mt-1.5 w-56 rounded-[8px] bg-background p-1.5 shadow-[0_4px_14px_rgb(0_0_0/0.08)] ring-1 ring-rule">
           <TextStyleOptions editor={editor} current={current} layout="column" onChosen={close} />
         </div>
       )}

@@ -41,7 +41,6 @@ export function RevokeShare({ id, name, revoke }: RevokeShareProps) {
       <div className="flex flex-wrap gap-3">
         <Button
           size="sm"
-          shape="pill"
           disabled={pending}
           className="bg-danger text-background hover:bg-danger/90"
           onClick={() => {
@@ -52,7 +51,6 @@ export function RevokeShare({ id, name, revoke }: RevokeShareProps) {
         </Button>
         <Button
           size="sm"
-          shape="pill"
           variant="ghost"
           disabled={pending}
           onClick={() => {

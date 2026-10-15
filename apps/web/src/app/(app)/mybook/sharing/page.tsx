@@ -7,7 +7,7 @@ import { Icon } from '@/features/mybook/components/icon'
 import { ProfessionalSharing } from '@/features/mybook/components/professional-sharing'
 import { ShareRecord } from '@/features/mybook/components/share-record'
 import { PageTitle } from '@/shared/components/page-title'
-import { Panel, Section } from '@/shared/components/section'
+import { Section } from '@/shared/components/section'
 import { fetchCareLinks } from '@/shared/lib/api/care'
 import { fetchJournal, fetchJournalAccess, fetchJournalShares } from '@/shared/lib/api/journal'
 import { requireOnboardedProfile } from '@/shared/lib/auth/session'
@@ -49,7 +49,7 @@ export default async function MybookSharingPage({ searchParams }: PageProps<'/my
       <div className="space-y-6">
         <Link
           href="/mybook"
-          className="-ml-2 inline-flex h-10 items-center gap-1 rounded-full pr-3 pl-1 text-[15px] text-muted-foreground transition-colors hover:text-foreground"
+          className="-ml-1 inline-flex h-10 items-center gap-1 pr-2 text-[15px] text-muted-foreground transition-colors hover:text-foreground"
         >
           <Icon name="back" />
           {t('back')}
@@ -58,14 +58,14 @@ export default async function MybookSharingPage({ searchParams }: PageProps<'/my
       </div>
 
       {links.length === 0 ? (
-        <Panel className="space-y-3 py-5">
+        <div className="max-w-[36rem] space-y-3">
           <p className="leading-relaxed text-muted-foreground">{t('noLinks')}</p>
           <Link href="/invites" className="inline-block underline decoration-1 underline-offset-4">
             {t('invites')}
           </Link>
-        </Panel>
+        </div>
       ) : (
-        <div className="space-y-6">
+        <div className="space-y-14">
           {links.map((link) => (
             <ProfessionalSharing
               key={link.id}
@@ -86,23 +86,21 @@ export default async function MybookSharingPage({ searchParams }: PageProps<'/my
 
       {ended.length > 0 && (
         <Section title={t('shares.ended')}>
-          <Panel className="px-3 py-3">
-            <ul className="space-y-2">
-              {ended.map((share) => (
-                <ShareRecord
-                  key={share.id}
-                  share={share}
-                  name={share.professional.name}
-                  access={access[share.id] ?? []}
-                  titles={titles}
-                  now={now}
-                  timeZone={timezone}
-                  revoke={null}
-                  showName
-                />
-              ))}
-            </ul>
-          </Panel>
+          <ul className="space-y-6 pt-1">
+            {ended.map((share) => (
+              <ShareRecord
+                key={share.id}
+                share={share}
+                name={share.professional.name}
+                access={access[share.id] ?? []}
+                titles={titles}
+                now={now}
+                timeZone={timezone}
+                revoke={null}
+                showName
+              />
+            ))}
+          </ul>
         </Section>
       )}
     </>

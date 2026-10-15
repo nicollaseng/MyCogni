@@ -7,7 +7,6 @@ import { PageList } from '@/features/mybook/components/page-list'
 import { groupByMonth } from '@/features/mybook/months'
 import { requireVerifiedProfessional } from '@/features/professional/access'
 import { PageTitle } from '@/shared/components/page-title'
-import { Panel } from '@/shared/components/section'
 import { fetchPatient } from '@/shared/lib/api/care'
 import { fetchSharedJournal } from '@/shared/lib/api/journal'
 import { requireProfile } from '@/shared/lib/auth/session'
@@ -43,7 +42,7 @@ export default async function PatientMybookPage({
       <div className="space-y-6">
         <Link
           href={`/pro/patients/${patient.id}`}
-          className="-ml-2 inline-flex h-10 items-center gap-1 rounded-full pr-3 pl-1 text-sm text-muted-foreground transition-colors hover:text-foreground"
+          className="-ml-1 inline-flex h-10 items-center gap-1 pr-2 text-sm text-muted-foreground transition-colors hover:text-foreground"
         >
           <Icon name="back" />
           {t('back')}
@@ -56,10 +55,12 @@ export default async function PatientMybookPage({
       </div>
 
       {pages.length === 0 ? (
-        <Panel className="max-w-3xl space-y-2 py-5">
-          <p className="font-serif text-[21px] leading-snug">{t('empty.title')}</p>
+        <section aria-labelledby="shared-empty" className="max-w-[36rem] space-y-2">
+          <h2 id="shared-empty" className="font-serif text-[23px] leading-snug">
+            {t('empty.title')}
+          </h2>
           <p className="leading-relaxed text-muted-foreground">{t('empty.body')}</p>
-        </Panel>
+        </section>
       ) : (
         <div className="max-w-3xl">
           <PageList
