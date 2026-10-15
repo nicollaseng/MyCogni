@@ -1,10 +1,12 @@
 import {
+  accountExportSchema,
   assessmentListSchema,
   assessmentSchema,
   checkInListSchema,
   checkInSchema,
   consentListSchema,
   profileSchema,
+  type AccountExport,
   type Assessment,
   type CheckIn,
   type Consent,
@@ -15,6 +17,7 @@ import {
   type UpdateProfileInput,
 } from '@mycogni/contracts'
 import { cache } from 'react'
+import { z } from 'zod'
 import { apiRequest } from './client'
 
 export interface CheckInFilter {
@@ -67,4 +70,12 @@ export function fetchCheckIns({ since, before, limit }: CheckInFilter): Promise<
     query.set('limit', String(limit))
   }
   return apiRequest({ path: `/v1/check-ins?${query.toString()}`, schema: checkInListSchema })
+}
+
+export function fetchAccountExport(): Promise<AccountExport> {
+  return apiRequest({ path: '/v1/me/export', schema: accountExportSchema })
+}
+
+export async function deleteAccount(): Promise<void> {
+  await apiRequest({ path: '/v1/me', schema: z.null(), method: 'DELETE' })
 }

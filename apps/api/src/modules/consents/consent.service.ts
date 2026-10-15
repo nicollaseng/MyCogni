@@ -8,7 +8,7 @@ export interface ConsentService {
   grant(user: AuthenticatedUser, input: GrantConsentsInput): Promise<Consent[]>
 }
 
-function toConsent(record: ConsentRecord): Consent {
+export function toConsent(record: ConsentRecord): Consent {
   return {
     kind: record.kind,
     version: record.version,

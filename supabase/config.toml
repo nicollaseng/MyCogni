@@ -28,7 +28,8 @@ port = 55323
 port = 55324
 
 [storage]
-enabled = false
+enabled = true
+file_size_limit = "2MiB"
 
 [auth]
 site_url = "http://localhost:3000"

@@ -55,6 +55,7 @@ describe('/v1/me', () => {
       id: ana.id,
       email: ana.email,
       displayName: 'Ana Lima',
+      avatarPath: null,
       timezone: 'America/Sao_Paulo',
       onboardingCompletedAt: null,
     })
@@ -96,5 +97,30 @@ describe('/v1/me', () => {
         timezone: 'America/Sao_Paulo',
       }),
     )
+  })
+
+  it('keeps the photo inside the person own folder', async () => {
+    const own = await app.inject({
+      method: 'PATCH',
+      url: '/v1/me',
+      headers: bearer(ana),
+      payload: { avatarPath: `${ana.id}/avatar-1.jpg` },
+    })
+    const foreign = await app.inject({
+      method: 'PATCH',
+      url: '/v1/me',
+      headers: bearer(ana),
+      payload: { avatarPath: `${bruno.id}/avatar-1.jpg` },
+    })
+    const cleared = await app.inject({
+      method: 'PATCH',
+      url: '/v1/me',
+      headers: bearer(ana),
+      payload: { avatarPath: null },
+    })
+
+    expect(own.json()).toEqual(expect.objectContaining({ avatarPath: `${ana.id}/avatar-1.jpg` }))
+    expect(foreign.statusCode).toBe(422)
+    expect(cleared.json()).toEqual(expect.objectContaining({ avatarPath: null }))
   })
 })

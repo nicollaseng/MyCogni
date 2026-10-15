@@ -7,6 +7,7 @@ import { testDatabaseUrl } from './database.ts'
 const statusSchema = z.object({
   ANON_KEY: z.string(),
   SERVICE_ROLE_KEY: z.string(),
+  SECRET_KEY: z.string(),
 })
 
 const repositoryRoot = fileURLToPath(new URL('../../../../', import.meta.url))
@@ -23,6 +24,7 @@ function exposeLocalSupabase(): void {
   const status = statusSchema.parse(JSON.parse(output))
   process.env.SUPABASE_ANON_KEY = status.ANON_KEY
   process.env.SUPABASE_SERVICE_ROLE_KEY = status.SERVICE_ROLE_KEY
+  process.env.SUPABASE_SECRET_KEY = status.SECRET_KEY
 }
 
 export default async function globalSetup(): Promise<void> {

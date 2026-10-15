@@ -27,6 +27,7 @@
   --color-muted-foreground: var(--muted-foreground);
   --color-rule: var(--rule);
   --color-sage: var(--sage);
+  --color-surface: var(--surface);
   --color-mist: var(--mist);
   --color-primary: var(--primary);
   --color-primary-foreground: var(--primary-foreground);
@@ -41,6 +42,7 @@
   --muted-foreground: #5b6762;
   --rule: #cfd8cf;
   --sage: #dfe7de;
+  --surface: #e5eae2;
   --mist: #dde6ee;
   --primary: #23423a;
   --primary-foreground: #f2f5ef;
@@ -59,6 +61,7 @@
     --muted-foreground: #9aa8a1;
     --rule: #2b3732;
     --sage: #1c2723;
+    --surface: #1a2320;
     --mist: #1b232c;
     --primary: #cfe0cb;
     --primary-foreground: #142019;

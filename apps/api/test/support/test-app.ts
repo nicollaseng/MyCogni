@@ -1,4 +1,5 @@
 import { buildApp } from '../../src/app.ts'
+import { createSupabaseAccountAdmin } from '../../src/auth/account-admin.ts'
 import { createSupabaseTokenVerifier, type TokenVerifier } from '../../src/auth/token-verifier.ts'
 import { loadConfig } from '../../src/config/env.ts'
 import type { Database } from '../../src/db/client.ts'
@@ -15,6 +16,7 @@ export const testConfig = loadConfig({
   CORS_ORIGINS: allowedOrigin,
   DATABASE_URL: testDatabaseUrl,
   SUPABASE_URL: testSupabaseUrl,
+  SUPABASE_SECRET_KEY: process.env.SUPABASE_SECRET_KEY,
 })
 
 export const rejectingVerifier: TokenVerifier = {
@@ -31,5 +33,10 @@ interface TestAppOptions {
 }
 
 export function buildTestApp({ db, verifier = rejectingVerifier }: TestAppOptions): Promise<App> {
-  return buildApp({ config: testConfig, db, verifier })
+  return buildApp({
+    config: testConfig,
+    db,
+    verifier,
+    accountAdmin: createSupabaseAccountAdmin(testConfig.supabaseUrl, testConfig.supabaseSecretKey),
+  })
 }

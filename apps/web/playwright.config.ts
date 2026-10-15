@@ -1,5 +1,6 @@
 import { defineConfig, devices } from '@playwright/test'
 import { signedInState } from './e2e/support/session'
+import { localSupabase } from './e2e/support/supabase'
 
 const port = 3000
 const baseURL = `http://localhost:${String(port)}`
@@ -45,6 +46,7 @@ export default defineConfig({
         CORS_ORIGINS: baseURL,
         DATABASE_URL: 'postgresql://postgres:postgres@127.0.0.1:55322/postgres',
         SUPABASE_URL: 'http://127.0.0.1:55321',
+        SUPABASE_SECRET_KEY: localSupabase().SECRET_KEY,
       },
     },
     {

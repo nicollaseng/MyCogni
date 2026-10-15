@@ -7,6 +7,7 @@ import { isMoodLevel } from '@/features/mood/mood-levels'
 import { LatestScreening } from '@/features/screening/components/latest-screening'
 import { latestByInstrument } from '@/features/screening/latest'
 import { PageTitle } from '@/shared/components/page-title'
+import { Panel, Section } from '@/shared/components/section'
 import { fetchAssessments, fetchCheckIns } from '@/shared/lib/api/resources'
 import { requireOnboardedProfile } from '@/shared/lib/auth/session'
 import { formatLongDate } from '@/shared/lib/time'
@@ -51,22 +52,23 @@ export default async function TodayPage() {
         </div>
       </section>
 
-      <section className="space-y-4 border-t border-rule pt-8">
-        <h2 className="text-xs tracking-[0.04em] text-muted-foreground">últimos 14 dias</h2>
-        <MoodStrip
-          days={days}
-          label={
-            recordedDays === 0
-              ? 'Nenhum dia registrado nos últimos 14 dias'
-              : `Humor de ${String(recordedDays)} dos últimos 14 dias`
-          }
-        />
-        <p className="text-sm text-muted-foreground">
-          {recordedDays === 0
-            ? 'Seus dias aparecem aqui conforme você registra.'
-            : `${String(recordedDays)} de 14 dias com registro.`}
-        </p>
-      </section>
+      <Section title="Últimos 14 dias">
+        <Panel className="space-y-4 py-5">
+          <MoodStrip
+            days={days}
+            label={
+              recordedDays === 0
+                ? 'Nenhum dia registrado nos últimos 14 dias'
+                : `Humor de ${String(recordedDays)} dos últimos 14 dias`
+            }
+          />
+          <p className="text-sm text-muted-foreground">
+            {recordedDays === 0
+              ? 'Seus dias aparecem aqui conforme você registra.'
+              : `${String(recordedDays)} de 14 dias com registro.`}
+          </p>
+        </Panel>
+      </Section>
 
       <LatestScreening results={latestByInstrument(assessments)} timeZone={timezone} />
     </>

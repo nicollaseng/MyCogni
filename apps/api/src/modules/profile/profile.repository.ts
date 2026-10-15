@@ -6,6 +6,7 @@ import { profiles } from '../../db/schema/index.ts'
 export interface ProfileRecord {
   id: string
   displayName: string | null
+  avatarPath: string | null
   timezone: string
   onboardingCompletedAt: Date | null
 }
@@ -13,6 +14,7 @@ export interface ProfileRecord {
 export interface ProfileChanges {
   displayName?: string
   timezone?: string
+  avatarPath?: string | null
 }
 
 export interface ProfileRepository {
@@ -24,6 +26,7 @@ export interface ProfileRepository {
 const columns = {
   id: profiles.id,
   displayName: profiles.displayName,
+  avatarPath: profiles.avatarPath,
   timezone: profiles.timezone,
   onboardingCompletedAt: profiles.onboardingCompletedAt,
 }

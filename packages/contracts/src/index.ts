@@ -1,3 +1,4 @@
+export { accountExportSchema, exportedAssessmentSchema, type AccountExport } from './account.ts'
 export {
   assessmentListSchema,
   assessmentSchema,

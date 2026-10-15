@@ -26,6 +26,7 @@ export default defineRailway((ctx) => {
       LOG_LEVEL: 'info',
       DATABASE_URL: preserve(),
       SUPABASE_URL: preserve(),
+      SUPABASE_SECRET_KEY: preserve(),
       CORS_ORIGINS: preserve(),
     },
   })
