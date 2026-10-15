@@ -61,6 +61,7 @@ describe('/v1/me', () => {
       avatarPath: null,
       timezone: 'America/Sao_Paulo',
       locale: null,
+      journalInInsights: false,
       onboardingCompletedAt: null,
     })
   })

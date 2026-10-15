@@ -62,6 +62,12 @@ describe('invitations', () => {
 
 describe('notifications', () => {
   it('separates invitations from messages of professionals, Cogni and the system', () => {
-    expect(notificationKinds).toEqual(['invitation', 'professional', 'marketing', 'system'])
+    expect(notificationKinds).toEqual([
+      'invitation',
+      'professional',
+      'marketing',
+      'system',
+      'insight',
+    ])
   })
 })
