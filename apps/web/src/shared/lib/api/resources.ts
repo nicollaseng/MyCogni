@@ -2,7 +2,9 @@ import {
   accountExportSchema,
   assessmentListSchema,
   assessmentSchema,
+  checkInAddendumSchema,
   checkInCountSchema,
+  checkInDetailSchema,
   checkInListSchema,
   checkInSchema,
   consentListSchema,
@@ -11,7 +13,10 @@ import {
   type AccountExport,
   type Assessment,
   type CheckIn,
+  type CheckInAddendum,
+  type CheckInDetail,
   type Consent,
+  type CreateCheckInAddendumInput,
   type CreateCheckInInput,
   type GrantConsentsInput,
   type PatientInsight,
@@ -22,7 +27,7 @@ import {
 import type { ConsentKind } from '@mycogni/domain'
 import { cache } from 'react'
 import { z } from 'zod'
-import { apiRequest } from './client'
+import { ApiError, apiRequest } from './client'
 
 export interface CheckInFilter {
   since?: Date
@@ -129,6 +134,32 @@ export async function fetchCheckInsSince(since: Date): Promise<CheckIn[]> {
     }
   }
   return collected
+}
+
+export async function fetchCheckIn(id: string): Promise<CheckInDetail | null> {
+  try {
+    return await apiRequest({
+      path: `/v1/check-ins/${encodeURIComponent(id)}`,
+      schema: checkInDetailSchema,
+    })
+  } catch (error) {
+    if (error instanceof ApiError && (error.status === 404 || error.status === 400)) {
+      return null
+    }
+    throw error
+  }
+}
+
+export function appendToCheckIn(
+  id: string,
+  body: CreateCheckInAddendumInput,
+): Promise<CheckInAddendum> {
+  return apiRequest({
+    path: `/v1/check-ins/${encodeURIComponent(id)}/addenda`,
+    schema: checkInAddendumSchema,
+    method: 'POST',
+    body,
+  })
 }
 
 export function fetchInsights(): Promise<PatientInsight[]> {

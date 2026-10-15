@@ -155,15 +155,29 @@ export interface CheckInSeed {
   note: string | null
 }
 
+const createdSchema = z.object({ id: z.uuid() })
+
 export async function recordCheckIns(
   email: string,
   password: string,
   checkIns: readonly CheckInSeed[],
+): Promise<string[]> {
+  const post = await poster(email, password)
+  const ids: string[] = []
+  for (const checkIn of checkIns) {
+    ids.push(createdSchema.parse(await post('/v1/check-ins', checkIn)).id)
+  }
+  return ids
+}
+
+export async function addToCheckIn(
+  email: string,
+  password: string,
+  checkInId: string,
+  text: string,
 ): Promise<void> {
   const post = await poster(email, password)
-  for (const checkIn of checkIns) {
-    await post('/v1/check-ins', checkIn)
-  }
+  await post(`/v1/check-ins/${checkInId}/addenda`, { text })
 }
 
 export async function registeredProfessional(

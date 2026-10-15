@@ -1,5 +1,5 @@
 {
-  "id": "e9a76674-0971-40e4-b81e-d995e09c0f90",
+  "id": "97e82179-e231-4215-bc7a-e45f687fcb47",
   "prevId": "7d07a49c-ce10-443d-9a50-2116b6e92e77",
   "version": "7",
   "dialect": "postgresql",
@@ -79,25 +79,25 @@
             }
           ],
           "isUnique": false,
-          "with": {},
+          "concurrently": false,
           "method": "btree",
-          "concurrently": false
+          "with": {}
         }
       },
       "foreignKeys": {
         "assessments_user_id_users_id_fk": {
           "name": "assessments_user_id_users_id_fk",
           "tableFrom": "assessments",
+          "tableTo": "users",
+          "schemaTo": "auth",
           "columnsFrom": [
             "user_id"
           ],
-          "tableTo": "users",
-          "schemaTo": "auth",
           "columnsTo": [
             "id"
           ],
-          "onUpdate": "no action",
-          "onDelete": "cascade"
+          "onDelete": "cascade",
+          "onUpdate": "no action"
         }
       },
       "compositePrimaryKeys": {},
@@ -205,9 +205,9 @@
             }
           ],
           "isUnique": false,
-          "with": {},
+          "concurrently": false,
           "method": "btree",
-          "concurrently": false
+          "with": {}
         },
         "assistant_conversations_patient_idx": {
           "name": "assistant_conversations_patient_idx",
@@ -220,39 +220,39 @@
             }
           ],
           "isUnique": false,
-          "with": {},
+          "concurrently": false,
           "method": "btree",
-          "concurrently": false
+          "with": {}
         }
       },
       "foreignKeys": {
         "assistant_conversations_owner_id_users_id_fk": {
           "name": "assistant_conversations_owner_id_users_id_fk",
           "tableFrom": "assistant_conversations",
+          "tableTo": "users",
+          "schemaTo": "auth",
           "columnsFrom": [
             "owner_id"
           ],
-          "tableTo": "users",
-          "schemaTo": "auth",
           "columnsTo": [
             "id"
           ],
-          "onUpdate": "no action",
-          "onDelete": "cascade"
+          "onDelete": "cascade",
+          "onUpdate": "no action"
         },
         "assistant_conversations_patient_id_users_id_fk": {
           "name": "assistant_conversations_patient_id_users_id_fk",
           "tableFrom": "assistant_conversations",
+          "tableTo": "users",
+          "schemaTo": "auth",
           "columnsFrom": [
             "patient_id"
           ],
-          "tableTo": "users",
-          "schemaTo": "auth",
           "columnsTo": [
             "id"
           ],
-          "onUpdate": "no action",
-          "onDelete": "cascade"
+          "onDelete": "cascade",
+          "onUpdate": "no action"
         }
       },
       "compositePrimaryKeys": {},
@@ -378,38 +378,38 @@
             }
           ],
           "isUnique": false,
-          "with": {},
+          "concurrently": false,
           "method": "btree",
-          "concurrently": false
+          "with": {}
         }
       },
       "foreignKeys": {
         "assistant_messages_conversation_id_assistant_conversations_id_fk": {
           "name": "assistant_messages_conversation_id_assistant_conversations_id_fk",
           "tableFrom": "assistant_messages",
+          "tableTo": "assistant_conversations",
           "columnsFrom": [
             "conversation_id"
           ],
-          "tableTo": "assistant_conversations",
           "columnsTo": [
             "id"
           ],
-          "onUpdate": "no action",
-          "onDelete": "cascade"
+          "onDelete": "cascade",
+          "onUpdate": "no action"
         },
         "assistant_messages_owner_id_users_id_fk": {
           "name": "assistant_messages_owner_id_users_id_fk",
           "tableFrom": "assistant_messages",
+          "tableTo": "users",
+          "schemaTo": "auth",
           "columnsFrom": [
             "owner_id"
           ],
-          "tableTo": "users",
-          "schemaTo": "auth",
           "columnsTo": [
             "id"
           ],
-          "onUpdate": "no action",
-          "onDelete": "cascade"
+          "onDelete": "cascade",
+          "onUpdate": "no action"
         }
       },
       "compositePrimaryKeys": {},
@@ -530,10 +530,10 @@
             }
           ],
           "isUnique": true,
-          "with": {},
-          "method": "btree",
           "where": "ended_at is null",
-          "concurrently": false
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
         },
         "care_links_patient_idx": {
           "name": "care_links_patient_idx",
@@ -546,52 +546,52 @@
             }
           ],
           "isUnique": false,
-          "with": {},
+          "concurrently": false,
           "method": "btree",
-          "concurrently": false
+          "with": {}
         }
       },
       "foreignKeys": {
         "care_links_professional_id_users_id_fk": {
           "name": "care_links_professional_id_users_id_fk",
           "tableFrom": "care_links",
+          "tableTo": "users",
+          "schemaTo": "auth",
           "columnsFrom": [
             "professional_id"
           ],
-          "tableTo": "users",
-          "schemaTo": "auth",
           "columnsTo": [
             "id"
           ],
-          "onUpdate": "no action",
-          "onDelete": "cascade"
+          "onDelete": "cascade",
+          "onUpdate": "no action"
         },
         "care_links_patient_id_users_id_fk": {
           "name": "care_links_patient_id_users_id_fk",
           "tableFrom": "care_links",
+          "tableTo": "users",
+          "schemaTo": "auth",
           "columnsFrom": [
             "patient_id"
           ],
-          "tableTo": "users",
-          "schemaTo": "auth",
           "columnsTo": [
             "id"
           ],
-          "onUpdate": "no action",
-          "onDelete": "cascade"
+          "onDelete": "cascade",
+          "onUpdate": "no action"
         },
         "care_links_invitation_id_invitations_id_fk": {
           "name": "care_links_invitation_id_invitations_id_fk",
           "tableFrom": "care_links",
+          "tableTo": "invitations",
           "columnsFrom": [
             "invitation_id"
           ],
-          "tableTo": "invitations",
           "columnsTo": [
             "id"
           ],
-          "onUpdate": "no action",
-          "onDelete": "set null"
+          "onDelete": "set null",
+          "onUpdate": "no action"
         }
       },
       "compositePrimaryKeys": {},
@@ -627,6 +627,134 @@
         }
       },
       "checkConstraints": {},
+      "isRLSEnabled": true
+    },
+    "public.check_in_addenda": {
+      "name": "check_in_addenda",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "check_in_id": {
+          "name": "check_in_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "text": {
+          "name": "text",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "check_in_addenda_check_in_created_idx": {
+          "name": "check_in_addenda_check_in_created_idx",
+          "columns": [
+            {
+              "expression": "check_in_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "created_at",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "check_in_addenda_check_in_id_check_ins_id_fk": {
+          "name": "check_in_addenda_check_in_id_check_ins_id_fk",
+          "tableFrom": "check_in_addenda",
+          "tableTo": "check_ins",
+          "columnsFrom": [
+            "check_in_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "check_in_addenda_user_id_users_id_fk": {
+          "name": "check_in_addenda_user_id_users_id_fk",
+          "tableFrom": "check_in_addenda",
+          "tableTo": "users",
+          "schemaTo": "auth",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {
+        "check_in_addenda_select_own": {
+          "name": "check_in_addenda_select_own",
+          "as": "PERMISSIVE",
+          "for": "SELECT",
+          "to": [
+            "authenticated"
+          ],
+          "using": "\"check_in_addenda\".\"user_id\" = (select auth.uid())"
+        },
+        "check_in_addenda_select_shared_check_in": {
+          "name": "check_in_addenda_select_shared_check_in",
+          "as": "PERMISSIVE",
+          "for": "SELECT",
+          "to": [
+            "authenticated"
+          ],
+          "using": "exists (\n        select 1 from public.check_ins ci\n        where ci.id = \"check_in_addenda\".\"check_in_id\"\n          and ci.user_id = \"check_in_addenda\".\"user_id\"\n      )"
+        },
+        "check_in_addenda_insert_own": {
+          "name": "check_in_addenda_insert_own",
+          "as": "PERMISSIVE",
+          "for": "INSERT",
+          "to": [
+            "authenticated"
+          ],
+          "withCheck": "\"check_in_addenda\".\"user_id\" = (select auth.uid())\n        and exists (\n          select 1 from public.check_ins ci\n          where ci.id = \"check_in_addenda\".\"check_in_id\"\n            and ci.user_id = (select auth.uid())\n        )"
+        }
+      },
+      "checkConstraints": {
+        "check_in_addenda_text_length": {
+          "name": "check_in_addenda_text_length",
+          "value": "char_length(\"check_in_addenda\".\"text\") between 1 and 1000"
+        }
+      },
       "isRLSEnabled": true
     },
     "public.check_ins": {
@@ -698,25 +826,25 @@
             }
           ],
           "isUnique": false,
-          "with": {},
+          "concurrently": false,
           "method": "btree",
-          "concurrently": false
+          "with": {}
         }
       },
       "foreignKeys": {
         "check_ins_user_id_users_id_fk": {
           "name": "check_ins_user_id_users_id_fk",
           "tableFrom": "check_ins",
+          "tableTo": "users",
+          "schemaTo": "auth",
           "columnsFrom": [
             "user_id"
           ],
-          "tableTo": "users",
-          "schemaTo": "auth",
           "columnsTo": [
             "id"
           ],
-          "onUpdate": "no action",
-          "onDelete": "cascade"
+          "onDelete": "cascade",
+          "onUpdate": "no action"
         }
       },
       "compositePrimaryKeys": {},
@@ -826,25 +954,25 @@
             }
           ],
           "isUnique": true,
-          "with": {},
+          "concurrently": false,
           "method": "btree",
-          "concurrently": false
+          "with": {}
         }
       },
       "foreignKeys": {
         "consents_user_id_users_id_fk": {
           "name": "consents_user_id_users_id_fk",
           "tableFrom": "consents",
+          "tableTo": "users",
+          "schemaTo": "auth",
           "columnsFrom": [
             "user_id"
           ],
-          "tableTo": "users",
-          "schemaTo": "auth",
           "columnsTo": [
             "id"
           ],
-          "onUpdate": "no action",
-          "onDelete": "cascade"
+          "onDelete": "cascade",
+          "onUpdate": "no action"
         }
       },
       "compositePrimaryKeys": {},
@@ -968,9 +1096,9 @@
             }
           ],
           "isUnique": false,
-          "with": {},
+          "concurrently": false,
           "method": "btree",
-          "concurrently": false
+          "with": {}
         },
         "insights_professional_idx": {
           "name": "insights_professional_idx",
@@ -989,39 +1117,39 @@
             }
           ],
           "isUnique": false,
-          "with": {},
+          "concurrently": false,
           "method": "btree",
-          "concurrently": false
+          "with": {}
         }
       },
       "foreignKeys": {
         "insights_patient_id_users_id_fk": {
           "name": "insights_patient_id_users_id_fk",
           "tableFrom": "insights",
+          "tableTo": "users",
+          "schemaTo": "auth",
           "columnsFrom": [
             "patient_id"
           ],
-          "tableTo": "users",
-          "schemaTo": "auth",
           "columnsTo": [
             "id"
           ],
-          "onUpdate": "no action",
-          "onDelete": "cascade"
+          "onDelete": "cascade",
+          "onUpdate": "no action"
         },
         "insights_professional_id_users_id_fk": {
           "name": "insights_professional_id_users_id_fk",
           "tableFrom": "insights",
+          "tableTo": "users",
+          "schemaTo": "auth",
           "columnsFrom": [
             "professional_id"
           ],
-          "tableTo": "users",
-          "schemaTo": "auth",
           "columnsTo": [
             "id"
           ],
-          "onUpdate": "no action",
-          "onDelete": "cascade"
+          "onDelete": "cascade",
+          "onUpdate": "no action"
         }
       },
       "compositePrimaryKeys": {},
@@ -1142,9 +1270,9 @@
             }
           ],
           "isUnique": false,
-          "with": {},
+          "concurrently": false,
           "method": "btree",
-          "concurrently": false
+          "with": {}
         },
         "invitations_patient_idx": {
           "name": "invitations_patient_idx",
@@ -1157,64 +1285,64 @@
             }
           ],
           "isUnique": false,
-          "with": {},
+          "concurrently": false,
           "method": "btree",
-          "concurrently": false
+          "with": {}
         },
         "invitations_recipient_email_idx": {
           "name": "invitations_recipient_email_idx",
           "columns": [
             {
               "expression": "lower(\"recipient_email\")",
-              "isExpression": true,
               "asc": true,
+              "isExpression": true,
               "nulls": "last"
             }
           ],
           "isUnique": false,
-          "with": {},
+          "concurrently": false,
           "method": "btree",
-          "concurrently": false
+          "with": {}
         }
       },
       "foreignKeys": {
         "invitations_professional_id_users_id_fk": {
           "name": "invitations_professional_id_users_id_fk",
           "tableFrom": "invitations",
+          "tableTo": "users",
+          "schemaTo": "auth",
           "columnsFrom": [
             "professional_id"
           ],
-          "tableTo": "users",
-          "schemaTo": "auth",
           "columnsTo": [
             "id"
           ],
-          "onUpdate": "no action",
-          "onDelete": "cascade"
+          "onDelete": "cascade",
+          "onUpdate": "no action"
         },
         "invitations_patient_id_users_id_fk": {
           "name": "invitations_patient_id_users_id_fk",
           "tableFrom": "invitations",
+          "tableTo": "users",
+          "schemaTo": "auth",
           "columnsFrom": [
             "patient_id"
           ],
-          "tableTo": "users",
-          "schemaTo": "auth",
           "columnsTo": [
             "id"
           ],
-          "onUpdate": "no action",
-          "onDelete": "set null"
+          "onDelete": "set null",
+          "onUpdate": "no action"
         }
       },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {
         "invitations_code_unique": {
           "name": "invitations_code_unique",
+          "nullsNotDistinct": false,
           "columns": [
             "code"
-          ],
-          "nullsNotDistinct": false
+          ]
         }
       },
       "policies": {
@@ -1324,51 +1452,51 @@
             }
           ],
           "isUnique": false,
-          "with": {},
+          "concurrently": false,
           "method": "btree",
-          "concurrently": false
+          "with": {}
         }
       },
       "foreignKeys": {
         "journal_access_log_share_id_journal_shares_id_fk": {
           "name": "journal_access_log_share_id_journal_shares_id_fk",
           "tableFrom": "journal_access_log",
+          "tableTo": "journal_shares",
           "columnsFrom": [
             "share_id"
           ],
-          "tableTo": "journal_shares",
           "columnsTo": [
             "id"
           ],
-          "onUpdate": "no action",
-          "onDelete": "cascade"
+          "onDelete": "cascade",
+          "onUpdate": "no action"
         },
         "journal_access_log_entry_id_journal_entries_id_fk": {
           "name": "journal_access_log_entry_id_journal_entries_id_fk",
           "tableFrom": "journal_access_log",
+          "tableTo": "journal_entries",
           "columnsFrom": [
             "entry_id"
           ],
-          "tableTo": "journal_entries",
           "columnsTo": [
             "id"
           ],
-          "onUpdate": "no action",
-          "onDelete": "cascade"
+          "onDelete": "cascade",
+          "onUpdate": "no action"
         },
         "journal_access_log_professional_id_users_id_fk": {
           "name": "journal_access_log_professional_id_users_id_fk",
           "tableFrom": "journal_access_log",
+          "tableTo": "users",
+          "schemaTo": "auth",
           "columnsFrom": [
             "professional_id"
           ],
-          "tableTo": "users",
-          "schemaTo": "auth",
           "columnsTo": [
             "id"
           ],
-          "onUpdate": "no action",
-          "onDelete": "cascade"
+          "onDelete": "cascade",
+          "onUpdate": "no action"
         }
       },
       "compositePrimaryKeys": {},
@@ -1473,25 +1601,25 @@
             }
           ],
           "isUnique": false,
-          "with": {},
+          "concurrently": false,
           "method": "btree",
-          "concurrently": false
+          "with": {}
         }
       },
       "foreignKeys": {
         "journal_entries_user_id_users_id_fk": {
           "name": "journal_entries_user_id_users_id_fk",
           "tableFrom": "journal_entries",
+          "tableTo": "users",
+          "schemaTo": "auth",
           "columnsFrom": [
             "user_id"
           ],
-          "tableTo": "users",
-          "schemaTo": "auth",
           "columnsTo": [
             "id"
           ],
-          "onUpdate": "no action",
-          "onDelete": "cascade"
+          "onDelete": "cascade",
+          "onUpdate": "no action"
         }
       },
       "compositePrimaryKeys": {},
@@ -1593,37 +1721,37 @@
             }
           ],
           "isUnique": false,
-          "with": {},
+          "concurrently": false,
           "method": "btree",
-          "concurrently": false
+          "with": {}
         }
       },
       "foreignKeys": {
         "journal_share_entries_share_id_journal_shares_id_fk": {
           "name": "journal_share_entries_share_id_journal_shares_id_fk",
           "tableFrom": "journal_share_entries",
+          "tableTo": "journal_shares",
           "columnsFrom": [
             "share_id"
           ],
-          "tableTo": "journal_shares",
           "columnsTo": [
             "id"
           ],
-          "onUpdate": "no action",
-          "onDelete": "cascade"
+          "onDelete": "cascade",
+          "onUpdate": "no action"
         },
         "journal_share_entries_entry_id_journal_entries_id_fk": {
           "name": "journal_share_entries_entry_id_journal_entries_id_fk",
           "tableFrom": "journal_share_entries",
+          "tableTo": "journal_entries",
           "columnsFrom": [
             "entry_id"
           ],
-          "tableTo": "journal_entries",
           "columnsTo": [
             "id"
           ],
-          "onUpdate": "no action",
-          "onDelete": "cascade"
+          "onDelete": "cascade",
+          "onUpdate": "no action"
         }
       },
       "compositePrimaryKeys": {
@@ -1727,9 +1855,9 @@
             }
           ],
           "isUnique": false,
-          "with": {},
+          "concurrently": false,
           "method": "btree",
-          "concurrently": false
+          "with": {}
         },
         "journal_shares_professional_idx": {
           "name": "journal_shares_professional_idx",
@@ -1742,52 +1870,52 @@
             }
           ],
           "isUnique": false,
-          "with": {},
+          "concurrently": false,
           "method": "btree",
-          "concurrently": false
+          "with": {}
         }
       },
       "foreignKeys": {
         "journal_shares_patient_id_users_id_fk": {
           "name": "journal_shares_patient_id_users_id_fk",
           "tableFrom": "journal_shares",
+          "tableTo": "users",
+          "schemaTo": "auth",
           "columnsFrom": [
             "patient_id"
           ],
-          "tableTo": "users",
-          "schemaTo": "auth",
           "columnsTo": [
             "id"
           ],
-          "onUpdate": "no action",
-          "onDelete": "cascade"
+          "onDelete": "cascade",
+          "onUpdate": "no action"
         },
         "journal_shares_professional_id_users_id_fk": {
           "name": "journal_shares_professional_id_users_id_fk",
           "tableFrom": "journal_shares",
+          "tableTo": "users",
+          "schemaTo": "auth",
           "columnsFrom": [
             "professional_id"
           ],
-          "tableTo": "users",
-          "schemaTo": "auth",
           "columnsTo": [
             "id"
           ],
-          "onUpdate": "no action",
-          "onDelete": "cascade"
+          "onDelete": "cascade",
+          "onUpdate": "no action"
         },
         "journal_shares_care_link_id_care_links_id_fk": {
           "name": "journal_shares_care_link_id_care_links_id_fk",
           "tableFrom": "journal_shares",
+          "tableTo": "care_links",
           "columnsFrom": [
             "care_link_id"
           ],
-          "tableTo": "care_links",
           "columnsTo": [
             "id"
           ],
-          "onUpdate": "no action",
-          "onDelete": "cascade"
+          "onDelete": "cascade",
+          "onUpdate": "no action"
         }
       },
       "compositePrimaryKeys": {},
@@ -1906,64 +2034,64 @@
             }
           ],
           "isUnique": false,
-          "with": {},
+          "concurrently": false,
           "method": "btree",
-          "concurrently": false
+          "with": {}
         }
       },
       "foreignKeys": {
         "notifications_user_id_users_id_fk": {
           "name": "notifications_user_id_users_id_fk",
           "tableFrom": "notifications",
+          "tableTo": "users",
+          "schemaTo": "auth",
           "columnsFrom": [
             "user_id"
           ],
-          "tableTo": "users",
-          "schemaTo": "auth",
           "columnsTo": [
             "id"
           ],
-          "onUpdate": "no action",
-          "onDelete": "cascade"
+          "onDelete": "cascade",
+          "onUpdate": "no action"
         },
         "notifications_invitation_id_invitations_id_fk": {
           "name": "notifications_invitation_id_invitations_id_fk",
           "tableFrom": "notifications",
+          "tableTo": "invitations",
           "columnsFrom": [
             "invitation_id"
           ],
-          "tableTo": "invitations",
           "columnsTo": [
             "id"
           ],
-          "onUpdate": "no action",
-          "onDelete": "cascade"
+          "onDelete": "cascade",
+          "onUpdate": "no action"
         },
         "notifications_insight_id_insights_id_fk": {
           "name": "notifications_insight_id_insights_id_fk",
           "tableFrom": "notifications",
+          "tableTo": "insights",
           "columnsFrom": [
             "insight_id"
           ],
-          "tableTo": "insights",
           "columnsTo": [
             "id"
           ],
-          "onUpdate": "no action",
-          "onDelete": "cascade"
+          "onDelete": "cascade",
+          "onUpdate": "no action"
         },
         "notifications_support_ticket_id_support_tickets_id_fk": {
           "name": "notifications_support_ticket_id_support_tickets_id_fk",
           "tableFrom": "notifications",
+          "tableTo": "support_tickets",
           "columnsFrom": [
             "support_ticket_id"
           ],
-          "tableTo": "support_tickets",
           "columnsTo": [
             "id"
           ],
-          "onUpdate": "no action",
-          "onDelete": "cascade"
+          "onDelete": "cascade",
+          "onUpdate": "no action"
         }
       },
       "compositePrimaryKeys": {},
@@ -2079,10 +2207,10 @@
             }
           ],
           "isUnique": true,
-          "with": {},
-          "method": "btree",
           "where": "resolved_at is null",
-          "concurrently": false
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
         },
         "professional_alerts_professional_created_idx": {
           "name": "professional_alerts_professional_created_idx",
@@ -2101,9 +2229,9 @@
             }
           ],
           "isUnique": false,
-          "with": {},
+          "concurrently": false,
           "method": "btree",
-          "concurrently": false
+          "with": {}
         },
         "professional_alerts_emailed_idx": {
           "name": "professional_alerts_emailed_idx",
@@ -2128,53 +2256,53 @@
             }
           ],
           "isUnique": false,
-          "with": {},
-          "method": "btree",
           "where": "emailed_at is not null",
-          "concurrently": false
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
         }
       },
       "foreignKeys": {
         "professional_alerts_care_link_id_care_links_id_fk": {
           "name": "professional_alerts_care_link_id_care_links_id_fk",
           "tableFrom": "professional_alerts",
+          "tableTo": "care_links",
           "columnsFrom": [
             "care_link_id"
           ],
-          "tableTo": "care_links",
           "columnsTo": [
             "id"
           ],
-          "onUpdate": "no action",
-          "onDelete": "cascade"
+          "onDelete": "cascade",
+          "onUpdate": "no action"
         },
         "professional_alerts_professional_id_users_id_fk": {
           "name": "professional_alerts_professional_id_users_id_fk",
           "tableFrom": "professional_alerts",
+          "tableTo": "users",
+          "schemaTo": "auth",
           "columnsFrom": [
             "professional_id"
           ],
-          "tableTo": "users",
-          "schemaTo": "auth",
           "columnsTo": [
             "id"
           ],
-          "onUpdate": "no action",
-          "onDelete": "cascade"
+          "onDelete": "cascade",
+          "onUpdate": "no action"
         },
         "professional_alerts_patient_id_users_id_fk": {
           "name": "professional_alerts_patient_id_users_id_fk",
           "tableFrom": "professional_alerts",
+          "tableTo": "users",
+          "schemaTo": "auth",
           "columnsFrom": [
             "patient_id"
           ],
-          "tableTo": "users",
-          "schemaTo": "auth",
           "columnsTo": [
             "id"
           ],
-          "onUpdate": "no action",
-          "onDelete": "cascade"
+          "onDelete": "cascade",
+          "onUpdate": "no action"
         }
       },
       "compositePrimaryKeys": {},
@@ -2270,35 +2398,35 @@
             }
           ],
           "isUnique": false,
-          "with": {},
+          "concurrently": false,
           "method": "btree",
-          "concurrently": false
+          "with": {}
         }
       },
       "foreignKeys": {
         "professional_documents_user_id_users_id_fk": {
           "name": "professional_documents_user_id_users_id_fk",
           "tableFrom": "professional_documents",
+          "tableTo": "users",
+          "schemaTo": "auth",
           "columnsFrom": [
             "user_id"
           ],
-          "tableTo": "users",
-          "schemaTo": "auth",
           "columnsTo": [
             "id"
           ],
-          "onUpdate": "no action",
-          "onDelete": "cascade"
+          "onDelete": "cascade",
+          "onUpdate": "no action"
         }
       },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {
         "professional_documents_path_unique": {
           "name": "professional_documents_path_unique",
+          "nullsNotDistinct": false,
           "columns": [
             "path"
-          ],
-          "nullsNotDistinct": false
+          ]
         }
       },
       "policies": {
@@ -2414,16 +2542,16 @@
         "professional_profiles_user_id_users_id_fk": {
           "name": "professional_profiles_user_id_users_id_fk",
           "tableFrom": "professional_profiles",
+          "tableTo": "users",
+          "schemaTo": "auth",
           "columnsFrom": [
             "user_id"
           ],
-          "tableTo": "users",
-          "schemaTo": "auth",
           "columnsTo": [
             "id"
           ],
-          "onUpdate": "no action",
-          "onDelete": "cascade"
+          "onDelete": "cascade",
+          "onUpdate": "no action"
         }
       },
       "compositePrimaryKeys": {},
@@ -2543,16 +2671,16 @@
         "profiles_id_users_id_fk": {
           "name": "profiles_id_users_id_fk",
           "tableFrom": "profiles",
+          "tableTo": "users",
+          "schemaTo": "auth",
           "columnsFrom": [
             "id"
           ],
-          "tableTo": "users",
-          "schemaTo": "auth",
           "columnsTo": [
             "id"
           ],
-          "onUpdate": "no action",
-          "onDelete": "cascade"
+          "onDelete": "cascade",
+          "onUpdate": "no action"
         }
       },
       "compositePrimaryKeys": {},
@@ -2612,15 +2740,15 @@
           "primaryKey": false,
           "notNull": true,
           "identity": {
+            "type": "always",
             "name": "support_tickets_number_seq",
+            "schema": "public",
             "increment": "1",
+            "startWith": "1001",
             "minValue": "1",
             "maxValue": "2147483647",
-            "startWith": "1001",
             "cache": "1",
-            "cycle": false,
-            "schema": "public",
-            "type": "always"
+            "cycle": false
           }
         },
         "user_id": {
@@ -2749,9 +2877,9 @@
             }
           ],
           "isUnique": false,
-          "with": {},
+          "concurrently": false,
           "method": "btree",
-          "concurrently": false
+          "with": {}
         },
         "support_tickets_status_created_idx": {
           "name": "support_tickets_status_created_idx",
@@ -2770,70 +2898,70 @@
             }
           ],
           "isUnique": false,
-          "with": {},
+          "concurrently": false,
           "method": "btree",
-          "concurrently": false
+          "with": {}
         }
       },
       "foreignKeys": {
         "support_tickets_user_id_users_id_fk": {
           "name": "support_tickets_user_id_users_id_fk",
           "tableFrom": "support_tickets",
+          "tableTo": "users",
+          "schemaTo": "auth",
           "columnsFrom": [
             "user_id"
           ],
-          "tableTo": "users",
-          "schemaTo": "auth",
           "columnsTo": [
             "id"
           ],
-          "onUpdate": "no action",
-          "onDelete": "cascade"
+          "onDelete": "cascade",
+          "onUpdate": "no action"
         },
         "support_tickets_taken_by_users_id_fk": {
           "name": "support_tickets_taken_by_users_id_fk",
           "tableFrom": "support_tickets",
+          "tableTo": "users",
+          "schemaTo": "auth",
           "columnsFrom": [
             "taken_by"
           ],
-          "tableTo": "users",
-          "schemaTo": "auth",
           "columnsTo": [
             "id"
           ],
-          "onUpdate": "no action",
-          "onDelete": "set null"
+          "onDelete": "set null",
+          "onUpdate": "no action"
         },
         "support_tickets_closed_by_users_id_fk": {
           "name": "support_tickets_closed_by_users_id_fk",
           "tableFrom": "support_tickets",
+          "tableTo": "users",
+          "schemaTo": "auth",
           "columnsFrom": [
             "closed_by"
           ],
-          "tableTo": "users",
-          "schemaTo": "auth",
           "columnsTo": [
             "id"
           ],
-          "onUpdate": "no action",
-          "onDelete": "set null"
+          "onDelete": "set null",
+          "onUpdate": "no action"
         }
       },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {
         "support_tickets_number_unique": {
           "name": "support_tickets_number_unique",
+          "nullsNotDistinct": false,
           "columns": [
             "number"
-          ],
-          "nullsNotDistinct": false
+          ]
         },
         "support_tickets_attachment_path_unique": {
           "name": "support_tickets_attachment_path_unique",
+          "nullsNotDistinct": false,
           "columns": [
             "attachment_path"
-          ],
-          "nullsNotDistinct": false
+          ]
         }
       },
       "policies": {
@@ -2940,16 +3068,16 @@
         "zen_step_progress_user_id_users_id_fk": {
           "name": "zen_step_progress_user_id_users_id_fk",
           "tableFrom": "zen_step_progress",
+          "tableTo": "users",
+          "schemaTo": "auth",
           "columnsFrom": [
             "user_id"
           ],
-          "tableTo": "users",
-          "schemaTo": "auth",
           "columnsTo": [
             "id"
           ],
-          "onUpdate": "no action",
-          "onDelete": "cascade"
+          "onDelete": "cascade",
+          "onUpdate": "no action"
         }
       },
       "compositePrimaryKeys": {
@@ -3192,10 +3320,10 @@
     }
   },
   "schemas": {},
-  "views": {},
   "sequences": {},
   "roles": {},
   "policies": {},
+  "views": {},
   "_meta": {
     "columns": {},
     "schemas": {},

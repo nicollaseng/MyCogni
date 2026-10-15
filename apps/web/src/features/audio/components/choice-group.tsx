@@ -2,6 +2,7 @@
 
 import { useId } from 'react'
 import { cn } from '@/shared/lib/utils'
+import { segmentedActive, segmentedGroup, segmentedItem } from '@/shared/ui/segmented'
 
 interface Choice<T extends string> {
   value: T
@@ -26,15 +27,14 @@ export function ChoiceGroup<T extends string>({
   return (
     <fieldset className="space-y-2">
       <legend className="pb-2 text-sm text-muted-foreground">{label}</legend>
-      <div className="grid auto-cols-fr grid-flow-col gap-1 rounded-md border border-rule p-1">
+      <div className={segmentedGroup}>
         {choices.map((choice) => (
           <label
             key={choice.value}
             className={cn(
-              'flex min-h-10 cursor-pointer items-center justify-center rounded-sm px-2 text-center text-sm leading-tight transition-colors duration-150 has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-foreground motion-reduce:transition-none',
-              choice.value === value
-                ? 'bg-primary text-primary-foreground'
-                : 'text-muted-foreground hover:bg-sage hover:text-foreground',
+              segmentedItem,
+              'h-auto min-h-10 px-2 py-1.5 text-center leading-tight whitespace-normal has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-foreground',
+              choice.value === value && segmentedActive,
             )}
           >
             <input

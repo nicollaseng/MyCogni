@@ -2,20 +2,14 @@ import type { InsightsMessages } from '../pt-BR/insights'
 
 export const insights: InsightsMessages = {
   patient: {
-    title: 'Summary of your entries',
+    digest: 'Automatic summary',
+    open: 'Read summary',
+    close: 'Close summary',
     period: '{period} · {count, plural, one {# entry} other {# entries}}',
     records: '{count, plural, one {# entry} other {# entries}}',
     highlights: 'What stood out',
     suggestions: 'For the coming days',
-    disclaimer: 'Written automatically from your entries. It is not a diagnosis.',
     earlier: 'Earlier summaries',
-    empty: {
-      explanation:
-        'Every {threshold} entries, a short summary of what stood out in your days appears here, with a few suggestions. It is written automatically from your entries and is not a diagnosis.',
-      progress: '{count} of {threshold} entries toward the first summary',
-      disabled: 'Summaries are turned off for your account.',
-      enable: 'Turn them on in your profile',
-    },
   },
   teaser: {
     title: 'Your latest summary',

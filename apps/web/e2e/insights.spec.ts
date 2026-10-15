@@ -72,15 +72,22 @@ test('shows the latest reading on Hoje and Padrões and opens an earlier one fro
   await teaser.getByRole('link', { name: 'Ler o resumo completo' }).click()
 
   await expect(page).toHaveURL(`/patterns#reading-${latestId}`)
-  const readings = page.getByRole('region', { name: 'Resumo dos seus registros' })
+  const readings = page.getByRole('region', { name: 'Resumo automático' })
   await expect(readings).toContainText('8 registros')
-  await expect(readings).toContainText(latestContent.summary)
+  await expect(readings.getByText(latestContent.summary)).toBeVisible()
   await expect(readings).toContainText(
     'Os dias com exercício tiveram o humor mais alto do período.',
   )
   await expect(readings).toContainText('Proteger o horário de dormir')
-  await expect(readings).toContainText('Não é um diagnóstico.')
   await expect(page.getByText(earlierContent.summary)).toBeHidden()
+  await readings.getByRole('button', { name: 'Fechar resumo' }).click()
+  await expect(readings.getByRole('button', { name: 'Ler resumo' })).toHaveAttribute(
+    'aria-expanded',
+    'false',
+  )
+  await expect(
+    readings.getByText('Sua semana terminou mais leve do que começou.', { exact: true }),
+  ).toBeVisible()
 
   await page.goto(`/patterns#reading-${earlierId}`)
 
@@ -98,13 +105,9 @@ test('explains the first reading and counts the records toward it', async ({ pag
 
   await expect(page.getByRole('region', { name: 'Seu último resumo' })).toHaveCount(0)
   await page.goto('/patterns')
-  const readings = page.getByRole('region', { name: 'Resumo dos seus registros' })
-  await expect(readings).toContainText('A cada 7 registros, aparece aqui um resumo curto')
-  await expect(readings).toContainText('Os resumos estão desligados na sua conta.')
-  await expect(readings.getByRole('link', { name: 'Ligar no seu perfil' })).toHaveAttribute(
-    'href',
-    '/me',
-  )
+  const upcoming = page.getByRole('region', { name: 'Em breve' })
+  await expect(upcoming).toContainText('Resumo automáticoDesligado · Ligar')
+  await expect(upcoming.getByRole('link', { name: 'Ligar' })).toHaveAttribute('href', '/me')
 
   await allowSummaries(person.email, password)
   await recordCheckIns(
@@ -114,8 +117,8 @@ test('explains the first reading and counts the records toward it', async ({ pag
   )
   await page.reload()
 
-  await expect(readings).toContainText('3 de 7 registros para o primeiro resumo')
-  await expect(readings).not.toContainText('Os resumos estão desligados')
+  await expect(upcoming).toContainText('Resumo automático3 de 7 registros')
+  await expect(upcoming).not.toContainText('Desligado')
 })
 
 test('lets the person include MyBook in the readings', async ({ page }) => {

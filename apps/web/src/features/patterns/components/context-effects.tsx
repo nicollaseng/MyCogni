@@ -1,6 +1,7 @@
 import { maxMoodLevel, type ContextEffect } from '@mycogni/domain'
 import { useFormatter, useTranslations } from 'next-intl'
 import { useCatalogLabels } from '@/features/check-in/use-catalog-labels'
+import { Section } from '@/shared/components/section'
 
 function position(average: number): string {
   return `${String((average / maxMoodLevel) * 100)}%`
@@ -30,42 +31,59 @@ function Dumbbell({ effect }: { effect: ContextEffect }) {
   )
 }
 
-export function ContextEffects({ effects }: { effects: readonly ContextEffect[] }) {
-  const t = useTranslations('patterns.contexts')
+function EffectList({ effects }: { effects: readonly ContextEffect[] }) {
+  const t = useTranslations('patterns.associations')
   const format = useFormatter()
   const labels = useCatalogLabels()
   const decimal = (value: number) =>
     format.number(value, { minimumFractionDigits: 1, maximumFractionDigits: 1 })
 
   return (
-    <div className="space-y-5 pt-1">
-      <p aria-hidden className="flex flex-wrap gap-x-5 gap-y-1 text-[13px] text-muted-foreground">
-        <span className="flex items-center gap-2">
-          <span className="size-2.5 rounded-full bg-emphasis" />
-          {t('with')}
-        </span>
-        <span className="flex items-center gap-2">
-          <span className="size-2.5 rounded-full border-2 border-muted-foreground" />
-          {t('without')}
-        </span>
-      </p>
-      <ul className="space-y-5">
-        {effects.map((effect) => (
-          <li key={effect.context} className="space-y-2">
-            <p className="leading-relaxed text-pretty">
-              {t('sentence', {
-                context: labels.context(effect.context),
-                with: decimal(effect.withAverage),
-                without: decimal(effect.withoutAverage),
-              })}{' '}
-              <span className="text-sm whitespace-nowrap text-muted-foreground">
+    <ul className="space-y-4 pt-1">
+      {effects.map((effect) => (
+        <li key={effect.context} className="space-y-1.5">
+          <p className="flex items-baseline justify-between gap-4">
+            <span className="truncate">{labels.context(effect.context)}</span>
+            <span className="flex shrink-0 items-center gap-1.5 text-sm text-muted-foreground">
+              <span aria-hidden className="size-2 rounded-full bg-emphasis" />
+              {decimal(effect.withAverage)} {t('with')}
+              <span
+                aria-hidden
+                className="ml-2 size-2 rounded-full border-[1.5px] border-muted-foreground"
+              />
+              {decimal(effect.withoutAverage)} {t('without')}
+              <span className="sr-only">
+                {' '}
                 ({t('days', { with: effect.withDays, without: effect.withoutDays })})
               </span>
-            </p>
-            <Dumbbell effect={effect} />
-          </li>
-        ))}
-      </ul>
-    </div>
+            </span>
+          </p>
+          <Dumbbell effect={effect} />
+        </li>
+      ))}
+    </ul>
+  )
+}
+
+interface ContextEffectsProps {
+  better: readonly ContextEffect[]
+  harder: readonly ContextEffect[]
+}
+
+export function ContextEffects({ better, harder }: ContextEffectsProps) {
+  const t = useTranslations('patterns.associations')
+  const lead = better.length > 0 ? better : harder
+
+  return (
+    <Section title={better.length > 0 ? t('better') : t('harder')}>
+      <p className="text-sm text-muted-foreground">{t('reading')}</p>
+      <EffectList effects={lead} />
+      {better.length > 0 && harder.length > 0 && (
+        <div className="space-y-1 pt-4">
+          <h3 className="text-sm font-medium">{t('harderShort')}</h3>
+          <EffectList effects={harder} />
+        </div>
+      )}
+    </Section>
   )
 }

@@ -47,30 +47,45 @@ test('searches notes and the names of emotions in the language in use', async ({
   await expect(page.getByText(/Nada por aqui com essa busca/)).toBeVisible()
 })
 
-test('filters by mood, emotion and note, and keeps the filters in the address', async ({
+test('filters through one panel, sums the filters up and keeps them in the address', async ({
   page,
 }) => {
   await signInWithEntries(page)
   await page.goto('/entries')
 
-  await page.getByRole('combobox', { name: 'Humor' }).selectOption({ label: 'Humor bom' })
-  await expect(page).toHaveURL('/entries?mood=good')
+  const button = page.getByRole('button', { name: /^Filtros/ })
+  await expect(button).toHaveAccessibleName('Filtros, nenhum ativo')
+  await button.click()
+  const panel = page.getByRole('dialog', { name: 'Filtros' })
+  const scale = panel.getByRole('group', { name: 'Humor' })
+  await scale.getByRole('button', { name: 'Um pouco bem' }).click()
+  await expect(page).toHaveURL('/entries?mood=4')
+  await scale.getByRole('button', { name: 'Muito bem' }).click()
+  await expect(page).toHaveURL('/entries?mood=4-6')
   await expect(page.getByRole('status')).toHaveText('2 registros encontrados')
 
-  await page.getByRole('checkbox', { name: 'Só com nota' }).check()
-  await expect(page).toHaveURL('/entries?mood=good&note=1')
-  await expect(page.getByRole('status')).toHaveText('1 registro encontrado')
-
-  await page.reload()
-  await expect(page.getByRole('combobox', { name: 'Humor' })).toHaveValue('good')
-  await expect(page.getByRole('checkbox', { name: 'Só com nota' })).toBeChecked()
+  await panel.getByRole('checkbox', { name: 'Só com nota' }).check()
+  await expect(page).toHaveURL('/entries?mood=4-6&note=1')
+  await panel.getByRole('button', { name: 'Ver 1 registro' }).click()
+  await expect(panel).toBeHidden()
+  await expect(page.getByText('Humor um pouco bem a muito bem · Com nota')).toBeVisible()
   await expect(page.getByText('Almoço com a Bia')).toBeVisible()
 
-  await page.getByRole('button', { name: 'Limpar filtros' }).click()
+  await page.reload()
+  await expect(button).toHaveAccessibleName('Filtros, 2 ativos')
+  await expect(page.getByText('Humor um pouco bem a muito bem · Com nota')).toBeVisible()
+
+  await page.getByRole('button', { name: 'Limpar', exact: true }).click()
   await expect(page).toHaveURL('/entries')
-  await page.getByRole('combobox', { name: 'Emoção' }).selectOption('luto')
+  await expect(page.getByRole('status')).toHaveText('4 registros')
+
+  await button.click()
+  await panel.getByRole('button', { name: /^Emoções/ }).click()
+  await panel.getByRole('group', { name: 'Suas' }).getByRole('checkbox', { name: 'luto' }).check()
   await expect(page).toHaveURL('/entries?emotion=luto')
   await expect(page.getByRole('status')).toHaveText('1 registro encontrado')
+  await page.keyboard.press('Escape')
+  await expect(panel).toBeHidden()
   const entries = page.getByRole('main').getByRole('listitem')
   await expect(entries).toHaveCount(1)
   await expect(entries).toContainText('luto')
@@ -78,4 +93,33 @@ test('filters by mood, emotion and note, and keeps the filters in the address', 
   await page.goBack()
   await expect(page).toHaveURL('/entries')
   await expect(page.getByRole('status')).toHaveText('4 registros')
+})
+
+test('opens a record read-only and adds a dated note below it', async ({ page }) => {
+  await signInWithEntries(page)
+  await page.goto('/entries?note=1')
+
+  await page.getByRole('link', { name: /Almoço com a Bia/ }).click()
+  await expect(page).toHaveURL(/\/entries\/[0-9a-f-]{36}\?note=1$/)
+  await expect(page.getByRole('heading', { level: 1, name: 'Bem' })).toBeVisible()
+  await expect(page.getByRole('list', { name: 'Emoções' })).toHaveText('alegria')
+  await expect(page.getByRole('list', { name: 'Contextos' })).toHaveText('amizades')
+  await expect(page.getByText('Almoço com a Bia')).toBeVisible()
+  await expect(page.getByRole('button', { name: 'Precisa de ajuda agora?' })).toBeVisible()
+
+  await page.getByRole('button', { name: 'Escrever mais' }).click()
+  await page
+    .getByRole('textbox', { name: 'O que você quer acrescentar?' })
+    .fill('Combinamos de repetir no mês que vem.')
+  await page.getByRole('button', { name: 'Guardar' }).click()
+  const later = page.getByRole('region', { name: 'Escrito depois' })
+  await expect(later).toContainText('Combinamos de repetir no mês que vem.')
+  await expect(page.getByRole('textbox')).toHaveCount(0)
+
+  await page.reload()
+  await expect(later).toContainText('Combinamos de repetir no mês que vem.')
+  await expect(page.getByText('Almoço com a Bia')).toBeVisible()
+
+  await page.getByRole('main').getByRole('link', { name: 'Registros', exact: true }).click()
+  await expect(page).toHaveURL('/entries?note=1')
 })

@@ -55,7 +55,7 @@ test.describe('switching tabs', () => {
     await openTab(
       'Padrões',
       '/patterns',
-      page.getByText('Seus padrões aparecem aqui depois dos primeiros registros.'),
+      page.getByText('Seus padrões aparecem aqui conforme você registra.'),
     )
     await openTab(
       'Zen',

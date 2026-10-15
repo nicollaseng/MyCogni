@@ -84,6 +84,17 @@ export {
   type EmotionId,
 } from './check-ins/catalog.ts'
 export { checkInLimits, checkInSearchLength, maxMoodLevel } from './check-ins/check-ins.ts'
+export {
+  activeFilterCount,
+  filterParts,
+  moodRangeOf,
+  moodRangeParam,
+  tagListOf,
+  toggleMoodLevel,
+  type EntryFilterSelection,
+  type FilterPart,
+  type MoodRange,
+} from './check-ins/entry-filters.ts'
 export { dailyMoods, dayKey, previousDays, type DatedMood } from './check-ins/days.ts'
 export {
   consentKinds,
@@ -186,7 +197,27 @@ export { assistantNotice, noticeKinds, type NoticeKind } from './assistant/notic
 export { filterReply, repeatsPassage, type ReplyFilterOptions } from './assistant/reply-filter.ts'
 export { consistencyOf, type Consistency } from './patterns/consistency.ts'
 export { averageOf, moodDays, weekdayOf, type MoodDay } from './patterns/days.ts'
+export {
+  defaultPatternPeriod,
+  historySince,
+  patternPeriodOf,
+  patternPeriods,
+  withinDays,
+  type PatternPeriod,
+} from './patterns/periods.ts'
 export { moodReportPeriods, patternRules, type MoodReportPeriod } from './patterns/rules.ts'
+export {
+  associationDays,
+  isUnlocked,
+  patternSections,
+  patternUnlocks,
+  pendingSections,
+  type BlockedReason,
+  type PatternEvidence,
+  type PatternSection,
+  type ProgressUnit,
+  type SectionStatus,
+} from './patterns/unlocks.ts'
 export {
   scoreTimeline,
   severityRanges,
