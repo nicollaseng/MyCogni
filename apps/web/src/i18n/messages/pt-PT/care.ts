@@ -94,8 +94,11 @@ export const care: CareMessages = {
     meta: { title: 'Convites' },
     title: 'Convites',
     description: 'Convites de profissionais para acompanhar os seus registos.',
-    empty:
-      'Ainda não recebeu convites. Quando um profissional enviar um convite, este aparece aqui e nas notificações.',
+    empty: {
+      title: 'Ainda não recebeu convites.',
+      description:
+        'Quando um profissional enviar um convite, este aparece aqui e nas notificações.',
+    },
     groups: {
       pending: 'A aguardar a sua resposta',
       accepted: 'Aceites',

@@ -5,6 +5,7 @@ import type { ReactNode } from 'react'
 import { Section } from '@/shared/components/section'
 import { formatDay } from '../format-day'
 import { groupInvitations, statusDate } from '../invitations'
+import { EmptyState } from '@/shared/components/empty-state'
 
 interface InvitationListProps {
   invitations: readonly ReceivedInvitation[]
@@ -43,7 +44,7 @@ export function InvitationList({ invitations, timeZone }: InvitationListProps) {
   const groups = groupInvitations(invitations)
 
   if (groups.length === 0) {
-    return <p className="text-pretty text-muted-foreground">{t('empty')}</p>
+    return <EmptyState title={t('empty.title')} description={t('empty.description')} />
   }
 
   return (
