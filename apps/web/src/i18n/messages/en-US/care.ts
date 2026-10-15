@@ -75,6 +75,7 @@ export const care: CareMessages = {
       privacy:
         'The link gives no access to anything else in your account. Learn more in the <link>privacy policy</link>.',
       agreement: 'Accepting means you agree to these terms.',
+      confirmAgreement: 'Confirming means you agree to these terms.',
     },
     submit: 'Accept',
     accepting: 'Accepting…',
@@ -166,11 +167,27 @@ export const care: CareMessages = {
     invites: 'See invitations',
     professionalArea: 'Professional area',
   },
+  terms: {
+    meta: { title: 'Updated terms' },
+    kicker: 'Updated terms',
+    title: 'Review and confirm the new terms.',
+    lead: 'Until you confirm, {name} keeps seeing your entries as you accepted before. If you prefer, you can end the link.',
+    changes: {
+      title: 'What changed',
+      body: 'Only the name of the place where you end the link: it is now Profile and settings. Everything else stays the same.',
+    },
+    confirm: 'Confirm',
+    confirming: 'Confirming…',
+    notice: 'We updated the sharing terms. <link>Review and confirm</link>.',
+    status: 'Confirm the new terms',
+  },
   feedback: {
     unavailable: 'This invitation is no longer available. Ask the sender for a new one.',
     notPending: 'This invitation has already been answered or is no longer valid.',
     alreadyLinked: 'You already share your entries with {name}.',
     error: 'We couldn’t finish that right now. Please try again in a moment.',
     endError: 'We couldn’t end the link right now. Please try again in a moment.',
+    linkEnded: 'This link has already ended.',
+    termsError: 'We couldn’t confirm the terms right now. Please try again in a moment.',
   },
 }

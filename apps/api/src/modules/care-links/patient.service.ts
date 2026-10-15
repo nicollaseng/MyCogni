@@ -5,7 +5,7 @@ import type {
   PatientSummary,
   ProfessionalOverview,
 } from '@mycogni/contracts'
-import { attentionReasonsOf, dayKey, previousDays } from '@mycogni/domain'
+import { attentionReasonsOf, dayKey, isSharingConsentCurrent, previousDays } from '@mycogni/domain'
 import type { AuthenticatedUser } from '../../auth/token-verifier.ts'
 import { ForbiddenError, NotFoundError } from '../../shared/errors.ts'
 import type { BucketStore } from '../../storage/bucket-store.ts'
@@ -89,6 +89,7 @@ export function createPatientService({
         completedAt: screening.completedAt.toISOString(),
       })),
       attention: attentionReasonsOf(signals),
+      termsOutdated: !isSharingConsentCurrent(link.consentVersion),
     }))
   }
 

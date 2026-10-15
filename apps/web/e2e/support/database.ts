@@ -61,6 +61,17 @@ export function seedProfessionalInsight(
   return insertInsight({ ...seed, audience: 'professional' })
 }
 
+export const previousSharingConsentVersion = '2026-10'
+
+export async function revertSharingTerms(patientId: string): Promise<void> {
+  await withDatabase(
+    (sql) => sql`
+      update public.care_links
+      set consent_version = ${previousSharingConsentVersion}, consent_accepted_at = started_at
+      where patient_id = ${patientId} and ended_at is null`,
+  )
+}
+
 export async function notifyInsight(patientId: string, insightId: string): Promise<void> {
   await withDatabase(
     (sql) => sql`

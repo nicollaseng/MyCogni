@@ -1,5 +1,6 @@
 import { describe, expect, it, jest } from '@jest/globals'
 import type { CareLink } from '@mycogni/contracts'
+import { sharingConsentVersion } from '@mycogni/domain'
 import { screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import type { ActionResult } from '@/shared/lib/actions/result'
@@ -19,6 +20,8 @@ const links: CareLink[] = [
     },
     sharesHistory: false,
     startedAt: '2026-10-14T15:00:00.000Z',
+    consentVersion: sharingConsentVersion,
+    termsOutdated: false,
   },
   {
     id: '3e2d1c0b-0000-4000-8000-000000000002',
@@ -30,6 +33,8 @@ const links: CareLink[] = [
     },
     sharesHistory: true,
     startedAt: '2026-09-01T15:00:00.000Z',
+    consentVersion: '2026-10',
+    termsOutdated: true,
   },
 ]
 
@@ -73,6 +78,19 @@ describe('CareLinks', () => {
     expect(
       screen.getByText(/Quem acompanha você recebe um alerta em situações específicas/),
     ).toHaveTextContent('como respostas que indicam risco')
+  })
+
+  it('points to the new terms only on the links that still wait for them', () => {
+    renderWithIntl(
+      <CareLinks links={links} timeZone="America/Sao_Paulo" end={succeed} isProfessional={false} />,
+    )
+
+    expect(
+      within(row('Lúcia Mendes')).getByRole('link', { name: 'Confirme os novos termos' }),
+    ).toHaveAttribute('href', '/me/professionals/3e2d1c0b-0000-4000-8000-000000000002/terms')
+    expect(
+      within(row('Helena Prado')).queryByRole('link', { name: 'Confirme os novos termos' }),
+    ).not.toBeInTheDocument()
   })
 
   it('asks for confirmation before ending a link', async () => {

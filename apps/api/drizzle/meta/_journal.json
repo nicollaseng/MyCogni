@@ -180,15 +180,29 @@
     {
       "idx": 25,
       "version": "7",
-      "when": 1792080415733,
-      "tag": "0025_create_professional_alerts",
+      "when": 1792082213739,
+      "tag": "0025_sharing_terms_acceptance",
       "breakpoints": true
     },
     {
       "idx": 26,
       "version": "7",
-      "when": 1792080416130,
-      "tag": "0026_professional_alerts_grants",
+      "when": 1792082218132,
+      "tag": "0026_confirm_sharing_terms",
+      "breakpoints": true
+    },
+    {
+      "idx": 27,
+      "version": "7",
+      "when": 1792083465961,
+      "tag": "0027_create_professional_alerts",
+      "breakpoints": true
+    },
+    {
+      "idx": 28,
+      "version": "7",
+      "when": 1792083471140,
+      "tag": "0028_professional_alerts_grants",
       "breakpoints": true
     }
   ]

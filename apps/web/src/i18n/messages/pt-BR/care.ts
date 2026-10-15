@@ -73,6 +73,7 @@ export const care = {
       privacy:
         'O vínculo não dá acesso a mais nada da sua conta. Saiba mais na <link>política de privacidade</link>.',
       agreement: 'Aceitar significa concordar com estes termos.',
+      confirmAgreement: 'Confirmar significa concordar com estes termos.',
     },
     submit: 'Aceitar',
     accepting: 'Aceitando…',
@@ -164,12 +165,28 @@ export const care = {
     invites: 'Ver convites',
     professionalArea: 'Área profissional',
   },
+  terms: {
+    meta: { title: 'Termos atualizados' },
+    kicker: 'Termos atualizados',
+    title: 'Revise e confirme os novos termos.',
+    lead: 'Enquanto você não confirma, {name} continua vendo seus registros como você aceitou antes. Se preferir, pode encerrar o vínculo.',
+    changes: {
+      title: 'O que mudou',
+      body: 'Só o nome do lugar onde você encerra o vínculo: agora é Perfil e configurações. O resto continua igual.',
+    },
+    confirm: 'Confirmar',
+    confirming: 'Confirmando…',
+    notice: 'Atualizamos os termos de compartilhamento. <link>Revise e confirme</link>.',
+    status: 'Confirme os novos termos',
+  },
   feedback: {
     unavailable: 'Este convite não está mais disponível. Peça um novo a quem enviou.',
     notPending: 'Este convite já foi respondido ou não vale mais.',
     alreadyLinked: 'Você já compartilha seus registros com {name}.',
     error: 'Não conseguimos concluir agora. Tente de novo em instantes.',
     endError: 'Não conseguimos encerrar o vínculo agora. Tente de novo em instantes.',
+    linkEnded: 'Este vínculo já foi encerrado.',
+    termsError: 'Não conseguimos confirmar os termos agora. Tente de novo em instantes.',
   },
 }
 

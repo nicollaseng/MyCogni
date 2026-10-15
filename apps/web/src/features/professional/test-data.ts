@@ -45,6 +45,7 @@ export function patient(overrides: Partial<PatientSummary> = {}): PatientSummary
     previousMoodAverage: 4,
     screenings: [],
     attention: [],
+    termsOutdated: false,
     ...overrides,
   }
 }

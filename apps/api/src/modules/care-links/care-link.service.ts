@@ -1,4 +1,4 @@
-import type { CareLink } from '@mycogni/contracts'
+import type { CareLink, ConfirmSharingTermsInput } from '@mycogni/contracts'
 import type { AuthenticatedUser } from '../../auth/token-verifier.ts'
 import { NotFoundError } from '../../shared/errors.ts'
 import type { BucketStore } from '../../storage/bucket-store.ts'
@@ -8,6 +8,7 @@ import type { CareLinkRepository } from './care-link.repository.ts'
 export interface CareLinkService {
   list(user: AuthenticatedUser): Promise<CareLink[]>
   end(user: AuthenticatedUser, id: string): Promise<void>
+  confirmTerms(user: AuthenticatedUser, id: string, input: ConfirmSharingTermsInput): Promise<void>
 }
 
 export function createCareLinkService(
@@ -20,6 +21,11 @@ export function createCareLinkService(
     },
     async end(user, id) {
       if (!(await repository.end(user.id, id))) {
+        throw new NotFoundError('No active link with this id')
+      }
+    },
+    async confirmTerms(user, id, { consentVersion }) {
+      if (!(await repository.confirmTerms(user.id, id, consentVersion))) {
         throw new NotFoundError('No active link with this id')
       }
     },

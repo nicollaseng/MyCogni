@@ -1,4 +1,5 @@
 import { randomUUID } from 'node:crypto'
+import { sharingConsentVersion } from '@mycogni/domain'
 import { expect, test, type Page } from '@playwright/test'
 import { z } from 'zod'
 import { apiUrl, finishOnboarding, inviteByLink, verifiedProfessional } from './support/api'
@@ -56,7 +57,7 @@ async function linkedPatient(professionalEmail: string, name: string): Promise<v
   const { id } = claimedSchema.parse(await send('POST', '/v1/invitations/claim', { code }))
   await send('POST', `/v1/invitations/${id}/accept`, {
     sharesHistory: false,
-    consentVersion: '2026-10',
+    consentVersion: sharingConsentVersion,
   })
   await send('POST', '/v1/check-ins', {
     moodLevel: 5,

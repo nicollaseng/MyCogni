@@ -382,6 +382,7 @@ export const professional: ProfessionalMessages = {
     fromLink: 'Registos a partir da ligação',
     withHistory: 'Inclui registos anteriores à ligação',
     mybook: 'Páginas do MyBook partilhadas',
+    termsPending: 'A aguardar confirmação dos termos atualizados',
     kpis: {
       mood: 'Humor médio 7 d',
       noPrevious: 'Sem registos nos 7 dias anteriores',

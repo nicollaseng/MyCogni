@@ -209,6 +209,20 @@ export async function allowSummaries(email: string, password: string): Promise<v
   await post('/v1/consents', { kinds: ['ai_processing'] })
 }
 
+const careLinksSchema = z.array(z.object({ id: z.uuid() }))
+
+export async function confirmSharingTerms(email: string, password: string): Promise<void> {
+  const session = await signedSession(email, password)
+  const response = await fetch(`${apiUrl}/v1/care-links`, {
+    headers: { authorization: `Bearer ${session.token}` },
+  })
+  for (const { id } of careLinksSchema.parse(await response.json())) {
+    await send(session, 'POST', `/v1/care-links/${id}/terms`, {
+      consentVersion: sharingConsentVersion,
+    })
+  }
+}
+
 export async function acceptInvitation(
   email: string,
   password: string,

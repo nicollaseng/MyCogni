@@ -382,6 +382,7 @@ export const professional: ProfessionalMessages = {
     fromLink: 'Entries since the link started',
     withHistory: 'Includes entries from before the link',
     mybook: 'Shared MyBook pages',
+    termsPending: 'Awaiting confirmation of the updated terms',
     kpis: {
       mood: 'Avg. mood 7 d',
       noPrevious: 'No entries in the previous 7 days',
