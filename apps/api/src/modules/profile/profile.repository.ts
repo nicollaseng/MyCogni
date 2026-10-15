@@ -9,6 +9,7 @@ export interface ProfileRecord {
   avatarPath: string | null
   timezone: string
   locale: string | null
+  journalInInsights: boolean
   onboardingCompletedAt: Date | null
 }
 
@@ -16,6 +17,7 @@ export interface ProfileChanges {
   displayName?: string
   timezone?: string
   locale?: string
+  journalInInsights?: boolean
   avatarPath?: string | null
 }
 
@@ -31,6 +33,7 @@ export const profileColumns = {
   avatarPath: profiles.avatarPath,
   timezone: profiles.timezone,
   locale: profiles.locale,
+  journalInInsights: profiles.journalInInsights,
   onboardingCompletedAt: profiles.onboardingCompletedAt,
 }
 

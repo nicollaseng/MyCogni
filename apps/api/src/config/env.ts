@@ -27,6 +27,8 @@ const envSchema = z.object({
     .transform((value) => value.replace(/\/+$/, ''))
     .optional(),
   MAIL_FROM: z.string().min(3).default('MyCogniAI <onboarding@resend.dev>'),
+  REDIS_URL: z.url({ protocol: /^rediss?$/ }).optional(),
+  ANTHROPIC_API_KEY: z.string().min(1).optional(),
 })
 
 export interface AppConfig {
@@ -40,6 +42,8 @@ export interface AppConfig {
   supabaseSecretKey: string
   webUrl: string
   mail: MailConfig
+  redisUrl: string | null
+  anthropicApiKey: string | null
 }
 
 export type MailConfig =
@@ -71,6 +75,8 @@ export function loadConfig(source: Record<string, string | undefined>): AppConfi
     supabaseSecretKey: env.SUPABASE_SECRET_KEY,
     webUrl: env.WEB_URL,
     mail: mailConfig(env.RESEND_API_KEY, env.MAILPIT_URL, env.MAIL_FROM),
+    redisUrl: env.REDIS_URL ?? null,
+    anthropicApiKey: env.ANTHROPIC_API_KEY ?? null,
   }
 }
 
