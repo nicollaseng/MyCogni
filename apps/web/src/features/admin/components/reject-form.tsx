@@ -29,7 +29,11 @@ export function RejectForm({ name, pending, onReject, onCancel }: RejectFormProp
   }
 
   return (
-    <form noValidate onSubmit={submit} className="max-w-xl space-y-3 py-1">
+    <form
+      noValidate
+      onSubmit={submit}
+      className="sticky left-4 w-[min(36rem,calc(100vw-4.5rem))] space-y-3 py-1"
+    >
       <div className="space-y-1.5">
         <label htmlFor={`${ids}-note`} className="block text-sm font-medium">
           {t('label', { name })}

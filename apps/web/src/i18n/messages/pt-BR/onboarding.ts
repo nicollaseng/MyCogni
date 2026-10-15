@@ -32,7 +32,7 @@ export const onboarding = {
     alt: 'Sua foto',
     continue: 'Continuar',
     skip: 'Continuar sem foto',
-    later: 'Dá para trocar ou remover a foto quando quiser, em Você.',
+    later: 'Dá para trocar ou remover a foto quando quiser, no seu perfil.',
   },
   intro: {
     title: 'Dois questionários curtos',

@@ -1,3 +1,4 @@
+import { randomUUID } from 'node:crypto'
 import { requiredConsentKinds, sharingConsentVersion } from '@mycogni/domain'
 import { z } from 'zod'
 import {
@@ -12,15 +13,87 @@ import {
 export const apiUrl =
   process.env.API_URL ?? `http://127.0.0.1:${process.env.E2E_API_PORT ?? '3333'}`
 
-const sessionSchema = z.object({ access_token: z.string() })
+const sessionSchema = z.object({ access_token: z.string(), user: z.object({ id: z.uuid() }) })
 
-async function accessToken(email: string, password: string): Promise<string> {
+interface Session {
+  token: string
+  userId: string
+}
+
+async function signedSession(email: string, password: string): Promise<Session> {
   const response = await fetch(`${supabaseUrl}/auth/v1/token?grant_type=password`, {
     method: 'POST',
     headers: { apikey: localSupabase().PUBLISHABLE_KEY, 'content-type': 'application/json' },
     body: JSON.stringify({ email, password }),
   })
-  return sessionSchema.parse(await response.json()).access_token
+  const session = sessionSchema.parse(await response.json())
+  return { token: session.access_token, userId: session.user.id }
+}
+
+async function accessToken(email: string, password: string): Promise<string> {
+  return (await signedSession(email, password)).token
+}
+
+export const tinyPdf = Buffer.from(
+  '%PDF-1.4\n1 0 obj<</Type/Catalog/Pages 2 0 R>>endobj\n2 0 obj<</Type/Pages/Kids[]/Count 0>>endobj\ntrailer<</Root 1 0 R>>\n%%EOF\n',
+)
+
+async function storeFile(
+  { token, userId }: Session,
+  bucket: string,
+  extension: string,
+  contentType: string,
+  body: Buffer,
+): Promise<string> {
+  const path = `${userId}/${randomUUID()}.${extension}`
+  const response = await fetch(`${supabaseUrl}/storage/v1/object/${bucket}/${path}`, {
+    method: 'POST',
+    headers: {
+      apikey: localSupabase().PUBLISHABLE_KEY,
+      authorization: `Bearer ${token}`,
+      'content-type': contentType,
+    },
+    body: Uint8Array.from(body),
+  })
+  if (!response.ok) {
+    throw new Error(`Storage answered ${String(response.status)}: ${await response.text()}`)
+  }
+  return path
+}
+
+async function send(
+  { token }: Session,
+  method: 'POST' | 'PATCH',
+  path: string,
+  body: unknown,
+): Promise<void> {
+  const response = await fetch(`${apiUrl}${path}`, {
+    method,
+    headers: { authorization: `Bearer ${token}`, 'content-type': 'application/json' },
+    body: JSON.stringify(body),
+  })
+  if (!response.ok) {
+    throw new Error(
+      `${method} ${path} answered ${String(response.status)}: ${await response.text()}`,
+    )
+  }
+}
+
+export async function sendRegistrationDocument(email: string, password: string): Promise<void> {
+  const session = await signedSession(email, password)
+  const path = await storeFile(session, 'professional-documents', 'pdf', 'application/pdf', tinyPdf)
+  await send(session, 'POST', '/v1/professional/documents', {
+    path,
+    fileName: 'Carteira CRP.pdf',
+    contentType: 'application/pdf',
+    sizeBytes: tinyPdf.length,
+  })
+}
+
+export async function setPhoto(email: string, password: string, photo: Buffer): Promise<void> {
+  const session = await signedSession(email, password)
+  const path = await storeFile(session, 'avatars', 'png', 'image/png', photo)
+  await send(session, 'PATCH', '/v1/me', { avatarPath: path })
 }
 
 async function poster(email: string, password: string) {
@@ -80,6 +153,7 @@ export async function verifiedProfessional(
     fullName,
     registration: 'CRP 06/123456',
   })
+  await sendRegistrationDocument(email, password)
   const adminEmail = uniqueEmail('admin')
   const adminId = await createUser(adminEmail, password)
   await makeAdmin(adminId)

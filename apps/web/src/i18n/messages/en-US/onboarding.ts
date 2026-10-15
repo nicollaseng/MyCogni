@@ -34,7 +34,7 @@ export const onboarding: OnboardingMessages = {
     alt: 'Your photo',
     continue: 'Continue',
     skip: 'Continue without a photo',
-    later: 'You can change or remove it whenever you like, in You.',
+    later: 'You can change or remove it whenever you like, in your profile.',
   },
   intro: {
     title: 'Two short questionnaires',

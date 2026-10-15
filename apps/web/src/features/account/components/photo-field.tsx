@@ -80,14 +80,15 @@ export function PhotoField({
       return
     }
     setFeedback(null)
-    setDraft({ source, preview: URL.createObjectURL(source) })
-  }
-
-  function closeEditor() {
     if (draft !== null) {
       URL.revokeObjectURL(draft.preview)
     }
-    setDraft(null)
+    setDraft({ source, preview: URL.createObjectURL(source) })
+  }
+
+  function closeEditor(preview: string) {
+    URL.revokeObjectURL(preview)
+    setDraft((current) => (current?.preview === preview ? null : current))
   }
 
   async function upload(photo: File) {
@@ -161,13 +162,16 @@ export function PhotoField({
       </div>
       {draft !== null && (
         <PhotoEditor
+          key={draft.preview}
           source={draft.source}
           preview={draft.preview}
           render={transport.render}
           onConfirm={(photo) => {
             void upload(photo)
           }}
-          onClose={closeEditor}
+          onClose={() => {
+            closeEditor(draft.preview)
+          }}
         />
       )}
     </div>

@@ -91,14 +91,16 @@ export function DocumentUpload({ proof, onSent, send = sendDocument }: DocumentU
       >
         {t('upload.consent')}
       </p>
-      <div className="min-h-5 text-sm" aria-live="polite">
-        {feedback?.kind === 'error' && (
-          <p role="alert" className="text-danger">
-            {t(`upload.errors.${feedback.problem}`)}
-          </p>
-        )}
-        {feedback?.kind === 'sent' && <p role="status">{t('upload.sent')}</p>}
-      </div>
+      {feedback?.kind === 'error' && (
+        <p role="alert" className="text-sm text-danger">
+          {t(`upload.errors.${feedback.problem}`)}
+        </p>
+      )}
+      {feedback?.kind === 'sent' && (
+        <p role="status" className="text-sm">
+          {t('upload.sent')}
+        </p>
+      )}
       <Button
         size="sm"
         className="h-10 px-4 text-[15px]"

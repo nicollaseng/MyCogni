@@ -1,6 +1,6 @@
 'use client'
 
-import { useTranslations } from 'next-intl'
+import { useFormatter, useTranslations } from 'next-intl'
 import { useId, useState } from 'react'
 import Cropper, { type Area, type Point } from 'react-easy-crop'
 import { Sheet } from '@/features/mybook/components/sheet'
@@ -17,8 +17,8 @@ interface PhotoEditorProps {
 }
 
 const cropAreaStyle = {
-  border: '1.5px solid var(--background)',
-  color: 'color-mix(in oklab, var(--foreground) 55%, transparent)',
+  border: '1px solid color-mix(in oklab, var(--foreground) 45%, transparent)',
+  color: 'color-mix(in oklab, var(--background) 62%, transparent)',
 }
 
 const sliderRow = 'grid grid-cols-[5.5rem_minmax(0,1fr)_3rem] items-center gap-3 text-sm'
@@ -27,6 +27,7 @@ const turnButton = 'h-9 px-3.5 text-sm'
 
 export function PhotoEditor({ source, preview, render, onConfirm, onClose }: PhotoEditorProps) {
   const t = useTranslations('account.photoEditor')
+  const format = useFormatter()
   const ids = useId()
   const [crop, setCrop] = useState<Point>({ x: 0, y: 0 })
   const [zoom, setZoom] = useState(1)
@@ -59,6 +60,7 @@ export function PhotoEditor({ source, preview, render, onConfirm, onClose }: Pho
                 zoom={zoom}
                 rotation={rotation}
                 aspect={1}
+                objectFit="cover"
                 minZoom={1}
                 maxZoom={4}
                 cropShape="round"
@@ -89,7 +91,7 @@ export function PhotoEditor({ source, preview, render, onConfirm, onClose }: Pho
                   className="w-full accent-primary"
                 />
                 <span aria-hidden className="text-right text-muted-foreground tabular-nums">
-                  {zoom.toFixed(1)}×
+                  {format.number(zoom, { maximumFractionDigits: 1, minimumFractionDigits: 1 })}×
                 </span>
               </div>
               <div className={sliderRow}>

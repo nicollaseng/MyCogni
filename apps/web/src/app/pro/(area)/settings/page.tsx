@@ -12,6 +12,7 @@ import { chooseLocale } from '@/features/locale/actions'
 import { LocaleSelect } from '@/features/locale/components/locale-select'
 import { requireProfessional } from '@/features/professional/access'
 import { renameProfessional } from '@/features/professional/actions'
+import { DocumentReplace } from '@/features/professional/components/document-replace'
 import { DocumentSummary } from '@/features/professional/components/document-summary'
 import { DocumentUpload } from '@/features/professional/components/document-upload'
 import { ProfessionalNameForm } from '@/features/professional/components/professional-name-form'
@@ -109,22 +110,30 @@ export default async function ProfessionalSettingsPage() {
         </p>
       </WorkspaceSection>
       <WorkspaceSection title={verification('title')}>
-        <Surface className="max-w-3xl px-4 py-4 sm:px-5">
+        <Surface className="max-w-3xl space-y-4 px-4 py-4 sm:px-5">
           <DocumentSummary professional={professional} timeZone={profile.timezone} />
-        </Surface>
-        {professional.status === 'rejected' && <TeamNote note={professional.reviewNote} />}
-        {professional.status === 'verified' ? (
-          <p className="max-w-3xl text-sm leading-relaxed text-muted-foreground">
-            {verification.rich('locked', { email: teamEmail, link: mailLink })}
-          </p>
-        ) : (
-          <Surface className="max-w-3xl px-4 py-5 sm:px-5">
-            <DocumentUpload
+          {professional.status === 'pending' && professional.document !== null && (
+            <DocumentReplace
               proof={registrationProofOf(professional.kind)}
               onSent={refreshAfterUpload}
             />
-          </Surface>
+          )}
+        </Surface>
+        {professional.status === 'rejected' && <TeamNote note={professional.reviewNote} />}
+        {professional.status === 'verified' && (
+          <p className="max-w-3xl text-sm leading-relaxed text-muted-foreground">
+            {verification.rich('locked', { email: teamEmail, link: mailLink })}
+          </p>
         )}
+        {professional.status !== 'verified' &&
+          (professional.status === 'rejected' || professional.document === null) && (
+            <Surface className="max-w-3xl px-4 py-5 sm:px-5">
+              <DocumentUpload
+                proof={registrationProofOf(professional.kind)}
+                onSent={refreshAfterUpload}
+              />
+            </Surface>
+          )}
       </WorkspaceSection>
       <WorkspaceSection title={t('account.title')}>
         <Surface className="max-w-3xl px-4 py-1 sm:px-5">
