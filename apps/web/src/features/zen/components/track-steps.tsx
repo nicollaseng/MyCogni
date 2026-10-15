@@ -1,21 +1,24 @@
 'use client'
 
-import type { ZenStepParams } from '@mycogni/contracts'
 import type { TrackId, TrackStep } from '@mycogni/domain'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { useState, type ReactNode } from 'react'
+import { browserPageClient, type PageClient } from '@/features/mybook/page-client'
 import { ActionError } from '@/shared/components/action-error'
 import { Sheet } from '@/shared/components/sheet'
 import { useSubmit } from '@/shared/hooks/use-submit'
-import type { ActionResult } from '@/shared/lib/actions/result'
+import { reportOutdatedApp } from '@/shared/lib/actions/outdated'
+import { failure, type ActionResult } from '@/shared/lib/actions/result'
 import { cn } from '@/shared/lib/utils'
 import { Button, buttonVariants } from '@/shared/ui/button'
 import type { StepText } from '../content/types'
+import { promptPage } from '../prompt-page'
 import { BreathingExercise } from './breathing-exercise'
 import { StepToggle, type SaveStep } from './step-toggle'
 
-export type WriteStep = (step: ZenStepParams) => Promise<ActionResult<null>>
+export type PromptPages = Pick<PageClient, 'create' | 'save'>
 
 export interface StepView {
   step: TrackStep
@@ -29,7 +32,7 @@ interface TrackStepsProps {
   nextId: string | null
   support: ReactNode
   save: SaveStep
-  write: WriteStep
+  pages?: PromptPages
 }
 
 function actionVariant(primary: boolean) {
@@ -72,16 +75,31 @@ function BreatheAction({ primary }: { primary: boolean }) {
 }
 
 function WriteAction({
-  step,
-  write,
+  prompt,
+  pages,
   primary,
 }: {
-  step: ZenStepParams
-  write: WriteStep
+  prompt: string
+  pages: PromptPages
   primary: boolean
 }) {
   const t = useTranslations('zen.track')
-  const { submit, pending, error } = useSubmit(write, () => undefined)
+  const router = useRouter()
+  const { submit, pending, error } = useSubmit(
+    async (): Promise<ActionResult<string> | null> => {
+      const created = await pages.create()
+      if (created.kind !== 'created') {
+        return outcomeOf(created.kind, t('writeError'))
+      }
+      const saved = await pages.save(created.id, promptPage(prompt))
+      return saved.kind === 'saved'
+        ? { ok: true, value: created.id }
+        : outcomeOf(saved.kind, t('writeError'))
+    },
+    (id) => {
+      router.push(`/mybook/${id}`)
+    },
+  )
 
   return (
     <div className="space-y-2">
@@ -90,7 +108,7 @@ function WriteAction({
         variant={actionVariant(primary)}
         disabled={pending}
         onClick={() => {
-          submit(step)
+          submit()
         }}
       >
         {pending ? t('opening') : t('actions.write')}
@@ -100,15 +118,23 @@ function WriteAction({
   )
 }
 
+function outcomeOf(kind: 'failed' | 'outdated', error: string): ActionResult<never> | null {
+  if (kind === 'outdated') {
+    reportOutdatedApp()
+    return null
+  }
+  return failure(error)
+}
+
 function StepAction({
-  trackId,
   step,
-  write,
+  text,
+  pages,
   primary,
 }: {
-  trackId: TrackId
   step: TrackStep
-  write: WriteStep
+  text: StepText
+  pages: PromptPages
   primary: boolean
 }) {
   const t = useTranslations('zen.track')
@@ -124,7 +150,7 @@ function StepAction({
     case 'breathe':
       return <BreatheAction primary={primary} />
     case 'write':
-      return <WriteAction step={{ trackId, stepId: step.id }} write={write} primary={primary} />
+      return <WriteAction prompt={text.body} pages={pages} primary={primary} />
     case 'check_in':
       return (
         <Link href="/check-in" className={linkAction}>
@@ -143,7 +169,14 @@ function StepAction({
   }
 }
 
-export function TrackSteps({ trackId, steps, nextId, support, save, write }: TrackStepsProps) {
+export function TrackSteps({
+  trackId,
+  steps,
+  nextId,
+  support,
+  save,
+  pages = browserPageClient,
+}: TrackStepsProps) {
   const t = useTranslations('zen.track')
 
   return (
@@ -188,12 +221,7 @@ export function TrackSteps({ trackId, steps, nextId, support, save, write }: Tra
             )}
             {step.kind === 'support' && support}
             <div className="pt-1 empty:hidden">
-              <StepAction
-                trackId={trackId}
-                step={step}
-                write={write}
-                primary={step.id === nextId}
-              />
+              <StepAction step={step} text={text} pages={pages} primary={step.id === nextId} />
             </div>
           </li>
         )

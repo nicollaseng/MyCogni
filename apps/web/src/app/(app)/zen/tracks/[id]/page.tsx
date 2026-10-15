@@ -3,7 +3,7 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { getLocale, getTranslations } from 'next-intl/server'
-import { setStepDone, writeFromPrompt } from '@/features/zen/actions'
+import { setStepDone } from '@/features/zen/actions'
 import { HelpLines } from '@/features/zen/components/help-lines'
 import { ProgressLine } from '@/features/zen/components/progress-line'
 import { TrackSteps } from '@/features/zen/components/track-steps'
@@ -82,7 +82,6 @@ export default async function ZenTrackPage({ params }: PageProps<'/zen/tracks/[i
             </div>
           }
           save={setStepDone}
-          write={writeFromPrompt}
         />
       </div>
 

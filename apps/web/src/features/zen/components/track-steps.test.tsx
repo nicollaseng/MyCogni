@@ -3,21 +3,36 @@ import type { ZenStepParams } from '@mycogni/contracts'
 import { tracks } from '@mycogni/domain'
 import { screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import type { CreateOutcome, PageClient, SaveOutcome } from '@/features/mybook/page-client'
 import type { ActionResult } from '@/shared/lib/actions/result'
 import { renderWithIntl } from '@/test/render'
+import { fakeRouter, WithRouter } from '@/test/router'
 import { trackText } from '../content/tracks'
+import { promptPage } from '../prompt-page'
 import { TrackSteps } from './track-steps'
 
 type Save = (step: ZenStepParams, done: boolean) => Promise<ActionResult<null>>
-type Write = (step: ZenStepParams) => Promise<ActionResult<null>>
 
 const ok: ActionResult<null> = { ok: true, value: null }
+
+const pageId = '8a7d3c1e-0000-4000-8000-000000000001'
+
+function pageClient(
+  created: CreateOutcome = { kind: 'created', id: pageId },
+  saved: SaveOutcome = { kind: 'saved', updatedAt: '2026-10-15T12:00:00.000Z' },
+) {
+  return {
+    create: jest.fn<PageClient['create']>().mockResolvedValue(created),
+    save: jest.fn<PageClient['save']>().mockResolvedValue(saved),
+  }
+}
 
 function renderTrack({
   done = [] as string[],
   save = jest.fn<Save>().mockResolvedValue(ok),
-  write = jest.fn<Write>().mockResolvedValue(ok),
+  pages = pageClient(),
 } = {}) {
+  const router = fakeRouter()
   const text = trackText('pt-BR', 'everyday-anxiety')
   const steps = tracks['everyday-anxiety'].steps.map((step) => ({
     step,
@@ -25,16 +40,18 @@ function renderTrack({
     done: done.includes(step.id),
   }))
   renderWithIntl(
-    <TrackSteps
-      trackId="everyday-anxiety"
-      steps={steps}
-      nextId={steps.find((step) => !step.done)?.step.id ?? null}
-      support={<p>Linhas de ajuda</p>}
-      save={save}
-      write={write}
-    />,
+    <WithRouter router={router}>
+      <TrackSteps
+        trackId="everyday-anxiety"
+        steps={steps}
+        nextId={steps.find((step) => !step.done)?.step.id ?? null}
+        support={<p>Linhas de ajuda</p>}
+        save={save}
+        pages={pages}
+      />
+    </WithRouter>,
   )
-  return { save, write }
+  return { save, pages, router }
 }
 
 function stepNamed(name: string): HTMLElement {
@@ -104,15 +121,36 @@ describe('TrackSteps', () => {
     })
   })
 
-  it('opens a MyBook page from the writing prompt', async () => {
+  it('opens a new MyBook page that starts with the writing prompt', async () => {
     const user = userEvent.setup()
-    const { write } = renderTrack()
+    const { pages, router } = renderTrack()
 
     await user.click(
       within(stepNamed('Escrever no MyBook')).getByRole('button', { name: 'Escrever no MyBook' }),
     )
 
-    expect(write).toHaveBeenCalledWith({ trackId: 'everyday-anxiety', stepId: 'write-worry' })
+    expect(pages.create).toHaveBeenCalledTimes(1)
+    expect(pages.save).toHaveBeenCalledWith(
+      pageId,
+      promptPage(
+        'Que preocupação voltou mais vezes nesta semana? O que está ao seu alcance fazer sobre ela, e o que não está?',
+      ),
+    )
+    expect(router.push).toHaveBeenCalledWith(`/mybook/${pageId}`)
+  })
+
+  it('stays on the track and explains when the page cannot be opened', async () => {
+    const user = userEvent.setup()
+    const { pages, router } = renderTrack({ pages: pageClient({ kind: 'failed' }) })
+    const step = stepNamed('Escrever no MyBook')
+
+    await user.click(within(step).getByRole('button', { name: 'Escrever no MyBook' }))
+
+    expect(await within(step).findByRole('alert')).toHaveTextContent(
+      'Não foi possível abrir uma página no MyBook agora.',
+    )
+    expect(pages.save).not.toHaveBeenCalled()
+    expect(router.push).not.toHaveBeenCalled()
   })
 
   it('opens the breathing exercise in a sheet', async () => {

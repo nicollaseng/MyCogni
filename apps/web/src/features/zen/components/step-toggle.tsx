@@ -4,6 +4,7 @@ import type { ZenStepParams } from '@mycogni/contracts'
 import { useTranslations } from 'next-intl'
 import { useOptimistic, useState, useTransition } from 'react'
 import { ActionError } from '@/shared/components/action-error'
+import { unlessOutdated } from '@/shared/lib/actions/outdated'
 import type { ActionResult } from '@/shared/lib/actions/result'
 import { cn } from '@/shared/lib/utils'
 
@@ -33,7 +34,10 @@ export function StepToggle({ step, done, describedBy, save }: StepToggleProps) {
     setError(null)
     startTransition(async () => {
       setShown(next)
-      const result = await save(step, next)
+      const result = await unlessOutdated(() => save(step, next))
+      if (result === null) {
+        return
+      }
       if (result.ok) {
         setSaved(next)
       } else {
