@@ -1,5 +1,5 @@
 import { describe, expect, it } from '@jest/globals'
-import { emotionFamilies } from './catalog'
+import { emotionFamilies } from '@mycogni/domain'
 import { emotionTabs, familiesByCloseness, suggestEmotions } from './suggestions'
 
 describe('emotion suggestions', () => {
@@ -14,33 +14,33 @@ describe('emotion suggestions', () => {
 
   it('suggests difficult emotions on a bad day', () => {
     expect(suggestEmotions(1 / 6)).toEqual([
-      'ansiedade',
-      'preocupação',
-      'medo',
-      'raiva',
-      'irritação',
-      'frustração',
-      'tristeza',
-      'desânimo',
+      'anxiety',
+      'worry',
+      'fear',
+      'anger',
+      'irritation',
+      'frustration',
+      'sadness',
+      'discouragement',
     ])
   })
 
   it('suggests pleasant emotions on a good day', () => {
-    expect(suggestEmotions(1).slice(0, 3)).toEqual(['alegria', 'felicidade', 'entusiasmo'])
+    expect(suggestEmotions(1).slice(0, 3)).toEqual(['joy', 'happiness', 'enthusiasm'])
   })
 
   it('orders every family by how close it is to the mood', () => {
-    const titles = familiesByCloseness(0.8).map((family) => family.title)
+    const ids = familiesByCloseness(0.8).map((family) => family.id)
 
-    expect(titles[0]).toBe('energia')
-    expect(titles.at(-1)).toBe('tristeza')
-    expect(titles).toHaveLength(emotionFamilies.length)
+    expect(ids[0]).toBe('energy')
+    expect(ids.at(-1)).toBe('sadness')
+    expect(ids).toHaveLength(emotionFamilies.length)
   })
 
   it('starts the tabs with the suggestions', () => {
     const tabs = emotionTabs(0.5)
 
-    expect(tabs[0]?.title).toBe('sugestões')
+    expect(tabs[0]?.id).toBe('suggestions')
     expect(tabs).toHaveLength(emotionFamilies.length + 1)
   })
 })

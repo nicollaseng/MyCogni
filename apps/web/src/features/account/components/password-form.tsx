@@ -1,5 +1,6 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
 import { useState, type SubmitEvent } from 'react'
 import { useSubmit } from '@/shared/hooks/use-submit'
 import type { ActionResult } from '@/shared/lib/actions/result'
@@ -12,6 +13,7 @@ interface PasswordFormProps {
 }
 
 export function PasswordForm({ changePassword }: PasswordFormProps) {
+  const t = useTranslations('account.password')
   const [current, setCurrent] = useState('')
   const [next, setNext] = useState('')
   const [notice, setNotice] = useState<string | null>(null)
@@ -30,7 +32,7 @@ export function PasswordForm({ changePassword }: PasswordFormProps) {
   return (
     <form onSubmit={handleSubmit} className="space-y-3">
       <TextField
-        label="Senha atual"
+        label={t('current')}
         type="password"
         autoComplete="current-password"
         value={current}
@@ -39,10 +41,10 @@ export function PasswordForm({ changePassword }: PasswordFormProps) {
         }}
       />
       <TextField
-        label="Nova senha"
+        label={t('next')}
         type="password"
         autoComplete="new-password"
-        hint="Pelo menos 8 caracteres, com letras e números."
+        hint={t('hint')}
         value={next}
         onChange={(event) => {
           setNext(event.currentTarget.value)
@@ -55,7 +57,7 @@ export function PasswordForm({ changePassword }: PasswordFormProps) {
         shape="pill"
         disabled={pending || current === '' || next === ''}
       >
-        {pending ? 'Salvando…' : 'Salvar nova senha'}
+        {pending ? t('saving') : t('save')}
       </Button>
     </form>
   )

@@ -1,6 +1,7 @@
 import { describe, expect, it } from '@jest/globals'
-import { render, screen, within } from '@testing-library/react'
+import { screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import { renderWithIntl } from '@/test/render'
 import { assessmentOf, fakeActions } from '../test/fixtures'
 import { ResultsStep } from './results-step'
 
@@ -14,7 +15,7 @@ const anxiety = assessmentOf({
 
 describe('ResultsStep', () => {
   it('shows each score with its band and what it suggests', () => {
-    render(
+    renderWithIntl(
       <ResultsStep
         depression={depression}
         anxiety={anxiety}
@@ -34,7 +35,7 @@ describe('ResultsStep', () => {
   })
 
   it('keeps the crisis lines in view when PHQ-9 item 9 was flagged', () => {
-    render(
+    renderWithIntl(
       <ResultsStep
         depression={{ ...depression, hasRiskFlag: true }}
         anxiety={anxiety}
@@ -47,7 +48,7 @@ describe('ResultsStep', () => {
   })
 
   it('does not bring up the crisis lines without the flag', () => {
-    render(
+    renderWithIntl(
       <ResultsStep
         depression={depression}
         anxiety={anxiety}
@@ -60,12 +61,26 @@ describe('ResultsStep', () => {
 
   it('finishes onboarding', async () => {
     const actions = fakeActions()
-    render(
+    renderWithIntl(
       <ResultsStep depression={depression} anxiety={anxiety} finish={actions.finishOnboarding} />,
     )
 
     await userEvent.click(screen.getByRole('button', { name: 'Começar a usar' }))
 
     expect(actions.finishOnboarding).toHaveBeenCalledTimes(1)
+  })
+
+  it('speaks European Portuguese', () => {
+    renderWithIntl(
+      <ResultsStep
+        depression={depression}
+        anxiety={anxiety}
+        finish={fakeActions().finishOnboarding}
+      />,
+      { locale: 'pt-PT' },
+    )
+
+    expect(screen.getByRole('heading', { name: 'O seu ponto de partida.' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Começar a usar' })).toBeInTheDocument()
   })
 })

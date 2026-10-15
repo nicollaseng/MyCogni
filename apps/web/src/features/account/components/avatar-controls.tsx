@@ -1,5 +1,6 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
 import type { ChangeEvent } from 'react'
 import { useSubmit } from '@/shared/hooks/use-submit'
 import type { ActionResult } from '@/shared/lib/actions/result'
@@ -15,6 +16,7 @@ interface AvatarControlsProps {
 const linkButton = 'text-sm underline decoration-1 underline-offset-4 disabled:opacity-50'
 
 export function AvatarControls({ hasPhoto, upload, remove }: AvatarControlsProps) {
+  const t = useTranslations('account.avatar')
   const sending = useSubmit(upload, () => undefined)
   const removing = useSubmit(remove, () => undefined)
   const pending = sending.pending || removing.pending
@@ -43,7 +45,7 @@ export function AvatarControls({ hasPhoto, upload, remove }: AvatarControlsProps
               void choose(event)
             }}
           />
-          {sending.pending ? 'Enviando…' : hasPhoto ? 'Trocar foto' : 'Adicionar foto'}
+          {sending.pending ? t('uploading') : hasPhoto ? t('change') : t('add')}
         </label>
         {hasPhoto && (
           <button
@@ -54,7 +56,7 @@ export function AvatarControls({ hasPhoto, upload, remove }: AvatarControlsProps
               removing.submit()
             }}
           >
-            Remover foto
+            {t('remove')}
           </button>
         )}
       </div>

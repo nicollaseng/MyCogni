@@ -1,11 +1,12 @@
+import { useTranslations } from 'next-intl'
 import type { ReactNode } from 'react'
 import { HelpDisclosure } from '@/shared/components/help-disclosure'
 import { Wordmark } from '@/shared/components/wordmark'
 import { CurrentNavigation } from './current-navigation'
 
-const navigationLabel = 'Navegação principal'
-
 export function AppShell({ children }: { children: ReactNode }) {
+  const navigationLabel = useTranslations('common.navigation')('label')
+
   return (
     <div className="flex min-h-dvh flex-col">
       <header className="border-b border-rule">

@@ -1,23 +1,27 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
+import { getTranslations } from 'next-intl/server'
 import { requestPasswordReset } from '@/features/auth/actions'
 import { AuthFootnote, authLink } from '@/features/auth/components/auth-footnote'
 import { AuthHeading } from '@/features/auth/components/auth-heading'
 import { EmailForm } from '@/features/auth/components/email-form'
 
-export const metadata: Metadata = { title: 'Esqueci a senha' }
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations('auth.meta')
+  return { title: t('forgotPassword') }
+}
 
-export default function ForgotPasswordPage() {
+export default async function ForgotPasswordPage() {
+  const t = await getTranslations('auth.forgotPassword')
+
   return (
     <>
-      <AuthHeading title="Esqueceu a senha?">
-        Digite seu email. Se houver uma conta, enviamos um código para você criar uma nova senha.
-      </AuthHeading>
-      <EmailForm action={requestPasswordReset} submitLabel="Enviar código" />
+      <AuthHeading title={t('title')}>{t('lead')}</AuthHeading>
+      <EmailForm action={requestPasswordReset} submitLabel={t('submit')} />
       <AuthFootnote>
-        Lembrou?{' '}
+        {t('remembered')}{' '}
         <Link href="/sign-in" className={authLink}>
-          Entrar
+          {t('signIn')}
         </Link>
       </AuthFootnote>
     </>

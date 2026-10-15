@@ -1,7 +1,9 @@
+import { useTranslations } from 'next-intl'
 import { privacyCommitments, sections } from '../content'
 import { SectionHeading } from './section-heading'
 
 export function PrivacySection() {
+  const t = useTranslations('landing')
   const titleId = `${sections.privacy}-title`
 
   return (
@@ -13,14 +15,14 @@ export function PrivacySection() {
       <div className="grid gap-12 lg:grid-cols-2 lg:items-end lg:gap-20">
         <SectionHeading
           id={titleId}
-          kicker="Privacidade"
-          title="Seus dados são seus."
-          description="Registrar o humor é uma das coisas mais íntimas que alguém faz. O MyCogniAI foi desenhado a partir disso."
+          kicker={t('sections.privacy')}
+          title={t('privacy.title')}
+          description={t('privacy.description')}
         />
         <ul className="divide-y divide-rule border-y border-rule">
           {privacyCommitments.map((commitment) => (
             <li key={commitment} className="py-4 leading-relaxed">
-              {commitment}
+              {t(`privacy.commitments.${commitment}`)}
             </li>
           ))}
         </ul>

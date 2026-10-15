@@ -1,4 +1,5 @@
-import { emotionFamilies, type ChoiceGroup, type EmotionFamily } from './catalog'
+import { emotionFamilies, type EmotionId } from '@mycogni/domain'
+import type { EmotionFamily, EmotionTab } from './catalog'
 
 const suggestionShape = [3, 3, 2] as const
 
@@ -8,14 +9,11 @@ export function familiesByCloseness(valence: number): EmotionFamily[] {
   )
 }
 
-export function suggestEmotions(valence: number): string[] {
+export function suggestEmotions(valence: number): EmotionId[] {
   const ranked = familiesByCloseness(valence)
   return suggestionShape.flatMap((count, index) => ranked[index]?.items.slice(0, count) ?? [])
 }
 
-export function emotionTabs(valence: number): ChoiceGroup[] {
-  return [
-    { id: 'suggestions', title: 'sugestões', items: suggestEmotions(valence) },
-    ...familiesByCloseness(valence),
-  ]
+export function emotionTabs(valence: number): EmotionTab[] {
+  return [{ id: 'suggestions', items: suggestEmotions(valence) }, ...familiesByCloseness(valence)]
 }

@@ -1,0 +1,89 @@
+import type { AccountMessages } from '../pt-BR/account'
+
+export const account: AccountMessages = {
+  title: 'You',
+  sections: {
+    account: 'Account',
+    preferences: 'Preferences',
+    privacy: 'Privacy',
+    data: 'Your data',
+  },
+  profile: {
+    photo: 'Your photo',
+    fallbackName: 'You',
+  },
+  avatar: {
+    add: 'Add photo',
+    change: 'Change photo',
+    remove: 'Remove photo',
+    uploading: 'Uploading…',
+  },
+  settings: {
+    change: 'Change {field}',
+    cancel: 'Cancel',
+  },
+  name: {
+    label: 'Name',
+    empty: 'No name',
+    field: 'New name',
+    save: 'Save name',
+    saving: 'Saving…',
+  },
+  email: {
+    label: 'Email',
+    field: 'New email',
+    send: 'Send confirmation',
+    sending: 'Sending…',
+  },
+  password: {
+    label: 'Password',
+    current: 'Current password',
+    next: 'New password',
+    hint: 'At least 8 characters, with letters and numbers.',
+    save: 'Save new password',
+    saving: 'Saving…',
+  },
+  consents: {
+    kinds: {
+      terms: 'Terms of use',
+      privacy: 'Privacy policy',
+      health_data: 'Use of your health data',
+      adult: 'Confirmation that you are 18 or older',
+      ai_processing: 'AI-written summaries',
+    },
+    granted: 'Granted on {date}',
+    notGranted: 'Not granted',
+    note: 'Required consents can only be withdrawn by deleting your account, under Your data.',
+  },
+  data: {
+    export: 'Download my data',
+    fileName: 'mycogniai-my-data-{day}.json',
+  },
+  delete: {
+    open: 'Delete my account',
+    warning:
+      'This deletes your account, your entries, questionnaires, consents and links with professionals. It can’t be undone. If you like, download your data first.',
+    word: 'DELETE',
+    confirm: 'Type {word} to confirm',
+    submit: 'Delete forever',
+    deleting: 'Deleting…',
+    cancel: 'Cancel',
+  },
+  signOut: 'Sign out',
+  feedback: {
+    saveError: 'We couldn’t save that right now. Please try again in a moment.',
+    nameRequired: 'Enter a name.',
+    nameTooLong: 'Use up to {max} characters.',
+    nameSaved: 'Name updated.',
+    emailSent: 'We sent a link to the new email. The change takes effect once you confirm it.',
+    wrongPassword: 'The current password doesn’t match.',
+    passwordChanged: 'Password changed.',
+    photoInvalid: 'Use a JPG, PNG or WebP image up to 2 MB.',
+    photoSaved: 'Photo updated.',
+    photoRemoved: 'Photo removed.',
+    typeWord: 'Type {word} to confirm.',
+    deleteError: 'We couldn’t delete your account right now. Please try again in a moment.',
+    aiOn: 'AI summaries turned on.',
+    aiOff: 'AI summaries turned off.',
+  },
+}

@@ -1,8 +1,9 @@
 import { describe, expect, it, jest } from '@jest/globals'
-import { gad7, phq9 } from '@mycogni/domain'
-import { render, screen } from '@testing-library/react'
+import { gad7, instrumentText, phq9 } from '@mycogni/domain'
+import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { fakeActions } from '@/features/onboarding/test/fixtures'
+import { renderWithIntl } from '@/test/render'
 import { Questionnaire } from './questionnaire'
 
 async function answer(label: string) {
@@ -11,12 +12,12 @@ async function answer(label: string) {
 
 describe('Questionnaire', () => {
   it('asks one question at a time with the prompt of the form', () => {
-    render(
+    renderWithIntl(
       <Questionnaire instrument={phq9} send={fakeActions().submitScreening} onDone={jest.fn()} />,
     )
 
     expect(screen.getByText('PHQ-9 · 1 de 9')).toBeInTheDocument()
-    expect(screen.getByText(phq9.prompt)).toBeInTheDocument()
+    expect(screen.getByText(instrumentText('pt-BR', 'phq9').prompt)).toBeInTheDocument()
     expect(
       screen.getByRole('heading', { name: 'Pouco interesse ou pouco prazer em fazer as coisas' }),
     ).toBeInTheDocument()
@@ -24,14 +25,16 @@ describe('Questionnaire', () => {
   })
 
   it('moves on as soon as an answer is chosen and keeps it when going back', async () => {
-    render(
+    renderWithIntl(
       <Questionnaire instrument={gad7} send={fakeActions().submitScreening} onDone={jest.fn()} />,
     )
 
     await answer('Vários dias')
 
     expect(await screen.findByText('GAD-7 · 2 de 7')).toBeInTheDocument()
-    expect(screen.getByRole('heading', { name: gad7.items[1] })).toBeInTheDocument()
+    expect(
+      screen.getByRole('heading', { name: instrumentText('pt-BR', 'gad7').items[1] }),
+    ).toBeInTheDocument()
 
     await userEvent.click(screen.getByRole('button', { name: 'Voltar' }))
 
@@ -44,7 +47,9 @@ describe('Questionnaire', () => {
   it('sends every answer once the last question is answered', async () => {
     const actions = fakeActions()
     const onDone = jest.fn()
-    render(<Questionnaire instrument={gad7} send={actions.submitScreening} onDone={onDone} />)
+    renderWithIntl(
+      <Questionnaire instrument={gad7} send={actions.submitScreening} onDone={onDone} />,
+    )
 
     const choices = ['Nenhuma vez', 'Vários dias', 'Mais da metade dos dias', 'Quase todos os dias']
     for (const [index, value] of [0, 1, 2, 3, 0, 1, 2].entries()) {
@@ -66,7 +71,7 @@ describe('Questionnaire', () => {
       .mockResolvedValueOnce({ ok: false, error: 'Não conseguimos salvar.' })
       .mockImplementation(fakeActions().submitScreening)
     const onDone = jest.fn()
-    render(<Questionnaire instrument={gad7} send={send} onDone={onDone} />)
+    renderWithIntl(<Questionnaire instrument={gad7} send={send} onDone={onDone} />)
 
     for (let index = 1; index <= 7; index++) {
       await screen.findByText(`GAD-7 · ${String(index)} de 7`)
@@ -78,5 +83,51 @@ describe('Questionnaire', () => {
 
     expect(send).toHaveBeenCalledTimes(2)
     expect(onDone).toHaveBeenCalled()
+  })
+
+  it('uses the official European Portuguese wording in Portugal', () => {
+    renderWithIntl(
+      <Questionnaire instrument={phq9} send={fakeActions().submitScreening} onDone={jest.fn()} />,
+      { locale: 'pt-PT' },
+    )
+
+    expect(
+      screen.getByText(
+        'Durante os últimos 14 dias, em quantos foi afectado/a por algum dos seguintes problemas?',
+      ),
+    ).toBeInTheDocument()
+    expect(
+      screen.getByRole('heading', { name: 'Tive pouco interesse ou prazer em fazer coisas' }),
+    ).toBeInTheDocument()
+    expect(
+      screen.getAllByRole('button', { pressed: false }).map((button) => button.textContent),
+    ).toEqual([
+      'Nunca',
+      'Em vários dias',
+      'Em mais de metade do número de dias',
+      'Em quase todos os dias',
+    ])
+  })
+
+  it('uses the official English wording and keeps the chosen answer', async () => {
+    const actions = fakeActions()
+    renderWithIntl(
+      <Questionnaire instrument={gad7} send={actions.submitScreening} onDone={jest.fn()} />,
+      { locale: 'en-US' },
+    )
+
+    expect(screen.getByText('GAD-7 · 1 of 7')).toBeInTheDocument()
+    expect(
+      screen.getByRole('heading', { name: 'Feeling nervous, anxious or on edge' }),
+    ).toBeInTheDocument()
+
+    await answer('Several days')
+    expect(await screen.findByText('GAD-7 · 2 of 7')).toBeInTheDocument()
+    await userEvent.click(screen.getByRole('button', { name: 'Back' }))
+
+    expect(screen.getByRole('button', { name: 'Several days' })).toHaveAttribute(
+      'aria-pressed',
+      'true',
+    )
   })
 })

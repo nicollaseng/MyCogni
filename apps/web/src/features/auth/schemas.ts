@@ -1,27 +1,38 @@
 import { z } from 'zod'
+import type { AuthMessages } from '@/i18n/messages/pt-BR/auth'
 
-export const emailSchema = z.email('Digite um email válido.')
+export type ValidationKey = keyof AuthMessages['validation']
 
-export const newPasswordSchema = z
-  .string()
-  .min(8, 'A senha precisa ter pelo menos 8 caracteres.')
-  .regex(/\p{L}/u, 'Use letras e números na senha.')
-  .regex(/\d/, 'Use letras e números na senha.')
+export type ValidationMessage = (key: ValidationKey) => string
 
-export const codeSchema = z
-  .string()
-  .trim()
-  .regex(/^\d{6}$/, 'O código tem 6 números.')
+export function emailSchema(message: ValidationMessage) {
+  return z.email(message('email'))
+}
 
-export const signUpSchema = z.object({ email: emailSchema, password: newPasswordSchema })
+export function newPasswordSchema(message: ValidationMessage) {
+  return z
+    .string()
+    .min(8, message('passwordLength'))
+    .regex(/\p{L}/u, message('passwordMix'))
+    .regex(/\d/, message('passwordMix'))
+}
 
-export const signInSchema = z.object({
-  email: emailSchema,
-  password: z.string().min(1, 'Digite sua senha.'),
-})
+export function codeSchema(message: ValidationMessage) {
+  return z
+    .string()
+    .trim()
+    .regex(/^\d{6}$/, message('code'))
+}
 
-export const verifySchema = z.object({ code: codeSchema })
-
-export const forgotPasswordSchema = z.object({ email: emailSchema })
-
-export const resetPasswordSchema = z.object({ code: codeSchema, password: newPasswordSchema })
+export function authSchemas(message: ValidationMessage) {
+  const email = emailSchema(message)
+  const newPassword = newPasswordSchema(message)
+  const code = codeSchema(message)
+  return {
+    signUp: z.object({ email, password: newPassword }),
+    signIn: z.object({ email, password: z.string().min(1, message('password')) }),
+    verify: z.object({ code }),
+    forgotPassword: z.object({ email }),
+    resetPassword: z.object({ code, password: newPassword }),
+  }
+}

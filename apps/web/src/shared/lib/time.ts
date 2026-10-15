@@ -1,15 +1,21 @@
-export function formatLongDate(date: Date, timeZone: string): string {
-  const formatted = new Intl.DateTimeFormat('pt-BR', {
+import type { Locale } from '@mycogni/domain'
+
+export function formatLongDate(date: Date, timeZone: string, locale: Locale): string {
+  return new Intl.DateTimeFormat(locale, {
     weekday: 'long',
     day: 'numeric',
     month: 'long',
     timeZone,
   }).format(date)
+}
+
+export function formatDayTitle(date: Date, timeZone: string, locale: Locale): string {
+  const formatted = formatLongDate(date, timeZone, locale)
   return formatted.charAt(0).toUpperCase() + formatted.slice(1)
 }
 
-export function formatTime(date: Date, timeZone: string): string {
-  return new Intl.DateTimeFormat('pt-BR', { hour: '2-digit', minute: '2-digit', timeZone }).format(
+export function formatTime(date: Date, timeZone: string, locale: Locale): string {
+  return new Intl.DateTimeFormat(locale, { hour: '2-digit', minute: '2-digit', timeZone }).format(
     date,
   )
 }

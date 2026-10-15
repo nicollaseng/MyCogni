@@ -1,8 +1,9 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
 import { useId, useState } from 'react'
 import { cn } from '@/shared/lib/utils'
-import type { ChoiceGroup } from '../catalog'
+import type { Choice, ChoiceGroup } from '../catalog'
 
 interface ChoicePickerProps {
   tabs: readonly ChoiceGroup[]
@@ -24,24 +25,34 @@ function normalize(text: string): string {
     .trim()
 }
 
+function uniqueChoices(tabs: readonly ChoiceGroup[]): Choice[] {
+  return [...new Map(tabs.flatMap((tab) => tab.items).map((item) => [item.id, item])).values()]
+}
+
 export function ChoicePicker({ tabs, selected, onToggle, searchLabel }: ChoicePickerProps) {
+  const t = useTranslations('checkIn.picker')
   const [activeIndex, setActiveIndex] = useState(0)
   const [query, setQuery] = useState('')
   const panelId = useId()
 
-  const catalog = [...new Set(tabs.flatMap((tab) => tab.items))]
+  const catalog = uniqueChoices(tabs)
+  const labelOf = (item: string) => catalog.find((choice) => choice.id === item)?.label ?? item
   const searchTerm = normalize(query)
   const searching = searchTerm !== ''
-  const custom = selected.filter((item) => !catalog.includes(item))
-  const exactMatch = catalog.find((item) => normalize(item) === searchTerm)
+  const custom = selected
+    .filter((item) => !catalog.some((choice) => choice.id === item))
+    .map((item) => ({ id: item, label: item }))
+  const exactMatch = catalog.find((choice) => normalize(choice.label) === searchTerm)
   const visible = searching
-    ? catalog.filter((item) => normalize(item).includes(searchTerm)).slice(0, visibleResults)
+    ? catalog
+        .filter((choice) => normalize(choice.label).includes(searchTerm))
+        .slice(0, visibleResults)
     : [...(tabs[activeIndex]?.items ?? []), ...(activeIndex === 0 ? custom : [])]
   const newItem = query.trim().toLowerCase()
   const canCreate = searching && exactMatch === undefined && !selected.includes(newItem)
 
   function add() {
-    const item = exactMatch ?? newItem
+    const item = exactMatch?.id ?? newItem
     if (item !== '' && !selected.includes(item)) {
       onToggle(item)
     }
@@ -56,7 +67,7 @@ export function ChoicePicker({ tabs, selected, onToggle, searchLabel }: ChoicePi
       >
         {tabs.map((tab, index) => {
           const active = !searching && index === activeIndex
-          const hasPicked = tab.items.some((item) => selected.includes(item))
+          const hasPicked = tab.items.some((item) => selected.includes(item.id))
           return (
             <button
               key={tab.id}
@@ -93,14 +104,14 @@ export function ChoicePicker({ tabs, selected, onToggle, searchLabel }: ChoicePi
         className="mt-4 flex min-h-[140px] flex-wrap content-start gap-2"
       >
         {visible.map((item) => {
-          const pressed = selected.includes(item)
+          const pressed = selected.includes(item.id)
           return (
             <button
-              key={item}
+              key={item.id}
               type="button"
               aria-pressed={pressed}
               onClick={() => {
-                onToggle(item)
+                onToggle(item.id)
               }}
               className={cn(
                 chipStyles,
@@ -109,14 +120,14 @@ export function ChoicePicker({ tabs, selected, onToggle, searchLabel }: ChoicePi
                   : 'border-rule bg-white/55 hover:border-foreground/30 dark:bg-white/5',
               )}
             >
-              {item}
+              {item.label}
             </button>
           )
         })}
         {canCreate && (
           <button
             type="button"
-            aria-label={`Adicionar ${newItem}`}
+            aria-label={t('add', { item: newItem })}
             onClick={add}
             className={cn(chipStyles, 'border-dashed border-foreground/40')}
           >
@@ -145,11 +156,11 @@ export function ChoicePicker({ tabs, selected, onToggle, searchLabel }: ChoicePi
       </label>
 
       <p aria-live="polite" className="mt-3 min-h-[21px] text-sm text-muted-foreground">
-        {selected.length > 0 && (
-          <>
-            Escolhidas: <span className="font-medium text-foreground">{selected.join(', ')}</span>
-          </>
-        )}
+        {selected.length > 0 &&
+          t.rich('chosen', {
+            items: selected.map(labelOf).join(', '),
+            list: (chunks) => <span className="font-medium text-foreground">{chunks}</span>,
+          })}
       </p>
     </div>
   )

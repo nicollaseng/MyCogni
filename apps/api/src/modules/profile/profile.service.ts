@@ -1,4 +1,5 @@
 import type { Profile, UpdateProfileInput } from '@mycogni/contracts'
+import { isLocale } from '@mycogni/domain'
 import type { AuthenticatedUser } from '../../auth/token-verifier.ts'
 import { NotFoundError, UnprocessableError } from '../../shared/errors.ts'
 import type { ProfileChanges, ProfileRecord, ProfileRepository } from './profile.repository.ts'
@@ -15,6 +16,7 @@ export function toProfile(record: ProfileRecord, user: AuthenticatedUser): Profi
     displayName: record.displayName,
     avatarPath: record.avatarPath,
     timezone: record.timezone,
+    locale: isLocale(record.locale) ? record.locale : null,
     onboardingCompletedAt: record.onboardingCompletedAt?.toISOString() ?? null,
   }
 }
@@ -23,6 +25,7 @@ function toChanges(input: UpdateProfileInput): ProfileChanges {
   return {
     ...(input.displayName === undefined ? {} : { displayName: input.displayName }),
     ...(input.timezone === undefined ? {} : { timezone: input.timezone }),
+    ...(input.locale === undefined ? {} : { locale: input.locale }),
     ...(input.avatarPath === undefined ? {} : { avatarPath: input.avatarPath }),
   }
 }

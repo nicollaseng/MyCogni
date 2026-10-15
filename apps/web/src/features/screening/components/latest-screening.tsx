@@ -1,9 +1,9 @@
 import type { Assessment } from '@mycogni/contracts'
 import type { ReactNode } from 'react'
 import { instrumentIds, instruments } from '@mycogni/domain'
+import { useLocale, useTranslations } from 'next-intl'
 import { Panel, Section } from '@/shared/components/section'
 import { formatLongDate } from '@/shared/lib/time'
-import { instrumentTopics, severityLabels } from '../copy'
 import type { LatestResults } from '../latest'
 
 interface LatestScreeningProps {
@@ -13,22 +13,27 @@ interface LatestScreeningProps {
 }
 
 function Row({ assessment }: { assessment: Assessment }) {
+  const t = useTranslations('screening')
   return (
     <li className="py-3.5">
       <p className="text-sm text-muted-foreground">
-        {instrumentTopics[assessment.instrument]}
+        {t(`topics.${assessment.instrument}`)}
         <span className="whitespace-nowrap"> · {instruments[assessment.instrument].name}</span>
       </p>
       <p className="mt-1 flex items-baseline gap-1.5">
         <span className="font-serif text-[28px] leading-none">{assessment.totalScore}</span>
-        <span className="text-sm text-muted-foreground">de {assessment.maxScore}</span>
-        <span className="ml-auto text-right">{severityLabels[assessment.severity]}</span>
+        <span className="text-sm text-muted-foreground">
+          {t('score.outOf', { max: assessment.maxScore })}
+        </span>
+        <span className="ml-auto text-right">{t(`severity.${assessment.severity}`)}</span>
       </p>
     </li>
   )
 }
 
 export function LatestScreening({ results, timeZone, children }: LatestScreeningProps) {
+  const t = useTranslations('screening.latest')
+  const locale = useLocale()
   const answered = instrumentIds.flatMap((id) => {
     const result = results[id]
     return result === undefined ? [] : [result]
@@ -40,12 +45,10 @@ export function LatestScreening({ results, timeZone, children }: LatestScreening
   )
 
   return (
-    <Section title="Seus questionários">
+    <Section title={t('title')}>
       {latest === undefined ? (
         <Panel>
-          <p className="py-3.5 text-muted-foreground">
-            Você ainda não respondeu o PHQ-9 e o GAD-7.
-          </p>
+          <p className="py-3.5 text-muted-foreground">{t('empty')}</p>
         </Panel>
       ) : (
         <>
@@ -57,8 +60,9 @@ export function LatestScreening({ results, timeZone, children }: LatestScreening
             </ul>
           </Panel>
           <p className="px-1 text-sm text-muted-foreground">
-            Respondidos em {formatLongDate(new Date(latest.completedAt), timeZone).toLowerCase()}. É
-            uma triagem, não um diagnóstico.
+            {t('answeredOn', {
+              date: formatLongDate(new Date(latest.completedAt), timeZone, locale),
+            })}
           </p>
         </>
       )}

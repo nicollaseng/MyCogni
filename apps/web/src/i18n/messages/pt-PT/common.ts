@@ -1,0 +1,40 @@
+import type { CommonMessages } from '../pt-BR/common'
+
+export const common: CommonMessages = {
+  meta: {
+    description:
+      'Diário de humor: um registo por dia e PHQ-9 e GAD-7 a cada duas semanas para ver como a ansiedade e o humor mudam.',
+  },
+  navigation: {
+    label: 'Navegação principal',
+    today: 'Hoje',
+    entries: 'Registos',
+    patterns: 'Padrões',
+    me: 'Perfil',
+  },
+  help: {
+    summary: 'Precisa de ajuda agora?',
+    intro: 'Se está em crise ou a pensar em magoar-se, ligue agora:',
+    disclaimer: 'O MyCogniAI não substitui o acompanhamento de um profissional.',
+  },
+  notFound: {
+    title: 'Esta página não existe.',
+    body: 'O endereço pode ter mudado ou estar incompleto.',
+    back: 'Voltar ao início',
+  },
+  mood: {
+    veryBad: 'Muito mal',
+    bad: 'Mal',
+    slightlyBad: 'Um pouco mal',
+    neutral: 'Neutro',
+    slightlyGood: 'Um pouco bem',
+    good: 'Bem',
+    veryGood: 'Muito bem',
+    scaleLow: 'muito mal',
+    scaleHigh: 'muito bem',
+  },
+  language: {
+    label: 'Idioma',
+    hint: 'A aplicação passa a usar este idioma em todos os ecrãs.',
+  },
+}

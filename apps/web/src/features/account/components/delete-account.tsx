@@ -1,5 +1,6 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
 import { useState, type SubmitEvent } from 'react'
 import { useSubmit } from '@/shared/hooks/use-submit'
 import type { ActionResult } from '@/shared/lib/actions/result'
@@ -12,10 +13,12 @@ interface DeleteAccountProps {
 }
 
 export function DeleteAccount({ remove }: DeleteAccountProps) {
+  const t = useTranslations('account.delete')
   const [open, setOpen] = useState(false)
   const [confirmation, setConfirmation] = useState('')
   const { submit, pending, error } = useSubmit(remove, () => undefined)
-  const confirmed = confirmation.trim().toUpperCase() === 'EXCLUIR'
+  const word = t('word')
+  const confirmed = confirmation.trim().toUpperCase() === word
 
   function handleSubmit(event: SubmitEvent<HTMLFormElement>) {
     event.preventDefault()
@@ -31,19 +34,16 @@ export function DeleteAccount({ remove }: DeleteAccountProps) {
         }}
         className="py-3.5 text-left text-danger underline decoration-1 underline-offset-4"
       >
-        Excluir minha conta
+        {t('open')}
       </button>
     )
   }
 
   return (
     <form onSubmit={handleSubmit} className="space-y-3 py-3.5">
-      <p className="leading-relaxed text-pretty">
-        Isso apaga sua conta, seus registros, questionários, consentimentos e vínculos com
-        profissionais. Não dá para desfazer. Se quiser, baixe seus dados antes.
-      </p>
+      <p className="leading-relaxed text-pretty">{t('warning')}</p>
       <TextField
-        label="Digite EXCLUIR para confirmar"
+        label={t('confirm', { word })}
         autoComplete="off"
         value={confirmation}
         onChange={(event) => {
@@ -59,7 +59,7 @@ export function DeleteAccount({ remove }: DeleteAccountProps) {
           disabled={!confirmed || pending}
           className="bg-danger text-background hover:bg-danger/90"
         >
-          {pending ? 'Excluindo…' : 'Excluir para sempre'}
+          {pending ? t('deleting') : t('submit')}
         </Button>
         <Button
           type="button"
@@ -71,7 +71,7 @@ export function DeleteAccount({ remove }: DeleteAccountProps) {
             setConfirmation('')
           }}
         >
-          Cancelar
+          {t('cancel')}
         </Button>
       </div>
     </form>

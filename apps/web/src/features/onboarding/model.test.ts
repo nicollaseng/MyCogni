@@ -8,6 +8,7 @@ const profile: Profile = {
   displayName: 'Ana',
   avatarPath: null,
   timezone: 'America/Sao_Paulo',
+  locale: null,
   onboardingCompletedAt: null,
 }
 

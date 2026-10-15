@@ -1,4 +1,5 @@
 import Image from 'next/image'
+import { useTranslations } from 'next-intl'
 import type { ActionResult } from '@/shared/lib/actions/result'
 import { initialsOf } from '../avatar'
 import { AvatarControls } from './avatar-controls'
@@ -12,6 +13,7 @@ interface ProfileHeaderProps {
 }
 
 export function ProfileHeader({ name, email, photoUrl, upload, remove }: ProfileHeaderProps) {
+  const t = useTranslations('account.profile')
   return (
     <header className="flex items-center gap-5">
       {photoUrl === null ? (
@@ -24,7 +26,7 @@ export function ProfileHeader({ name, email, photoUrl, upload, remove }: Profile
       ) : (
         <Image
           src={photoUrl}
-          alt="Sua foto"
+          alt={t('photo')}
           width={80}
           height={80}
           unoptimized
@@ -33,7 +35,7 @@ export function ProfileHeader({ name, email, photoUrl, upload, remove }: Profile
       )}
       <div className="min-w-0 space-y-1">
         <h1 className="truncate font-serif text-[32px] leading-[1.05] tracking-[-0.02em]">
-          {name ?? 'Você'}
+          {name ?? t('fallbackName')}
         </h1>
         <p className="truncate text-sm text-muted-foreground">{email}</p>
         <AvatarControls hasPhoto={photoUrl !== null} upload={upload} remove={remove} />

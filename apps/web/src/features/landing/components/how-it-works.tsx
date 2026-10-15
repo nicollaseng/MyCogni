@@ -1,3 +1,4 @@
+import { useTranslations } from 'next-intl'
 import type { ReactNode } from 'react'
 import { MoodMap } from '@/features/mood/components/mood-map'
 import { MoodStrip } from '@/features/mood/components/mood-strip'
@@ -6,38 +7,29 @@ import { QuestionnairePreview } from './questionnaire-preview'
 import { SectionHeading } from './section-heading'
 
 interface Step {
-  title: string
-  description: string
+  key: 'record' | 'answer' | 'understand'
   visual: ReactNode
 }
 
+function SampleFortnight() {
+  const t = useTranslations('landing.howItWorks.sample')
+
+  return (
+    <figure className="w-full">
+      <MoodStrip days={sampleFortnight} label={t('label')} />
+      <figcaption className="mt-3 text-xs text-muted-foreground">{t('caption')}</figcaption>
+    </figure>
+  )
+}
+
 const steps: readonly Step[] = [
-  {
-    title: 'Registre',
-    description:
-      'Arraste até o humor do momento e, se quiser, diga o que sente e o que tem a ver com isso. Leva menos de um minuto.',
-    visual: <MoodMap valence={0.35} rings={9} className="size-40" />,
-  },
-  {
-    title: 'Responda',
-    description:
-      'A cada duas semanas, o PHQ-9 e o GAD-7, questionários usados no mundo todo para acompanhar depressão e ansiedade.',
-    visual: <QuestionnairePreview />,
-  },
-  {
-    title: 'Entenda',
-    description:
-      'Toda semana, um resumo em linguagem simples mostra o que mudou e o que parece influenciar seus dias.',
-    visual: (
-      <figure className="w-full">
-        <MoodStrip days={sampleFortnight} label="Exemplo de duas semanas de humor" />
-        <figcaption className="mt-3 text-xs text-muted-foreground">exemplo · 14 dias</figcaption>
-      </figure>
-    ),
-  },
+  { key: 'record', visual: <MoodMap valence={0.35} rings={9} className="size-40" /> },
+  { key: 'answer', visual: <QuestionnairePreview /> },
+  { key: 'understand', visual: <SampleFortnight /> },
 ]
 
 export function HowItWorks() {
+  const t = useTranslations('landing')
   const titleId = `${sections.howItWorks}-title`
 
   return (
@@ -48,18 +40,22 @@ export function HowItWorks() {
     >
       <SectionHeading
         id={titleId}
-        kicker="Como funciona"
-        title="Um minuto por dia, um retrato a cada duas semanas."
+        kicker={t('sections.howItWorks')}
+        title={t('howItWorks.title')}
       />
       <ol className="mt-14 grid gap-14 lg:grid-cols-3 lg:gap-12">
         {steps.map((step, index) => (
-          <li key={step.title} className="flex flex-col">
+          <li key={step.key} className="flex flex-col">
             <div className="flex h-48 items-end">{step.visual}</div>
             <p className="mt-8 text-sm text-muted-foreground">
               {String(index + 1).padStart(2, '0')}
             </p>
-            <h3 className="mt-1 font-serif text-[26px] tracking-[-0.01em]">{step.title}</h3>
-            <p className="mt-3 leading-relaxed text-muted-foreground">{step.description}</p>
+            <h3 className="mt-1 font-serif text-[26px] tracking-[-0.01em]">
+              {t(`howItWorks.steps.${step.key}.title`)}
+            </h3>
+            <p className="mt-3 leading-relaxed text-muted-foreground">
+              {t(`howItWorks.steps.${step.key}.description`)}
+            </p>
           </li>
         ))}
       </ol>

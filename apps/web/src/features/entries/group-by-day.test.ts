@@ -16,7 +16,7 @@ function checkIn(recordedAt: string, moodLevel = 3): CheckIn {
 const options = { timeZone: 'America/Sao_Paulo', now: new Date('2026-10-14T18:00:00Z') }
 
 describe('groupByDay', () => {
-  it('names today and yesterday, and writes the date for older days', () => {
+  it('tells today and yesterday apart from older days', () => {
     const groups = groupByDay(
       [
         checkIn('2026-10-14T15:00:00Z'),
@@ -26,7 +26,12 @@ describe('groupByDay', () => {
       options,
     )
 
-    expect(groups.map((group) => group.label)).toEqual(['Hoje', 'Ontem', 'Sábado, 10 de outubro'])
+    expect(groups.map((group) => [group.key, group.day])).toEqual([
+      ['2026-10-14', 'today'],
+      ['2026-10-13', 'yesterday'],
+      ['2026-10-10', 'earlier'],
+    ])
+    expect(groups.at(-1)?.date).toEqual(new Date('2026-10-10T15:00:00Z'))
   })
 
   it('keeps the records of the same local day together, in the given order', () => {
@@ -40,10 +45,10 @@ describe('groupByDay', () => {
     )
 
     expect(
-      groups.map((group) => [group.label, group.checkIns.map((item) => item.moodLevel)]),
+      groups.map((group) => [group.day, group.checkIns.map((item) => item.moodLevel)]),
     ).toEqual([
-      ['Hoje', [5, 2]],
-      ['Ontem', [1]],
+      ['today', [5, 2]],
+      ['yesterday', [1]],
     ])
   })
 

@@ -1,5 +1,6 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
 import { useState, type SubmitEvent } from 'react'
 import { useSubmit } from '@/shared/hooks/use-submit'
 import type { ActionResult } from '@/shared/lib/actions/result'
@@ -12,6 +13,7 @@ interface EmailFormProps {
 }
 
 export function EmailForm({ changeEmail }: EmailFormProps) {
+  const t = useTranslations('account.email')
   const [email, setEmail] = useState('')
   const [notice, setNotice] = useState<string | null>(null)
   const { submit, pending, error } = useSubmit(changeEmail, setNotice)
@@ -25,7 +27,7 @@ export function EmailForm({ changeEmail }: EmailFormProps) {
   return (
     <form onSubmit={handleSubmit} noValidate className="space-y-3">
       <TextField
-        label="Novo email"
+        label={t('field')}
         type="email"
         autoComplete="email"
         value={email}
@@ -35,7 +37,7 @@ export function EmailForm({ changeEmail }: EmailFormProps) {
       />
       <FormMessage error={error} notice={notice} />
       <Button type="submit" size="sm" shape="pill" disabled={pending || email.trim() === ''}>
-        {pending ? 'Enviando…' : 'Enviar confirmação'}
+        {pending ? t('sending') : t('send')}
       </Button>
     </form>
   )

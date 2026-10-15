@@ -17,5 +17,9 @@ ENV NODE_ENV=production \
 WORKDIR /app
 COPY --from=build /repo/apps/web/.next/standalone ./
 COPY --from=build /repo/apps/web/.next/static ./apps/web/.next/static
+RUN mkdir -p apps/web/node_modules/@ip-location-db \
+  && ln -s /app/node_modules/.pnpm/@ip-location-db+geo-whois-asn-country-mmdb@*/node_modules/@ip-location-db/geo-whois-asn-country-mmdb \
+  apps/web/node_modules/@ip-location-db/geo-whois-asn-country-mmdb \
+  && test -f apps/web/node_modules/@ip-location-db/geo-whois-asn-country-mmdb/geo-whois-asn-country.mmdb
 USER node
 CMD ["node", "apps/web/server.js"]

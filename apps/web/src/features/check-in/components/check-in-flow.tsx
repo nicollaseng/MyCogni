@@ -2,10 +2,11 @@
 
 import type { CheckIn, CreateCheckInInput } from '@mycogni/contracts'
 import Link from 'next/link'
+import { useLocale, useTranslations } from 'next-intl'
 import { useState } from 'react'
 import {
-  labelOf,
   moodColor,
+  moodKeyOf,
   neutralMood,
   valenceOf,
   type MoodLevel,
@@ -16,6 +17,7 @@ import { formatTime } from '@/shared/lib/time'
 import { cn } from '@/shared/lib/utils'
 import { contextTabs } from '../catalog'
 import { emotionTabs } from '../suggestions'
+import { useCatalogLabels } from '../use-catalog-labels'
 import { DoneStep } from './done-step'
 import { MoodStep } from './mood-step'
 import { PickerStep } from './picker-step'
@@ -35,6 +37,10 @@ interface CheckInFlowProps {
 }
 
 export function CheckInFlow({ today, timeZone, save }: CheckInFlowProps) {
+  const t = useTranslations('checkIn')
+  const tMood = useTranslations('common.mood')
+  const locale = useLocale()
+  const labels = useCatalogLabels()
   const [step, setStep] = useState<Step>('mood')
   const [level, setLevel] = useState<MoodLevel>(neutralMood)
   const [emotions, setEmotions] = useState<string[]>([])
@@ -44,7 +50,7 @@ export function CheckInFlow({ today, timeZone, save }: CheckInFlowProps) {
   const valence = valenceOf(level)
   const progress = step === 'done' ? progressSteps.length : progressSteps.indexOf(step) + 1
   const { submit, pending, error } = useSubmit(save, (checkIn) => {
-    setRecordedAt(formatTime(new Date(checkIn.recordedAt), timeZone))
+    setRecordedAt(formatTime(new Date(checkIn.recordedAt), timeZone, locale))
     setStep('done')
   })
 
@@ -71,9 +77,11 @@ export function CheckInFlow({ today, timeZone, save }: CheckInFlowProps) {
               (step === 'mood' || step === 'done') && 'invisible',
             )}
           >
-            Voltar
+            {t('flow.back')}
           </button>
-          <p className="sr-only">{`Passo ${String(progress)} de ${String(progressSteps.length)}`}</p>
+          <p className="sr-only">
+            {t('flow.progress', { current: progress, total: progressSteps.length })}
+          </p>
           <div aria-hidden className="flex gap-1.5">
             {progressSteps.map((item, index) => (
               <span
@@ -86,7 +94,7 @@ export function CheckInFlow({ today, timeZone, save }: CheckInFlowProps) {
             ))}
           </div>
           <Link href="/today" className="min-w-14 text-right">
-            Fechar
+            {t('flow.close')}
           </Link>
         </header>
 
@@ -106,16 +114,18 @@ export function CheckInFlow({ today, timeZone, save }: CheckInFlowProps) {
 
         {step === 'emotions' && (
           <PickerStep
-            title="O que você está sentindo?"
+            title={t('emotionStep.title')}
             valence={valence}
-            tabs={emotionTabs(valence)}
+            tabs={labels.emotionChoices(emotionTabs(valence))}
             selected={emotions}
             onToggle={(item) => {
               setEmotions((current) => toggle(current, item))
             }}
-            searchLabel="Buscar ou escrever outra"
+            searchLabel={t('emotionStep.search')}
             primaryLabel={
-              emotions.length > 0 ? `Continuar com ${String(emotions.length)}` : 'Continuar'
+              emotions.length > 0
+                ? t('flow.continueWith', { count: emotions.length })
+                : t('flow.continue')
             }
             onPrimary={() => {
               setStep('context')
@@ -128,15 +138,15 @@ export function CheckInFlow({ today, timeZone, save }: CheckInFlowProps) {
 
         {step === 'context' && (
           <PickerStep
-            title="O que tem a ver com isso?"
+            title={t('contextStep.title')}
             valence={valence}
-            tabs={contextTabs}
+            tabs={labels.contextChoices(contextTabs)}
             selected={contexts}
             onToggle={(item) => {
               setContexts((current) => toggle(current, item))
             }}
-            searchLabel="Buscar ou escrever outro"
-            primaryLabel={pending ? 'Registrando…' : 'Registrar'}
+            searchLabel={t('contextStep.search')}
+            primaryLabel={pending ? t('flow.saving') : t('flow.save')}
             onPrimary={finish}
             pending={pending}
             error={error}
@@ -146,8 +156,8 @@ export function CheckInFlow({ today, timeZone, save }: CheckInFlowProps) {
               onChange={(event) => {
                 setNote(event.currentTarget.value)
               }}
-              aria-label="Nota sobre hoje"
-              placeholder="Quer anotar algo sobre hoje?"
+              aria-label={t('contextStep.noteLabel')}
+              placeholder={t('contextStep.notePlaceholder')}
               rows={2}
               className="mt-2 w-full resize-none bg-transparent font-serif text-[17px] leading-normal outline-none placeholder:text-muted-foreground placeholder:italic"
             />
@@ -158,7 +168,11 @@ export function CheckInFlow({ today, timeZone, save }: CheckInFlowProps) {
           <DoneStep
             valence={valence}
             recordedAt={recordedAt}
-            summary={[labelOf(level).toLowerCase(), ...emotions, ...contexts]}
+            summary={[
+              tMood(moodKeyOf(level)).toLocaleLowerCase(locale),
+              ...emotions.map(labels.emotion),
+              ...contexts.map(labels.context),
+            ]}
           />
         )}
       </div>

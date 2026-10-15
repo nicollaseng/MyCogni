@@ -1,15 +1,26 @@
 import { describe, expect, it } from '@jest/globals'
-import { formatLongDate, formatTime } from './time'
+import { formatDayTitle, formatLongDate, formatTime } from './time'
 
 describe('formatLongDate', () => {
-  it('writes the weekday, day and month in Portuguese', () => {
-    expect(formatLongDate(new Date('2026-10-14T15:00:00Z'), 'America/Sao_Paulo')).toBe(
-      'Quarta-feira, 14 de outubro',
-    )
+  it('writes the weekday, day and month in the language of the person', () => {
+    const date = new Date('2026-10-14T15:00:00Z')
+
+    expect(formatLongDate(date, 'America/Sao_Paulo', 'pt-BR')).toBe('quarta-feira, 14 de outubro')
+    expect(formatLongDate(date, 'Europe/Lisbon', 'pt-PT')).toBe('quarta-feira, 14 de outubro')
+    expect(formatLongDate(date, 'America/New_York', 'en-US')).toBe('Wednesday, October 14')
+    expect(formatLongDate(date, 'Europe/London', 'en-GB')).toBe('Wednesday 14 October')
   })
 
   it('uses the day of the given time zone, not the UTC day', () => {
-    expect(formatLongDate(new Date('2026-10-15T01:30:00Z'), 'America/Sao_Paulo')).toBe(
+    expect(formatLongDate(new Date('2026-10-15T01:30:00Z'), 'America/Sao_Paulo', 'pt-BR')).toBe(
+      'quarta-feira, 14 de outubro',
+    )
+  })
+})
+
+describe('formatDayTitle', () => {
+  it('starts the date with a capital letter to head a day', () => {
+    expect(formatDayTitle(new Date('2026-10-14T15:00:00Z'), 'America/Sao_Paulo', 'pt-BR')).toBe(
       'Quarta-feira, 14 de outubro',
     )
   })
@@ -17,7 +28,10 @@ describe('formatLongDate', () => {
 
 describe('formatTime', () => {
   it('writes hours and minutes on the clock of the given time zone', () => {
-    expect(formatTime(new Date('2026-10-15T01:30:00Z'), 'America/Sao_Paulo')).toBe('22:30')
-    expect(formatTime(new Date('2026-10-15T01:30:00Z'), 'Europe/Lisbon')).toBe('02:30')
+    const date = new Date('2026-10-15T01:30:00Z')
+
+    expect(formatTime(date, 'America/Sao_Paulo', 'pt-BR')).toBe('22:30')
+    expect(formatTime(date, 'Europe/Lisbon', 'pt-PT')).toBe('02:30')
+    expect(formatTime(date, 'America/New_York', 'en-US')).toBe('09:30 PM')
   })
 })

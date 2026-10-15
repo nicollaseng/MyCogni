@@ -1,17 +1,22 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
+import { getTranslations } from 'next-intl/server'
 import { EntryList } from '@/features/entries/components/entry-list'
 import { groupByDay } from '@/features/entries/group-by-day'
 import { PageTitle } from '@/shared/components/page-title'
 import { fetchCheckIns } from '@/shared/lib/api/resources'
 import { requireOnboardedProfile } from '@/shared/lib/auth/session'
 
-export const metadata: Metadata = { title: 'Registros' }
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations('entries.meta')
+  return { title: t('title') }
+}
 
 const pageSize = 50
 
 export default async function EntriesPage({ searchParams }: PageProps<'/entries'>) {
   const { timezone } = await requireOnboardedProfile()
+  const t = await getTranslations('entries')
   const { before } = await searchParams
   const checkIns = await fetchCheckIns({
     before: typeof before === 'string' ? before : undefined,
@@ -21,14 +26,9 @@ export default async function EntriesPage({ searchParams }: PageProps<'/entries'
 
   return (
     <>
-      <PageTitle
-        title="Registros"
-        description="Cada check-in fica guardado aqui, com a data, o humor e o que você quiser anotar."
-      />
+      <PageTitle title={t('title')} description={t('description')} />
       {checkIns.length === 0 ? (
-        <p className="border-t border-rule pt-8 text-muted-foreground">
-          Seu primeiro registro aparece aqui.
-        </p>
+        <p className="border-t border-rule pt-8 text-muted-foreground">{t('empty')}</p>
       ) : (
         <EntryList
           groups={groupByDay(checkIns, { timeZone: timezone, now: new Date() })}
@@ -40,7 +40,7 @@ export default async function EntriesPage({ searchParams }: PageProps<'/entries'
           href={{ pathname: '/entries', query: { before: oldest.recordedAt } }}
           className="text-sm underline decoration-1 underline-offset-4"
         >
-          Registros anteriores
+          {t('older')}
         </Link>
       )}
     </>

@@ -1,17 +1,33 @@
 import type { Assessment } from '@mycogni/contracts'
+import type { Locale } from '@mycogni/domain'
 
-function shortDate(iso: string, timeZone: string): string {
-  return new Intl.DateTimeFormat('pt-BR', { day: 'numeric', month: 'long', timeZone }).format(
-    new Date(iso),
-  )
+export type Change = 'same' | 'up' | 'down'
+
+export interface Comparison {
+  change: Change
+  points: number
+  day: string
 }
 
-export function comparedTo(current: Assessment, previous: Assessment, timeZone: string): string {
-  const difference = current.totalScore - previous.totalScore
-  const day = shortDate(previous.completedAt, timeZone)
+function changeOf(difference: number): Change {
   if (difference === 0) {
-    return `Igual a ${day}`
+    return 'same'
   }
-  const points = Math.abs(difference) === 1 ? 'ponto' : 'pontos'
-  return `${String(Math.abs(difference))} ${points} ${difference > 0 ? 'a mais' : 'a menos'} que em ${day}`
+  return difference > 0 ? 'up' : 'down'
+}
+
+export function comparisonOf(
+  current: Assessment,
+  previous: Assessment,
+  timeZone: string,
+  locale: Locale,
+): Comparison {
+  const difference = current.totalScore - previous.totalScore
+  return {
+    change: changeOf(difference),
+    points: Math.abs(difference),
+    day: new Intl.DateTimeFormat(locale, { day: 'numeric', month: 'long', timeZone }).format(
+      new Date(previous.completedAt),
+    ),
+  }
 }

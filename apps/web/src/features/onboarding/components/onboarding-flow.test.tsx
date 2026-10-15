@@ -1,15 +1,16 @@
 import { describe, expect, it, jest } from '@jest/globals'
-import { phq9 } from '@mycogni/domain'
-import { render, screen } from '@testing-library/react'
+import { instrumentText, type Locale } from '@mycogni/domain'
+import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import { renderWithIntl } from '@/test/render'
 import type { OnboardingStart } from '../model'
 import { assessmentOf, fakeActions } from '../test/fixtures'
 import { OnboardingFlow } from './onboarding-flow'
 
 const signOut = jest.fn(() => Promise.resolve())
 
-function renderFlow(start: OnboardingStart, actions = fakeActions()) {
-  render(<OnboardingFlow start={start} actions={actions} signOut={signOut} />)
+function renderFlow(start: OnboardingStart, actions = fakeActions(), locale: Locale = 'pt-BR') {
+  renderWithIntl(<OnboardingFlow start={start} actions={actions} signOut={signOut} />, { locale })
   return actions
 }
 
@@ -35,7 +36,9 @@ describe('OnboardingFlow', () => {
     })
     await userEvent.click(await screen.findByRole('button', { name: 'Começar' }))
 
-    expect(screen.getByRole('heading', { name: phq9.items[0] })).toBeInTheDocument()
+    expect(
+      screen.getByRole('heading', { name: instrumentText('pt-BR', 'phq9').items[0] }),
+    ).toBeInTheDocument()
   })
 
   it('stops for support when PHQ-9 item 9 is above zero, then moves on to GAD-7', async () => {
@@ -78,5 +81,20 @@ describe('OnboardingFlow', () => {
 
     expect(screen.getByRole('region', { name: 'Sinais de ansiedade' })).toHaveTextContent('6de 21')
     expect(screen.getByText('Etapa 4 de 4')).toBeInTheDocument()
+  })
+
+  it('guides an English speaker from the name to the questionnaires', async () => {
+    renderFlow({ step: 'name', displayName: 'Ana', results: {} }, fakeActions(), 'en-US')
+
+    expect(screen.getByText('Step 2 of 4')).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Sign out' })).toBeInTheDocument()
+    expect(screen.getByLabelText('Name')).toHaveValue('Ana')
+    await userEvent.click(screen.getByRole('button', { name: 'Continue' }))
+
+    expect(
+      await screen.findByRole('heading', { name: 'Two short questionnaires' }),
+    ).toBeInTheDocument()
+    expect(screen.getByText('questions, one per screen')).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Start' })).toBeInTheDocument()
   })
 })

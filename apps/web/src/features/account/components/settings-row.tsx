@@ -1,5 +1,6 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
 import { createContext, useContext, useState, type ReactNode } from 'react'
 
 const CloseRow = createContext<() => void>(() => undefined)
@@ -15,6 +16,7 @@ interface SettingsRowProps {
 }
 
 export function SettingsRow({ label, value, children }: SettingsRowProps) {
+  const t = useTranslations('account.settings')
   const [open, setOpen] = useState(false)
 
   return (
@@ -32,7 +34,7 @@ export function SettingsRow({ label, value, children }: SettingsRowProps) {
           }}
           className="shrink-0 text-sm underline decoration-1 underline-offset-4"
         >
-          {open ? 'Cancelar' : `Alterar ${label.toLowerCase()}`}
+          {open ? t('cancel') : t('change', { field: label.toLowerCase() })}
         </button>
       </div>
       {open && (

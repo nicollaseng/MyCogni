@@ -1,8 +1,11 @@
 import Link from 'next/link'
+import { useTranslations } from 'next-intl'
 import { cn } from '@/shared/lib/utils'
 import { buttonVariants } from '@/shared/ui/button'
 
 export function ClosingCta() {
+  const t = useTranslations('landing')
+
   return (
     <section
       aria-labelledby="closing-title"
@@ -12,14 +15,14 @@ export function ClosingCta() {
         id="closing-title"
         className="font-serif text-[40px] leading-[1.05] tracking-[-0.02em] sm:text-[56px]"
       >
-        Comece pelo dia de hoje.
+        {t('closing.title')}
       </h2>
-      <p className="mt-4 text-lg text-muted-foreground">Leva menos de um minuto.</p>
+      <p className="mt-4 text-lg text-muted-foreground">{t('closing.lead')}</p>
       <Link
         href="/sign-up"
         className={cn(buttonVariants({ size: 'lg', shape: 'pill' }), 'mt-9 px-9')}
       >
-        Começar
+        {t('cta.start')}
       </Link>
     </section>
   )

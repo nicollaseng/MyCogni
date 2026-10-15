@@ -5,7 +5,7 @@ import { assessments, checkIns, consents, profiles } from '../../db/schema/index
 import type { AssessmentRecord } from '../assessments/assessment.repository.ts'
 import type { CheckInRecord } from '../check-ins/check-in.repository.ts'
 import type { ConsentRecord } from '../consents/consent.repository.ts'
-import type { ProfileRecord } from '../profile/profile.repository.ts'
+import { profileColumns, type ProfileRecord } from '../profile/profile.repository.ts'
 
 export interface AccountData {
   profile: ProfileRecord | undefined
@@ -23,13 +23,7 @@ export function createAccountRepository(db: Database): AccountRepository {
     collect(userId) {
       return withUser(db, userId, async (tx) => {
         const [profile] = await tx
-          .select({
-            id: profiles.id,
-            displayName: profiles.displayName,
-            avatarPath: profiles.avatarPath,
-            timezone: profiles.timezone,
-            onboardingCompletedAt: profiles.onboardingCompletedAt,
-          })
+          .select(profileColumns)
           .from(profiles)
           .where(eq(profiles.id, userId))
         return {

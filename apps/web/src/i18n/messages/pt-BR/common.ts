@@ -1,0 +1,40 @@
+export const common = {
+  meta: {
+    description:
+      'Diário de humor: um registro por dia e PHQ-9 e GAD-7 a cada duas semanas para ver como ansiedade e humor mudam.',
+  },
+  navigation: {
+    label: 'Navegação principal',
+    today: 'Hoje',
+    entries: 'Registros',
+    patterns: 'Padrões',
+    me: 'Você',
+  },
+  help: {
+    summary: 'Precisa de ajuda agora?',
+    intro: 'Se você está em crise ou pensando em se machucar, ligue agora:',
+    disclaimer: 'O MyCogniAI não substitui acompanhamento profissional.',
+  },
+  notFound: {
+    title: 'Esta página não existe.',
+    body: 'O endereço pode ter mudado ou estar incompleto.',
+    back: 'Voltar ao início',
+  },
+  mood: {
+    veryBad: 'Muito mal',
+    bad: 'Mal',
+    slightlyBad: 'Um pouco mal',
+    neutral: 'Neutro',
+    slightlyGood: 'Um pouco bem',
+    good: 'Bem',
+    veryGood: 'Muito bem',
+    scaleLow: 'muito mal',
+    scaleHigh: 'muito bem',
+  },
+  language: {
+    label: 'Idioma',
+    hint: 'O app passa a usar este idioma em todas as telas.',
+  },
+}
+
+export type CommonMessages = typeof common
