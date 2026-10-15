@@ -149,6 +149,13 @@ The API runs on Railway (project `mycogni`, workspace "Nicollas Linhares's Proje
 - After changing the file: `railway config plan` to preview, then `railway config apply` (with the `staging` environment linked)
 - The image installs and builds only the API and the workspace packages it depends on, keeps production dependencies only, and runs as the `node` user. To build it locally: `docker build -f apps/api/Dockerfile -t mycogni-api .`
 
+The web app is a second Railway service (`web`), from `apps/web/Dockerfile`:
+
+- Next.js builds with `output: 'standalone'` (traced from the monorepo root), and the image runs `node apps/web/server.js` as the `node` user
+- `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` are inlined at build time, so the Dockerfile takes them as build arguments. Railway passes the service variables of the same name
+- `API_URL` (the API's public URL) and `SITE_URL` (the web's own URL, used for the Google return) are read at runtime
+- The Supabase project must list `SITE_URL` as site URL and `SITE_URL/auth/callback` as an allowed redirect
+
 ## Scripts
 
 | Command             | Description                                  |
