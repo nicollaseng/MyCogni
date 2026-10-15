@@ -1,0 +1,200 @@
+.journal {
+  font-family: var(--font-newsreader), ui-serif, Georgia, serif;
+  font-size: 19px;
+  line-height: 1.6;
+  color: var(--foreground);
+  overflow-wrap: anywhere;
+  min-height: 12rem;
+}
+
+.journal:focus {
+  outline: none;
+}
+
+.journal > * + * {
+  margin-top: 0.55em;
+}
+
+.journal h1 {
+  font-size: 1.65em;
+  line-height: 1.15;
+  font-weight: 500;
+  letter-spacing: -0.015em;
+  margin-top: 1.1em;
+}
+
+.journal h2 {
+  font-size: 1.3em;
+  line-height: 1.2;
+  font-weight: 500;
+  margin-top: 1em;
+}
+
+.journal h3 {
+  font-family: var(--font-grotesk), ui-sans-serif, system-ui, sans-serif;
+  font-size: 0.86em;
+  line-height: 1.35;
+  font-weight: 600;
+  margin-top: 1em;
+}
+
+.journal > :first-child {
+  margin-top: 0;
+}
+
+.journal strong {
+  font-weight: 600;
+}
+
+.journal u {
+  text-underline-offset: 0.18em;
+}
+
+.journal ul,
+.journal ol {
+  padding-left: 1.5em;
+}
+
+.journal ul {
+  list-style-type: disc;
+}
+
+.journal ol {
+  list-style-type: decimal;
+}
+
+.journal ul[data-variant='dash'] {
+  list-style-type: '–\00a0\00a0';
+}
+
+.journal li::marker {
+  color: var(--muted-foreground);
+}
+
+.journal li > p,
+.journal li > div > p {
+  margin: 0;
+}
+
+.journal li + li {
+  margin-top: 0.2em;
+}
+
+.journal ul[data-type='taskList'] {
+  list-style: none;
+  padding-left: 0.1em;
+}
+
+.journal ul[data-type='taskList'] ul[data-type='taskList'] {
+  padding-left: 1.6em;
+}
+
+.journal ul[data-type='taskList'] > li {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6em;
+}
+
+.journal ul[data-type='taskList'] > li > label {
+  flex: none;
+  display: flex;
+  align-items: center;
+  height: 1.6em;
+  user-select: none;
+}
+
+.journal ul[data-type='taskList'] > li > div {
+  flex: 1;
+  min-width: 0;
+}
+
+.journal ul[data-type='taskList'] > li input[type='checkbox'] {
+  appearance: none;
+  display: grid;
+  place-content: center;
+  width: 1.1em;
+  height: 1.1em;
+  margin: 0;
+  border: 1.5px solid var(--muted-foreground);
+  border-radius: 9999px;
+  background: transparent;
+  cursor: pointer;
+  transition:
+    background-color 150ms,
+    border-color 150ms;
+}
+
+.journal ul[data-type='taskList'] > li input[type='checkbox']::after {
+  content: '';
+  width: 0.32em;
+  height: 0.56em;
+  margin-top: -0.12em;
+  border: solid var(--primary-foreground);
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg) scale(0);
+  transition: transform 150ms;
+}
+
+.journal ul[data-type='taskList'] > li input[type='checkbox']:checked {
+  border-color: var(--emphasis);
+  background: var(--emphasis);
+}
+
+.journal ul[data-type='taskList'] > li input[type='checkbox']:checked::after {
+  transform: rotate(45deg) scale(1);
+}
+
+.journal ul[data-type='taskList'] > li input[type='checkbox']:disabled {
+  cursor: default;
+}
+
+.journal li[data-checked='true'] > div {
+  color: var(--muted-foreground);
+}
+
+.journal img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  margin: 0.9em 0;
+  border-radius: 16px;
+  background: var(--surface);
+}
+
+.journal img.ProseMirror-selectednode {
+  outline: 3px solid var(--emphasis);
+  outline-offset: 2px;
+}
+
+.journal blockquote {
+  border-left: 2px solid var(--rule);
+  padding-left: 1em;
+  color: var(--muted-foreground);
+}
+
+.journal hr {
+  border: none;
+  border-top: 1px solid var(--rule);
+  margin: 1.4em 0;
+}
+
+.journal p.is-editor-empty:first-child::before {
+  content: attr(data-placeholder);
+  float: left;
+  height: 0;
+  color: var(--muted-foreground);
+  pointer-events: none;
+}
+
+@media (min-width: 40rem) {
+  .journal {
+    font-size: 20px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .journal ul[data-type='taskList'] > li input[type='checkbox'],
+  .journal ul[data-type='taskList'] > li input[type='checkbox']::after {
+    transition: none;
+  }
+}

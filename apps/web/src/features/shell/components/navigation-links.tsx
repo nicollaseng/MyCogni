@@ -11,7 +11,7 @@ interface NavigationLinksProps {
 }
 
 const listStyles: Record<NavigationVariant, string> = {
-  bar: 'grid grid-cols-4',
+  bar: 'grid grid-cols-5',
   top: 'flex items-center gap-8',
 }
 

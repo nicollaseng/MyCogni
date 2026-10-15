@@ -9,6 +9,7 @@ export const common: CommonMessages = {
     label: 'Navegação principal',
     today: 'Hoje',
     entries: 'Registos',
+    mybook: 'MyBook',
     patterns: 'Padrões',
     me: 'Perfil',
   },

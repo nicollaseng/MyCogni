@@ -9,7 +9,7 @@ import {
   uniqueEmail,
 } from './supabase'
 
-const apiUrl = process.env.API_URL ?? 'http://127.0.0.1:3333'
+const apiUrl = process.env.API_URL ?? `http://127.0.0.1:${process.env.E2E_API_PORT ?? '3333'}`
 
 const sessionSchema = z.object({ access_token: z.string() })
 

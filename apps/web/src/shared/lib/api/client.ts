@@ -2,7 +2,7 @@ import { z } from 'zod'
 import { serverEnv } from '../env'
 import { createSupabaseServerClient } from '../supabase/server'
 
-type Method = 'GET' | 'POST' | 'PATCH' | 'DELETE'
+type Method = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE'
 
 interface ApiRequest<T> {
   path: `/v1/${string}`
