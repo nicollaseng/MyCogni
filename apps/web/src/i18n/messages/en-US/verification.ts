@@ -1,12 +1,38 @@
 import type { VerificationMessages } from '../pt-BR/verification'
 
 export const verification: VerificationMessages = {
+  steps: {
+    title: 'Professional sign-up',
+    progress: 'Step {current} of {total}',
+    back: 'Back to sign-up',
+    done: 'done',
+    names: {
+      document: 'Proof of license',
+      photo: 'Profile photo',
+      review: 'In review',
+    },
+    hints: {
+      photo: 'Optional. Shown to your patients.',
+      review: 'The MyCogniAI team checks everything before enabling invitations.',
+    },
+  },
   start: {
-    kicker: 'Last step of your sign-up',
     title: 'Send proof of your license.',
     lead: 'We check every professional before enabling invitations. Your sign-up goes to review as soon as the document arrives.',
-    photo: 'Profile photo',
-    photoHint: 'Optional. Shown to your patients and on your invitation page.',
+  },
+  photo: {
+    title: 'Add a photo to your profile.',
+    lead: 'It is optional. The photo appears next to your name on your invitation page and to the patients you follow.',
+    received: 'Document received. The review has started.',
+    add: 'Add photo',
+    skip: 'Skip for now',
+    continue: 'Continue',
+    saving: 'Saving…',
+    later: 'You can change or remove the photo anytime in Settings.',
+    failed: 'We couldn’t continue right now. Please try again in a moment.',
+  },
+  review: {
+    settings: 'To change the photo or the document, open <link>Settings</link>.',
   },
   proofs: {
     crp: {
@@ -24,8 +50,10 @@ export const verification: VerificationMessages = {
   },
   upload: {
     choose: 'Choose file',
-    another: 'Choose another file',
+    drop: 'or drag the file here',
     formats: 'PDF, JPG or PNG, up to 10 MB.',
+    replace: 'Replace',
+    remove: 'Remove',
     send: 'Send document',
     sending: 'Sending…',
     sent: 'Document sent. We will check it soon.',

@@ -64,3 +64,10 @@ export async function deleteTestUser(id: string): Promise<void> {
 export function bearer(user: TestUser): Record<string, string> {
   return { authorization: `Bearer ${user.accessToken}` }
 }
+
+export async function readAppMetadata(id: string): Promise<Record<string, unknown>> {
+  const user = z
+    .object({ app_metadata: z.record(z.string(), z.unknown()) })
+    .parse(await request(`/auth/v1/admin/users/${id}`, { headers: adminHeaders() }))
+  return user.app_metadata
+}

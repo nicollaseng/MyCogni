@@ -1,6 +1,7 @@
 import { beforeAll, describe, expect, it, jest } from '@jest/globals'
 import { screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import { PathnameContext } from 'next/dist/shared/lib/hooks-client-context.shared-runtime'
 import { renderWithIntl } from '@/test/render'
 import { MobileMenu } from './mobile-menu'
 
@@ -18,13 +19,9 @@ function renderMenu() {
   const signOut = jest.fn<() => Promise<void>>(() => Promise.resolve())
   const user = userEvent.setup()
   renderWithIntl(
-    <MobileMenu
-      name="Helena Duarte"
-      profession="Psicologia"
-      verified={false}
-      alerts={null}
-      signOut={signOut}
-    />,
+    <PathnameContext.Provider value="/pro/patients">
+      <MobileMenu name="Helena Duarte" profession="Psicologia" alerts={null} signOut={signOut} />
+    </PathnameContext.Provider>,
   )
   return { user }
 }
@@ -44,6 +41,7 @@ describe('MobileMenu', () => {
     expect(drawer).toBeVisible()
     expect(screen.getByRole('button', { name: 'Fechar menu' })).toHaveFocus()
     expect(screen.getByText('Helena Duarte')).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: 'Pacientes' })).toHaveAttribute('aria-current', 'page')
     expect(drawer.querySelector('img')).toBeNull()
     expect(drawer).not.toHaveTextContent('HD')
     expect(screen.getByRole('link', { name: 'Configurações' })).toHaveAttribute(

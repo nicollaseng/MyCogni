@@ -59,6 +59,7 @@ test('a professional sends the document, the team opens and approves it, and a l
   page,
   browser,
 }) => {
+  test.slow()
   const name = `Helena Prado ${randomUUID().slice(0, 6)}`
   const email = uniqueEmail('pro-document')
   await createUser(email, password)
@@ -75,8 +76,6 @@ test('a professional sends the document, the team opens and approves it, and a l
     page.getByRole('heading', { level: 1, name: 'Envie o comprovante do seu registro.' }),
   ).toBeVisible()
   await expect(page.getByText(/Apenas a equipe MyCogniAI tem acesso/)).toBeVisible()
-  await choosePhoto(page, 'Adicionar foto')
-  await expect(page.getByRole('img', { name: `Foto de ${name}` }).first()).toBeVisible()
   await page.getByLabel('Escolher arquivo').setInputFiles({
     name: 'Carteira CRP.pdf',
     mimeType: 'application/pdf',
@@ -85,10 +84,17 @@ test('a professional sends the document, the team opens and approves it, and a l
   await page.getByRole('button', { name: 'Enviar comprovante' }).click()
 
   await expect(
+    page.getByRole('heading', { level: 1, name: 'Adicione uma foto ao seu perfil.' }),
+  ).toBeVisible()
+  await choosePhoto(page, 'Adicionar foto')
+  await expect(page.getByRole('main').getByRole('img', { name: `Foto de ${name}` })).toBeVisible()
+  await page.getByRole('button', { name: 'Continuar' }).click()
+
+  await expect(
     page.getByRole('heading', { level: 1, name: 'Seu cadastro está em verificação.' }),
   ).toBeVisible()
   await expect(page.getByText('Carteira CRP.pdf')).toBeVisible()
-  await expect(page.getByText('Em análise')).toBeVisible()
+  await expect(page.getByRole('main').getByText('Em análise', { exact: true }).last()).toBeVisible()
 
   const adminEmail = uniqueEmail('admin')
   await makeAdmin(await createUser(adminEmail, password))
@@ -148,14 +154,17 @@ test('the team rejects with a reason that the professional reads before sending 
   await page.getByLabel('Nome completo').fill(name)
   await page.getByRole('checkbox').check()
   await page.getByRole('button', { name: 'Enviar para verificação' }).click()
-  await expect(page.getByText('Comprovante de formação', { exact: true })).toBeVisible()
+  await expect(page.getByRole('heading', { name: 'Comprovante de formação' })).toBeVisible()
   await page.getByLabel('Escolher arquivo').setInputFiles({
     name: 'certificado.pdf',
     mimeType: 'application/pdf',
     buffer: tinyPdf,
   })
   await page.getByRole('button', { name: 'Enviar comprovante' }).click()
-  await expect(page.getByText('Em análise')).toBeVisible()
+  await page.getByRole('button', { name: 'Pular por agora' }).click()
+  await expect(
+    page.getByRole('heading', { level: 1, name: 'Seu cadastro está em verificação.' }),
+  ).toBeVisible()
 
   const adminEmail = uniqueEmail('admin')
   await makeAdmin(await createUser(adminEmail, password))
@@ -172,6 +181,7 @@ test('the team rejects with a reason that the professional reads before sending 
     page.getByRole('heading', { level: 1, name: 'Não conseguimos verificar seu cadastro.' }),
   ).toBeVisible()
   await expect(page.getByText('O certificado está sem assinatura.')).toBeVisible()
+  await expect(page.getByText('Passo 1 de 3')).toBeVisible()
   await page.getByLabel('Escolher arquivo').setInputFiles({
     name: 'certificado-assinado.pdf',
     mimeType: 'application/pdf',

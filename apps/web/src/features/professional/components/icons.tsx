@@ -193,3 +193,20 @@ export function SignOutIcon({ className }: IconProps) {
     </Icon>
   )
 }
+
+export function DocumentIcon({ className }: IconProps) {
+  return (
+    <Icon className={className}>
+      <path d="M14 3.5H7.5A1.5 1.5 0 0 0 6 5v14a1.5 1.5 0 0 0 1.5 1.5h9A1.5 1.5 0 0 0 18 19V7.5z" />
+      <path d="M14 3.5v4h4M9 12.5h6M9 16h4" />
+    </Icon>
+  )
+}
+
+export function CheckIcon({ className }: IconProps) {
+  return (
+    <Icon className={className}>
+      <path d="M5 12.5l4.5 4.5L19 7.5" />
+    </Icon>
+  )
+}
