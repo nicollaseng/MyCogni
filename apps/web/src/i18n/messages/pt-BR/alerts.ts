@@ -2,7 +2,7 @@ export const alerts = {
   meta: { title: 'Alertas' },
   title: 'Alertas',
   description:
-    'Situações que pedem um olhar seu: respostas que indicam risco, resultados graves, piora do humor, resumos que pedem atenção e dias sem registros. Os urgentes também chegam por email, sem detalhes clínicos.',
+    'Situações que pedem um olhar seu. Os urgentes também chegam por email, sem detalhes clínicos.',
   levels: { urgent: 'Urgente', watch: 'Atenção', info: 'Informativo' },
   statuses: { open: 'Novo', acknowledged: 'Visto', resolved: 'Resolvido' },
   reasons: {

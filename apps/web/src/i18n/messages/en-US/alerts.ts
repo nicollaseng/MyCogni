@@ -4,7 +4,7 @@ export const alerts: AlertsMessages = {
   meta: { title: 'Alerts' },
   title: 'Alerts',
   description:
-    'Situations that call for a look from you: answers that suggest risk, severe results, worsening mood, summaries that ask for attention and days without entries. Urgent ones also arrive by email, with no clinical details.',
+    'Situations that call for a look from you. Urgent ones also arrive by email, with no clinical details.',
   levels: { urgent: 'Urgent', watch: 'Watch', info: 'Info' },
   statuses: { open: 'New', acknowledged: 'Seen', resolved: 'Resolved' },
   reasons: {

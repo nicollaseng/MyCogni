@@ -30,7 +30,7 @@ import {
   useAlertActions,
   type AlertActions,
 } from './alert-cells'
-import { table, TableScroll } from './data-table'
+import { centeredTable as table, TableScroll } from './data-table'
 import { FilterControl, SearchField } from './filter-controls'
 import { SortIcon } from './icons'
 import { Pager } from './pager'
@@ -70,7 +70,7 @@ function Header({
       aria-sort={active ? (sort.direction === 'asc' ? 'ascending' : 'descending') : undefined}
       className={cn(
         table.head,
-        column === 'patient' && cn(table.headFirst, 'min-w-48'),
+        column === 'patient' && cn(table.headFirst, 'md:min-w-48'),
         column === 'actions' && 'w-px text-right',
       )}
     >
@@ -215,10 +215,11 @@ export function AlertsTable({ alerts, now, timeZone, acknowledge, resolve }: Ale
                             src={alert.patientPhotoUrl}
                             initials={initialsOf(alert.patientName)}
                             size="xs"
+                            className="max-sm:hidden"
                           />
                           <Link
                             href={`/pro/patients/${alert.patientId}`}
-                            className="font-medium decoration-1 underline-offset-4 hover:underline"
+                            className="font-medium whitespace-nowrap decoration-1 underline-offset-4 hover:underline"
                           >
                             {name}
                           </Link>

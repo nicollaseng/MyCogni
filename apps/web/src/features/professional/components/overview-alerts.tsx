@@ -5,7 +5,7 @@ import { Avatar } from '@/shared/components/avatar'
 import { initialsOf } from '@/shared/lib/initials'
 import { cn } from '@/shared/lib/utils'
 import { AlertLevelLabel } from './alert-cells'
-import { table, TableScroll } from './data-table'
+import { centeredTable as table, TableScroll } from './data-table'
 import { RelativeTime } from './patient-cells'
 import { Quiet } from './workspace'
 
@@ -52,10 +52,11 @@ export function OverviewAlerts({ alerts, now, timeZone }: OverviewAlertsProps) {
                     src={alert.patientPhotoUrl}
                     initials={initialsOf(alert.patientName)}
                     size="xs"
+                    className="max-sm:hidden"
                   />
                   <Link
                     href={`/pro/patients/${alert.patientId}`}
-                    className="font-medium decoration-1 underline-offset-4 hover:underline"
+                    className="font-medium whitespace-nowrap decoration-1 underline-offset-4 hover:underline"
                   >
                     {alert.patientName ?? t('unnamed')}
                   </Link>

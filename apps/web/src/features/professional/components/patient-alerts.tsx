@@ -12,7 +12,7 @@ import {
   useAlertActions,
   type AlertActions,
 } from './alert-cells'
-import { table, TableScroll } from './data-table'
+import { centeredTable as table, TableScroll } from './data-table'
 import { RelativeTime } from './patient-cells'
 import { WorkspaceSection } from './workspace'
 
