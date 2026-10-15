@@ -93,7 +93,7 @@ export function journalExtensions({ placeholder, photo, task }: JournalLabels): 
       nested: true,
       a11y: { checkboxLabel: (node) => task(node.textContent) },
     }),
-    JournalImage.configure({ HTMLAttributes: { alt: photo } }),
+    JournalImage.configure({ HTMLAttributes: { alt: photo, loading: 'lazy', decoding: 'async' } }),
     Placeholder.configure({ placeholder }),
   ]
 }

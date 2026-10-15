@@ -25,6 +25,8 @@ function Avatar({ initials, photoUrl, className }: AvatarProps) {
         alt=""
         width={40}
         height={40}
+        loading="eager"
+        decoding="async"
         unoptimized
         className={cn('shrink-0 rounded-full object-cover', className)}
       />

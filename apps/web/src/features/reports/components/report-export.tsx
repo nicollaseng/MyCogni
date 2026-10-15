@@ -1,6 +1,6 @@
 'use client'
 
-import { moodReportPeriods, type MoodReportPeriod } from '@mycogni/contracts'
+import { moodReportPeriods, type MoodReportPeriod } from '@mycogni/domain'
 import { useTranslations } from 'next-intl'
 import { useId, useState, type ReactNode } from 'react'
 import { ActionError } from '@/shared/components/action-error'

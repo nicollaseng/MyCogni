@@ -1,5 +1,4 @@
-import { checkInSearchLength } from '@mycogni/contracts'
-import { checkInLimits } from '@mycogni/domain'
+import { checkInLimits, checkInSearchLength } from '@mycogni/domain'
 import type { CheckInFilter } from '@/shared/lib/api/resources'
 
 export const periods = ['7', '30', '90'] as const

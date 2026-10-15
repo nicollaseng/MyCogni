@@ -29,7 +29,7 @@ export function ProfileMenu({ name, profession, photoUrl, signOut }: ProfileMenu
           open && 'bg-foreground/[0.06]',
         )}
       >
-        <Avatar src={photoUrl} initials={initialsOf(name)} size="sm" />
+        <Avatar src={photoUrl} initials={initialsOf(name)} size="sm" eager />
         <span className="min-w-0 flex-1">
           <span className="block truncate text-[15px] font-medium">{name}</span>
           <span className="block truncate text-[13px] text-muted-foreground">{profession}</span>
