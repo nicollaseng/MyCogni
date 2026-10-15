@@ -31,6 +31,22 @@ test('creates an account with the code sent by email', async ({ page }) => {
   await expect(page).toHaveURL('/onboarding')
 })
 
+test('says when the email already has an account instead of waiting for a code', async ({
+  page,
+}) => {
+  const email = uniqueEmail('signup-existing')
+  await createUser(email, password)
+  await page.goto('/sign-up')
+  await page.getByLabel('Email').fill(email)
+  await page.getByLabel('Senha').fill('outra-senha-2026')
+  await page.getByRole('button', { name: 'Criar conta' }).click()
+
+  await expect(
+    page.getByText('Já existe uma conta com este email. Entre ou recupere a senha.'),
+  ).toBeVisible()
+  await expect(page).toHaveURL('/sign-up')
+})
+
 test('asks for a stronger password before creating the account', async ({ page }) => {
   await page.goto('/sign-up')
   await page.getByLabel('Email').fill(uniqueEmail('weak'))
