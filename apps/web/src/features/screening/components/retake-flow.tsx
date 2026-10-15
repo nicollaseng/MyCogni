@@ -111,6 +111,12 @@ export function RetakeFlow({ previous: initial, timeZone, send }: RetakeFlowProp
                 <Link href="/me" className={cn(buttonVariants({ size: 'lg' }), 'w-full')}>
                   {t('retake.back')}
                 </Link>
+                <Link
+                  href="/zen"
+                  className="mt-4 self-center text-[15px] underline decoration-1 underline-offset-4"
+                >
+                  {t('retake.zen')}
+                </Link>
               </StepActions>
             </section>
           )}

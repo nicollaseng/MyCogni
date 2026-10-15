@@ -48,6 +48,7 @@ export const screening: ScreeningMessages = {
     resultsTitle: 'Os seus resultados de hoje.',
     disclaimer: 'É um rastreio, não um diagnóstico. Só um profissional pode avaliar o seu caso.',
     back: 'Voltar ao perfil',
+    zen: 'Ver sugestões no Zen Space',
   },
   latest: {
     title: 'Os seus questionários',
