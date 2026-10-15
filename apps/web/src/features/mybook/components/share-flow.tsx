@@ -4,6 +4,7 @@ import type { CreateJournalShareInput, JournalEntrySummary } from '@mycogni/cont
 import { useLocale, useTranslations } from 'next-intl'
 import { useId, useState, type ReactNode } from 'react'
 import { ActionError } from '@/shared/components/action-error'
+import { Sheet } from '@/shared/components/sheet'
 import { useSubmit } from '@/shared/hooks/use-submit'
 import type { ActionResult } from '@/shared/lib/actions/result'
 import { cn } from '@/shared/lib/utils'
@@ -18,7 +19,6 @@ import {
   type DurationChoice,
 } from '../sharing'
 import { SearchField } from './search-field'
-import { Sheet } from './sheet'
 
 type Scope = CreateJournalShareInput['scope']
 

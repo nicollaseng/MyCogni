@@ -1,11 +1,14 @@
+import type { ReactNode } from 'react'
+
 interface PageTitleProps {
   title: string
   kicker?: string
   description?: string
   titleId?: string
+  action?: ReactNode
 }
 
-export function PageTitle({ title, kicker, description, titleId }: PageTitleProps) {
+export function PageTitle({ title, kicker, description, titleId, action }: PageTitleProps) {
   return (
     <header className="space-y-3">
       {kicker !== undefined && <p className="text-sm text-muted-foreground">{kicker}</p>}
@@ -18,6 +21,7 @@ export function PageTitle({ title, kicker, description, titleId }: PageTitleProp
       {description !== undefined && (
         <p className="max-w-[36rem] leading-relaxed text-muted-foreground">{description}</p>
       )}
+      {action !== undefined && <div className="pt-2">{action}</div>}
     </header>
   )
 }

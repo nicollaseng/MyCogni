@@ -26,6 +26,13 @@ export class ApiError extends Error {
   }
 }
 
+function errorOf(status: number, payload: unknown): ApiError {
+  const error = errorBodySchema.safeParse(payload)
+  return error.success
+    ? new ApiError(status, error.data.code, error.data.message)
+    : new ApiError(status, 'UNKNOWN', `API answered ${String(status)}`)
+}
+
 async function accessToken(): Promise<string> {
   const supabase = await createSupabaseServerClient('read-only')
   const { data } = await supabase.auth.getSession()
@@ -56,10 +63,26 @@ export async function apiRequest<T>({
   })
   const payload: unknown = response.status === 204 ? null : await response.json()
   if (!response.ok) {
-    const error = errorBodySchema.safeParse(payload)
-    throw error.success
-      ? new ApiError(response.status, error.data.code, error.data.message)
-      : new ApiError(response.status, 'UNKNOWN', `API answered ${String(response.status)}`)
+    throw errorOf(response.status, payload)
   }
   return schema.parse(payload)
+}
+
+export interface ApiFile {
+  bytes: ArrayBuffer
+  disposition: string
+}
+
+export async function apiFile(path: `/v1/${string}`): Promise<ApiFile> {
+  const response = await fetch(`${serverEnv().apiUrl}${path}`, {
+    headers: { authorization: `Bearer ${await accessToken()}` },
+    cache: 'no-store',
+  })
+  if (!response.ok) {
+    throw errorOf(response.status, await response.json().catch(() => null))
+  }
+  return {
+    bytes: await response.arrayBuffer(),
+    disposition: response.headers.get('content-disposition') ?? 'attachment',
+  }
 }
