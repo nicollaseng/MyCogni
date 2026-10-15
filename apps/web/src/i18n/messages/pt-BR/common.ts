@@ -27,6 +27,7 @@ export const common = {
     intro: 'Se você está em crise ou pensando em se machucar, ligue agora:',
     disclaimer: 'O MyCogniAI não substitui acompanhamento profissional.',
   },
+  loading: 'Carregando',
   notFound: {
     title: 'Esta página não existe.',
     body: 'O endereço pode ter mudado ou estar incompleto.',

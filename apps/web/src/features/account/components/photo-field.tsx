@@ -23,7 +23,7 @@ export function PhotoField({ initials, alt, size = 'xl', children, ...options }:
 
   return (
     <div className="flex items-center gap-5">
-      <Avatar src={url} initials={initials} size={size} alt={alt} />
+      <Avatar src={url} initials={initials} size={size} alt={alt} eager />
       <div className="min-w-0 space-y-1.5">
         {children}
         <div className="flex flex-wrap gap-x-4 gap-y-1">

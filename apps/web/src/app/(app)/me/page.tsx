@@ -14,7 +14,7 @@ import {
   deleteMyAccount,
   refreshAfterUpload,
   renameMe,
-  setAiConsent,
+  setConsent,
   setJournalInInsights,
 } from '@/features/account/actions'
 import { endLink } from '@/features/care/actions'
@@ -41,7 +41,8 @@ import { fetchCareLinks, fetchProfessional } from '@/shared/lib/api/care'
 import { fetchAssessments, fetchConsents } from '@/shared/lib/api/resources'
 import { fetchSupportTickets } from '@/shared/lib/api/support'
 import { requireOnboardedProfile } from '@/shared/lib/auth/session'
-import { ownPhotoUrl } from '@/shared/lib/photos'
+import { fetchMyPhotoUrl } from '@/shared/lib/photos'
+import { guarded } from '@/shared/lib/settled'
 import { Button } from '@/shared/ui/button'
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -64,19 +65,23 @@ async function voicePreviews(): Promise<Partial<Record<NarrationVoiceId, string>
 }
 
 export default async function MePage() {
-  const profile = await requireOnboardedProfile()
-  const [assessments, consents, photoUrl, careLinks, professional, tickets, t, language, previews] =
-    await Promise.all([
+  const [
+    profile,
+    [assessments, consents, photoUrl, careLinks, professional, tickets, t, language, previews],
+  ] = await guarded(
+    requireOnboardedProfile(),
+    Promise.all([
       fetchAssessments(),
       fetchConsents(),
-      ownPhotoUrl(profile.avatarPath),
+      fetchMyPhotoUrl(),
       fetchCareLinks(),
       fetchProfessional(),
       fetchSupportTickets(),
       getTranslations('account'),
       getTranslations('common.language'),
       voicePreviews(),
-    ])
+    ]),
+  )
   const lastAnswer = assessments[0]?.completedAt
 
   return (
@@ -132,11 +137,7 @@ export default async function MePage() {
 
       <Section title={t('sections.privacy')}>
         <Panel>
-          <ConsentList
-            consents={consents}
-            timeZone={profile.timezone}
-            setAiConsent={setAiConsent}
-          />
+          <ConsentList consents={consents} timeZone={profile.timezone} setConsent={setConsent} />
           <JournalInsightsSwitch
             enabled={profile.journalInInsights}
             setJournalInInsights={setJournalInInsights}

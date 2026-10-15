@@ -9,6 +9,7 @@ import { ZenTopBar } from '@/features/zen/components/zen-top-bar'
 import { fetchCareLinks } from '@/shared/lib/api/care'
 import { fetchStepProgress } from '@/shared/lib/api/zen'
 import { requireOnboardedProfile } from '@/shared/lib/auth/session'
+import { guarded } from '@/shared/lib/settled'
 
 export async function generateMetadata({
   params,
@@ -18,17 +19,13 @@ export async function generateMetadata({
 }
 
 export default async function ZenTopicPage({ params }: PageProps<'/zen/topics/[id]'>) {
-  await requireOnboardedProfile()
-  const { id } = await params
+  const [[{ id }], [t, locale, doneSteps, careLinks]] = await guarded(
+    Promise.all([params, requireOnboardedProfile()]),
+    Promise.all([getTranslations('zen'), getLocale(), fetchStepProgress(), fetchCareLinks()]),
+  )
   if (!isTopicId(id)) {
     notFound()
   }
-  const [t, locale, doneSteps, careLinks] = await Promise.all([
-    getTranslations('zen'),
-    getLocale(),
-    fetchStepProgress(),
-    fetchCareLinks(),
-  ])
   const language = contentLanguageOf(locale)
   const topic = topics[id]
   const professionals = careLinks.map((link) => link.professional.name)

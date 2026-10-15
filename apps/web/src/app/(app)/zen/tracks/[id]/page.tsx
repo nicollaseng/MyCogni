@@ -20,6 +20,7 @@ import { ZenTopBar } from '@/features/zen/components/zen-top-bar'
 import { fetchCareLinks } from '@/shared/lib/api/care'
 import { fetchStepProgress } from '@/shared/lib/api/zen'
 import { requireOnboardedProfile } from '@/shared/lib/auth/session'
+import { guarded } from '@/shared/lib/settled'
 
 export async function generateMetadata({
   params,
@@ -29,18 +30,19 @@ export async function generateMetadata({
 }
 
 export default async function ZenTrackPage({ params }: PageProps<'/zen/tracks/[id]'>) {
-  await requireOnboardedProfile()
-  const { id } = await params
+  const [[{ id }], [t, locale, doneSteps, careLinks, manifest]] = await guarded(
+    Promise.all([params, requireOnboardedProfile()]),
+    Promise.all([
+      getTranslations('zen'),
+      getLocale(),
+      fetchStepProgress(),
+      fetchCareLinks(),
+      fetchNarrationManifest(),
+    ]),
+  )
   if (!isTrackId(id)) {
     notFound()
   }
-  const [t, locale, doneSteps, careLinks, manifest] = await Promise.all([
-    getTranslations('zen'),
-    getLocale(),
-    fetchStepProgress(),
-    fetchCareLinks(),
-    fetchNarrationManifest(),
-  ])
   const language = contentLanguageOf(locale)
   const text = trackText(language, id)
   const progress = progressOf(id, doneSteps)

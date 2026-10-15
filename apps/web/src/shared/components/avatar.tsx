@@ -16,10 +16,11 @@ interface AvatarProps {
   initials: string
   size: AvatarSize
   alt?: string
+  eager?: boolean
   className?: string
 }
 
-export function Avatar({ src, initials, size, alt = '', className }: AvatarProps) {
+export function Avatar({ src, initials, size, alt = '', eager = false, className }: AvatarProps) {
   const { pixels, className: sizeClass } = sizes[size]
   if (src === null) {
     return (
@@ -41,6 +42,8 @@ export function Avatar({ src, initials, size, alt = '', className }: AvatarProps
       alt={alt}
       width={pixels}
       height={pixels}
+      loading={eager ? 'eager' : 'lazy'}
+      decoding="async"
       unoptimized
       className={cn('shrink-0 rounded-full bg-sage object-cover', sizeClass, className)}
     />

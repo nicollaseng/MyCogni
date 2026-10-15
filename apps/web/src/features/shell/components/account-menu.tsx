@@ -25,6 +25,8 @@ function Avatar({ initials, photoUrl, className }: AvatarProps) {
         alt=""
         width={40}
         height={40}
+        loading="eager"
+        decoding="async"
         unoptimized
         className={cn('shrink-0 rounded-full object-cover', className)}
       />
@@ -95,6 +97,7 @@ function AccountPanel({ name, email, signOut, onNavigate }: AccountPanelProps) {
       <div role="menu" aria-label={t('menu')} className="border-t border-rule p-1">
         <Link
           href="/me"
+          prefetch
           role="menuitem"
           tabIndex={-1}
           onClick={onNavigate}
@@ -104,6 +107,7 @@ function AccountPanel({ name, email, signOut, onNavigate }: AccountPanelProps) {
         </Link>
         <Link
           href="/me#professionals"
+          prefetch
           role="menuitem"
           tabIndex={-1}
           onClick={onNavigate}

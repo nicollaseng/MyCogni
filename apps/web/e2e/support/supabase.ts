@@ -98,19 +98,44 @@ export async function deleteUser(id: string): Promise<void> {
   })
 }
 
+const teardownAttempts = 3
+
+const teardownBatch = 20
+
+async function tolerant(request: () => Promise<Response>): Promise<Response | null> {
+  for (let attempt = 1; attempt <= teardownAttempts; attempt++) {
+    try {
+      return await request()
+    } catch (cause) {
+      if (attempt === teardownAttempts) {
+        console.warn(`Test cleanup could not reach Supabase: ${String(cause)}`)
+      }
+    }
+  }
+  return null
+}
+
 export async function deleteTestUsers(): Promise<void> {
-  const response = await fetch(`${supabaseUrl}/auth/v1/admin/users?per_page=1000`, {
-    headers: adminHeaders(),
-  })
-  const { users } = usersSchema.parse(await response.json())
-  await Promise.all(
-    users
-      .filter((user) => user.email.endsWith(`@${testEmailDomain}`))
-      .map((user) =>
-        fetch(`${supabaseUrl}/auth/v1/admin/users/${user.id}`, {
-          method: 'DELETE',
-          headers: adminHeaders(),
-        }),
-      ),
+  const response = await tolerant(() =>
+    fetch(`${supabaseUrl}/auth/v1/admin/users?per_page=1000`, { headers: adminHeaders() }),
   )
+  if (response?.ok !== true) {
+    return
+  }
+  const ids = usersSchema
+    .parse(await response.json())
+    .users.filter((user) => user.email.endsWith(`@${testEmailDomain}`))
+    .map((user) => user.id)
+  for (let start = 0; start < ids.length; start += teardownBatch) {
+    await Promise.all(
+      ids.slice(start, start + teardownBatch).map((id) =>
+        tolerant(() =>
+          fetch(`${supabaseUrl}/auth/v1/admin/users/${id}`, {
+            method: 'DELETE',
+            headers: adminHeaders(),
+          }),
+        ),
+      ),
+    )
+  }
 }

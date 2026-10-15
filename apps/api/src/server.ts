@@ -1,3 +1,9 @@
+import {
+  anthropicSender,
+  createClaudeAssistantModel,
+  type AssistantModel,
+} from './ai/assistant-model.ts'
+import { createScriptedAssistantModel } from './ai/scripted-assistant-model.ts'
 import { buildApp } from './app.ts'
 import { createSupabaseAccountAdmin } from './auth/account-admin.ts'
 import { createSupabaseTokenVerifier } from './auth/token-verifier.ts'
@@ -9,6 +15,16 @@ import { createSupportAttachmentStore } from './storage/support-attachments.ts'
 
 const config = loadConfig(process.env)
 const database = connectDatabase(config.databaseUrl)
+
+function assistantModel(): AssistantModel | null {
+  if (config.assistantModel === 'scripted') {
+    return createScriptedAssistantModel()
+  }
+  return config.anthropicApiKey === null
+    ? null
+    : createClaudeAssistantModel(anthropicSender(config.anthropicApiKey))
+}
+
 const app = await buildApp({
   config,
   db: database.db,
@@ -18,6 +34,7 @@ const app = await buildApp({
   profileFiles: createProfileFileStores(config.supabaseUrl, config.supabaseSecretKey),
   photoFetcher: fetch,
   supportAttachments: createSupportAttachmentStore(config.supabaseUrl, config.supabaseSecretKey),
+  assistantModel: assistantModel(),
 })
 
 app.addHook('onClose', () => database.close())

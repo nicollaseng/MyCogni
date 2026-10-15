@@ -20,7 +20,9 @@ async function signInAsReadyPerson(page: Page, secret = password): Promise<strin
   await page.getByLabel('Senha').fill(secret)
   await page.getByRole('button', { name: 'Entrar', exact: true }).click()
   await expect(page).toHaveURL('/today')
-  await page.goto('/me')
+  await page.getByRole('button', { name: 'Sua conta' }).click()
+  await page.getByRole('menuitem', { name: 'Perfil e configurações' }).click()
+  await expect(page).toHaveURL('/me')
   return email
 }
 

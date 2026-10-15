@@ -30,11 +30,11 @@ export function WorkspaceHeader({
   return (
     <header className="min-w-0 space-y-1.5">
       {kicker !== undefined && <div className="text-sm text-muted-foreground">{kicker}</div>}
-      <div className="flex items-start justify-between gap-4">
+      <div className="flex flex-wrap items-start justify-between gap-x-4 gap-y-3">
         <h1 className="min-w-0 font-serif text-[28px] leading-[1.1] tracking-[-0.015em] sm:text-[34px]">
           {title}
         </h1>
-        {actions !== undefined && <div className="flex shrink-0 gap-2 sm:pt-1">{actions}</div>}
+        {actions !== undefined && <div className="flex flex-wrap gap-2 sm:pt-1">{actions}</div>}
       </div>
       {description !== undefined && (
         <div className="max-w-[44rem] text-[15px] leading-relaxed text-muted-foreground">

@@ -1,5 +1,6 @@
 'use client'
 
+import type { ConsentKind } from '@mycogni/domain'
 import { useTranslations } from 'next-intl'
 import { useState } from 'react'
 import { useSubmit } from '@/shared/hooks/use-submit'
@@ -7,25 +8,28 @@ import type { ActionResult } from '@/shared/lib/actions/result'
 import { Switch } from '@/shared/ui/switch'
 import { FormMessage } from './form-message'
 
-interface AiConsentSwitchProps {
+export type SetConsent = (kind: ConsentKind, enabled: boolean) => Promise<ActionResult<string>>
+
+interface ConsentSwitchProps {
+  kind: ConsentKind
   enabled: boolean
-  setAiConsent: (enabled: boolean) => Promise<ActionResult<string>>
+  setConsent: SetConsent
 }
 
-export function AiConsentSwitch({ enabled, setAiConsent }: AiConsentSwitchProps) {
+export function ConsentSwitch({ kind, enabled, setConsent }: ConsentSwitchProps) {
   const t = useTranslations('account.consents.kinds')
   const [checked, setChecked] = useState(enabled)
-  const { submit, pending, error } = useSubmit(setAiConsent, () => undefined)
+  const { submit, pending, error } = useSubmit(setConsent, () => undefined)
 
   return (
     <div className="flex flex-col items-end gap-1">
       <Switch
         checked={checked}
-        label={t('ai_processing')}
+        label={t(kind)}
         disabled={pending}
         onChange={(next) => {
           setChecked(next)
-          submit(next)
+          submit(kind, next)
         }}
       />
       <FormMessage error={error} notice={null} />

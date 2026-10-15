@@ -1,6 +1,8 @@
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { getTranslations } from 'next-intl/server'
+import { assistantActions } from '@/features/assistant/bound-actions'
+import { PatientAssistant } from '@/features/assistant/components/patient-assistant'
 import { requireVerifiedProfessional } from '@/features/professional/access'
 import { acknowledgeAlert, resolveAlert } from '@/features/professional/alert-actions'
 import { pendingAlerts } from '@/features/professional/alert-table'
@@ -11,7 +13,11 @@ import { PatientHeader } from '@/features/professional/components/patient-header
 import { PatientKpis } from '@/features/professional/components/patient-kpis'
 import { QuestionnaireTable } from '@/features/professional/components/questionnaire-table'
 import { ReadingsSection } from '@/features/professional/components/readings-section'
-import { Surface, WorkspaceSection } from '@/features/professional/components/workspace'
+import {
+  quietButton,
+  Surface,
+  WorkspaceSection,
+} from '@/features/professional/components/workspace'
 import { moodDays } from '@/features/professional/mood-days'
 import { ReportExport } from '@/features/reports/components/report-export'
 import {
@@ -21,7 +27,9 @@ import {
   fetchPatientInsights,
 } from '@/shared/lib/api/care'
 import { fetchAlerts } from '@/shared/lib/api/alerts'
+import { ApiError } from '@/shared/lib/api/client'
 import { requireProfile } from '@/shared/lib/auth/session'
+import { settledValue } from '@/shared/lib/settled'
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations('professional.meta')
@@ -31,22 +39,37 @@ export async function generateMetadata(): Promise<Metadata> {
 const windowDays = 30
 const dayInMs = 24 * 60 * 60 * 1000
 
-export default async function PatientPage({ params }: PageProps<'/pro/patients/[id]'>) {
-  await requireVerifiedProfessional()
+function isMissing(cause: unknown): boolean {
+  return cause instanceof ApiError && (cause.status === 404 || cause.status === 400)
+}
+
+async function patientFileOf(params: PageProps<'/pro/patients/[id]'>['params'], now: Date) {
   const { id } = await params
-  const [patient, { timezone }] = await Promise.all([fetchPatient(id), requireProfile()])
-  if (patient === null) {
-    notFound()
-  }
-  const now = new Date()
-  const [checkIns, assessments, readings, alerts, t, patients] = await Promise.all([
-    fetchPatientCheckIns(patient.id, new Date(now.getTime() - (windowDays + 1) * dayInMs)),
-    fetchPatientAssessments(patient.id),
-    fetchPatientInsights(patient.id),
-    fetchAlerts(patient.id),
+  return Promise.all([
+    fetchPatient(id),
+    fetchPatientCheckIns(id, new Date(now.getTime() - (windowDays + 1) * dayInMs)),
+    fetchPatientAssessments(id),
+    fetchPatientInsights(id),
+    fetchAlerts(id),
     getTranslations('professional.patient'),
     getTranslations('professional.patients'),
   ])
+}
+
+export default async function PatientPage({ params }: PageProps<'/pro/patients/[id]'>) {
+  const now = new Date()
+  const [access, file] = await Promise.allSettled([
+    Promise.all([requireVerifiedProfessional(), requireProfile()]),
+    patientFileOf(params, now),
+  ])
+  const [, { timezone }] = settledValue(access)
+  if (file.status === 'rejected' && isMissing(file.reason)) {
+    notFound()
+  }
+  const [patient, checkIns, assessments, readings, alerts, t, patients] = settledValue(file)
+  if (patient === null) {
+    notFound()
+  }
 
   return (
     <>
@@ -54,13 +77,22 @@ export default async function PatientPage({ params }: PageProps<'/pro/patients/[
         patient={patient}
         timeZone={timezone}
         actions={
-          <ReportExport
-            href={`/pro/patients/${patient.id}/report`}
-            audience="professional"
-            name={patient.name ?? patients('unnamed')}
-            summaries={readings.length > 0}
-            triggerClassName="h-9 px-3.5 text-sm hover:bg-surface"
-          />
+          <>
+            <PatientAssistant
+              patientId={patient.id}
+              name={patient.name ?? patients('unnamed')}
+              actions={assistantActions}
+              timeZone={timezone}
+              triggerClassName={quietButton}
+            />
+            <ReportExport
+              href={`/pro/patients/${patient.id}/report`}
+              audience="professional"
+              name={patient.name ?? patients('unnamed')}
+              summaries={readings.length > 0}
+              triggerClassName="h-9 px-3.5 text-sm hover:bg-surface"
+            />
+          </>
         }
       />
       <PatientAlerts

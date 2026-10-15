@@ -236,8 +236,22 @@
     {
       "idx": 33,
       "version": "7",
-      "when": 1792098561174,
-      "tag": "0033_narration_bucket",
+      "when": 1792097185384,
+      "tag": "0033_create_assistant_conversations",
+      "breakpoints": true
+    },
+    {
+      "idx": 34,
+      "version": "7",
+      "when": 1792097186747,
+      "tag": "0034_assistant_grants",
+      "breakpoints": true
+    },
+    {
+      "idx": 35,
+      "version": "7",
+      "when": 1792100780992,
+      "tag": "0035_narration_bucket",
       "breakpoints": true
     }
   ]

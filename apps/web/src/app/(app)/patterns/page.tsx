@@ -29,6 +29,7 @@ import {
   fetchInsights,
 } from '@/shared/lib/api/resources'
 import { requireOnboardedProfile } from '@/shared/lib/auth/session'
+import { guarded } from '@/shared/lib/settled'
 import { buttonVariants } from '@/shared/ui/button'
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -39,16 +40,18 @@ export async function generateMetadata(): Promise<Metadata> {
 const dayInMs = 24 * 60 * 60 * 1000
 
 export default async function PatternsPage() {
-  const { timezone } = await requireOnboardedProfile()
   const now = new Date()
-  const [t, checkIns, assessments, readings, consents, recentCount] = await Promise.all([
-    getTranslations('patterns'),
-    fetchCheckInsSince(new Date(now.getTime() - patternRules.windowDays * dayInMs)),
-    fetchAssessments(),
-    fetchInsights(),
-    fetchConsents(),
-    countCheckIns({ since: new Date(now.getTime() - insightLookbackDays * dayInMs) }),
-  ])
+  const [{ timezone }, [t, checkIns, assessments, readings, consents, recentCount]] = await guarded(
+    requireOnboardedProfile(),
+    Promise.all([
+      getTranslations('patterns'),
+      fetchCheckInsSince(new Date(now.getTime() - patternRules.windowDays * dayInMs)),
+      fetchAssessments(),
+      fetchInsights(),
+      fetchConsents(),
+      countCheckIns({ since: new Date(now.getTime() - insightLookbackDays * dayInMs) }),
+    ]),
+  )
   const moods = checkIns.map((checkIn) => ({
     moodLevel: checkIn.moodLevel,
     recordedAt: new Date(checkIn.recordedAt),

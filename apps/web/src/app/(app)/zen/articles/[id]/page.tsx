@@ -7,6 +7,7 @@ import { ArticleView } from '@/features/zen/components/article-view'
 import { ZenTopBar } from '@/features/zen/components/zen-top-bar'
 import { fetchCareLinks } from '@/shared/lib/api/care'
 import { requireOnboardedProfile } from '@/shared/lib/auth/session'
+import { guarded } from '@/shared/lib/settled'
 
 export async function generateMetadata({
   params,
@@ -16,16 +17,13 @@ export async function generateMetadata({
 }
 
 export default async function ZenArticlePage({ params }: PageProps<'/zen/articles/[id]'>) {
-  await requireOnboardedProfile()
-  const { id } = await params
+  const [[{ id }], [locale, careLinks, manifest]] = await guarded(
+    Promise.all([params, requireOnboardedProfile()]),
+    Promise.all([getLocale(), fetchCareLinks(), fetchNarrationManifest()]),
+  )
   if (!isArticleId(id)) {
     notFound()
   }
-  const [locale, careLinks, manifest] = await Promise.all([
-    getLocale(),
-    fetchCareLinks(),
-    fetchNarrationManifest(),
-  ])
   const language = contentLanguageOf(locale)
 
   return (

@@ -1,19 +1,20 @@
 import type { ReactNode } from 'react'
 import { AmbientProvider } from '@/features/audio/ambient-provider'
 import { AppShell } from '@/features/shell/components/app-shell'
+import { preloadNotifications } from '@/shared/lib/api/care'
 import { requireOnboardedProfile } from '@/shared/lib/auth/session'
-import { ownPhotoUrl } from '@/shared/lib/photos'
+import { fetchMyPhotoUrl } from '@/shared/lib/photos'
+import { guarded } from '@/shared/lib/settled'
 
 export default async function AppLayout({ children }: Readonly<{ children: ReactNode }>) {
-  const { displayName, email, avatarPath, timezone } = await requireOnboardedProfile()
+  preloadNotifications()
+  const [{ displayName, email, timezone }, photoUrl] = await guarded(
+    requireOnboardedProfile(),
+    fetchMyPhotoUrl(),
+  )
   return (
     <AmbientProvider>
-      <AppShell
-        name={displayName}
-        email={email}
-        photoUrl={await ownPhotoUrl(avatarPath)}
-        timeZone={timezone}
-      >
+      <AppShell name={displayName} email={email} photoUrl={photoUrl} timeZone={timezone}>
         {children}
       </AppShell>
     </AmbientProvider>

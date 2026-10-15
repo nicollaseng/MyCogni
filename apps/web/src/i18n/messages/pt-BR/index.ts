@@ -1,5 +1,6 @@
 import { account } from './account'
 import { alerts } from './alerts'
+import { assistant } from './assistant'
 import { admin } from './admin'
 import { audio } from './audio'
 import { auth } from './auth'
@@ -44,6 +45,7 @@ export const messages = {
   zen,
   audio,
   support,
+  assistant,
 }
 
 export type Messages = typeof messages

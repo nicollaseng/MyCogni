@@ -1,6 +1,8 @@
 import { useTranslations } from 'next-intl'
 import { Suspense, type ReactNode } from 'react'
 import { AmbientControl } from '@/features/audio/components/ambient-control'
+import { assistantActions } from '@/features/assistant/bound-actions'
+import { AssistantLauncher } from '@/features/assistant/components/assistant-launcher'
 import { signOut } from '@/features/auth/actions'
 import { BellLink } from '@/features/care/components/bell-link'
 import { NotificationBell } from '@/features/care/components/notification-bell'
@@ -8,6 +10,7 @@ import { HelpDisclosure } from '@/shared/components/help-disclosure'
 import { Wordmark } from '@/shared/components/wordmark'
 import { AccountMenu } from './account-menu'
 import { CurrentNavigation } from './current-navigation'
+import { FreshOnReturn } from './fresh-on-return'
 
 interface AppShellProps {
   name: string | null
@@ -22,6 +25,7 @@ export function AppShell({ name, email, photoUrl, timeZone, children }: AppShell
 
   return (
     <div className="flex min-h-dvh flex-col">
+      <FreshOnReturn />
       <header className="border-b border-rule">
         <div className="relative mx-auto flex w-full max-w-3xl items-center justify-between gap-6 px-6 py-5">
           <Wordmark />
@@ -47,6 +51,8 @@ export function AppShell({ name, email, photoUrl, timeZone, children }: AppShell
       <footer className="mx-auto w-full max-w-3xl px-6 pb-28 sm:pb-12">
         <HelpDisclosure />
       </footer>
+
+      <AssistantLauncher actions={assistantActions} timeZone={timeZone} />
 
       <nav
         aria-label={navigationLabel}

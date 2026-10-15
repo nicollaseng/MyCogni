@@ -1,6 +1,7 @@
 import { useTranslations } from 'next-intl'
 import type { ReactNode } from 'react'
 import { signOut } from '@/features/auth/actions'
+import { FreshOnReturn } from '@/features/shell/components/fresh-on-return'
 import { Wordmark } from '@/shared/components/wordmark'
 import { cn } from '@/shared/lib/utils'
 import { ProfileMenu } from './profile-menu'
@@ -25,6 +26,7 @@ export function OnboardingShell({
   const t = useTranslations('professional.shell')
   return (
     <div className={cn('min-h-dvh', className)}>
+      <FreshOnReturn />
       <header className="border-b border-rule">
         <div className={cn(column, 'flex h-16 items-center justify-between gap-4')}>
           <div className="flex min-w-0 items-baseline gap-3">
@@ -42,7 +44,13 @@ export function OnboardingShell({
           />
         </div>
       </header>
-      <main className={cn(column, 'space-y-7 pt-8 pb-16 sm:pt-10 lg:space-y-9 lg:pt-14 lg:pb-24')}>
+      <main
+        data-shell="onboarding"
+        className={cn(
+          column,
+          'group/shell space-y-7 pt-8 pb-16 sm:pt-10 lg:space-y-9 lg:pt-14 lg:pb-24',
+        )}
+      >
         {children}
       </main>
     </div>

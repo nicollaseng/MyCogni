@@ -56,7 +56,7 @@ export function ProfileMenu({
           open && 'bg-foreground/[0.06]',
         )}
       >
-        <Avatar src={photoUrl} initials={initialsOf(name)} size="sm" />
+        <Avatar src={photoUrl} initials={initialsOf(name)} size="sm" eager />
         <span className={cn('min-w-0 flex-1', placement === 'header' && 'max-sm:sr-only')}>
           <span className="block truncate text-[15px] font-medium">{name}</span>
           {placement === 'sidebar' && (
