@@ -9,6 +9,7 @@ import {
   narrationPath,
   zenArticles,
   type ArticleId,
+  type NarrationKey,
   type NarrationManifest,
 } from '@mycogni/domain'
 import { localSupabase, supabaseUrl } from './supabase'
@@ -49,10 +50,13 @@ async function storedManifest(): Promise<NarrationManifest> {
     : { version: 1, files: {} }
 }
 
-export async function publishArticleNarration(id: ArticleId, audioFile: string): Promise<string> {
-  const text = articleNarration(zenArticles[id].text['pt-BR'])
+export async function publishNarration(
+  key: NarrationKey,
+  text: string,
+  audioFile: string,
+): Promise<string> {
   const fingerprint = narrationFingerprint({ language: 'pt-BR', voice: 'jessica', text })
-  const path = narrationPath({ language: 'pt-BR', voice: 'jessica' }, articleKey(id), fingerprint)
+  const path = narrationPath({ language: 'pt-BR', voice: 'jessica' }, key, fingerprint)
   const audio = await readFile(audioFile)
   await store(path, Uint8Array.from(audio), 'audio/mpeg')
   const manifest = await storedManifest()
@@ -66,4 +70,12 @@ export async function publishArticleNarration(id: ArticleId, audioFile: string):
     'application/json',
   )
   return path
+}
+
+export function publishArticleNarration(id: ArticleId, audioFile: string): Promise<string> {
+  return publishNarration(
+    articleKey(id),
+    articleNarration(zenArticles[id].text['pt-BR']),
+    audioFile,
+  )
 }
