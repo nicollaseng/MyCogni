@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import { getTranslations } from 'next-intl/server'
+import { refreshAfterUpload } from '@/features/account/actions'
 import { TicketForm } from '@/features/support/components/ticket-form'
 import { PageTitle } from '@/shared/components/page-title'
 import { requireOnboardedProfile } from '@/shared/lib/auth/session'
@@ -18,7 +19,7 @@ export default async function NewSupportTicketPage() {
   return (
     <>
       <PageTitle title={t('title')} description={t('description')} />
-      <TicketForm role="patient" email={profile.email} />
+      <TicketForm role="patient" email={profile.email} onSent={refreshAfterUpload} />
     </>
   )
 }
