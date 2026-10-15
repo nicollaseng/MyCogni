@@ -155,6 +155,35 @@ export {
   type InsightAudience,
 } from './insights/insights.ts'
 export { isOnboardingReady, type OnboardingProgress } from './onboarding/onboarding.ts'
+export {
+  assistantLimits,
+  assistantModes,
+  assistantRoles,
+  mergeRisk,
+  needsSupport,
+  riskLevels,
+  type AssistantMode,
+  type AssistantRole,
+  type RiskLevel,
+} from './assistant/assistant.ts'
+export {
+  conversationRisk,
+  messageRisk,
+  normalizeText,
+  riskForMode,
+  riskSignals,
+  type ConversationRiskInput,
+  type RiskAssessment,
+  type RiskSignal,
+} from './assistant/crisis-detector.ts'
+export {
+  concernCategories,
+  crisisCategories,
+  type ConcernCategory,
+  type CrisisCategory,
+} from './assistant/crisis-phrases.ts'
+export { assistantNotice, noticeKinds, type NoticeKind } from './assistant/notices.ts'
+export { filterReply, repeatsPassage, type ReplyFilterOptions } from './assistant/reply-filter.ts'
 export { consistencyOf, type Consistency } from './patterns/consistency.ts'
 export { averageOf, moodDays, weekdayOf, type MoodDay } from './patterns/days.ts'
 export { patternRules } from './patterns/rules.ts'
