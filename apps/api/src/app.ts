@@ -27,6 +27,7 @@ import { onboardingModule } from './modules/onboarding/index.ts'
 import { professionalModule } from './modules/professionals/index.ts'
 import { profileModule } from './modules/profile/index.ts'
 import { reportModule } from './modules/reports/index.ts'
+import { zenModule } from './modules/zen/index.ts'
 import { requireAuthentication } from './plugins/authentication.ts'
 import { registerErrorHandler } from './plugins/error-handler.ts'
 import { registerSecurity } from './plugins/security.ts'
@@ -80,6 +81,7 @@ function authenticatedRoutes(
     await api.register(insightModule(db))
     await api.register(reportModule(db))
     await api.register(alertModule(db, profileFiles.photos))
+    await api.register(zenModule(db))
   }
 }
 

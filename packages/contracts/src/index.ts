@@ -162,3 +162,11 @@ export {
   type MoodReportPeriod,
   type MoodReportQuery,
 } from './reports.ts'
+export {
+  stepProgressListSchema,
+  stepProgressSchema,
+  trackIdSchema,
+  zenStepParamsSchema,
+  type StepProgress,
+  type ZenStepParams,
+} from './zen.ts'
