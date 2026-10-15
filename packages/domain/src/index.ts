@@ -1,7 +1,6 @@
 export {
   accountTypeChoiceMinutes,
   accountTypes,
-  isAccountType,
   isBrandNewAccount,
   signUpAccountType,
   type AccountFootprint,
@@ -111,7 +110,6 @@ export {
   isPatientConsent,
   isRevocable,
   missingConsents,
-  patientConsentKinds,
   requiredConsentKinds,
   type ConsentKind,
 } from './consents/consents.ts'

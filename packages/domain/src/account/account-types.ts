@@ -10,10 +10,6 @@ export interface AccountFootprint {
   hasRecords: boolean
 }
 
-export function isAccountType(value: unknown): value is AccountType {
-  return accountTypes.some((type) => type === value)
-}
-
 export function signUpAccountType(value: unknown): AccountType {
   return value === 'professional' ? 'professional' : 'patient'
 }
@@ -23,7 +19,6 @@ export function isBrandNewAccount(account: AccountFootprint, now: Date): boolean
   return (
     account.onboardingCompletedAt === null &&
     !account.hasRecords &&
-    age >= 0 &&
     age <= accountTypeChoiceMinutes * 60_000
   )
 }

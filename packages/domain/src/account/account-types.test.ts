@@ -1,10 +1,5 @@
 import { describe, expect, it } from '@jest/globals'
-import {
-  accountTypeChoiceMinutes,
-  isAccountType,
-  isBrandNewAccount,
-  signUpAccountType,
-} from './account-types.ts'
+import { accountTypeChoiceMinutes, isBrandNewAccount, signUpAccountType } from './account-types.ts'
 
 const now = new Date('2026-10-15T12:00:00Z')
 
@@ -13,13 +8,6 @@ function minutesAgo(minutes: number): Date {
 }
 
 describe('account types', () => {
-  it('knows only the patient and the professional accounts', () => {
-    expect(isAccountType('patient')).toBe(true)
-    expect(isAccountType('professional')).toBe(true)
-    expect(isAccountType('admin')).toBe(false)
-    expect(isAccountType(null)).toBe(false)
-  })
-
   it('opens a professional account only when the sign up asks for one', () => {
     expect(signUpAccountType('professional')).toBe('professional')
     expect(signUpAccountType('patient')).toBe('patient')
@@ -33,9 +21,10 @@ describe('account types', () => {
 describe('isBrandNewAccount', () => {
   const fresh = { createdAt: minutesAgo(5), onboardingCompletedAt: null, hasRecords: false }
 
-  it('accepts an account created moments ago that has not been used', () => {
+  it('accepts an unused account created moments ago, even with a slightly fast database clock', () => {
     expect(isBrandNewAccount(fresh, now)).toBe(true)
     expect(isBrandNewAccount({ ...fresh, createdAt: now }, now)).toBe(true)
+    expect(isBrandNewAccount({ ...fresh, createdAt: minutesAgo(-1) }, now)).toBe(true)
     expect(
       isBrandNewAccount({ ...fresh, createdAt: minutesAgo(accountTypeChoiceMinutes) }, now),
     ).toBe(true)
@@ -45,10 +34,6 @@ describe('isBrandNewAccount', () => {
     expect(
       isBrandNewAccount({ ...fresh, createdAt: minutesAgo(accountTypeChoiceMinutes + 1) }, now),
     ).toBe(false)
-  })
-
-  it('refuses an account created in the future, which only a wrong clock produces', () => {
-    expect(isBrandNewAccount({ ...fresh, createdAt: minutesAgo(-1) }, now)).toBe(false)
   })
 
   it('refuses an account that finished onboarding or already holds records', () => {
