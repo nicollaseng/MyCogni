@@ -4,6 +4,7 @@ import { InvalidConfigError, loadConfig } from '../../src/config/env.ts'
 const required = {
   DATABASE_URL: 'postgresql://postgres:postgres@127.0.0.1:55322/postgres',
   SUPABASE_URL: 'http://127.0.0.1:55321',
+  SUPABASE_SECRET_KEY: 'sb_secret_test',
 }
 
 describe('loadConfig', () => {
@@ -16,6 +17,7 @@ describe('loadConfig', () => {
       corsOrigins: [],
       databaseUrl: required.DATABASE_URL,
       supabaseUrl: required.SUPABASE_URL,
+      supabaseSecretKey: required.SUPABASE_SECRET_KEY,
     })
   })
 

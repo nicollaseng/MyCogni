@@ -7,7 +7,7 @@ export interface CheckInService {
   list(user: AuthenticatedUser, query: CheckInQuery): Promise<CheckIn[]>
 }
 
-function toCheckIn(record: CheckInRecord): CheckIn {
+export function toCheckIn(record: CheckInRecord): CheckIn {
   return { ...record, recordedAt: record.recordedAt.toISOString() }
 }
 

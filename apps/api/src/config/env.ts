@@ -19,6 +19,7 @@ const envSchema = z.object({
     .pipe(z.array(z.url())),
   DATABASE_URL: z.url({ protocol: /^postgres(ql)?$/ }),
   SUPABASE_URL: z.url({ protocol: /^https?$/ }).transform((value) => value.replace(/\/+$/, '')),
+  SUPABASE_SECRET_KEY: z.string().min(1),
 })
 
 export interface AppConfig {
@@ -29,6 +30,7 @@ export interface AppConfig {
   corsOrigins: string[]
   databaseUrl: string
   supabaseUrl: string
+  supabaseSecretKey: string
 }
 
 export class InvalidConfigError extends Error {
@@ -52,5 +54,6 @@ export function loadConfig(source: Record<string, string | undefined>): AppConfi
     corsOrigins: env.CORS_ORIGINS,
     databaseUrl: env.DATABASE_URL,
     supabaseUrl: env.SUPABASE_URL,
+    supabaseSecretKey: env.SUPABASE_SECRET_KEY,
   }
 }

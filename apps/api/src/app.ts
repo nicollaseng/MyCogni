@@ -5,9 +5,11 @@ import {
   type FastifyPluginAsyncZod,
   type ZodTypeProvider,
 } from 'fastify-type-provider-zod'
+import type { AccountAdmin } from './auth/account-admin.ts'
 import type { TokenVerifier } from './auth/token-verifier.ts'
 import type { AppConfig } from './config/env.ts'
 import type { Database } from './db/client.ts'
+import { accountModule } from './modules/account/index.ts'
 import { assessmentModule } from './modules/assessments/index.ts'
 import { checkInModule } from './modules/check-ins/index.ts'
 import { consentModule } from './modules/consents/index.ts'
@@ -24,9 +26,14 @@ export interface AppDependencies {
   config: AppConfig
   db: Database
   verifier: TokenVerifier
+  accountAdmin: AccountAdmin
 }
 
-function authenticatedRoutes({ db, verifier }: AppDependencies): FastifyPluginAsyncZod {
+function authenticatedRoutes({
+  db,
+  verifier,
+  accountAdmin,
+}: AppDependencies): FastifyPluginAsyncZod {
   return async (api) => {
     requireAuthentication(api, verifier)
     await api.register(profileModule(db))
@@ -35,6 +42,7 @@ function authenticatedRoutes({ db, verifier }: AppDependencies): FastifyPluginAs
     await api.register(checkInModule(db))
     await api.register(onboardingModule(db))
     await api.register(professionalModule(db))
+    await api.register(accountModule(db, accountAdmin))
   }
 }
 

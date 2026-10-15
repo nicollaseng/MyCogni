@@ -65,7 +65,7 @@ test('signs in and out', async ({ page }) => {
   await expect(page).toHaveURL('/today')
 
   await page.goto('/me')
-  await expect(page.getByText(email)).toBeVisible()
+  await expect(page.getByText(email).first()).toBeVisible()
   await page.getByRole('button', { name: 'Sair' }).click()
 
   await expect(page).toHaveURL('/')

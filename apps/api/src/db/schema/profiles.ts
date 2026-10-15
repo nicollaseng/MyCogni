@@ -9,6 +9,7 @@ export const profiles = pgTable(
       .primaryKey()
       .references(() => authUsers.id, { onDelete: 'cascade' }),
     displayName: text('display_name'),
+    avatarPath: text('avatar_path'),
     timezone: text('timezone').notNull().default('America/Sao_Paulo'),
     onboardingCompletedAt: timestamp('onboarding_completed_at', { withTimezone: true }),
     createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),

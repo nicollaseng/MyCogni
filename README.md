@@ -145,7 +145,7 @@ The API runs on Railway (project `mycogni`, workspace "Nicollas Linhares's Proje
 - The source is the GitHub repo. The `staging` environment follows the `staging` branch, and `production` will follow `main`
 - Docker build with watch patterns limited to the API, the packages and the lockfile, so web-only changes don't redeploy the API
 - Before each deploy Railway runs the migrations (`node apps/api/dist/scripts/migrate.js`). The new version only takes traffic after `/health` answers
-- `NODE_ENV` and `LOG_LEVEL` are set in the file. `DATABASE_URL` (Supabase session pooler, IPv4), `SUPABASE_URL` and `CORS_ORIGINS` are set per environment with `railway variables` and kept by `preserve()`. Railway provides `PORT`
+- `NODE_ENV` and `LOG_LEVEL` are set in the file. `DATABASE_URL` (Supabase session pooler, IPv4), `SUPABASE_URL`, `SUPABASE_SECRET_KEY` (used only to delete accounts) and `CORS_ORIGINS` are set per environment with `railway variables` and kept by `preserve()`. Railway provides `PORT`
 - After changing the file: `railway config plan` to preview, then `railway config apply` (with the `staging` environment linked)
 - The image installs and builds only the API and the workspace packages it depends on, keeps production dependencies only, and runs as the `node` user. To build it locally: `docker build -f apps/api/Dockerfile -t mycogni-api .`
 

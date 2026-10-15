@@ -5,6 +5,7 @@ import { z } from 'zod'
 
 const statusSchema = z.object({
   PUBLISHABLE_KEY: z.string(),
+  SECRET_KEY: z.string(),
   SERVICE_ROLE_KEY: z.string(),
   MAILPIT_URL: z.url(),
 })

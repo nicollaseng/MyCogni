@@ -1,5 +1,6 @@
 import type { Assessment } from '@mycogni/contracts'
 import { instrumentIds, instruments } from '@mycogni/domain'
+import { Panel, Section } from '@/shared/components/section'
 import { formatLongDate } from '@/shared/lib/time'
 import { instrumentTopics, severityLabels } from '../copy'
 import type { LatestResults } from '../latest'
@@ -11,18 +12,15 @@ interface LatestScreeningProps {
 
 function Row({ assessment }: { assessment: Assessment }) {
   return (
-    <li className="border-b border-rule py-3">
-      <p className="text-sm">
+    <li className="py-3.5">
+      <p className="text-sm text-muted-foreground">
         {instrumentTopics[assessment.instrument]}
-        <span className="whitespace-nowrap text-muted-foreground">
-          {' '}
-          · {instruments[assessment.instrument].name}
-        </span>
+        <span className="whitespace-nowrap"> · {instruments[assessment.instrument].name}</span>
       </p>
       <p className="mt-1 flex items-baseline gap-1.5">
-        <span className="font-serif text-[26px] leading-none">{assessment.totalScore}</span>
+        <span className="font-serif text-[28px] leading-none">{assessment.totalScore}</span>
         <span className="text-sm text-muted-foreground">de {assessment.maxScore}</span>
-        <span className="ml-auto text-right text-sm">{severityLabels[assessment.severity]}</span>
+        <span className="ml-auto text-right">{severityLabels[assessment.severity]}</span>
       </p>
     </li>
   )
@@ -40,25 +38,28 @@ export function LatestScreening({ results, timeZone }: LatestScreeningProps) {
   )
 
   return (
-    <section aria-labelledby="latest-screening" className="space-y-4 border-t border-rule pt-8">
-      <h2 id="latest-screening" className="text-xs tracking-[0.04em] text-muted-foreground">
-        seus questionários
-      </h2>
+    <Section title="Seus questionários">
       {latest === undefined ? (
-        <p className="text-muted-foreground">Você ainda não respondeu o PHQ-9 e o GAD-7.</p>
+        <Panel>
+          <p className="py-3.5 text-muted-foreground">
+            Você ainda não respondeu o PHQ-9 e o GAD-7.
+          </p>
+        </Panel>
       ) : (
         <>
-          <ul className="border-t border-rule">
-            {answered.map((assessment) => (
-              <Row key={assessment.id} assessment={assessment} />
-            ))}
-          </ul>
-          <p className="text-sm text-muted-foreground">
+          <Panel>
+            <ul>
+              {answered.map((assessment) => (
+                <Row key={assessment.id} assessment={assessment} />
+              ))}
+            </ul>
+          </Panel>
+          <p className="px-1 text-sm text-muted-foreground">
             Respondidos em {formatLongDate(new Date(latest.completedAt), timeZone).toLowerCase()}. É
             uma triagem, não um diagnóstico.
           </p>
         </>
       )}
-    </section>
+    </Section>
   )
 }

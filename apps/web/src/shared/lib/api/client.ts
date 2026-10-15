@@ -2,7 +2,7 @@ import { z } from 'zod'
 import { serverEnv } from '../env'
 import { createSupabaseServerClient } from '../supabase/server'
 
-type Method = 'GET' | 'POST' | 'PATCH'
+type Method = 'GET' | 'POST' | 'PATCH' | 'DELETE'
 
 interface ApiRequest<T> {
   path: `/v1/${string}`
@@ -50,7 +50,7 @@ export async function apiRequest<T>({
     body: body === undefined ? undefined : JSON.stringify(body),
     cache: 'no-store',
   })
-  const payload: unknown = await response.json()
+  const payload: unknown = response.status === 204 ? null : await response.json()
   if (!response.ok) {
     const error = errorBodySchema.safeParse(payload)
     throw error.success

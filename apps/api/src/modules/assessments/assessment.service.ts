@@ -8,7 +8,7 @@ export interface AssessmentService {
   list(user: AuthenticatedUser): Promise<Assessment[]>
 }
 
-function toAssessment(record: AssessmentRecord): Assessment {
+export function toAssessment(record: AssessmentRecord): Assessment {
   return {
     id: record.id,
     instrument: record.instrument,

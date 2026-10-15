@@ -1,4 +1,5 @@
 import { buildApp } from './app.ts'
+import { createSupabaseAccountAdmin } from './auth/account-admin.ts'
 import { createSupabaseTokenVerifier } from './auth/token-verifier.ts'
 import { loadConfig } from './config/env.ts'
 import { connectDatabase } from './db/client.ts'
@@ -9,6 +10,7 @@ const app = await buildApp({
   config,
   db: database.db,
   verifier: createSupabaseTokenVerifier(config.supabaseUrl),
+  accountAdmin: createSupabaseAccountAdmin(config.supabaseUrl, config.supabaseSecretKey),
 })
 
 app.addHook('onClose', () => database.close())
