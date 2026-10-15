@@ -8,8 +8,9 @@ export function withUser<T>(
 ): Promise<T> {
   const claims = JSON.stringify({ sub: userId, role: 'authenticated' })
   return db.transaction(async (tx) => {
-    await tx.execute(sql`select set_config('request.jwt.claims', ${claims}, true)`)
-    await tx.execute(sql`set local role authenticated`)
+    await tx.execute(
+      sql`select set_config('request.jwt.claims', ${claims}, true), set_config('role', 'authenticated', true)`,
+    )
     return work(tx)
   })
 }
