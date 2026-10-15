@@ -8,6 +8,7 @@ import { InviteDialog } from '@/features/professional/components/invite-dialog'
 import { WorkspaceHeader } from '@/features/professional/components/workspace'
 import { fetchSentInvitations } from '@/shared/lib/api/care'
 import { requireProfile } from '@/shared/lib/auth/session'
+import { guarded } from '@/shared/lib/settled'
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations('professional.meta')
@@ -15,13 +16,10 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function ProfessionalInvitesPage({ searchParams }: PageProps<'/pro/invites'>) {
-  await requireVerifiedProfessional()
-  const [{ timezone }, invitations, t, params] = await Promise.all([
-    requireProfile(),
-    fetchSentInvitations(),
-    getTranslations('professional.invites'),
-    searchParams,
-  ])
+  const [[, { timezone }], [invitations, t, params]] = await guarded(
+    Promise.all([requireVerifiedProfessional(), requireProfile()]),
+    Promise.all([fetchSentInvitations(), getTranslations('professional.invites'), searchParams]),
+  )
 
   return (
     <>

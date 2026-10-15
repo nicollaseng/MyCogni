@@ -25,6 +25,7 @@ export default defineRailway((ctx) => {
     replicas,
     env: {
       NODE_ENV: 'production',
+      HOST: '::',
       LOG_LEVEL: 'info',
       DATABASE_URL: preserve(),
       SUPABASE_URL: preserve(),

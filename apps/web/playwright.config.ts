@@ -6,6 +6,7 @@ const port = Number(process.env.E2E_WEB_PORT ?? '3000')
 const apiPort = process.env.E2E_API_PORT ?? '3333'
 const baseURL = `http://localhost:${String(port)}`
 const apiUrl = `http://127.0.0.1:${apiPort}`
+const production = process.env.E2E_PRODUCTION === '1'
 const services = {
   LOG_LEVEL: 'warn',
   DATABASE_URL: 'postgresql://postgres:postgres@127.0.0.1:55322/postgres',
@@ -62,10 +63,12 @@ export default defineConfig({
       env: services,
     },
     {
-      command: `next dev --port ${String(port)}`,
+      command: production
+        ? `next build && next start --port ${String(port)}`
+        : `next dev --port ${String(port)}`,
       url: baseURL,
       reuseExistingServer: true,
-      timeout: 120_000,
+      timeout: production ? 600_000 : 120_000,
       env: { API_URL: apiUrl, SITE_URL: baseURL },
     },
   ],

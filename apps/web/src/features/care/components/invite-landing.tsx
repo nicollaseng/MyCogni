@@ -66,6 +66,7 @@ export function PendingInvite({ preview, now, children }: PendingInviteProps) {
         initials={initialsOf(name)}
         alt={common('photoOf', { name })}
         size="xl"
+        eager
       />
       <InviteHeading
         kicker={`${t('kicker')} · ${common(`professionalKinds.${kind}`)}`}

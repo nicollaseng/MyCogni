@@ -101,8 +101,8 @@ test('discards a new page left without writing anything', async ({ page }) => {
   await page.getByRole('main').getByRole('link', { name: 'MyBook' }).click()
 
   await expect(page).toHaveURL('/mybook')
-  const response = await page.goto(blank)
-  expect(response?.status()).toBe(404)
+  await page.goto(blank)
+  await expect(page.getByRole('heading', { name: 'Esta página não existe.' })).toBeVisible()
 })
 
 test.describe('sharing', () => {

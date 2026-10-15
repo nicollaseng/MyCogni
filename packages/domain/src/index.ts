@@ -83,7 +83,7 @@ export {
   type EmotionFamilyId,
   type EmotionId,
 } from './check-ins/catalog.ts'
-export { checkInLimits, maxMoodLevel } from './check-ins/check-ins.ts'
+export { checkInLimits, checkInSearchLength, maxMoodLevel } from './check-ins/check-ins.ts'
 export { dailyMoods, dayKey, previousDays, type DatedMood } from './check-ins/days.ts'
 export {
   consentKinds,
@@ -186,7 +186,7 @@ export { assistantNotice, noticeKinds, type NoticeKind } from './assistant/notic
 export { filterReply, repeatsPassage, type ReplyFilterOptions } from './assistant/reply-filter.ts'
 export { consistencyOf, type Consistency } from './patterns/consistency.ts'
 export { averageOf, moodDays, weekdayOf, type MoodDay } from './patterns/days.ts'
-export { patternRules } from './patterns/rules.ts'
+export { moodReportPeriods, patternRules, type MoodReportPeriod } from './patterns/rules.ts'
 export {
   scoreTimeline,
   severityRanges,
@@ -224,6 +224,13 @@ export {
   type ProfessionalDocumentType,
   type RegistrationProof,
 } from './care/documents.ts'
+export {
+  createSignedLinkCache,
+  signedLinkWindow,
+  signedLinkWindowSeconds,
+  type SignedLinkCache,
+  type SignedLinkWindow,
+} from './files/signed-links.ts'
 export {
   cleanFileName,
   uploadProblem,

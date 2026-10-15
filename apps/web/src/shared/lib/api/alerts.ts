@@ -20,6 +20,10 @@ export const fetchAlertCount = cache((): Promise<AlertCount> =>
   apiRequest({ path: '/v1/professional/alerts/count', schema: alertCountSchema }),
 )
 
+export function preloadAlertCount(): void {
+  fetchAlertCount().catch(() => undefined)
+}
+
 export async function changeAlert(id: string, action: 'acknowledge' | 'resolve'): Promise<void> {
   await apiRequest({
     path: `/v1/professional/alerts/${encodeURIComponent(id)}/${action}`,

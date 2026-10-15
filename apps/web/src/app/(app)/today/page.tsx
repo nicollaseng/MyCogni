@@ -14,6 +14,7 @@ import { PageTitle } from '@/shared/components/page-title'
 import { fetchCareLinks } from '@/shared/lib/api/care'
 import { fetchAssessments, fetchCheckIns, fetchInsights } from '@/shared/lib/api/resources'
 import { requireOnboardedProfile } from '@/shared/lib/auth/session'
+import { guarded } from '@/shared/lib/settled'
 import { formatDayTitle } from '@/shared/lib/time'
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -25,15 +26,18 @@ const windowDays = patternRules.recentDays
 const dayInMs = 24 * 60 * 60 * 1000
 
 export default async function TodayPage() {
-  const { timezone } = await requireOnboardedProfile()
-  const [t, locale] = await Promise.all([getTranslations('today'), getLocale()])
   const now = new Date()
-  const [checkIns, assessments, readings, careLinks] = await Promise.all([
-    fetchCheckIns({ since: new Date(now.getTime() - (windowDays + 1) * dayInMs), limit: 200 }),
-    fetchAssessments(),
-    fetchInsights(),
-    fetchCareLinks(),
-  ])
+  const [{ timezone }, [t, locale, checkIns, assessments, readings, careLinks]] = await guarded(
+    requireOnboardedProfile(),
+    Promise.all([
+      getTranslations('today'),
+      getLocale(),
+      fetchCheckIns({ since: new Date(now.getTime() - (windowDays + 1) * dayInMs), limit: 200 }),
+      fetchAssessments(),
+      fetchInsights(),
+      fetchCareLinks(),
+    ]),
+  )
   const days = moodDays(
     checkIns.map((checkIn) => ({
       moodLevel: checkIn.moodLevel,

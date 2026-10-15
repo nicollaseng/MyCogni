@@ -9,6 +9,7 @@ import { HelpDisclosure } from '@/shared/components/help-disclosure'
 import { Wordmark } from '@/shared/components/wordmark'
 import { AccountMenu } from './account-menu'
 import { CurrentNavigation } from './current-navigation'
+import { FreshOnReturn } from './fresh-on-return'
 
 interface AppShellProps {
   name: string | null
@@ -23,6 +24,7 @@ export function AppShell({ name, email, photoUrl, timeZone, children }: AppShell
 
   return (
     <div className="flex min-h-dvh flex-col">
+      <FreshOnReturn />
       <header className="border-b border-rule">
         <div className="relative mx-auto flex w-full max-w-3xl items-center justify-between gap-6 px-6 py-5">
           <Wordmark />

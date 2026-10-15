@@ -17,9 +17,12 @@ function fileOf(name: string, type: string, size: number): File {
 
 function renderForm(result: SendResult = { ok: true, ticket: sentTicket }) {
   const send = jest.fn<SendTicket>(() => Promise.resolve(result))
+  const onSent = jest.fn<() => Promise<void>>(() => Promise.resolve())
   const user = userEvent.setup({ applyAccept: false })
-  renderWithIntl(<TicketForm role="patient" email="marina@exemplo.com" send={send} />)
-  return { send, user }
+  renderWithIntl(
+    <TicketForm role="patient" email="marina@exemplo.com" send={send} onSent={onSent} />,
+  )
+  return { send, onSent, user }
 }
 
 const sentTicket = { id: '0b7c6c8e-6a8f-4f53-9f4b-000000000051', number: 1042, emailSent: true }
@@ -109,7 +112,7 @@ describe('TicketForm', () => {
   })
 
   it('sends the attachment with the ticket and shows the ticket number', async () => {
-    const { send, user } = renderForm()
+    const { send, onSent, user } = renderForm()
     const photo = fileOf('tela.png', 'image/png', 2048)
 
     await user.selectOptions(screen.getByLabelText('Assunto'), 'Problema técnico')
@@ -136,10 +139,11 @@ describe('TicketForm', () => {
       `/support/${sentTicket.id}`,
     )
     expect(screen.getByRole('link', { name: 'Voltar' })).toHaveAttribute('href', '/me#support')
+    expect(onSent).toHaveBeenCalledTimes(1)
   })
 
   it('says when too many tickets were opened today', async () => {
-    const { user } = renderForm({ ok: false, problem: 'limit' })
+    const { onSent, user } = renderForm({ ok: false, problem: 'limit' })
 
     await user.selectOptions(screen.getByLabelText('Assunto'), 'Sugestão')
     await user.type(screen.getByLabelText('Mensagem'), message)
@@ -148,6 +152,7 @@ describe('TicketForm', () => {
     expect(await screen.findByRole('alert')).toHaveTextContent(
       'Você já abriu muitos chamados hoje. Tente de novo amanhã.',
     )
+    expect(onSent).not.toHaveBeenCalled()
   })
 
   it('leads professionals back to their own area', async () => {

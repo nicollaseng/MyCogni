@@ -5,3 +5,5 @@ export const checkInLimits = {
   tagLength: 40,
   note: 2000,
 } as const
+
+export const checkInSearchLength = 100

@@ -1,5 +1,5 @@
 import { avatarBucket, professionalDocumentBucket } from '@mycogni/domain'
-import { createBucketStore, type BucketStore } from './bucket-store.ts'
+import { createBucketStore, stableLinks, type BucketStore } from './bucket-store.ts'
 
 export const documentLinkLifetimeSeconds = 5 * 60
 
@@ -14,13 +14,13 @@ export function createProfileFileStores(supabaseUrl: string, secretKey: string):
       supabaseUrl,
       secretKey,
       bucket: avatarBucket,
-      lifetimeSeconds: 3600,
+      links: stableLinks(),
     }),
     documents: createBucketStore({
       supabaseUrl,
       secretKey,
       bucket: professionalDocumentBucket,
-      lifetimeSeconds: documentLinkLifetimeSeconds,
+      links: { kind: 'expiring', lifetimeSeconds: documentLinkLifetimeSeconds },
     }),
   }
 }
