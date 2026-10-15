@@ -32,6 +32,7 @@ interface TicketFormProps {
   email: string | null
   send?: SendTicket
   prepare?: PrepareAttachment
+  onSent?: () => Promise<void>
 }
 
 const fieldStyle =
@@ -42,6 +43,7 @@ export function TicketForm({
   email,
   send = sendTicket,
   prepare = prepareAttachment,
+  onSent,
 }: TicketFormProps) {
   const t = useTranslations('support')
   const ids = useId()
@@ -78,6 +80,7 @@ export function TicketForm({
     setSending(false)
     if (result.ok) {
       setSent(result.ticket)
+      await onSent?.().catch(() => undefined)
     } else {
       setFailure(result.problem)
     }

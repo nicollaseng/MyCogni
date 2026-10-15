@@ -1,9 +1,7 @@
-import { locales } from '@mycogni/domain'
+import { locales, moodReportPeriods, type MoodReportPeriod } from '@mycogni/domain'
 import { z } from 'zod'
 
-export const moodReportPeriods = [7, 30] as const
-
-export type MoodReportPeriod = (typeof moodReportPeriods)[number]
+export { moodReportPeriods, type MoodReportPeriod }
 
 export const moodReportQuerySchema = z.object({
   days: z.coerce.number().pipe(z.literal(moodReportPeriods)),

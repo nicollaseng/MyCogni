@@ -12,6 +12,7 @@ import { fetchCareLinks } from '@/shared/lib/api/care'
 import { fetchAssessments, fetchCheckInsSince } from '@/shared/lib/api/resources'
 import { fetchStepProgress } from '@/shared/lib/api/zen'
 import { requireOnboardedProfile } from '@/shared/lib/auth/session'
+import { guarded } from '@/shared/lib/settled'
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations('zen.meta')
@@ -21,15 +22,17 @@ export async function generateMetadata(): Promise<Metadata> {
 const moodWindowMs = 7 * 24 * 60 * 60 * 1000
 
 export default async function ZenPage() {
-  const { timezone } = await requireOnboardedProfile()
   const now = new Date()
-  const [t, assessments, checkIns, doneSteps, careLinks] = await Promise.all([
-    getTranslations('zen'),
-    fetchAssessments(),
-    fetchCheckInsSince(new Date(now.getTime() - moodWindowMs)),
-    fetchStepProgress(),
-    fetchCareLinks(),
-  ])
+  const [{ timezone }, [t, assessments, checkIns, doneSteps, careLinks]] = await guarded(
+    requireOnboardedProfile(),
+    Promise.all([
+      getTranslations('zen'),
+      fetchAssessments(),
+      fetchCheckInsSince(new Date(now.getTime() - moodWindowMs)),
+      fetchStepProgress(),
+      fetchCareLinks(),
+    ]),
+  )
   const latest = latestByInstrument(assessments)
   const suggestion = zenSuggestion({
     latest: Object.values(latest),

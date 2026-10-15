@@ -7,6 +7,7 @@ import {
   markNotificationsReadSchema,
   type AcceptInvitationInput,
   type ConfirmSharingTermsInput,
+  type NotificationList,
 } from '@mycogni/contracts'
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
@@ -18,11 +19,13 @@ import {
   confirmSharingTerms,
   declineInvitation,
   endCareLink,
+  fetchNotifications,
   fetchReceivedInvitation,
   markNotificationsRead,
 } from '@/shared/lib/api/care'
 import { ApiError } from '@/shared/lib/api/client'
 import { forgetContinuePath } from '@/shared/lib/auth/continue-path'
+import { previewOf } from './notification-preview'
 
 type Outcome<T> = { ok: true; value: T } | { ok: false; status: number | null }
 
@@ -104,7 +107,7 @@ export async function endLink(id: string): Promise<ActionResult<null>> {
   if (!ended.ok && ended.status !== 404) {
     return failure(t('endError'))
   }
-  revalidatePath('/me')
+  refreshApp()
   return { ok: true, value: null }
 }
 
@@ -146,4 +149,10 @@ export async function readNotifications(ids: string[]): Promise<ActionResult<nul
   }
   refreshApp()
   return { ok: true, value: null }
+}
+
+export async function latestNotifications(): Promise<ActionResult<NotificationList>> {
+  const t = await getTranslations('care.feedback')
+  const latest = await settle(fetchNotifications)
+  return latest.ok ? { ok: true, value: previewOf(latest.value) } : failure(t('error'))
 }

@@ -97,10 +97,8 @@ export function createPatientService({
     user: AuthenticatedUser,
     patientId: string,
   ): Promise<PatientLinkRecord> {
-    await requireVerified(user)
-    const link = (await careLinks.listPatients(user.id)).find(
-      (candidate) => candidate.patientId === patientId,
-    )
+    const [, links] = await Promise.all([requireVerified(user), careLinks.listPatients(user.id)])
+    const link = links.find((candidate) => candidate.patientId === patientId)
     if (link === undefined) {
       throw new NotFoundError('Patient not found')
     }
@@ -109,8 +107,8 @@ export function createPatientService({
 
   return {
     async list(user) {
-      await requireVerified(user)
-      return summarize(user.id, await careLinks.listPatients(user.id))
+      const [, links] = await Promise.all([requireVerified(user), careLinks.listPatients(user.id)])
+      return summarize(user.id, links)
     },
     async find(user, patientId) {
       const [summary] = await summarize(user.id, [await linkOrFail(user, patientId)])
@@ -120,10 +118,13 @@ export function createPatientService({
       return summary
     },
     async overview(user) {
-      await requireVerified(user)
       const moment = now()
-      const ids = (await careLinks.listPatients(user.id)).map((link) => link.patientId)
-      const timeZone = await metrics.timeZoneOf(user.id)
+      const [, links, timeZone] = await Promise.all([
+        requireVerified(user),
+        careLinks.listPatients(user.id),
+        metrics.timeZoneOf(user.id),
+      ])
+      const ids = links.map((link) => link.patientId)
       const days = previousDays(dayKey(moment, timeZone), activityDays)
       const since = new Date(moment.getTime() - (activityDays + 1) * dayInMilliseconds)
       const [activity, recent, invitations] = await Promise.all([

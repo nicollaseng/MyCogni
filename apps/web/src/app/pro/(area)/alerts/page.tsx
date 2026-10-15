@@ -6,6 +6,7 @@ import { AlertsTable } from '@/features/professional/components/alerts-table'
 import { WorkspaceHeader } from '@/features/professional/components/workspace'
 import { fetchAlerts } from '@/shared/lib/api/alerts'
 import { requireProfile } from '@/shared/lib/auth/session'
+import { guarded } from '@/shared/lib/settled'
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations('alerts.meta')
@@ -13,12 +14,10 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function ProfessionalAlertsPage() {
-  await requireVerifiedProfessional()
-  const [{ timezone }, alerts, t] = await Promise.all([
-    requireProfile(),
-    fetchAlerts(),
-    getTranslations('alerts'),
-  ])
+  const [[, { timezone }], [alerts, t]] = await guarded(
+    Promise.all([requireVerifiedProfessional(), requireProfile()]),
+    Promise.all([fetchAlerts(), getTranslations('alerts')]),
+  )
 
   return (
     <>

@@ -28,6 +28,7 @@ export const common: CommonMessages = {
     intro: 'Se está em crise ou a pensar em magoar-se, ligue agora:',
     disclaimer: 'O MyCogniAI não substitui o acompanhamento de um profissional.',
   },
+  loading: 'A carregar',
   notFound: {
     title: 'Esta página não existe.',
     body: 'O endereço pode ter mudado ou estar incompleto.',

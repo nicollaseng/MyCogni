@@ -47,13 +47,14 @@ export function createInsightService({
       })
     },
     async ofPatient(user, patientId) {
-      const professional = await professionals.find(user.id)
+      const [professional, links] = await Promise.all([
+        professionals.find(user.id),
+        careLinks.listPatients(user.id),
+      ])
       if (professional?.status !== 'verified') {
         throw new ForbiddenError('Only verified professionals can read summaries')
       }
-      const linked = (await careLinks.listPatients(user.id)).some(
-        (link) => link.patientId === patientId,
-      )
+      const linked = links.some((link) => link.patientId === patientId)
       if (!linked) {
         throw new NotFoundError('Patient not found')
       }

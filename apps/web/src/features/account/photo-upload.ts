@@ -1,9 +1,14 @@
-import { z } from 'zod'
 import { sendUpload, type UploadResult } from '@/shared/lib/uploads'
 
-const uploadedSchema = z.object({ url: z.url().nullable() })
-
 const endpoint = '/uploads/photo'
+
+function uploadedUrl(value: unknown): string | null | undefined {
+  if (typeof value !== 'object' || value === null || !('url' in value)) {
+    return undefined
+  }
+  const { url } = value
+  return typeof url === 'string' || url === null ? url : undefined
+}
 
 export async function sendPhoto(photo: File): Promise<UploadResult<string | null>> {
   const body = new FormData()
@@ -12,8 +17,8 @@ export async function sendPhoto(photo: File): Promise<UploadResult<string | null
   if (!result.ok) {
     return result
   }
-  const parsed = uploadedSchema.safeParse(result.value)
-  return parsed.success ? { ok: true, value: parsed.data.url } : { ok: false, problem: 'failed' }
+  const url = uploadedUrl(result.value)
+  return url === undefined ? { ok: false, problem: 'failed' } : { ok: true, value: url }
 }
 
 export async function deletePhoto(): Promise<UploadResult<null>> {

@@ -1,7 +1,6 @@
 'use client'
 
-import { checkInSearchLength } from '@mycogni/contracts'
-import { contextGroups, emotionFamilies } from '@mycogni/domain'
+import { checkInSearchLength, contextGroups, emotionFamilies } from '@mycogni/domain'
 import { useTranslations } from 'next-intl'
 import type { SubmitEvent } from 'react'
 import type { ChoiceGroup } from '@/features/check-in/catalog'

@@ -21,7 +21,9 @@ import {
   fetchPatientInsights,
 } from '@/shared/lib/api/care'
 import { fetchAlerts } from '@/shared/lib/api/alerts'
+import { ApiError } from '@/shared/lib/api/client'
 import { requireProfile } from '@/shared/lib/auth/session'
+import { settledValue } from '@/shared/lib/settled'
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations('professional.meta')
@@ -31,22 +33,37 @@ export async function generateMetadata(): Promise<Metadata> {
 const windowDays = 30
 const dayInMs = 24 * 60 * 60 * 1000
 
-export default async function PatientPage({ params }: PageProps<'/pro/patients/[id]'>) {
-  await requireVerifiedProfessional()
+function isMissing(cause: unknown): boolean {
+  return cause instanceof ApiError && (cause.status === 404 || cause.status === 400)
+}
+
+async function patientFileOf(params: PageProps<'/pro/patients/[id]'>['params'], now: Date) {
   const { id } = await params
-  const [patient, { timezone }] = await Promise.all([fetchPatient(id), requireProfile()])
-  if (patient === null) {
-    notFound()
-  }
-  const now = new Date()
-  const [checkIns, assessments, readings, alerts, t, patients] = await Promise.all([
-    fetchPatientCheckIns(patient.id, new Date(now.getTime() - (windowDays + 1) * dayInMs)),
-    fetchPatientAssessments(patient.id),
-    fetchPatientInsights(patient.id),
-    fetchAlerts(patient.id),
+  return Promise.all([
+    fetchPatient(id),
+    fetchPatientCheckIns(id, new Date(now.getTime() - (windowDays + 1) * dayInMs)),
+    fetchPatientAssessments(id),
+    fetchPatientInsights(id),
+    fetchAlerts(id),
     getTranslations('professional.patient'),
     getTranslations('professional.patients'),
   ])
+}
+
+export default async function PatientPage({ params }: PageProps<'/pro/patients/[id]'>) {
+  const now = new Date()
+  const [access, file] = await Promise.allSettled([
+    Promise.all([requireVerifiedProfessional(), requireProfile()]),
+    patientFileOf(params, now),
+  ])
+  const [, { timezone }] = settledValue(access)
+  if (file.status === 'rejected' && isMissing(file.reason)) {
+    notFound()
+  }
+  const [patient, checkIns, assessments, readings, alerts, t, patients] = settledValue(file)
+  if (patient === null) {
+    notFound()
+  }
 
   return (
     <>
