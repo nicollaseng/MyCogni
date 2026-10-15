@@ -1,7 +1,15 @@
 import { afterAll, beforeAll, describe, expect, it } from '@jest/globals'
+import { avatarBucket, journalBucket, professionalDocumentBucket } from '@mycogni/domain'
 import { connectDatabase, type DatabaseConnection } from '../../src/db/client.ts'
 import type { App } from '../../src/shared/http.ts'
+import { registerProfessional } from '../support/care.ts'
 import { testDatabaseUrl } from '../support/database.ts'
+import {
+  storedFiles,
+  uploadAvatar,
+  uploadJournalImage,
+  uploadProfessionalDocument,
+} from '../support/storage.ts'
 import {
   bearer,
   createTestUser,
@@ -94,6 +102,9 @@ describe('/v1/me account', () => {
   })
 
   it('deletes the account and everything recorded with it', async () => {
+    const entry = (await post(ana, '/v1/journal', {})).json<{ id: string }>()
+    await uploadJournalImage(ana, entry.id)
+    await uploadAvatar(ana)
     const response = await app.inject({ method: 'DELETE', url: '/v1/me', headers: bearer(ana) })
     const afterwards = await app.inject({ method: 'GET', url: '/v1/me', headers: bearer(ana) })
     const user = await fetch(`${testSupabaseUrl}/auth/v1/admin/users/${ana.id}`, {
@@ -103,5 +114,24 @@ describe('/v1/me account', () => {
     expect(response.statusCode).toBe(204)
     expect(user.status).toBe(404)
     expect(afterwards.statusCode).toBe(404)
+    expect(await storedFiles(journalBucket, ana.id)).toEqual([])
+    expect(await storedFiles(avatarBucket, ana.id)).toEqual([])
+  })
+
+  it('deletes the registration documents of a professional who leaves', async () => {
+    const carla = await createTestUser({ full_name: 'Carla' })
+    await registerProfessional(connection.db, carla.id, { status: 'pending' })
+    await uploadProfessionalDocument(carla)
+
+    const response = await app.inject({ method: 'DELETE', url: '/v1/me', headers: bearer(carla) })
+
+    expect(response.statusCode).toBe(204)
+    expect(await storedFiles(professionalDocumentBucket, carla.id)).toEqual([])
+  })
+
+  it('keeps the files of everyone else', async () => {
+    await uploadAvatar(bruno)
+
+    expect(await storedFiles(avatarBucket, bruno.id)).toHaveLength(1)
   })
 })
