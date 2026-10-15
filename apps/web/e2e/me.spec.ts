@@ -1,4 +1,5 @@
 import { readFile } from 'node:fs/promises'
+import { fileURLToPath } from 'node:url'
 import { expect, test, type Page } from '@playwright/test'
 import { finishOnboarding } from './support/api'
 import { signedOut } from './support/session'
@@ -8,10 +9,7 @@ test.use({ storageState: signedOut })
 
 const password = 'voce-2026'
 
-const pixel = Buffer.from(
-  'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==',
-  'base64',
-)
+const photo = fileURLToPath(new URL('./fixtures/photo.png', import.meta.url))
 
 async function signInAsReadyPerson(page: Page, secret = password): Promise<string> {
   const email = uniqueEmail('voce')
@@ -72,15 +70,27 @@ test('changes the password after checking the current one', async ({ page }) => 
   await expect(page).toHaveURL('/today')
 })
 
-test('adds and removes a photo', async ({ page }) => {
+test('adds a photo through the editor, changes it and removes it', async ({ page }) => {
   await signInAsReadyPerson(page)
 
-  await page.getByLabel('Adicionar foto').setInputFiles({
-    name: 'eu.png',
-    mimeType: 'image/png',
-    buffer: pixel,
-  })
+  await page.getByLabel('Adicionar foto').setInputFiles(photo)
+  const editor = page.getByRole('dialog', { name: 'Ajustar foto' })
+  await expect(editor).toBeVisible()
+  await editor.getByLabel('Tamanho').fill('2')
+  await editor.getByRole('button', { name: 'Girar para a direita' }).click()
+  await editor.getByRole('button', { name: 'Usar foto' }).click()
 
+  const avatar = page.getByRole('img', { name: 'Sua foto' })
+  await expect(avatar).toBeVisible()
+  await expect(page.getByRole('main').getByRole('status')).toHaveText('Foto atualizada.')
+  const first = await avatar.getAttribute('src')
+
+  await page.getByLabel('Trocar foto').setInputFiles(photo)
+  await editor.getByLabel('Ângulo').fill('-10')
+  await editor.getByRole('button', { name: 'Usar foto' }).click()
+  await expect(avatar).not.toHaveAttribute('src', first ?? '')
+
+  await page.reload()
   await expect(page.getByRole('img', { name: 'Sua foto' })).toBeVisible()
   await page.getByRole('button', { name: 'Remover foto' }).click()
   await expect(page.getByRole('img', { name: 'Sua foto' })).toHaveCount(0)

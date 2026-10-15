@@ -198,7 +198,7 @@ test('a professional discovers the area on the public page and goes to sign in',
   await expect(page).toHaveURL('/sign-in')
 })
 
-test('a new professional signs in from the professional page and waits for verification', async ({
+test('a new professional signs in from the professional page and is asked for the document', async ({
   page,
 }) => {
   const email = uniqueEmail('new-pro')
@@ -221,8 +221,9 @@ test('a new professional signs in from the professional page and waits for verif
 
   await expect(page).toHaveURL('/pro')
   await expect(
-    page.getByRole('heading', { level: 1, name: 'Seu cadastro está em verificação.' }),
+    page.getByRole('heading', { level: 1, name: 'Envie o comprovante do seu registro.' }),
   ).toBeVisible()
+  await expect(page.getByText('Carteira do CRP', { exact: true })).toBeVisible()
   await expect(page.getByRole('link', { name: 'Convites' })).toHaveCount(0)
 
   await page.goto('/pro/invites')

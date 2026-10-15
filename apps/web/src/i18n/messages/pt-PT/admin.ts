@@ -7,7 +7,7 @@ export const admin: AdminMessages = {
   professionals: {
     title: 'Profissionais',
     description:
-      'Confirme o nome e a inscrição na ordem antes de aprovar. Só profissionais verificados podem convidar pacientes.',
+      'Abra o comprovativo e confirme o nome e a inscrição antes de aprovar. Só profissionais verificados podem convidar pacientes.',
     tabs: {
       label: 'Estado do registo',
       pending: 'A aguardar',
@@ -19,6 +19,7 @@ export const admin: AdminMessages = {
       kind: 'Profissão',
       registration: 'Inscrição',
       email: 'Email',
+      document: 'Comprovativo',
       createdAt: 'Registo',
       actions: 'Ações',
     },
@@ -34,6 +35,19 @@ export const admin: AdminMessages = {
     noEmail: 'Sem email',
     createdAt: 'Registo a {date}',
     reviewedAt: 'Revisto a {date}',
+    document: {
+      open: 'Abrir',
+      openLabel: 'Abrir comprovativo de {name} num novo separador',
+      missing: 'A aguardar envio',
+    },
+    rejectForm: {
+      label: 'Motivo da recusa para {name}',
+      hint: 'O profissional lê esta mensagem. Indique o que precisa de ser corrigido.',
+      confirm: 'Confirmar recusa',
+      cancel: 'Cancelar',
+      required: 'Escreva o motivo, com pelo menos 3 caracteres.',
+    },
+    note: 'Motivo: {note}',
     approve: 'Aprovar',
     reject: 'Recusar',
     approved: 'Registo de {name} aprovado.',

@@ -31,6 +31,7 @@ import { registerErrorHandler } from './plugins/error-handler.ts'
 import { registerSecurity } from './plugins/security.ts'
 import type { App } from './shared/http.ts'
 import type { JournalImageStore } from './storage/journal-images.ts'
+import type { ProfileFileStores } from './storage/profile-files.ts'
 
 export interface AppDependencies {
   config: AppConfig
@@ -38,16 +39,22 @@ export interface AppDependencies {
   verifier: TokenVerifier
   accountAdmin: AccountAdmin
   journalImages: JournalImageStore
+  profileFiles: ProfileFileStores
 }
 
-function publicRoutes({ config, db }: AppDependencies, mailer: Mailer): FastifyPluginAsyncZod {
+function publicRoutes(
+  { config, db, profileFiles }: AppDependencies,
+  mailer: Mailer,
+): FastifyPluginAsyncZod {
   return async (api) => {
-    await api.register(invitationPublicModule({ db, mailer, webUrl: config.webUrl }))
+    await api.register(
+      invitationPublicModule({ db, photos: profileFiles.photos, mailer, webUrl: config.webUrl }),
+    )
   }
 }
 
 function authenticatedRoutes(
-  { config, db, verifier, accountAdmin, journalImages }: AppDependencies,
+  { config, db, verifier, accountAdmin, journalImages, profileFiles }: AppDependencies,
   mailer: Mailer,
   jobs: JobScheduler,
 ): FastifyPluginAsyncZod {
@@ -60,10 +67,12 @@ function authenticatedRoutes(
     await api.register(onboardingModule(db))
     await api.register(professionalModule(db))
     await api.register(accountModule(db, accountAdmin))
-    await api.register(invitationModule({ db, mailer, webUrl: config.webUrl }))
-    await api.register(careLinkModule(db))
+    await api.register(
+      invitationModule({ db, photos: profileFiles.photos, mailer, webUrl: config.webUrl }),
+    )
+    await api.register(careLinkModule(db, profileFiles.photos))
     await api.register(notificationModule(db))
-    await api.register(adminModule(db))
+    await api.register(adminModule(db, profileFiles.documents))
     await api.register(journalModule({ db, images: journalImages, log: api.log }))
     await api.register(insightModule(db))
     await api.register(reportModule(db))

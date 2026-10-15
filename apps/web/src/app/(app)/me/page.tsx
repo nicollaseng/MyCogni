@@ -5,13 +5,11 @@ import {
   changeEmail,
   changePassword,
   deleteMyAccount,
-  removeAvatar,
+  refreshAfterUpload,
   renameMe,
   setAiConsent,
   setJournalInInsights,
-  uploadAvatar,
 } from '@/features/account/actions'
-import { avatarUrl } from '@/features/account/avatar-url'
 import { endLink } from '@/features/care/actions'
 import { CareLinks } from '@/features/care/components/care-links'
 import { ConsentList } from '@/features/account/components/consent-list'
@@ -32,6 +30,7 @@ import { Panel, Section } from '@/shared/components/section'
 import { fetchCareLinks, fetchProfessional } from '@/shared/lib/api/care'
 import { fetchAssessments, fetchConsents } from '@/shared/lib/api/resources'
 import { requireOnboardedProfile } from '@/shared/lib/auth/session'
+import { ownPhotoUrl } from '@/shared/lib/photos'
 import { Button } from '@/shared/ui/button'
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -47,7 +46,7 @@ export default async function MePage() {
     [
       fetchAssessments(),
       fetchConsents(),
-      avatarUrl(profile.avatarPath),
+      ownPhotoUrl(profile.avatarPath),
       fetchCareLinks(),
       fetchProfessional(),
       getTranslations('account'),
@@ -62,8 +61,7 @@ export default async function MePage() {
         name={profile.displayName}
         email={profile.email}
         photoUrl={photoUrl}
-        upload={uploadAvatar}
-        remove={removeAvatar}
+        onPhotoSaved={refreshAfterUpload}
       />
 
       <LatestScreening results={latestByInstrument(assessments)} timeZone={profile.timezone}>

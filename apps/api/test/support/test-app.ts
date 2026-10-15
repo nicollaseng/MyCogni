@@ -6,6 +6,7 @@ import type { Database } from '../../src/db/client.ts'
 import { UnauthorizedError } from '../../src/shared/errors.ts'
 import type { App } from '../../src/shared/http.ts'
 import { createJournalImageStore } from '../../src/storage/journal-images.ts'
+import { createProfileFileStores } from '../../src/storage/profile-files.ts'
 import { testDatabaseUrl } from './database.ts'
 import { testMailpitUrl, testSupabaseUrl } from './supabase.ts'
 
@@ -42,5 +43,6 @@ export function buildTestApp({ db, verifier = rejectingVerifier }: TestAppOption
     verifier,
     accountAdmin: createSupabaseAccountAdmin(testConfig.supabaseUrl, testConfig.supabaseSecretKey),
     journalImages: createJournalImageStore(testConfig.supabaseUrl, testConfig.supabaseSecretKey),
+    profileFiles: createProfileFileStores(testConfig.supabaseUrl, testConfig.supabaseSecretKey),
   })
 }

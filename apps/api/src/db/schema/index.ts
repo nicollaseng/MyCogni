@@ -12,5 +12,6 @@ export {
   journalShareScope,
 } from './journal.ts'
 export { notificationKind, notifications } from './notifications.ts'
+export { professionalDocuments } from './professional-documents.ts'
 export { professionalKind, professionalProfiles, professionalStatus } from './professionals.ts'
 export { profiles, type Profile } from './profiles.ts'

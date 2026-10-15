@@ -9,7 +9,7 @@ function renderMenu() {
   const user = userEvent.setup()
   renderWithIntl(
     <>
-      <ProfileMenu name="Helena Duarte" profession="Psicologia" signOut={signOut} />
+      <ProfileMenu name="Helena Duarte" profession="Psicologia" photoUrl={null} signOut={signOut} />
       <p>Fora do menu</p>
     </>,
   )

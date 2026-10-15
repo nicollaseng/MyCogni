@@ -11,11 +11,12 @@ import { CurrentNavigation } from './current-navigation'
 interface AppShellProps {
   name: string | null
   email: string | null
+  photoUrl: string | null
   timeZone: string
   children: ReactNode
 }
 
-export function AppShell({ name, email, timeZone, children }: AppShellProps) {
+export function AppShell({ name, email, photoUrl, timeZone, children }: AppShellProps) {
   const navigationLabel = useTranslations('common.navigation')('label')
 
   return (
@@ -31,7 +32,7 @@ export function AppShell({ name, email, timeZone, children }: AppShellProps) {
               <Suspense fallback={<BellLink unread={0} />}>
                 <NotificationBell timeZone={timeZone} />
               </Suspense>
-              <AccountMenu name={name} email={email} signOut={signOut} />
+              <AccountMenu name={name} email={email} photoUrl={photoUrl} signOut={signOut} />
             </div>
           </div>
         </div>

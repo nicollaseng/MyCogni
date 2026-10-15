@@ -11,13 +11,23 @@ type End = (id: string) => Promise<ActionResult<null>>
 const links: CareLink[] = [
   {
     id: '3e2d1c0b-0000-4000-8000-000000000001',
-    professional: { name: 'Helena Prado', kind: 'psychologist', registration: 'CRP 06/123456' },
+    professional: {
+      name: 'Helena Prado',
+      kind: 'psychologist',
+      registration: 'CRP 06/123456',
+      photoUrl: 'https://exemplo.com/helena.jpg',
+    },
     sharesHistory: false,
     startedAt: '2026-10-14T15:00:00.000Z',
   },
   {
     id: '3e2d1c0b-0000-4000-8000-000000000002',
-    professional: { name: 'Lúcia Mendes', kind: 'psychiatrist', registration: 'CRM 123456' },
+    professional: {
+      name: 'Lúcia Mendes',
+      kind: 'psychiatrist',
+      registration: 'CRM 123456',
+      photoUrl: null,
+    },
     sharesHistory: true,
     startedAt: '2026-09-01T15:00:00.000Z',
   },
@@ -47,6 +57,10 @@ describe('CareLinks', () => {
       'Psicologia · Desde 14 de outubroSó registros a partir do vínculo',
     )
     expect(row('Lúcia Mendes')).toHaveTextContent('Inclui registros anteriores')
+    expect(
+      within(row('Helena Prado')).getByRole('img', { name: 'Foto de Helena Prado' }),
+    ).toHaveAttribute('src', 'https://exemplo.com/helena.jpg')
+    expect(within(row('Lúcia Mendes')).getByText('LM')).toBeInTheDocument()
     expect(screen.getByRole('link', { name: 'Ver convites' })).toHaveAttribute('href', '/invites')
     expect(screen.getByRole('link', { name: 'Área profissional' })).toHaveAttribute('href', '/pro')
   })

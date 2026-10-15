@@ -1,7 +1,34 @@
-import { professionalKinds, professionalStatuses, requiresRegistration } from '@mycogni/domain'
+import {
+  professionalDocumentLimits,
+  professionalDocumentTypes,
+  professionalKinds,
+  professionalStatuses,
+  requiresRegistration,
+} from '@mycogni/domain'
 import { z } from 'zod'
 
+const timestamp = z.iso.datetime({ offset: true })
+
 export const professionalKindSchema = z.enum(professionalKinds)
+
+export const professionalDocumentSchema = z.object({
+  id: z.uuid(),
+  fileName: z.string(),
+  contentType: z.enum(professionalDocumentTypes),
+  sizeBytes: z.int().positive(),
+  createdAt: timestamp,
+})
+
+export type ProfessionalDocument = z.infer<typeof professionalDocumentSchema>
+
+export const submitProfessionalDocumentSchema = z.object({
+  path: z.string().min(1).max(200),
+  fileName: z.string().trim().min(1).max(professionalDocumentLimits.fileName),
+  contentType: z.enum(professionalDocumentTypes),
+  sizeBytes: z.int().positive().max(professionalDocumentLimits.bytes),
+})
+
+export type SubmitProfessionalDocumentInput = z.infer<typeof submitProfessionalDocumentSchema>
 
 export const registerProfessionalSchema = z
   .object({
@@ -21,8 +48,11 @@ export const professionalProfileSchema = z.object({
   fullName: z.string(),
   registration: z.string().nullable(),
   status: z.enum(professionalStatuses),
-  createdAt: z.iso.datetime({ offset: true }),
-  verifiedAt: z.iso.datetime({ offset: true }).nullable(),
+  reviewNote: z.string().nullable(),
+  createdAt: timestamp,
+  verifiedAt: timestamp.nullable(),
+  reviewedAt: timestamp.nullable(),
+  document: professionalDocumentSchema.nullable(),
 })
 
 export type ProfessionalProfile = z.infer<typeof professionalProfileSchema>

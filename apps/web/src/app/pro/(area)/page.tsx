@@ -19,6 +19,7 @@ import {
 import { attentionPatients, overviewKpis } from '@/features/professional/overview'
 import { fetchPatients, fetchProfessionalOverview } from '@/shared/lib/api/care'
 import { requireProfile } from '@/shared/lib/auth/session'
+import { fetchMyPhotoUrl } from '@/shared/lib/photos'
 import { formatDayTitle } from '@/shared/lib/time'
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -31,7 +32,13 @@ const inviteHref = { pathname: '/pro/invites', query: { new: '1' } } as const
 export default async function ProfessionalHomePage() {
   const [professional, { timezone }] = await Promise.all([requireProfessional(), requireProfile()])
   if (professional.status !== 'verified') {
-    return <VerificationNotice professional={professional} timeZone={timezone} />
+    return (
+      <VerificationNotice
+        professional={professional}
+        timeZone={timezone}
+        photoUrl={await fetchMyPhotoUrl()}
+      />
+    )
   }
   const [patients, overview, t, locale] = await Promise.all([
     fetchPatients(),

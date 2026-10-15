@@ -4,6 +4,8 @@ import type { PatientSummary } from '@mycogni/contracts'
 import Link from 'next/link'
 import { useTranslations } from 'next-intl'
 import { useState, type ReactNode } from 'react'
+import { initialsOf } from '@/shared/lib/initials'
+import { Avatar } from '@/shared/components/avatar'
 import { cn } from '@/shared/lib/utils'
 import { Button } from '@/shared/ui/button'
 import { paginate } from '../pagination'
@@ -51,7 +53,7 @@ const columns: readonly SortKey[] = [
 ]
 
 const columnStyles: Partial<Record<SortKey, string>> = {
-  name: 'min-w-44',
+  name: 'min-w-56',
   week: 'text-right',
   attention: 'min-w-56',
 }
@@ -116,14 +118,24 @@ function PatientRow({
       className={cn(table.row, 'cursor-pointer')}
     >
       <Cell className={table.first}>
-        <Link
-          href={`/pro/patients/${patient.id}`}
-          className="font-medium decoration-1 underline-offset-4 hover:underline"
-        >
-          {patient.name ?? t('unnamed')}
-        </Link>
-        <span className="mt-0.5 block text-[13px] whitespace-nowrap text-muted-foreground">
-          <SinceDate startedAt={patient.startedAt} timeZone={timeZone} />
+        <span className="flex items-start gap-3">
+          <Avatar
+            src={patient.photoUrl}
+            initials={initialsOf(patient.name, null)}
+            size="sm"
+            className="mt-0.5"
+          />
+          <span className="min-w-0">
+            <Link
+              href={`/pro/patients/${patient.id}`}
+              className="font-medium decoration-1 underline-offset-4 hover:underline"
+            >
+              {patient.name ?? t('unnamed')}
+            </Link>
+            <span className="mt-0.5 block text-[13px] whitespace-nowrap text-muted-foreground">
+              <SinceDate startedAt={patient.startedAt} timeZone={timeZone} />
+            </span>
+          </span>
         </span>
       </Cell>
       <Cell className="whitespace-nowrap">

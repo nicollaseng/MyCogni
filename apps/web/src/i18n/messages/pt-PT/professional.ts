@@ -205,7 +205,7 @@ export const professional: ProfessionalMessages = {
       body: 'A nossa equipa confirma manualmente a sua inscrição profissional antes de disponibilizar os convites.',
       next: 'O que acontece agora',
       steps: {
-        review: 'Confirmamos o seu nome e a sua inscrição na ordem.',
+        review: 'Confirmamos o seu nome, a sua inscrição e o comprovativo enviado.',
         approve: 'Com o registo aprovado, esta página passa a mostrar os seus pacientes.',
         invite: 'Convida pacientes por email ou por ligação, e cada pessoa decide se aceita.',
       },
@@ -213,7 +213,8 @@ export const professional: ProfessionalMessages = {
     },
     rejected: {
       title: 'Não foi possível verificar o seu registo.',
-      body: 'Se considera que houve um engano ou quer enviar outros dados, escreva para <link>{email}</link> com o seu nome e a sua inscrição.',
+      body: 'Leia a mensagem da equipa e envie um novo comprovativo. O registo volta a ser analisado assim que o recebermos. Dúvidas: <link>{email}</link>.',
+      note: 'Mensagem da equipa MyCogniAI',
     },
   },
   time: {
@@ -257,6 +258,8 @@ export const professional: ProfessionalMessages = {
       saving: 'A guardar…',
       invalidName: 'Use entre 3 e 120 caracteres.',
       error: 'Não foi possível guardar agora. Tente novamente dentro de instantes.',
+      photo: 'Fotografia',
+      photoHint: 'Aparece aos seus pacientes e na página dos seus convites.',
       kind: 'Profissão',
       registration: 'Número de inscrição na ordem',
       noRegistration: 'Sem inscrição',

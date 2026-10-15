@@ -1,5 +1,5 @@
 import type { Profile, UpdateProfileInput } from '@mycogni/contracts'
-import { isLocale } from '@mycogni/domain'
+import { isLocale, isOwnAvatarPath } from '@mycogni/domain'
 import type { AuthenticatedUser } from '../../auth/token-verifier.ts'
 import { NotFoundError, UnprocessableError } from '../../shared/errors.ts'
 import type { ProfileChanges, ProfileRecord, ProfileRepository } from './profile.repository.ts'
@@ -35,7 +35,7 @@ function toChanges(input: UpdateProfileInput): ProfileChanges {
 }
 
 function ownsAvatar(user: AuthenticatedUser, avatarPath: string | null | undefined): boolean {
-  return avatarPath === undefined || avatarPath === null || avatarPath.startsWith(`${user.id}/`)
+  return avatarPath === undefined || avatarPath === null || isOwnAvatarPath(avatarPath, user.id)
 }
 
 export function createProfileService(repository: ProfileRepository): ProfileService {

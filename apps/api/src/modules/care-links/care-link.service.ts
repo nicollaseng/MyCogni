@@ -1,21 +1,22 @@
 import type { CareLink } from '@mycogni/contracts'
 import type { AuthenticatedUser } from '../../auth/token-verifier.ts'
 import { NotFoundError } from '../../shared/errors.ts'
-import type { CareLinkRecord, CareLinkRepository } from './care-link.repository.ts'
+import type { BucketStore } from '../../storage/bucket-store.ts'
+import { toCareLinks } from './care-link.mapper.ts'
+import type { CareLinkRepository } from './care-link.repository.ts'
 
 export interface CareLinkService {
   list(user: AuthenticatedUser): Promise<CareLink[]>
   end(user: AuthenticatedUser, id: string): Promise<void>
 }
 
-export function toCareLink(record: CareLinkRecord): CareLink {
-  return { ...record, startedAt: record.startedAt.toISOString() }
-}
-
-export function createCareLinkService(repository: CareLinkRepository): CareLinkService {
+export function createCareLinkService(
+  repository: CareLinkRepository,
+  photos: BucketStore,
+): CareLinkService {
   return {
     async list(user) {
-      return (await repository.listForPatient(user.id)).map(toCareLink)
+      return toCareLinks(await repository.listForPatient(user.id), photos)
     },
     async end(user, id) {
       if (!(await repository.end(user.id, id))) {

@@ -1,6 +1,6 @@
 'use server'
 
-import { reviewProfessionalSchema, type ReviewProfessionalInput } from '@mycogni/contracts'
+import { reviewProfessionalSchema } from '@mycogni/contracts'
 import { revalidatePath } from 'next/cache'
 import { getTranslations } from 'next-intl/server'
 import { z } from 'zod'
@@ -9,15 +9,12 @@ import { reviewProfessional } from '@/shared/lib/api/care'
 
 const professionalId = z.uuid()
 
-export async function reviewAs(
-  userId: string,
-  status: ReviewProfessionalInput['status'],
-): Promise<ActionResult<null>> {
+export async function reviewAs(userId: string, input: unknown): Promise<ActionResult<null>> {
   const t = await getTranslations('admin.professionals')
   const id = professionalId.safeParse(userId)
-  const review = reviewProfessionalSchema.safeParse({ status })
+  const review = reviewProfessionalSchema.safeParse(input)
   if (!id.success || !review.success) {
-    return failure(t('error'))
+    return failure(t(review.success ? 'error' : 'rejectForm.required'))
   }
   return attempt(async () => {
     await reviewProfessional(id.data, review.data)

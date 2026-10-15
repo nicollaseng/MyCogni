@@ -130,7 +130,7 @@ describe('invitations and care links', () => {
 
     expect(preview.statusCode).toBe(200)
     expect(preview.json()).toEqual({
-      professional: { name: 'Dra. Helena Prado', kind: 'psychologist' },
+      professional: { name: 'Dra. Helena Prado', kind: 'psychologist', photoUrl: null },
       status: 'pending',
       expiresAt: expect.any(String),
     })

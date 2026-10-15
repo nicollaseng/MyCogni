@@ -18,7 +18,13 @@ function renderMenu() {
   const signOut = jest.fn<() => Promise<void>>(() => Promise.resolve())
   const user = userEvent.setup()
   renderWithIntl(
-    <MobileMenu name="Helena Duarte" profession="Psicologia" verified={false} signOut={signOut} />,
+    <MobileMenu
+      name="Helena Duarte"
+      profession="Psicologia"
+      photoUrl={null}
+      verified={false}
+      signOut={signOut}
+    />,
   )
   return { user }
 }

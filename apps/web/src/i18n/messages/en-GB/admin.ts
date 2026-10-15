@@ -6,7 +6,7 @@ export const admin: AdminMessages = {
   professionals: {
     ...american.professionals,
     description:
-      'Check the name and the registration before approving. Only verified professionals can invite patients.',
+      'Open the document and check the name and the registration before approving. Only verified professionals can invite patients.',
     registration: 'Registration',
     noRegistration: 'No registration',
     columns: {

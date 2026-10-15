@@ -4,7 +4,7 @@ import { latestByInstrument, type LatestResults } from '@/features/screening/lat
 import type { SubmitScreening } from '@/features/screening/model'
 import type { ActionResult } from '@/shared/lib/actions/result'
 
-export type Step = 'consents' | 'name' | 'intro' | 'phq9' | 'support' | 'gad7' | 'results'
+export type Step = 'consents' | 'name' | 'photo' | 'intro' | 'phq9' | 'support' | 'gad7' | 'results'
 
 export type Phase = 'consents' | 'name' | 'screening' | 'results'
 
@@ -28,9 +28,13 @@ export interface OnboardingActions {
   saveName: (input: NameInput) => Promise<ActionResult<null>>
   submitScreening: SubmitScreening
   finishOnboarding: () => Promise<ActionResult<null>>
+  photoSaved: () => Promise<void>
 }
 
 export function phaseOf(step: Step): Phase {
+  if (step === 'photo') {
+    return 'name'
+  }
   if (step === 'consents' || step === 'name' || step === 'results') {
     return step
   }

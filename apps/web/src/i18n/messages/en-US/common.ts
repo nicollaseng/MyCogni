@@ -42,6 +42,7 @@ export const common: CommonMessages = {
     physician: 'Medicine',
     psychoanalyst: 'Psychoanalysis',
   },
+  photoOf: 'Photo of {name}',
   language: {
     label: 'Language',
     hint: 'The app switches to this language on every screen.',

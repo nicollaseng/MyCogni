@@ -28,6 +28,14 @@ export const onboarding: OnboardingMessages = {
     submit: 'Continue',
     saving: 'Saving…',
   },
+  photo: {
+    title: 'Would you like to add a photo?',
+    lead: 'It’s optional. Only you and the professionals you choose to share your records with will see it.',
+    alt: 'Your photo',
+    continue: 'Continue',
+    skip: 'Continue without a photo',
+    later: 'You can change or remove it whenever you like, in your profile.',
+  },
   intro: {
     title: 'Two short questionnaires',
     lead: 'The <nowrap>PHQ-9</nowrap> and the <nowrap>GAD-7</nowrap> are used around the world to follow signs of depression and anxiety. They become your starting point.',

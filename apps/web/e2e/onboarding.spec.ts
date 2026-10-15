@@ -37,6 +37,7 @@ async function reachQuestions(page: Page) {
   await acceptRequiredConsents(page)
   await page.getByLabel('Nome').fill('Marina')
   await page.getByRole('button', { name: 'Continuar' }).click()
+  await page.getByRole('button', { name: 'Continuar sem foto' }).click()
   await page.getByRole('button', { name: 'Começar' }).click()
 }
 

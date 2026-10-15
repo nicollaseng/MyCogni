@@ -204,7 +204,7 @@ export const professional: ProfessionalMessages = {
       body: 'Our team checks your professional license by hand before enabling invitations.',
       next: 'What happens next',
       steps: {
-        review: 'We check your name and your license.',
+        review: 'We check your name, your license and the document you sent.',
         approve: 'Once you are approved, this page shows your patients.',
         invite:
           'You invite patients by email or by link, and each of them decides whether to accept.',
@@ -213,7 +213,8 @@ export const professional: ProfessionalMessages = {
     },
     rejected: {
       title: 'We could not verify your sign-up.',
-      body: 'If you think this is a mistake or want to send other details, write to <link>{email}</link> with your name and license number.',
+      body: 'Read the note from our team and send a new document. Your sign-up goes back to review as soon as it arrives. Questions: <link>{email}</link>.',
+      note: 'Note from the MyCogniAI team',
     },
   },
   time: {
@@ -257,6 +258,8 @@ export const professional: ProfessionalMessages = {
       saving: 'Saving…',
       invalidName: 'Use between 3 and 120 characters.',
       error: 'We could not save that right now. Try again in a moment.',
+      photo: 'Photo',
+      photoHint: 'Shown to your patients and on your invitation page.',
       kind: 'Profession',
       registration: 'License number',
       noRegistration: 'No license number',
