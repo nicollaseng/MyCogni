@@ -33,10 +33,7 @@ export const defaultAudioPreferences: AudioPreferences = {
 
 export const audioPreferencesKey = 'mycogni.audio'
 
-function fieldsOf(raw: string | null): Record<string, unknown> {
-  if (raw === null) {
-    return {}
-  }
+function fieldsOf(raw: string): Record<string, unknown> {
   try {
     const parsed: unknown = JSON.parse(raw)
     return typeof parsed === 'object' && parsed !== null ? { ...parsed } : {}
@@ -46,6 +43,9 @@ function fieldsOf(raw: string | null): Record<string, unknown> {
 }
 
 export function parseAudioPreferences(raw: string | null): AudioPreferences {
+  if (raw === null) {
+    return defaultAudioPreferences
+  }
   const { voice, speed, sound, volume, scope } = fieldsOf(raw)
   return {
     voice: isNarrationVoiceId(voice) ? voice : null,

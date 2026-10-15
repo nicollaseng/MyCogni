@@ -4,7 +4,6 @@ import { ambientLoopAt, type AmbientLoopId, type AmbientSoundId } from '@mycogni
 import { usePathname } from 'next/navigation'
 import {
   createContext,
-  useCallback,
   useContext,
   useEffect,
   useState,
@@ -12,9 +11,18 @@ import {
   type ReactNode,
 } from 'react'
 import { createAmbientEngine, type AmbientEngine } from './ambient-engine'
+import { createAmbientSession, type AmbientSession } from './ambient-session'
 import { useAudioPreferences } from './preferences'
 
 export const ambientPreviewMs = 7000
+
+interface AmbientControls {
+  session: AmbientSession
+  start: (loop: AmbientLoopId | null) => void
+  stop: () => void
+  preview: (sound: AmbientSoundId) => void
+  duck: (ducked: boolean) => void
+}
 
 export interface AmbientState {
   loop: AmbientLoopId | null
@@ -25,19 +33,76 @@ export interface AmbientState {
   duck: (ducked: boolean) => void
 }
 
-const inactive: AmbientState = {
-  loop: null,
-  playing: false,
-  toggle: () => undefined,
-  preview: () => undefined,
-  previewing: null,
-  duck: () => undefined,
+function controlsFor(session: AmbientSession, ambient: AmbientEngine): AmbientControls {
+  return {
+    session,
+    start(loop) {
+      ambient.unlock()
+      if (loop !== null) {
+        ambient.play(loop)
+      }
+      session.update({ wanted: true })
+    },
+    stop() {
+      session.update({ wanted: false })
+    },
+    preview(sound) {
+      if (session.snapshot().previewing === sound) {
+        session.update({ previewing: null })
+        return
+      }
+      ambient.unlock()
+      if (sound !== 'none') {
+        ambient.play(sound)
+      }
+      session.update({ previewing: sound })
+    },
+    duck(ducked) {
+      session.update({ ducks: Math.max(0, session.snapshot().ducks + (ducked ? 1 : -1)) })
+    },
+  }
 }
 
-const AmbientContext = createContext<AmbientState>(inactive)
+const silent: AmbientEngine = {
+  unlock: () => undefined,
+  play: () => undefined,
+  stop: () => undefined,
+  setVolume: () => undefined,
+  setDucked: () => undefined,
+}
+
+const AmbientContext = createContext<AmbientControls>(
+  controlsFor(createAmbientSession('/'), silent),
+)
+
+function isZenPath(pathname: string): boolean {
+  return pathname === '/zen' || pathname.startsWith('/zen/')
+}
+
+function useSession(session: AmbientSession) {
+  return useSyncExternalStore(session.subscribe, session.snapshot, session.snapshot)
+}
 
 export function useAmbient(): AmbientState {
-  return useContext(AmbientContext)
+  const controls = useContext(AmbientContext)
+  const { pathname, wanted, previewing } = useSession(controls.session)
+  const { scope, sound } = useAudioPreferences()
+  const loop = ambientLoopAt({ scope, sound, onZen: isZenPath(pathname) })
+
+  return {
+    loop,
+    playing: wanted && loop !== null,
+    toggle: () => {
+      if (wanted) {
+        controls.stop()
+      } else {
+        controls.start(loop)
+      }
+    },
+    preview: controls.preview,
+    previewing,
+    duck: controls.duck,
+  }
 }
 
 function subscribeToVisibility(onChange: () => void): () => void {
@@ -55,10 +120,6 @@ function useHidden(): boolean {
   )
 }
 
-function isZenPath(pathname: string): boolean {
-  return pathname === '/zen' || pathname.startsWith('/zen/')
-}
-
 interface AmbientRootProps {
   pathname: string
   children: ReactNode
@@ -74,16 +135,23 @@ export function AmbientRoot({
   children,
   engine = createAmbientEngine,
 }: AmbientRootProps) {
-  const preferences = useAudioPreferences()
-  const onZen = isZenPath(pathname)
-  const hidden = useHidden()
-  const [wanted, setWanted] = useState(false)
-  const [previewing, setPreviewing] = useState<AmbientSoundId | null>(null)
-  const [ducks, setDucks] = useState(0)
   const [ambient] = useState(engine)
-  const loop = ambientLoopAt({ scope: preferences.scope, sound: preferences.sound, onZen })
+  const [controls] = useState(() => controlsFor(createAmbientSession(pathname), ambient))
+  const { session } = controls
+  const { wanted, previewing, ducks } = useSession(session)
+  const preferences = useAudioPreferences()
+  const hidden = useHidden()
+  const loop = ambientLoopAt({
+    scope: preferences.scope,
+    sound: preferences.sound,
+    onZen: isZenPath(pathname),
+  })
   const previewLoop = previewing === null || previewing === 'none' ? null : previewing
   const target = hidden ? null : (previewLoop ?? (wanted ? loop : null))
+
+  useEffect(() => {
+    session.update({ pathname })
+  }, [session, pathname])
 
   useEffect(() => {
     if (target === null) {
@@ -106,12 +174,12 @@ export function AmbientRoot({
       return undefined
     }
     const timer = setTimeout(() => {
-      setPreviewing(null)
+      session.update({ previewing: null })
     }, ambientPreviewMs)
     return () => {
       clearTimeout(timer)
     }
-  }, [previewing])
+  }, [session, previewing])
 
   useEffect(
     () => () => {
@@ -120,45 +188,5 @@ export function AmbientRoot({
     [ambient],
   )
 
-  const duck = useCallback(
-    (ducked: boolean) => {
-      setDucks((count) => Math.max(0, count + (ducked ? 1 : -1)))
-    },
-    [setDucks],
-  )
-
-  function toggle() {
-    if (wanted) {
-      setWanted(false)
-      return
-    }
-    ambient.unlock()
-    if (loop !== null) {
-      ambient.play(loop)
-    }
-    setWanted(true)
-  }
-
-  function preview(sound: AmbientSoundId) {
-    if (previewing === sound) {
-      setPreviewing(null)
-      return
-    }
-    ambient.unlock()
-    if (sound !== 'none') {
-      ambient.play(sound)
-    }
-    setPreviewing(sound)
-  }
-
-  const state: AmbientState = {
-    loop,
-    playing: wanted && loop !== null,
-    toggle,
-    preview,
-    previewing,
-    duck,
-  }
-
-  return <AmbientContext.Provider value={state}>{children}</AmbientContext.Provider>
+  return <AmbientContext.Provider value={controls}>{children}</AmbientContext.Provider>
 }

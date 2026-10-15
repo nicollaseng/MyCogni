@@ -92,8 +92,18 @@ export function useNarrationAudio(
     const session = navigator.mediaSession
     session.metadata = new MediaMetadata({ title, artist: 'MyCogniAI', album: 'Zen Space' })
     const handlers: [MediaSessionAction, MediaSessionActionHandler][] = [
-      ['play', toggle],
-      ['pause', toggle],
+      [
+        'play',
+        () => {
+          void ref.current?.play()
+        },
+      ],
+      [
+        'pause',
+        () => {
+          ref.current?.pause()
+        },
+      ],
       [
         'seekbackward',
         () => {
@@ -115,7 +125,7 @@ export function useNarrationAudio(
         session.setActionHandler(action, null)
       }
     }
-  }, [playing, title, toggle, skip])
+  }, [ref, playing, title, skip])
 
   const sync = useCallback(() => {
     const element = ref.current
