@@ -22,7 +22,8 @@ export interface CheckInFilter {
   since?: Date
   q?: string
   qTags?: readonly string[]
-  tags?: readonly string[]
+  emotions?: readonly string[]
+  contexts?: readonly string[]
   minMood?: number
   maxMood?: number
   hasNote?: boolean
@@ -69,6 +70,15 @@ function searchOf(q: string | undefined, qTags: readonly string[] | undefined) {
   )
 }
 
+function anyOf(
+  column: typeof checkIns.emotions | typeof checkIns.contexts,
+  chosen: readonly string[] | undefined,
+) {
+  return chosen === undefined || chosen.length === 0
+    ? undefined
+    : sql`${column} && ${sql.param(chosen)}::text[]`
+}
+
 function noteOf(hasNote: boolean | undefined) {
   if (hasNote === undefined) {
     return undefined
@@ -77,15 +87,14 @@ function noteOf(hasNote: boolean | undefined) {
 }
 
 function conditionsOf(ownerId: string, filter: Omit<CheckInWindow, 'limit'>) {
-  const { since, before, q, qTags, tags, minMood, maxMood, hasNote } = filter
+  const { since, before, q, qTags, emotions, contexts, minMood, maxMood, hasNote } = filter
   return and(
     eq(checkIns.userId, ownerId),
     since === undefined ? undefined : gte(checkIns.recordedAt, since),
     before === undefined ? undefined : lt(checkIns.recordedAt, before),
     searchOf(q, qTags),
-    tags === undefined || tags.length === 0
-      ? undefined
-      : sql`${allTags} @> ${sql.param(tags)}::text[]`,
+    anyOf(checkIns.emotions, emotions),
+    anyOf(checkIns.contexts, contexts),
     minMood === undefined ? undefined : gte(checkIns.moodLevel, minMood),
     maxMood === undefined ? undefined : lte(checkIns.moodLevel, maxMood),
     noteOf(hasNote),

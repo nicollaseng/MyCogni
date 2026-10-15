@@ -33,7 +33,8 @@ export interface CheckInFilter {
   since?: Date
   q?: string
   qTags?: readonly string[]
-  tags?: readonly string[]
+  emotions?: readonly string[]
+  contexts?: readonly string[]
   minMood?: number
   maxMood?: number
   hasNote?: boolean
@@ -79,13 +80,18 @@ export function createCheckIn(body: CreateCheckInInput): Promise<CheckIn> {
   return apiRequest({ path: '/v1/check-ins', schema: checkInSchema, method: 'POST', body })
 }
 
+function listOf(values: readonly string[] | undefined): string | undefined {
+  return values === undefined || values.length === 0 ? undefined : values.join(',')
+}
+
 function checkInQuery({
   since,
   before,
   limit,
   q,
   qTags,
-  tags,
+  emotions,
+  contexts,
   minMood,
   maxMood,
   hasNote,
@@ -96,8 +102,9 @@ function checkInQuery({
     ['before', before],
     ['limit', limit === undefined ? undefined : String(limit)],
     ['q', q === undefined || q === '' ? undefined : q],
-    ['qTags', qTags === undefined || qTags.length === 0 ? undefined : qTags.join(',')],
-    ['tags', tags === undefined || tags.length === 0 ? undefined : tags.join(',')],
+    ['qTags', listOf(qTags)],
+    ['emotions', listOf(emotions)],
+    ['contexts', listOf(contexts)],
     ['minMood', minMood === undefined ? undefined : String(minMood)],
     ['maxMood', maxMood === undefined ? undefined : String(maxMood)],
     ['hasNote', hasNote === undefined ? undefined : String(hasNote)],

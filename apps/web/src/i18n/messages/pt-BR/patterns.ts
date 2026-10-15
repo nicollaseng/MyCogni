@@ -78,8 +78,6 @@ export const patterns = {
       answers: '{current} de {required} respostas',
     },
     contexts: 'Marque contextos nos registros',
-    disabled: 'Desligado',
-    enable: 'Ligar',
   },
 }
 

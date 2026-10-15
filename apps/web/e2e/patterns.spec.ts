@@ -73,9 +73,7 @@ test('reads two months of records and keeps every section on the chosen period',
     page.getByRole('region', { name: 'O que acompanha seus dias melhores' }),
   ).toContainText('exercício')
   await expect(page.getByRole('region', { name: 'Dias da semana' })).toBeVisible()
-  await expect(page.getByRole('region', { name: 'Em breve' }).getByRole('listitem')).toHaveText([
-    'Resumo automáticoDesligado · Ligar',
-  ])
+  await expect(page.getByRole('region', { name: 'Em breve' })).toHaveCount(0)
 
   await periods.getByRole('link', { name: '7 dias' }).click()
   await expect(page).toHaveURL('/patterns?period=7')

@@ -48,7 +48,8 @@ const sinceSchema = z.iso.datetime({ offset: true }).optional()
 const filterFields = {
   q: z.string().trim().max(checkInSearchLength).optional(),
   qTags: tagListSchema.optional(),
-  tags: tagListSchema.optional(),
+  emotions: tagListSchema.optional(),
+  contexts: tagListSchema.optional(),
   minMood: moodBoundSchema.optional(),
   maxMood: moodBoundSchema.optional(),
   hasNote: z.stringbool().optional(),
