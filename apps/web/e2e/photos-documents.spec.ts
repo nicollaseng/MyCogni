@@ -62,7 +62,7 @@ test('a professional sends the document, the team opens and approves it, and a l
   test.slow()
   const name = `Helena Prado ${randomUUID().slice(0, 6)}`
   const email = uniqueEmail('pro-document')
-  await createUser(email, password)
+  await createUser(email, password, { accountType: 'professional' })
   await signIn(page, email)
 
   await page.goto('/pro/join')
@@ -147,7 +147,7 @@ test('the team rejects with a reason that the professional reads before sending 
 }) => {
   const name = `Rafael Lima ${randomUUID().slice(0, 6)}`
   const email = uniqueEmail('pro-rejected')
-  await createUser(email, password)
+  await createUser(email, password, { accountType: 'professional' })
   await signIn(page, email)
   await page.goto('/pro/join')
   await page.getByText('Psicanálise', { exact: true }).click()
