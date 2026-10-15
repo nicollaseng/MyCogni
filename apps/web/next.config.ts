@@ -16,6 +16,13 @@ const config: NextConfig = {
   experimental: {
     staleTimes: { dynamic: 0, static: 300 },
   },
+  headers: () =>
+    Promise.resolve([
+      {
+        source: '/audio/ambient/:file*',
+        headers: [{ key: 'Cache-Control', value: 'public, max-age=31536000, immutable' }],
+      },
+    ]),
 }
 
 const withNextIntl = createNextIntlPlugin('./src/i18n/request.ts')

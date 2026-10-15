@@ -1,0 +1,57 @@
+import type { AudioMessages } from '../pt-BR/audio'
+
+export const audio: AudioMessages = {
+  ambient: {
+    control: 'Som de fundo: {sound}',
+    sounds: {
+      sea: 'Mar',
+      rain: 'Chuva',
+      forest: 'Floresta',
+      'brown-noise': 'Ruído castanho',
+      none: 'Nenhum',
+    },
+  },
+  player: {
+    label: 'Leitura em voz alta',
+    listen: 'Ouvir',
+    listenTo: 'Ouvir: {title}',
+    play: 'Reproduzir',
+    pause: 'Pausar',
+    back: 'Recuar {seconds} segundos',
+    forward: 'Avançar {seconds} segundos',
+    position: 'Posição',
+    positionValue: '{time} de {total}',
+    speed: 'Velocidade: {speed, number}×',
+    speedShort: '{speed, number}×',
+  },
+  settings: {
+    title: 'Som e voz',
+    voice: 'Voz da leitura',
+    voiceOption: '{name} · {gender, select, female {feminina} other {masculina}}, {tone}',
+    tones: {
+      warm: 'acolhedora',
+      bright: 'leve',
+      natural: 'natural',
+      relaxed: 'tranquila',
+    },
+    sample: 'Ouvir amostra',
+    listen: 'Ouvir',
+    stop: 'Parar',
+    speed: 'Velocidade da leitura',
+    speeds: {
+      slower: 'Mais devagar',
+      normal: 'Normal',
+      faster: 'Mais rápida',
+    },
+    where: 'Som de fundo',
+    scopes: {
+      zen: 'Só no Zen Space',
+      app: 'Em toda a app',
+      off: 'Desligado',
+    },
+    sound: 'Que som',
+    volume: 'Volume',
+    percent: '{percent}%',
+    device: 'Estas escolhas ficam guardadas só neste dispositivo.',
+  },
+}

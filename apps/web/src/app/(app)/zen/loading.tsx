@@ -1,11 +1,9 @@
 import { useTranslations } from 'next-intl'
 import { PageTitle } from '@/shared/components/page-title'
 import {
-  descriptionWidths,
-  LinesSkeleton,
   LoadingState,
-  RowsSkeleton,
   SectionSkeleton,
+  Skeleton,
   SkeletonPanel,
 } from '@/shared/components/skeleton'
 
@@ -14,18 +12,20 @@ export default function ZenLoading() {
 
   return (
     <LoadingState className="space-y-10">
-      <PageTitle
-        title={t('title')}
-        description={<LinesSkeleton widths={descriptionWidths} className="pt-1" />}
-      />
+      <PageTitle title={t('title')} action={<Skeleton className="h-4 w-24" />} />
       <SectionSkeleton>
-        <SkeletonPanel className="h-32" />
+        <SkeletonPanel className="h-48" />
+        <Skeleton className="h-12 w-40 rounded-md" />
       </SectionSkeleton>
       <SectionSkeleton>
-        <RowsSkeleton rows={4} className="pt-1" />
+        <span aria-hidden className="grid grid-cols-2 gap-2 sm:grid-cols-5">
+          {Array.from({ length: 5 }, (_, index) => (
+            <SkeletonPanel key={index} className="h-16" />
+          ))}
+        </span>
       </SectionSkeleton>
       <SectionSkeleton>
-        <RowsSkeleton rows={3} className="pt-1" />
+        <SkeletonPanel className="h-64" />
       </SectionSkeleton>
     </LoadingState>
   )

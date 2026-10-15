@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react'
+import { AmbientProvider } from '@/features/audio/ambient-provider'
 import { AppShell } from '@/features/shell/components/app-shell'
 import { preloadNotifications } from '@/shared/lib/api/care'
 import { requireOnboardedProfile } from '@/shared/lib/auth/session'
@@ -12,8 +13,10 @@ export default async function AppLayout({ children }: Readonly<{ children: React
     fetchMyPhotoUrl(),
   )
   return (
-    <AppShell name={displayName} email={email} photoUrl={photoUrl} timeZone={timezone}>
-      {children}
-    </AppShell>
+    <AmbientProvider>
+      <AppShell name={displayName} email={email} photoUrl={photoUrl} timeZone={timezone}>
+        {children}
+      </AppShell>
+    </AmbientProvider>
   )
 }

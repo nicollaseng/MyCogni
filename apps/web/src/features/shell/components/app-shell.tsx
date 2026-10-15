@@ -1,14 +1,15 @@
 import { useTranslations } from 'next-intl'
 import { Suspense, type ReactNode } from 'react'
+import { AmbientControl } from '@/features/audio/components/ambient-control'
 import { assistantActions } from '@/features/assistant/bound-actions'
 import { AssistantLauncher } from '@/features/assistant/components/assistant-launcher'
 import { signOut } from '@/features/auth/actions'
 import { BellLink } from '@/features/care/components/bell-link'
 import { NotificationBell } from '@/features/care/components/notification-bell'
-import { HelpDisclosure } from '@/shared/components/help-disclosure'
 import { Wordmark } from '@/shared/components/wordmark'
 import { AccountMenu } from './account-menu'
 import { CurrentNavigation } from './current-navigation'
+import { CurrentFooterHelp } from './footer-help'
 import { FreshOnReturn } from './fresh-on-return'
 
 interface AppShellProps {
@@ -33,6 +34,7 @@ export function AppShell({ name, email, photoUrl, timeZone, children }: AppShell
               <CurrentNavigation variant="top" />
             </nav>
             <div className="flex items-center gap-2">
+              <AmbientControl />
               <Suspense fallback={<BellLink unread={0} />}>
                 <NotificationBell timeZone={timeZone} />
               </Suspense>
@@ -47,7 +49,7 @@ export function AppShell({ name, email, photoUrl, timeZone, children }: AppShell
       </main>
 
       <footer className="mx-auto w-full max-w-3xl px-6 pb-28 sm:pb-12">
-        <HelpDisclosure />
+        <CurrentFooterHelp />
       </footer>
 
       <AssistantLauncher actions={assistantActions} timeZone={timeZone} />

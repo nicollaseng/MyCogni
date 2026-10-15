@@ -1,5 +1,6 @@
 import type { InstrumentId, Severity } from '../assessments/instrument.ts'
 import { lowMoodAverage } from '../care/attention.ts'
+import type { SupportLevel } from '../safety/risk.ts'
 import { stepOf, tracks, type ArticleId, type TrackId } from './catalog.ts'
 import type { DoneStep } from './progress.ts'
 
@@ -89,6 +90,13 @@ export function zenSuggestion(signals: ZenSignals): ZenSuggestion {
     tracks: suggested,
     seekHelpFirst: suggested[0] === 'seeking-help',
   }
+}
+
+export function supportLevelOf(suggestion: ZenSuggestion): SupportLevel | null {
+  if (suggestion.reasons.includes('risk_item')) {
+    return 'urgent'
+  }
+  return suggestion.seekHelpFirst ? 'watch' : null
 }
 
 export function readArticles(doneSteps: readonly DoneStep[]): ArticleId[] {

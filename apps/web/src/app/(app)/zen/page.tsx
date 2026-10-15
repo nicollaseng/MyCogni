@@ -1,12 +1,20 @@
-import { averageOf, zenSuggestion } from '@mycogni/domain'
+import {
+  articleIds,
+  averageOf,
+  contentLanguageOf,
+  supportLevelOf,
+  todayPick,
+  trackIds,
+  zenSuggestion,
+} from '@mycogni/domain'
 import type { Metadata } from 'next'
-import { getTranslations } from 'next-intl/server'
-import { LatestScreening } from '@/features/screening/components/latest-screening'
-import { ScreeningSchedule } from '@/features/screening/components/screening-schedule'
+import { getLocale, getTranslations } from 'next-intl/server'
+import { SafetyPanel } from '@/features/safety/components/safety-panel'
 import { latestByInstrument } from '@/features/screening/latest'
-import { ArticleList } from '@/features/zen/components/article-list'
-import { ForYou } from '@/features/zen/components/for-you'
-import { TrackList } from '@/features/zen/components/track-list'
+import { HelpNow } from '@/features/zen/components/help-now'
+import { ReadingRows, TrackRows } from '@/features/zen/components/library'
+import { TodayCard } from '@/features/zen/components/today-card'
+import { TopicTiles } from '@/features/zen/components/topic-tiles'
 import { PageTitle } from '@/shared/components/page-title'
 import { fetchCareLinks } from '@/shared/lib/api/care'
 import { fetchAssessments, fetchCheckInsSince } from '@/shared/lib/api/resources'
@@ -23,51 +31,49 @@ const moodWindowMs = 7 * 24 * 60 * 60 * 1000
 
 export default async function ZenPage() {
   const now = new Date()
-  const [{ timezone }, [t, assessments, checkIns, doneSteps, careLinks]] = await guarded(
+  const [, [t, locale, assessments, checkIns, doneSteps, careLinks]] = await guarded(
     requireOnboardedProfile(),
     Promise.all([
       getTranslations('zen'),
+      getLocale(),
       fetchAssessments(),
       fetchCheckInsSince(new Date(now.getTime() - moodWindowMs)),
       fetchStepProgress(),
       fetchCareLinks(),
     ]),
   )
-  const latest = latestByInstrument(assessments)
+  const language = contentLanguageOf(locale)
   const suggestion = zenSuggestion({
-    latest: Object.values(latest),
+    latest: Object.values(latestByInstrument(assessments)),
     moodAverage: averageOf(checkIns.map((checkIn) => checkIn.moodLevel)),
   })
-  const lastAnswer = assessments[0]?.completedAt
+  const professionals = careLinks.map((link) => link.professional.name)
+  const support = supportLevelOf(suggestion)
 
   return (
     <>
-      <PageTitle title={t('title')} description={t('description')} />
+      <PageTitle title={t('title')} action={<HelpNow professionals={professionals} />} />
 
-      <ForYou
-        suggestion={suggestion}
-        doneSteps={doneSteps}
-        professionals={careLinks.map((link) => link.professional.name)}
+      {support !== null && <SafetyPanel level={support} professionals={professionals} />}
+
+      <TodayCard
+        pick={todayPick(suggestion.tracks, doneSteps)}
+        language={language}
+        reasons={suggestion.reasons}
       />
 
-      <TrackList doneSteps={doneSteps} />
+      <TopicTiles />
 
-      <ArticleList />
+      <TrackRows
+        ids={trackIds}
+        doneSteps={doneSteps}
+        language={language}
+        title={t('library.tracks')}
+      />
 
-      <LatestScreening results={latest} timeZone={timezone}>
-        {lastAnswer !== undefined && (
-          <ScreeningSchedule
-            lastAnswer={lastAnswer}
-            now={now}
-            timeZone={timezone}
-            offerRetake="always"
-          />
-        )}
-      </LatestScreening>
+      <ReadingRows ids={articleIds} language={language} title={t('library.readings')} shown={4} />
 
-      <p className="max-w-[36rem] border-l-2 border-rule pl-4 text-sm leading-relaxed text-muted-foreground">
-        {t('disclaimer')}
-      </p>
+      <p className="text-sm text-muted-foreground">{t('disclaimer')}</p>
     </>
   )
 }

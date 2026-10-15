@@ -226,3 +226,4 @@ export {
   type SendAssistantMessageInput,
 } from './assistant.ts'
 export { riskLevelSchema, supportSignalSchema, type SupportSignal } from './safety.ts'
+export { narrationManifestSchema } from './narration.ts'

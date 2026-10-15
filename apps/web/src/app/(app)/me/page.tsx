@@ -1,5 +1,12 @@
+import {
+  contentLanguageOf,
+  findNarration,
+  previewNarrationItem,
+  voicesFor,
+  type NarrationVoiceId,
+} from '@mycogni/domain'
 import type { Metadata } from 'next'
-import { getTranslations } from 'next-intl/server'
+import { getLocale, getTranslations } from 'next-intl/server'
 import { signOut } from '@/features/auth/actions'
 import {
   changeEmail,
@@ -20,6 +27,8 @@ import { NameForm } from '@/features/account/components/name-form'
 import { PasswordForm } from '@/features/account/components/password-form'
 import { ProfileHeader } from '@/features/account/components/profile-header'
 import { SettingsRow } from '@/features/account/components/settings-row'
+import { SoundAndVoiceSettings } from '@/features/audio/components/sound-and-voice-settings'
+import { fetchNarrationManifest, narrationUrl } from '@/features/audio/narration'
 import { chooseLocale } from '@/features/locale/actions'
 import { LocaleSelect } from '@/features/locale/components/locale-select'
 import { LatestScreening } from '@/features/screening/components/latest-screening'
@@ -43,8 +52,20 @@ export async function generateMetadata(): Promise<Metadata> {
 
 const rowLink = 'block py-3.5 underline decoration-1 underline-offset-4'
 
+async function voicePreviews(): Promise<Partial<Record<NarrationVoiceId, string>>> {
+  const [locale, manifest] = await Promise.all([getLocale(), fetchNarrationManifest()])
+  const language = contentLanguageOf(locale)
+  const { text } = previewNarrationItem(language)
+  return Object.fromEntries(
+    voicesFor(language).flatMap((voice) => {
+      const file = findNarration(manifest, { language, voice: voice.id, text })
+      return file === null ? [] : [[voice.id, narrationUrl(file.path)]]
+    }),
+  )
+}
+
 export default async function MePage() {
-  const [profile, [assessments, consents, photoUrl, careLinks, tickets, t, language]] =
+  const [profile, [assessments, consents, photoUrl, careLinks, tickets, t, language, previews]] =
     await guarded(
       requireOnboardedProfile(),
       Promise.all([
@@ -55,6 +76,7 @@ export default async function MePage() {
         fetchSupportTickets(),
         getTranslations('account'),
         getTranslations('common.language'),
+        voicePreviews(),
       ]),
     )
   const lastAnswer = assessments[0]?.completedAt
@@ -102,6 +124,8 @@ export default async function MePage() {
         </Panel>
         <p className="text-sm text-pretty text-muted-foreground">{language('hint')}</p>
       </Section>
+
+      <SoundAndVoiceSettings previews={previews} />
 
       <Section title={t('sections.privacy')}>
         <Panel>

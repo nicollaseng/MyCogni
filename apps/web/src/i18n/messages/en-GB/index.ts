@@ -2,6 +2,7 @@ import { account } from './account'
 import { alerts } from './alerts'
 import { assistant } from './assistant'
 import { admin } from './admin'
+import { audio } from './audio'
 import { auth } from './auth'
 import { care } from './care'
 import { checkIn } from './check-in'
@@ -44,6 +45,7 @@ export const messages: Messages = {
   admin,
   verification,
   zen,
+  audio,
   support,
   assistant,
   safety,

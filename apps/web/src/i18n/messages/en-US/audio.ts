@@ -1,0 +1,57 @@
+import type { AudioMessages } from '../pt-BR/audio'
+
+export const audio: AudioMessages = {
+  ambient: {
+    control: 'Background sound: {sound}',
+    sounds: {
+      sea: 'Sea',
+      rain: 'Rain',
+      forest: 'Forest',
+      'brown-noise': 'Brown noise',
+      none: 'None',
+    },
+  },
+  player: {
+    label: 'Read aloud',
+    listen: 'Listen',
+    listenTo: 'Listen: {title}',
+    play: 'Play',
+    pause: 'Pause',
+    back: 'Back {seconds} seconds',
+    forward: 'Forward {seconds} seconds',
+    position: 'Position',
+    positionValue: '{time} of {total}',
+    speed: 'Speed: {speed, number}×',
+    speedShort: '{speed, number}×',
+  },
+  settings: {
+    title: 'Sound and voice',
+    voice: 'Reading voice',
+    voiceOption: '{name} · {gender, select, female {female} other {male}}, {tone}',
+    tones: {
+      warm: 'warm',
+      bright: 'bright',
+      natural: 'natural',
+      relaxed: 'relaxed',
+    },
+    sample: 'Play a sample',
+    listen: 'Listen',
+    stop: 'Stop',
+    speed: 'Reading speed',
+    speeds: {
+      slower: 'Slower',
+      normal: 'Normal',
+      faster: 'Faster',
+    },
+    where: 'Background sound',
+    scopes: {
+      zen: 'Only in Zen Space',
+      app: 'Across the app',
+      off: 'Off',
+    },
+    sound: 'Which sound',
+    volume: 'Volume',
+    percent: '{percent}%',
+    device: 'These choices are saved on this device only.',
+  },
+}

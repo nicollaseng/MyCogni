@@ -288,6 +288,13 @@
       "when": 1792104468355,
       "tag": "0040_note_risk_alerts",
       "breakpoints": true
+    },
+    {
+      "idx": 41,
+      "version": "7",
+      "when": 1792105156313,
+      "tag": "0041_narration_bucket",
+      "breakpoints": true
     }
   ]
 }

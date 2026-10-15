@@ -1,14 +1,14 @@
 import { describe, expect, it, jest } from '@jest/globals'
 import type { ZenStepParams } from '@mycogni/contracts'
-import { tracks } from '@mycogni/domain'
+import { stepMinutes, trackText, tracks } from '@mycogni/domain'
 import { screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import type { CreateOutcome, PageClient, SaveOutcome } from '@/features/mybook/page-client'
 import type { ActionResult } from '@/shared/lib/actions/result'
 import { renderWithIntl } from '@/test/render'
 import { fakeRouter, WithRouter } from '@/test/router'
-import { trackText } from '../content/tracks'
 import { promptPage } from '../prompt-page'
+import { stepTitle } from '../titles'
 import { TrackSteps } from './track-steps'
 
 type Save = (step: ZenStepParams, done: boolean) => Promise<ActionResult<null>>
@@ -31,13 +31,20 @@ function renderTrack({
   done = [] as string[],
   save = jest.fn<Save>().mockResolvedValue(ok),
   pages = pageClient(),
+  narrated = false,
 } = {}) {
   const router = fakeRouter()
   const text = trackText('pt-BR', 'everyday-anxiety')
   const steps = tracks['everyday-anxiety'].steps.map((step) => ({
     step,
+    title: stepTitle(step, text.steps[step.id] ?? { title: step.id, body: '' }, 'pt-BR'),
     text: text.steps[step.id] ?? { title: step.id, body: '' },
     done: done.includes(step.id),
+    minutes: stepMinutes(step, 'pt-BR'),
+    narration:
+      narrated && step.id === 'reflect'
+        ? [{ voice: 'jessica' as const, url: 'https://storage.test/reflect.mp3' }]
+        : [],
   }))
   renderWithIntl(
     <WithRouter router={router}>
@@ -45,6 +52,7 @@ function renderTrack({
         trackId="everyday-anxiety"
         steps={steps}
         nextId={steps.find((step) => !step.done)?.step.id ?? null}
+        started={done.length > 0}
         support={<p>Linhas de ajuda</p>}
         save={save}
         pages={pages}
@@ -58,28 +66,59 @@ function stepNamed(name: string): HTMLElement {
   return screen.getByRole('listitem', { name })
 }
 
+async function openStep(name: string): Promise<HTMLElement> {
+  const step = stepNamed(name)
+  await userEvent.setup().click(within(step).getByRole('button', { name: new RegExp(name) }))
+  return step
+}
+
 describe('TrackSteps', () => {
-  it('lists every step in order with its way in', () => {
-    renderTrack()
+  it('lists every step as a short row with its kind, duration and done state', () => {
+    renderTrack({ done: ['read-anxiety-basics'] })
 
     expect(screen.getAllByRole('listitem')).toHaveLength(6)
-    expect(
-      within(stepNamed('Ler: o que é ansiedade, e o que não é')).getByRole('link', { name: 'Ler' }),
-    ).toHaveAttribute('href', '/zen/articles/anxiety-basics')
-    expect(
-      within(stepNamed('Registrar como você está')).getByRole('link', {
-        name: 'Fazer um registro',
-      }),
-    ).toHaveAttribute('href', '/check-in')
-    expect(within(stepNamed('Escrever no MyBook')).getByRole('blockquote')).toHaveTextContent(
+    expect(stepNamed('Ler: o que é ansiedade, e o que não é')).toHaveTextContent(
+      /Leitura · \d min · Feito/,
+    )
+    expect(stepNamed('Respirar em quadrado')).toHaveTextContent('Respiração · 1 min')
+    expect(stepNamed('Respirar em quadrado')).not.toHaveTextContent('Feito')
+    expect(screen.queryByText(/Quatro ciclos de respiração/)).not.toBeInTheDocument()
+  })
+
+  it('offers one primary action for the next step', () => {
+    renderTrack({ done: ['read-anxiety-basics'] })
+
+    expect(screen.getByText('Próximo: Respirar em quadrado · 1 min')).toBeVisible()
+    expect(screen.getByRole('button', { name: 'Continuar' })).toHaveAttribute(
+      'aria-haspopup',
+      'dialog',
+    )
+  })
+
+  it('starts a new track by opening its first read', () => {
+    renderTrack()
+
+    expect(screen.getByRole('link', { name: 'Começar' })).toHaveAttribute(
+      'href',
+      '/zen/articles/anxiety-basics',
+    )
+  })
+
+  it('shows the details of a step only when asked', async () => {
+    renderTrack()
+
+    const step = await openStep('Escrever no MyBook')
+
+    expect(within(step).getByRole('blockquote')).toHaveTextContent(
       'Que preocupação voltou mais vezes nesta semana?',
     )
+    expect(within(step).getByRole('button', { name: 'Marcar como feito' })).toBeVisible()
   })
 
   it('marks a step as done and keeps it marked', async () => {
     const user = userEvent.setup()
     const { save } = renderTrack()
-    const step = stepNamed('Respirar em quadrado')
+    const step = await openStep('Respirar em quadrado')
 
     await user.click(within(step).getByRole('button', { name: 'Marcar como feito' }))
 
@@ -93,7 +132,7 @@ describe('TrackSteps', () => {
   it('undoes a step that was done', async () => {
     const user = userEvent.setup()
     const { save } = renderTrack({ done: ['read-anxiety-basics'] })
-    const step = stepNamed('Ler: o que é ansiedade, e o que não é')
+    const step = await openStep('Ler: o que é ansiedade, e o que não é')
 
     await user.click(within(step).getByRole('button', { name: 'Feito' }))
 
@@ -108,7 +147,7 @@ describe('TrackSteps', () => {
     renderTrack({
       save: jest.fn<Save>().mockResolvedValue({ ok: false, error: 'Não foi possível salvar.' }),
     })
-    const step = stepNamed('Refletir')
+    const step = await openStep('Refletir')
 
     await user.click(within(step).getByRole('button', { name: 'Marcar como feito' }))
 
@@ -124,10 +163,9 @@ describe('TrackSteps', () => {
   it('opens a new MyBook page that starts with the writing prompt', async () => {
     const user = userEvent.setup()
     const { pages, router } = renderTrack()
+    const step = await openStep('Escrever no MyBook')
 
-    await user.click(
-      within(stepNamed('Escrever no MyBook')).getByRole('button', { name: 'Escrever no MyBook' }),
-    )
+    await user.click(within(step).getByRole('button', { name: 'Escrever no MyBook' }))
 
     expect(pages.create).toHaveBeenCalledTimes(1)
     expect(pages.save).toHaveBeenCalledWith(
@@ -142,7 +180,7 @@ describe('TrackSteps', () => {
   it('stays on the track and explains when the page cannot be opened', async () => {
     const user = userEvent.setup()
     const { pages, router } = renderTrack({ pages: pageClient({ kind: 'failed' }) })
-    const step = stepNamed('Escrever no MyBook')
+    const step = await openStep('Escrever no MyBook')
 
     await user.click(within(step).getByRole('button', { name: 'Escrever no MyBook' }))
 
@@ -155,11 +193,21 @@ describe('TrackSteps', () => {
 
   it('opens the breathing exercise in a sheet', async () => {
     const user = userEvent.setup()
-    renderTrack()
+    renderTrack({ done: ['read-anxiety-basics'] })
 
-    await user.click(screen.getByRole('button', { name: 'Começar o exercício' }))
+    await user.click(screen.getByRole('button', { name: 'Continuar' }))
 
     const dialog = screen.getByRole('dialog', { name: 'Respirar em quadrado' })
     expect(within(dialog).getByRole('button', { name: 'Começar' })).toBeInTheDocument()
+  })
+
+  it('reads a step out loud only when its narration exists', async () => {
+    renderTrack({ narrated: true })
+
+    const reflect = await openStep('Refletir')
+    expect(within(reflect).getByRole('button', { name: 'Ouvir: Refletir' })).toBeVisible()
+
+    const breathe = await openStep('Respirar em quadrado')
+    expect(within(breathe).queryByRole('button', { name: /Ouvir/ })).not.toBeInTheDocument()
   })
 })
