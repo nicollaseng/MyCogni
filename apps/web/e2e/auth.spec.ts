@@ -104,7 +104,11 @@ test('creates a new password with the code sent by email', async ({ page }) => {
   await page.getByRole('button', { name: 'Enviar código' }).click()
   await expect(page).toHaveURL('/reset-password')
 
+  await expect(page.getByLabel('Nova senha')).toHaveCount(0)
   await page.getByLabel('Código').fill(await latestCode(email, /nova senha/))
+  await page.getByRole('button', { name: 'Continuar' }).click()
+  await expect(page).toHaveURL('/new-password')
+
   await page.getByLabel('Nova senha').fill('nova-senha-2026')
   await page.getByRole('button', { name: 'Salvar nova senha' }).click()
   await expect(page).toHaveURL('/today')
@@ -114,6 +118,23 @@ test('creates a new password with the code sent by email', async ({ page }) => {
   await expect(page).toHaveURL('/')
   await signIn(page, email, 'nova-senha-2026')
   await expect(page).toHaveURL('/today')
+})
+
+test('offers another code only a minute after the first one', async ({ page }) => {
+  await page.clock.install()
+  const email = uniqueEmail('resend')
+  await page.goto('/sign-up')
+  await page.getByLabel('Email').fill(email)
+  await page.getByLabel('Senha').fill(password)
+  await page.getByRole('button', { name: 'Criar conta' }).click()
+  await expect(page).toHaveURL('/verify')
+
+  await expect(page.getByText(/Você pode pedir outro código em 0:[5-6]\d|1:00/)).toBeVisible()
+  await expect(page.getByRole('button', { name: 'Enviar outro código' })).toHaveCount(0)
+
+  await page.clock.fastForward(61_000)
+  await expect(page.getByText('Não recebeu?')).toBeVisible()
+  await expect(page.getByRole('button', { name: 'Enviar outro código' })).toBeVisible()
 })
 
 test('keeps the app behind the sign in', async ({ page }) => {

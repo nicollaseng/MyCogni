@@ -15,35 +15,35 @@ describe('CodeForm', () => {
     expect(code).toHaveAttribute('maxlength', '6')
   })
 
-  it('asks only for the code when confirming the email', () => {
-    renderWithIntl(<CodeForm action={jest.fn<FormAction>()} submitLabel="Confirmar email" />)
-
-    expect(screen.queryByLabelText('Nova senha')).not.toBeInTheDocument()
-  })
-
-  it('asks for the code and a new password when resetting it', async () => {
+  it('asks only for the code, also when resetting the password', async () => {
     const user = userEvent.setup()
     const action = jest.fn<FormAction>().mockResolvedValue(initialFormState)
-    renderWithIntl(<CodeForm action={action} withNewPassword submitLabel="Salvar nova senha" />)
+    renderWithIntl(<CodeForm action={action} submitLabel="Continuar" />)
 
+    expect(screen.queryByLabelText('Nova senha')).not.toBeInTheDocument()
     await user.type(screen.getByLabelText('Código'), '123456')
-    await user.type(screen.getByLabelText('Nova senha'), 'nova-senha-2026')
-    await user.click(screen.getByRole('button', { name: 'Salvar nova senha' }))
+    await user.click(screen.getByRole('button', { name: 'Continuar' }))
 
-    const formData = action.mock.calls[0]?.[1]
-    expect(formData?.get('code')).toBe('123456')
-    expect(formData?.get('password')).toBe('nova-senha-2026')
+    expect(action.mock.calls[0]?.[1].get('code')).toBe('123456')
+  })
+
+  it('shows what comes right under the code field before the main button', () => {
+    renderWithIntl(
+      <CodeForm action={jest.fn<FormAction>()} submitLabel="Confirmar email">
+        <p>Não recebeu?</p>
+      </CodeForm>,
+    )
+
+    const hint = screen.getByText('Não recebeu?')
+    const button = screen.getByRole('button', { name: 'Confirmar email' })
+    expect(hint.compareDocumentPosition(button) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy()
   })
 
   it('speaks European Portuguese', () => {
-    renderWithIntl(
-      <CodeForm action={jest.fn<FormAction>()} withNewPassword submitLabel="Guardar" />,
-      { locale: 'pt-PT' },
-    )
+    renderWithIntl(<CodeForm action={jest.fn<FormAction>()} submitLabel="Continuar" />, {
+      locale: 'pt-PT',
+    })
 
     expect(screen.getByLabelText('Código')).toBeInTheDocument()
-    expect(screen.getByLabelText('Nova palavra-passe')).toHaveAccessibleDescription(
-      'Pelo menos 8 caracteres, com letras e números.',
-    )
   })
 })
