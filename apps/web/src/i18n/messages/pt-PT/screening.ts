@@ -53,7 +53,7 @@ export const screening: ScreeningMessages = {
     start: 'Começar',
     resultsTitle: 'Os seus resultados de hoje.',
     disclaimer: 'É um rastreio, não um diagnóstico. Só um profissional pode avaliar o seu caso.',
-    back: 'Voltar ao Perfil',
+    back: 'Voltar ao perfil',
   },
   latest: {
     title: 'Os seus questionários',

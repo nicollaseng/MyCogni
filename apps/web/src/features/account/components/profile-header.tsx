@@ -1,7 +1,7 @@
 import Image from 'next/image'
 import { useTranslations } from 'next-intl'
 import type { ActionResult } from '@/shared/lib/actions/result'
-import { initialsOf } from '../avatar'
+import { initialsOf } from '@/shared/lib/initials'
 import { AvatarControls } from './avatar-controls'
 
 interface ProfileHeaderProps {

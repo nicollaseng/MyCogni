@@ -103,3 +103,12 @@ export async function inviteByLink(
     await post('/v1/invitations', { channel: 'link', locale: 'pt-BR' }),
   ).invitation
 }
+
+export async function claimInvitation(
+  email: string,
+  password: string,
+  code: string,
+): Promise<void> {
+  const post = await poster(email, password)
+  await post('/v1/invitations/claim', { code })
+}

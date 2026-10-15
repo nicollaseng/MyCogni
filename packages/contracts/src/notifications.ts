@@ -9,6 +9,7 @@ export const notificationSchema = z.object({
   kind: z.enum(notificationKinds),
   createdAt: timestamp,
   readAt: timestamp.nullable(),
+  insightId: z.uuid().nullable(),
   invitation: z
     .object({
       id: z.uuid(),

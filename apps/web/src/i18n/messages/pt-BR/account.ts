@@ -1,5 +1,5 @@
 export const account = {
-  title: 'Você',
+  title: 'Perfil e configurações',
   sections: {
     account: 'Conta',
     preferences: 'Preferências',

@@ -4,9 +4,9 @@ import Link from 'next/link'
 import { useTranslations } from 'next-intl'
 import { useId, useRef, useState } from 'react'
 import { Wordmark } from '@/shared/components/wordmark'
+import { drawerMotion, useAnimatedDialog } from '@/shared/hooks/use-animated-dialog'
 import { CloseIcon, MenuIcon, SettingsIcon, SignOutIcon } from './icons'
 import { ProfessionalNavigation } from './professional-navigation'
-import { drawerMotion, useAnimatedDialog } from './use-animated-dialog'
 
 interface MobileMenuProps {
   name: string

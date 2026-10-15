@@ -15,6 +15,7 @@ const notifications: Notification[] = [
     kind: 'invitation',
     createdAt: '2026-10-14T15:00:00.000Z',
     readAt: null,
+    insightId: null,
     invitation: {
       id: invitationId,
       status: 'pending',
@@ -26,6 +27,7 @@ const notifications: Notification[] = [
     kind: 'marketing',
     createdAt: '2026-10-01T15:00:00.000Z',
     readAt: '2026-10-02T15:00:00.000Z',
+    insightId: null,
     invitation: null,
   },
 ]
@@ -57,6 +59,33 @@ describe('NotificationFeed', () => {
     )
     expect(news).toHaveTextContent('News from MyCogniAI')
     expect(screen.getAllByText('New')).toHaveLength(1)
+  })
+
+  it('links each notification to where it leads and leaves notices without a link', () => {
+    const insightId = '7a1c2b3d-0000-4000-8000-000000000020'
+    renderWithIntl(
+      <NotificationFeed
+        notifications={[
+          ...notifications,
+          {
+            id: '7a1c2b3d-0000-4000-8000-000000000003',
+            kind: 'insight',
+            createdAt: '2026-10-13T15:00:00.000Z',
+            readAt: '2026-10-13T16:00:00.000Z',
+            insightId,
+            invitation: null,
+          },
+        ]}
+        timeZone="America/Sao_Paulo"
+        markRead={markRead}
+      />,
+    )
+
+    expect(screen.getByRole('link', { name: 'Ver resumo' })).toHaveAttribute(
+      'href',
+      `/patterns#reading-${insightId}`,
+    )
+    expect(screen.getAllByRole('link')).toHaveLength(2)
   })
 
   it('uses the Portuguese text by default', () => {

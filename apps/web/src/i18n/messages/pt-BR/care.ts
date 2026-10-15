@@ -20,7 +20,7 @@ export const care = {
       },
       accepted: {
         title: 'Este convite já foi aceito.',
-        body: 'Os profissionais que acompanham seus registros aparecem em Você, na parte Profissionais.',
+        body: 'Os profissionais que acompanham seus registros aparecem em Perfil e configurações, na parte Profissionais.',
       },
       declined: {
         title: 'Este convite foi recusado.',
@@ -67,7 +67,7 @@ export const care = {
         'Ao aceitar, você autoriza {name} a ver seus registros de humor, com emoções, contextos e notas, e seus resultados do PHQ-9 e do GAD-7, para acompanhar sua evolução.',
       history:
         'Por padrão, entram só os registros feitos a partir de hoje. Os anteriores entram apenas se você ligar a opção acima.',
-      end: 'Você pode encerrar o vínculo quando quiser, em Você. A partir daí, {name} deixa de ver seus registros.',
+      end: 'Você pode encerrar o vínculo quando quiser, em Perfil e configurações. A partir daí, {name} deixa de ver seus registros.',
       privacy:
         'O vínculo não dá acesso a mais nada da sua conta. Saiba mais na <link>política de privacidade</link>.',
       agreement: 'Aceitar significa concordar com estes termos.',
@@ -122,7 +122,11 @@ export const care = {
       canceled: 'Convite cancelado',
       expired: 'Convite expirado',
     },
-    open: 'Ver convite',
+    open: {
+      invitation: 'Ver convite',
+      professional: 'Ver profissionais',
+      insight: 'Ver resumo',
+    },
     kinds: {
       invitation: 'Convite de um profissional',
       professional: 'Mensagem de um profissional',
@@ -134,6 +138,8 @@ export const care = {
   bell: {
     label:
       '{count, plural, =0 {Notificações} one {Notificações, # não lida} other {Notificações, # não lidas}}',
+    unread: '{count, plural, one {# não lida} other {# não lidas}}',
+    seeAll: 'Ver todas',
   },
   links: {
     title: 'Profissionais',

@@ -1,7 +1,7 @@
 import { moodDays, patternRules } from '@mycogni/domain'
 import type { Metadata } from 'next'
-import Link from 'next/link'
 import { getLocale, getTranslations } from 'next-intl/server'
+import { TodayActions } from '@/features/check-in/components/today-actions'
 import { MoodMap } from '@/features/mood/components/mood-map'
 import { RecentMood } from '@/features/mood/components/recent-mood'
 import { LatestScreening } from '@/features/screening/components/latest-screening'
@@ -11,7 +11,6 @@ import { PageTitle } from '@/shared/components/page-title'
 import { fetchAssessments, fetchCheckIns } from '@/shared/lib/api/resources'
 import { requireOnboardedProfile } from '@/shared/lib/auth/session'
 import { formatDayTitle } from '@/shared/lib/time'
-import { buttonVariants } from '@/shared/ui/button'
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations('today.meta')
@@ -46,14 +45,7 @@ export default async function TodayPage() {
         <MoodMap valence={0.5} rings={9} className="size-32 shrink-0 sm:size-40" />
         <div className="space-y-4">
           <p className="leading-relaxed text-muted-foreground">{t('intro')}</p>
-          <div className="flex flex-wrap items-center gap-3">
-            <Link href="/check-in" className={buttonVariants()}>
-              {t('checkIn')}
-            </Link>
-            <Link href="/mybook" className={buttonVariants({ variant: 'outline' })}>
-              {t('writeMyBook')}
-            </Link>
-          </div>
+          <TodayActions />
         </div>
       </section>
 

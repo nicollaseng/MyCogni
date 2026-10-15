@@ -31,3 +31,30 @@ export function formatShortDate(date: Date, timeZone: string, locale: Locale): s
 export function dateOfDay(day: string): Date {
   return new Date(`${day}T12:00:00Z`)
 }
+
+const minuteInMs = 60 * 1000
+
+export function formatRelativeTime(
+  date: Date,
+  now: Date,
+  timeZone: string,
+  locale: Locale,
+): string {
+  const relative = new Intl.RelativeTimeFormat(locale, { numeric: 'auto' })
+  const minutes = Math.round((date.getTime() - now.getTime()) / minuteInMs)
+  const hours = Math.round(minutes / 60)
+  const days = Math.round(hours / 24)
+  if (Math.abs(minutes) < 1) {
+    return relative.format(0, 'second')
+  }
+  if (Math.abs(minutes) < 60) {
+    return relative.format(minutes, 'minute')
+  }
+  if (Math.abs(hours) < 24) {
+    return relative.format(hours, 'hour')
+  }
+  if (Math.abs(days) < 7) {
+    return relative.format(days, 'day')
+  }
+  return formatShortDate(date, timeZone, locale)
+}

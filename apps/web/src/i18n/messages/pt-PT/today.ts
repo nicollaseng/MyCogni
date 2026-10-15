@@ -7,7 +7,7 @@ export const today: TodayMessages = {
   title: 'Como se sente agora?',
   intro: 'Demora menos de um minuto. Num dia difícil, basta registar o humor.',
   checkIn: 'Registar como estou',
-  writeMyBook: 'Escrever no MyBook',
+  writeMyBook: 'Prefere escrever? <link>Abrir o MyBook</link>',
   recent: {
     title: 'Últimos {days} dias',
     average: 'Nos últimos 7 dias, o seu humor médio foi {average} em 6 ({mood}).',
