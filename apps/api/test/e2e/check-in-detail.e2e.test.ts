@@ -112,6 +112,7 @@ describe('/v1/check-ins/:id', () => {
       id: expect.any(String),
       text: 'Relendo: o prazo foi cumprido.',
       createdAt: expect.any(String),
+      support: { level: 'none' },
     })
     expect(second.statusCode).toBe(201)
     const { addenda, note, moodLevel } = (await detail(ana, recent)).json<{

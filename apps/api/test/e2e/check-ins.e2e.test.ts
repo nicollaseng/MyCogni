@@ -70,6 +70,7 @@ describe('/v1/check-ins', () => {
       contexts: ['trabalho'],
       note: 'Prazo apertado',
       recordedAt: expect.any(String),
+      support: { level: 'none' },
     })
   })
 

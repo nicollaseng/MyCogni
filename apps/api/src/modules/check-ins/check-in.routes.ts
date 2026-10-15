@@ -1,13 +1,13 @@
 import {
-  checkInAddendumSchema,
   checkInCountSchema,
   checkInDetailSchema,
   checkInFilterSchema,
   checkInListSchema,
-  checkInSchema,
   checkInSearchSchema,
   createCheckInAddendumSchema,
   createCheckInSchema,
+  recordedAddendumSchema,
+  recordedCheckInSchema,
 } from '@mycogni/contracts'
 import type { FastifyPluginCallbackZod } from 'fastify-type-provider-zod'
 import { z } from 'zod'
@@ -30,7 +30,7 @@ export function checkInRoutes(service: CheckInService): FastifyPluginCallbackZod
     )
     app.post(
       '/check-ins',
-      { schema: { body: createCheckInSchema, response: { 201: checkInSchema } } },
+      { schema: { body: createCheckInSchema, response: { 201: recordedCheckInSchema } } },
       async (request, reply) =>
         reply.status(201).send(await service.record(currentUser(request), request.body)),
     )
@@ -45,7 +45,7 @@ export function checkInRoutes(service: CheckInService): FastifyPluginCallbackZod
         schema: {
           params: byId,
           body: createCheckInAddendumSchema,
-          response: { 201: checkInAddendumSchema },
+          response: { 201: recordedAddendumSchema },
         },
       },
       async (request, reply) =>
