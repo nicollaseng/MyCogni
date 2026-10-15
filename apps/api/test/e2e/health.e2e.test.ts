@@ -1,17 +1,22 @@
 import { afterAll, beforeAll, describe, expect, it } from '@jest/globals'
+import { connectDatabase, type DatabaseConnection } from '../../src/db/client.ts'
 import type { App } from '../../src/shared/http.ts'
+import { testDatabaseUrl } from '../support/database.ts'
 import { allowedOrigin, buildTestApp } from '../support/test-app.ts'
 
 describe('GET /health', () => {
   let app: App
+  let connection: DatabaseConnection
 
   beforeAll(async () => {
-    app = await buildTestApp()
+    connection = connectDatabase(testDatabaseUrl)
+    app = await buildTestApp({ db: connection.db })
     await app.ready()
   })
 
   afterAll(async () => {
     await app.close()
+    await connection.close()
   })
 
   it('reports the service as healthy', async () => {

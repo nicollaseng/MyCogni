@@ -17,6 +17,8 @@ const envSchema = z.object({
         .filter((origin) => origin.length > 0),
     )
     .pipe(z.array(z.url())),
+  DATABASE_URL: z.url({ protocol: /^postgres(ql)?$/ }),
+  SUPABASE_URL: z.url({ protocol: /^https?$/ }).transform((value) => value.replace(/\/+$/, '')),
 })
 
 export interface AppConfig {
@@ -25,6 +27,8 @@ export interface AppConfig {
   port: number
   logLevel: (typeof logLevels)[number]
   corsOrigins: string[]
+  databaseUrl: string
+  supabaseUrl: string
 }
 
 export class InvalidConfigError extends Error {
@@ -46,5 +50,7 @@ export function loadConfig(source: Record<string, string | undefined>): AppConfi
     port: env.PORT,
     logLevel: env.LOG_LEVEL,
     corsOrigins: env.CORS_ORIGINS,
+    databaseUrl: env.DATABASE_URL,
+    supabaseUrl: env.SUPABASE_URL,
   }
 }
