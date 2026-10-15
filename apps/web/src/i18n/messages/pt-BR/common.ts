@@ -7,6 +7,7 @@ export const common = {
     label: 'Navegação principal',
     today: 'Hoje',
     entries: 'Registros',
+    mybook: 'MyBook',
     patterns: 'Padrões',
     me: 'Você',
   },

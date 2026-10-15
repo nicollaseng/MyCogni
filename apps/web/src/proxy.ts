@@ -30,6 +30,8 @@ export const config = {
   matcher: [
     '/today/:path*',
     '/entries/:path*',
+    '/mybook',
+    '/mybook/:path',
     '/patterns/:path*',
     '/me/:path*',
     '/check-in/:path*',

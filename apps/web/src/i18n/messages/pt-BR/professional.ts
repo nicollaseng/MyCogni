@@ -386,6 +386,7 @@ export const professional = {
     since: 'Compartilha registros com você desde {date}',
     fromLink: 'Registros a partir do vínculo',
     withHistory: 'Inclui registros anteriores ao vínculo',
+    mybook: 'Páginas do MyBook compartilhadas',
     kpis: {
       mood: 'Humor médio 7 d',
       noPrevious: 'Sem registros nos 7 dias anteriores',

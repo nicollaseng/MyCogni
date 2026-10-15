@@ -7,6 +7,7 @@ import { common } from './common'
 import { entries } from './entries'
 import { landing } from './landing'
 import { legal } from './legal'
+import { mybook } from './mybook'
 import { onboarding } from './onboarding'
 import { patterns } from './patterns'
 import { professional } from './professional'
@@ -21,6 +22,7 @@ export const messages = {
   onboarding,
   checkIn,
   entries,
+  mybook,
   today,
   patterns,
   screening,
