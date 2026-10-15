@@ -103,6 +103,15 @@ e2e/           Playwright specs, run on a mobile and a desktop profile
 - `main` deploys to production
 - `staging` deploys to staging; feature branches target `staging`
 
+## Deploy
+
+The API runs on Railway (project `mycogni`, region US East) from the image in `apps/api/Dockerfile`, configured by `apps/api/railway.json`:
+
+- The image installs and builds only the API and the workspace packages it depends on, then keeps production dependencies only and runs as the `node` user
+- Before each deploy, Railway runs the migrations (`node apps/api/dist/scripts/migrate.js`); the new version only takes traffic after `/health` answers
+- Variables per environment: `DATABASE_URL` (Supabase session pooler, IPv4), `SUPABASE_URL`, `CORS_ORIGINS`, `LOG_LEVEL`; Railway provides `PORT`
+- To build the image locally: `docker build -f apps/api/Dockerfile -t mycogni-api .`
+
 ## Scripts
 
 | Command             | Description                                  |
