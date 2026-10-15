@@ -38,6 +38,7 @@ export {
   cooldownStart,
   emailsRightAway,
   emailWindowStart,
+  raisesNoteAlert,
   type Alert,
   type AlertEvent,
   type AlertLevel,

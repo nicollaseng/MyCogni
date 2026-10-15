@@ -1,5 +1,5 @@
 {
-  "id": "136ba486-a72c-458a-ad1c-23f45cb0389e",
+  "id": "e2f2583a-8e98-4483-bbda-2f5bf04ff492",
   "prevId": "bf020dfa-b19d-4902-8729-cc7140bdd4e3",
   "version": "7",
   "dialect": "postgresql",
@@ -3208,8 +3208,7 @@
         "low_mood",
         "mood_drop",
         "inactive",
-        "note_risk",
-        "note_concern"
+        "note_risk"
       ]
     },
     "public.assessment_instrument": {

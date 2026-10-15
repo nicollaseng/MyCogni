@@ -164,20 +164,19 @@ describe('support signal on saved notes', () => {
     expect(page.support).toEqual({ level: 'watch' })
   })
 
-  it('queues only the level and the ids for the professional alerts', async () => {
+  it('queues only the ids of an urgent note for the professional alerts', async () => {
     await queue.take()
     const recorded = await checkIn(urgent)
+    const worrying = await checkIn(watch)
+    await addendum(worrying.id, watch)
+    await savePage(await newPage(), watch)
     await checkIn(calm)
 
     const queued = await queue.take()
     expect(queued.map(({ trigger }) => trigger)).toEqual([
-      {
-        kind: 'note',
-        note: { kind: 'check_in', patientId: marina.id, checkInId: recorded.id },
-        level: 'urgent',
-      },
+      { kind: 'note', note: { kind: 'check_in', patientId: marina.id, checkInId: recorded.id } },
     ])
-    expect(queued[0]?.payload).not.toMatch(/morrer|suicide|signals/i)
+    expect(queued[0]?.payload).not.toMatch(/morrer|triste|suicide|signals|urgent/i)
   })
 
   it('logs only the level and the ids of a note that needs support', () => {

@@ -94,7 +94,9 @@ test('a note asking for help offers support and alerts the professional who can 
   await expect(page.getByText('Vontade de morrer')).toBeVisible()
 })
 
-test('a private MyBook page offers support without telling the professional', async ({ page }) => {
+test('a private page or a worrying note offers support without alerting the professional', async ({
+  page,
+}) => {
   const pair = await linkedPair()
 
   await signIn(page, pair.patientEmail)
@@ -116,14 +118,16 @@ test('a private MyBook page offers support without telling the professional', as
   await expect(page.getByRole('region', { name: 'Apoio agora' })).toContainText(
     'Se ficar pesado, tem gente pronta para ouvir você, a qualquer hora.',
   )
+  await checkIn(page, 'Vontade de morrer')
   await page.context().clearCookies()
 
   await signIn(page, pair.professionalEmail)
-  const watch = await alertRow(page, 'Nota que pede atenção', pair.patientName)
-  await expect(watch).toContainText('Atenção')
+  const risk = await alertRow(page, 'Nota com sinal de risco', pair.patientName)
+  await expect(risk.getByRole('link', { name: /Nota com sinal de risco/ })).toHaveAttribute(
+    'href',
+    /\/pro\/patients\/[0-9a-f-]{36}\/entries\/[0-9a-f-]{36}$/,
+  )
   await expect(
-    page.getByRole('row').filter({ hasText: 'Nota com sinal de risco' }).filter({
-      hasText: pair.patientName,
-    }),
-  ).toHaveCount(0)
+    page.getByRole('row').filter({ hasText: 'Nota' }).filter({ hasText: pair.patientName }),
+  ).toHaveCount(1)
 })

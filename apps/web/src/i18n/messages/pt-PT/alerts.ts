@@ -16,7 +16,6 @@ export const alerts: AlertsMessages = {
     mood_drop: 'Descida do humor na semana',
     inactive: 'Sem registos há 7+ dias',
     note_risk: 'Nota com sinal de risco',
-    note_concern: 'Nota que pede atenção',
   },
   search: 'Pesquisar alerta',
   searchPlaceholder: 'Pesquisar por paciente',

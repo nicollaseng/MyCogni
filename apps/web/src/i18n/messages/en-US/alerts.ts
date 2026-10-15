@@ -16,7 +16,6 @@ export const alerts: AlertsMessages = {
     mood_drop: 'Mood drop this week',
     inactive: 'No entries for 7+ days',
     note_risk: 'Note with a sign of risk',
-    note_concern: 'Note that calls for attention',
   },
   search: 'Search alerts',
   searchPlaceholder: 'Search by patient',

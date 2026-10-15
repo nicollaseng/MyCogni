@@ -1,4 +1,3 @@
-import type { SupportLevel } from '@mycogni/domain'
 import { Queue, type JobsOptions } from 'bullmq'
 import type { ErrorLog } from '../shared/log.ts'
 import type { AlertTrigger, SavedNote } from './alert-trigger.ts'
@@ -8,7 +7,7 @@ export interface JobScheduler {
   checkInRecorded(patientId: string): Promise<void>
   assessmentCompleted(patientId: string, assessmentId: string): Promise<void>
   summaryCreated(insightId: string): Promise<void>
-  noteSaved(note: SavedNote, level: SupportLevel): Promise<void>
+  noteSaved(note: SavedNote): Promise<void>
   close(): Promise<void>
 }
 
@@ -21,14 +20,14 @@ const insightBatchingMs = 60_000
 
 const alertBatchingMs = 30_000
 
-function noteJobId(note: SavedNote, level: SupportLevel): string {
+function noteJobId(note: SavedNote): string {
   switch (note.kind) {
     case 'check_in':
       return `alert-note-${note.checkInId}`
     case 'addendum':
       return `alert-note-${note.addendumId}`
     case 'journal':
-      return `alert-note-${note.entryId}-${level}`
+      return `alert-note-${note.entryId}`
   }
 }
 
@@ -97,8 +96,8 @@ export function createJobScheduler(
     summaryCreated(insightId) {
       return alert({ kind: 'summary', insightId }, `alert-summary-${insightId}`)
     },
-    noteSaved(note, level) {
-      return alert({ kind: 'note', note, level }, noteJobId(note, level))
+    noteSaved(note) {
+      return alert({ kind: 'note', note }, noteJobId(note))
     },
     async close() {
       await Promise.all([insights.close(), alerts.close()])

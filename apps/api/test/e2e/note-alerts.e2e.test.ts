@@ -161,16 +161,14 @@ describe('professional alerts from written notes', () => {
     expect(await mailCountTo(helena.email)).toBe(1)
   })
 
-  it('asks to watch a worrying note without an email and stays quiet on calm notes', async () => {
-    const checkInId = await checkIn(marina, watch)
+  it('leaves worrying and calm notes to the patient support only', async () => {
+    const before = await alertsOf(marina)
+    const worrying = await checkIn(marina, watch)
+    await addendum(marina, worrying, watch)
     await checkIn(marina, 'Dia tranquilo')
 
-    expect(await runQueued()).toEqual({ raised: 1, emailed: 0 })
-    expect(summaryOf(await alertsOf(marina))).toEqual(
-      expect.arrayContaining([
-        { reason: 'note_concern', level: 'watch', status: 'open', checkInId, journalEntryId: null },
-      ]),
-    )
+    expect(await queue.take()).toEqual([])
+    expect(await alertsOf(marina)).toEqual(before)
     expect(await mailCountTo(helena.email)).toBe(1)
   })
 
@@ -216,7 +214,6 @@ describe('professional alerts from written notes', () => {
     expect(queued?.trigger).toEqual({
       kind: 'note',
       note: { kind: 'journal', patientId: paula.id, entryId: page },
-      level: 'urgent',
     })
     expect(queued === undefined ? null : await job.run(queued.trigger)).toEqual({
       raised: 0,

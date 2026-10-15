@@ -127,13 +127,13 @@ export function createAlertJob({
     return evaluations
   }
 
-  async function note({ note: saved, level }: NoteTrigger): Promise<Evaluation[]> {
+  async function note({ note: saved }: NoteTrigger): Promise<Evaluation[]> {
     const evaluations: Evaluation[] = []
     for (const link of await store.activeLinks({ patientId: saved.patientId })) {
       if (await store.visibleNote(link, saved)) {
         evaluations.push({
           link,
-          alerts: alertsFor({ kind: 'note', level }),
+          alerts: alertsFor({ kind: 'note' }),
           subject: subjectOf(saved),
         })
       }

@@ -7,6 +7,7 @@ import {
   cooldownStart,
   emailsRightAway,
   emailWindowStart,
+  raisesNoteAlert,
 } from './alerts.ts'
 import type { AttentionSignals } from './attention.ts'
 
@@ -82,14 +83,14 @@ describe('alertsFor', () => {
     expect(alertsFor({ kind: 'summary', attention: 'none' })).toEqual([])
   })
 
-  it('follows the risk level of a written note', () => {
-    expect(alertsFor({ kind: 'note', level: 'urgent' })).toEqual([
-      { reason: 'note_risk', level: 'urgent' },
-    ])
-    expect(alertsFor({ kind: 'note', level: 'watch' })).toEqual([
-      { reason: 'note_concern', level: 'watch' },
-    ])
-    expect(alertsFor({ kind: 'note', level: 'none' })).toEqual([])
+  it('raises an urgent alert for a note with a sign of risk', () => {
+    expect(alertsFor({ kind: 'note' })).toEqual([{ reason: 'note_risk', level: 'urgent' }])
+  })
+
+  it('alerts professionals only about urgent notes', () => {
+    expect(raisesNoteAlert('urgent')).toBe(true)
+    expect(raisesNoteAlert('watch')).toBe(false)
+    expect(raisesNoteAlert('none')).toBe(false)
   })
 
   it('gives every reason a level', () => {
@@ -102,7 +103,6 @@ describe('alertsFor', () => {
       'watch',
       'info',
       'urgent',
-      'watch',
     ])
   })
 })
@@ -112,7 +112,6 @@ describe('alert timing', () => {
     expect(cooldownStart('risk_item', now)).toBeNull()
     expect(cooldownStart('summary_watch', now)).toBeNull()
     expect(cooldownStart('note_risk', now)).toBeNull()
-    expect(cooldownStart('note_concern', now)).toBeNull()
     expect(cooldownStart('low_mood', now)).toEqual(new Date('2026-10-08T12:00:00Z'))
     expect(cooldownStart('inactive', now)).toEqual(new Date('2026-10-08T12:00:00Z'))
   })

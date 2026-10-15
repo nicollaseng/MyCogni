@@ -1,5 +1,5 @@
 import type { SupportSignal } from '@mycogni/contracts'
-import { needsSupport, type RiskLevel } from '@mycogni/domain'
+import { needsSupport, raisesNoteAlert, type RiskLevel } from '@mycogni/domain'
 import type { FastifyBaseLogger } from 'fastify'
 import type { SavedNote } from '../../jobs/alert-trigger.ts'
 import type { JobScheduler } from '../../jobs/scheduler.ts'
@@ -16,7 +16,9 @@ export function createNoteSafety(
     async review(note, level) {
       if (needsSupport(level)) {
         log.info({ ...note, support: level }, 'Note support signal')
-        await jobs.noteSaved(note, level)
+      }
+      if (raisesNoteAlert(level)) {
+        await jobs.noteSaved(note)
       }
       return { level }
     },

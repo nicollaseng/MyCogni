@@ -1,4 +1,3 @@
-import { riskLevels } from '@mycogni/domain'
 import { z } from 'zod'
 
 export const savedNoteSchema = z.discriminatedUnion('kind', [
@@ -19,11 +18,7 @@ export const alertTriggerSchema = z.discriminatedUnion('kind', [
   z.object({ kind: z.literal('assessment'), patientId: z.uuid(), assessmentId: z.uuid() }),
   z.object({ kind: z.literal('summary'), insightId: z.uuid() }),
   z.object({ kind: z.literal('daily') }),
-  z.object({
-    kind: z.literal('note'),
-    note: savedNoteSchema,
-    level: z.enum(riskLevels).exclude(['none']),
-  }),
+  z.object({ kind: z.literal('note'), note: savedNoteSchema }),
 ])
 
 export type AlertTrigger = z.infer<typeof alertTriggerSchema>
