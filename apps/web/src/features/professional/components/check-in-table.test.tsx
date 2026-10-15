@@ -3,6 +3,7 @@ import type { CheckIn } from '@mycogni/contracts'
 import { screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { renderWithIntl } from '@/test/render'
+import { fakeRouter, WithRouter } from '@/test/router'
 import { testTimeZone } from '../test-data'
 import { CheckInTable } from './check-in-table'
 
@@ -27,10 +28,17 @@ const walk = checkIn(14, {
 const quiet = checkIn(13, { moodLevel: 1, emotions: ['sadness'] })
 const older = Array.from({ length: 12 }, (_, index) => checkIn(index + 1))
 
+const patientId = '5d1e2f3a-4b5c-4d6e-8f7a-000000000001'
+
 function renderTable(checkIns: readonly CheckIn[]) {
   const user = userEvent.setup()
-  renderWithIntl(<CheckInTable checkIns={checkIns} timeZone={testTimeZone} days={30} />)
-  return { user }
+  const router = fakeRouter()
+  renderWithIntl(
+    <WithRouter router={router}>
+      <CheckInTable patientId={patientId} checkIns={checkIns} timeZone={testTimeZone} days={30} />
+    </WithRouter>,
+  )
+  return { user, router }
 }
 
 function bodyRows(): HTMLElement[] {
@@ -55,13 +63,31 @@ describe('CheckInTable', () => {
     expect(within(second).getByText('Mal')).toBeInTheDocument()
   })
 
-  it('opens a long note in place', async () => {
-    const { user } = renderTable([walk])
+  it('opens a long note in place without leaving the table', async () => {
+    const { user, router } = renderTable([walk])
     const note = screen.getByRole('button', { name: 'Caminhei antes do trabalho e o dia rendeu.' })
 
     await user.click(note)
 
     expect(note).toHaveAttribute('aria-expanded', 'true')
+    expect(router.push).not.toHaveBeenCalled()
+  })
+
+  it('opens the read-only record from its date or anywhere on the row', async () => {
+    const { user, router } = renderTable([walk])
+    const [row] = bodyRows()
+    if (row === undefined) {
+      throw new Error('Expected one entry')
+    }
+
+    expect(within(row).getByRole('link', { name: /14 de out\./ })).toHaveAttribute(
+      'href',
+      `/pro/patients/${patientId}/entries/${walk.id}`,
+    )
+
+    await user.click(within(row).getByText('Bem'))
+
+    expect(router.push).toHaveBeenCalledWith(`/pro/patients/${patientId}/entries/${walk.id}`)
   })
 
   it('pages through long months and keeps only notes when asked, back on the first page', async () => {

@@ -79,7 +79,12 @@ export default async function PatientPage({ params }: PageProps<'/pro/patients/[
         </Surface>
       </WorkspaceSection>
       <WorkspaceSection title={t('entries.title', { days: windowDays })}>
-        <CheckInTable checkIns={checkIns} timeZone={timezone} days={windowDays} />
+        <CheckInTable
+          patientId={patient.id}
+          checkIns={checkIns}
+          timeZone={timezone}
+          days={windowDays}
+        />
       </WorkspaceSection>
       <WorkspaceSection title={t('screenings.title')} description={t('screenings.note')}>
         <QuestionnaireTable assessments={assessments} timeZone={timezone} />

@@ -2,6 +2,7 @@ import { describe, expect, it } from '@jest/globals'
 import type { CheckIn } from '@mycogni/contracts'
 import { screen, within } from '@testing-library/react'
 import { renderWithIntl } from '@/test/render'
+import { noFilters } from '../filters'
 import type { DayGroup } from '../group-by-day'
 import { EntryList } from './entry-list'
 
@@ -60,6 +61,22 @@ describe('EntryList', () => {
 
     const saturday = screen.getByRole('region', { name: 'Sábado, 10 de outubro' })
     expect(within(saturday).getByText('tempo livre')).toBeInTheDocument()
+  })
+
+  it('opens each record keeping the filters in use for the way back', () => {
+    renderWithIntl(
+      <EntryList
+        timeZone="America/Sao_Paulo"
+        groups={groups}
+        filters={{ ...noFilters, period: '30', contexts: ['work'] }}
+      />,
+    )
+
+    const today = screen.getByRole('region', { name: 'Hoje' })
+    expect(within(today).getByRole('link')).toHaveAttribute(
+      'href',
+      `/entries/${morning.id}?period=30&context=work`,
+    )
   })
 
   it('names days, moods and catalog tags in European Portuguese', () => {

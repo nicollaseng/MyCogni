@@ -2,6 +2,7 @@ import {
   assessmentListSchema,
   careLinkListSchema,
   careLinkSchema,
+  checkInDetailSchema,
   checkInListSchema,
   createdInvitationSchema,
   invitationPreviewSchema,
@@ -21,6 +22,7 @@ import {
   type Assessment,
   type CareLink,
   type CheckIn,
+  type CheckInDetail,
   type ConfirmSharingTermsInput,
   type CreatedInvitation,
   type CreateInvitationInput,
@@ -238,6 +240,23 @@ export function fetchPatientCheckIns(patientId: string, since: Date): Promise<Ch
     path: `/v1/professional/patients/${encodeURIComponent(patientId)}/check-ins?${query.toString()}`,
     schema: checkInListSchema,
   })
+}
+
+export async function fetchPatientCheckIn(
+  patientId: string,
+  checkInId: string,
+): Promise<CheckInDetail | null> {
+  try {
+    return await apiRequest({
+      path: `/v1/professional/patients/${encodeURIComponent(patientId)}/check-ins/${encodeURIComponent(checkInId)}`,
+      schema: checkInDetailSchema,
+    })
+  } catch (error) {
+    if (error instanceof ApiError && (error.status === 404 || error.status === 400)) {
+      return null
+    }
+    throw error
+  }
 }
 
 export function fetchPatientAssessments(patientId: string): Promise<Assessment[]> {

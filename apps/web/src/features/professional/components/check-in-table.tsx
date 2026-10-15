@@ -1,8 +1,10 @@
 'use client'
 
 import type { CheckIn } from '@mycogni/contracts'
+import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { useLocale, useTranslations } from 'next-intl'
-import { useState } from 'react'
+import { useState, type MouseEvent } from 'react'
 import { useCatalogLabels } from '@/features/check-in/use-catalog-labels'
 import { cn } from '@/shared/lib/utils'
 import { formatTime } from '@/shared/lib/time'
@@ -14,6 +16,7 @@ import { MoodLabel } from './patient-cells'
 import { Quiet } from './workspace'
 
 interface CheckInTableProps {
+  patientId: string
   checkIns: readonly CheckIn[]
   timeZone: string
   days: number
@@ -65,8 +68,13 @@ function Note({ note }: { note: string }) {
   )
 }
 
-export function CheckInTable({ checkIns, timeZone, days }: CheckInTableProps) {
+function isControl(target: EventTarget): boolean {
+  return target instanceof Element && target.closest('a, button, input, label') !== null
+}
+
+export function CheckInTable({ patientId, checkIns, timeZone, days }: CheckInTableProps) {
   const t = useTranslations('professional')
+  const router = useRouter()
   const locale = useLocale()
   const labels = useCatalogLabels()
   const [onlyNotes, setOnlyNotes] = useState(false)
@@ -127,18 +135,32 @@ export function CheckInTable({ checkIns, timeZone, days }: CheckInTableProps) {
               <tbody>
                 {current.items.map((checkIn) => {
                   const recordedAt = new Date(checkIn.recordedAt)
+                  const href = `/pro/patients/${patientId}/entries/${checkIn.id}` as const
                   return (
-                    <tr key={checkIn.id} className={table.row}>
+                    <tr
+                      key={checkIn.id}
+                      onClick={(event: MouseEvent<HTMLTableRowElement>) => {
+                        if (!isControl(event.target)) {
+                          router.push(href)
+                        }
+                      }}
+                      className={cn(table.row, 'cursor-pointer')}
+                    >
                       <td className={cn(compactCell, table.first, 'whitespace-nowrap')}>
-                        <time dateTime={checkIn.recordedAt}>
-                          {formatEntryDate(recordedAt, timeZone, locale)}
-                          <span aria-hidden className="text-muted-foreground">
-                            {' · '}
-                          </span>
-                          <span className="text-muted-foreground">
-                            {formatTime(recordedAt, timeZone, locale)}
-                          </span>
-                        </time>
+                        <Link
+                          href={href}
+                          className="rounded-[4px] underline decoration-rule decoration-1 underline-offset-4 hover:decoration-foreground"
+                        >
+                          <time dateTime={checkIn.recordedAt}>
+                            {formatEntryDate(recordedAt, timeZone, locale)}
+                            <span aria-hidden className="text-muted-foreground">
+                              {' · '}
+                            </span>
+                            <span className="text-muted-foreground">
+                              {formatTime(recordedAt, timeZone, locale)}
+                            </span>
+                          </time>
+                        </Link>
                       </td>
                       <td className={cn(compactCell, 'whitespace-nowrap')}>
                         <MoodLabel level={checkIn.moodLevel} />
