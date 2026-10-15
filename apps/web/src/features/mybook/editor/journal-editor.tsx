@@ -7,6 +7,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useLocale, useTranslations } from 'next-intl'
 import { useCallback, useEffect, useLayoutEffect, useRef, useState, useTransition } from 'react'
+import { SafetyNotice } from '@/features/safety/components/safety-notice'
 import { ReloadNotice } from '@/shared/components/reload-notice'
 import { useSubmit } from '@/shared/hooks/use-submit'
 import { reportOutdatedApp } from '@/shared/lib/actions/outdated'
@@ -209,6 +210,12 @@ export function JournalEditor({
             }}
           />
         </div>
+      </div>
+
+      <div aria-live="polite" className="empty:hidden">
+        {saving.safety !== null && (
+          <SafetyNotice key={saving.safety.level} prompt={saving.safety} />
+        )}
       </div>
 
       {autosave.status === 'outdated' && <ReloadNotice message={t('status.outdated')} />}

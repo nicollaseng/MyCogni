@@ -37,7 +37,7 @@ export function MessageList({ messages, pending, mode, contacts }: MessageListPr
           </div>
           {needsSupport(message, mode) && (
             <div className="pt-3">
-              <SupportCard mode={mode} contacts={contacts} />
+              <SupportCard mode={mode} contacts={contacts} intro={false} />
             </div>
           )}
         </div>

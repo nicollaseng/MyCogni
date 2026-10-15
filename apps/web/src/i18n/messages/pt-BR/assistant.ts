@@ -57,12 +57,6 @@ export const assistant = {
   noAccess: 'Sem permissão para ler os seus registros, eu respondo de forma geral.',
   professionalNoAccess:
     'Este paciente não autorizou o uso de IA nos registros dele. As respostas são gerais.',
-  support: {
-    title: 'Você não precisa passar por isso sem apoio',
-    body: 'Fale com quem acompanha você, com alguém de confiança ou com um destes serviços, a qualquer hora.',
-    professionals: 'Quem acompanha você',
-    lines: 'Atendimento agora',
-  },
   professionalSupport: {
     title: 'Sinais de risco',
     body: 'Siga o seu protocolo de segurança. Se houver risco imediato, acione os serviços de emergência.',

@@ -4,15 +4,18 @@ import { checkInLimits } from '@mycogni/domain'
 import type { CheckInAddendum } from '@mycogni/contracts'
 import { useLocale, useTranslations } from 'next-intl'
 import { useId, useState, useTransition, type SubmitEvent } from 'react'
+import { SafetyNotice } from '@/features/safety/components/safety-notice'
+import type { SafetyPrompt } from '@/features/safety/model'
 import { unlessOutdated } from '@/shared/lib/actions/outdated'
 import type { ActionResult } from '@/shared/lib/actions/result'
 import { formatDayMonth, formatTime } from '@/shared/lib/time'
 import { Button } from '@/shared/ui/button'
+import type { SavedAddendum } from '../actions'
 
 interface EntryAddendaProps {
   addenda: readonly CheckInAddendum[]
   timeZone: string
-  append?: (text: string) => Promise<ActionResult<CheckInAddendum>>
+  append?: (text: string) => Promise<ActionResult<SavedAddendum>>
 }
 
 const nearLimit = 100
@@ -27,6 +30,7 @@ export function EntryAddenda({ addenda, timeZone, append }: EntryAddendaProps) {
   const [writing, setWriting] = useState(false)
   const [text, setText] = useState('')
   const [error, setError] = useState<string | null>(null)
+  const [safety, setSafety] = useState<{ key: string; prompt: SafetyPrompt } | null>(null)
   const [pending, startTransition] = useTransition()
   const remaining = checkInLimits.addendum - text.length
 
@@ -44,7 +48,11 @@ export function EntryAddenda({ addenda, timeZone, append }: EntryAddendaProps) {
         setError(result.error)
         return
       }
-      setItems((current) => [...current, result.value])
+      const { addendum, safety: prompt } = result.value
+      setItems((current) => [...current, addendum])
+      if (prompt !== null) {
+        setSafety({ key: addendum.id, prompt })
+      }
       setText('')
       setError(null)
       setWriting(false)
@@ -78,6 +86,8 @@ export function EntryAddenda({ addenda, timeZone, append }: EntryAddendaProps) {
           </ol>
         </section>
       )}
+
+      {safety !== null && <SafetyNotice key={safety.key} prompt={safety.prompt} />}
 
       {append !== undefined &&
         (writing ? (

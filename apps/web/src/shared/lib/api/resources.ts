@@ -2,18 +2,17 @@ import {
   accountExportSchema,
   assessmentListSchema,
   assessmentSchema,
-  checkInAddendumSchema,
   checkInCountSchema,
   checkInDetailSchema,
   checkInListSchema,
-  checkInSchema,
   consentListSchema,
   patientInsightListSchema,
   profileSchema,
+  recordedAddendumSchema,
+  recordedCheckInSchema,
   type AccountExport,
   type Assessment,
   type CheckIn,
-  type CheckInAddendum,
   type CheckInDetail,
   type Consent,
   type CreateCheckInAddendumInput,
@@ -21,6 +20,8 @@ import {
   type GrantConsentsInput,
   type PatientInsight,
   type Profile,
+  type RecordedAddendum,
+  type RecordedCheckIn,
   type SubmitAssessmentInput,
   type UpdateProfileInput,
 } from '@mycogni/contracts'
@@ -75,8 +76,8 @@ export function completeOnboarding(): Promise<Profile> {
   return apiRequest({ path: '/v1/onboarding/complete', schema: profileSchema, method: 'POST' })
 }
 
-export function createCheckIn(body: CreateCheckInInput): Promise<CheckIn> {
-  return apiRequest({ path: '/v1/check-ins', schema: checkInSchema, method: 'POST', body })
+export function createCheckIn(body: CreateCheckInInput): Promise<RecordedCheckIn> {
+  return apiRequest({ path: '/v1/check-ins', schema: recordedCheckInSchema, method: 'POST', body })
 }
 
 function checkInQuery({
@@ -153,10 +154,10 @@ export async function fetchCheckIn(id: string): Promise<CheckInDetail | null> {
 export function appendToCheckIn(
   id: string,
   body: CreateCheckInAddendumInput,
-): Promise<CheckInAddendum> {
+): Promise<RecordedAddendum> {
   return apiRequest({
     path: `/v1/check-ins/${encodeURIComponent(id)}/addenda`,
-    schema: checkInAddendumSchema,
+    schema: recordedAddendumSchema,
     method: 'POST',
     body,
   })

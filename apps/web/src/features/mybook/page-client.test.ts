@@ -48,11 +48,12 @@ afterEach(() => {
 
 describe('browserPageClient.save', () => {
   it('sends the page to its stable address and returns when the server saved it', async () => {
-    const fetchMock = respond(answer(200, { updatedAt: '2026-10-15T15:00:00.000Z' }))
+    const fetchMock = respond(answer(200, { updatedAt: '2026-10-15T15:00:00.000Z', safety: null }))
 
     expect(await browserPageClient.save(entryId, input)).toEqual({
       kind: 'saved',
       updatedAt: '2026-10-15T15:00:00.000Z',
+      safety: null,
     })
     const [path, init] = fetchMock.mock.calls[0] ?? []
     expect(path).toBe(`/mybook/${entryId}/content`)
@@ -60,6 +61,17 @@ describe('browserPageClient.save', () => {
       method: 'PUT',
       body: JSON.stringify(input),
       headers: { [pageClientHeader]: pageClientVersion, 'content-type': 'application/json' },
+    })
+  })
+
+  it('passes on the support the server offers after a save', async () => {
+    const safety = { level: 'urgent', professionals: ['Helena Prado'] }
+    respond(answer(200, { updatedAt: '2026-10-15T15:00:00.000Z', safety }))
+
+    expect(await browserPageClient.save(entryId, input)).toEqual({
+      kind: 'saved',
+      updatedAt: '2026-10-15T15:00:00.000Z',
+      safety,
     })
   })
 

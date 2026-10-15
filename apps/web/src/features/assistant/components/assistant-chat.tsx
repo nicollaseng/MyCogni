@@ -75,7 +75,7 @@ export function AssistantChat({ target, actions, timeZone }: AssistantChatProps)
         </div>
         {helpOpen && (
           <div id={helpId}>
-            <SupportCard mode={mode} contacts={contacts} />
+            <SupportCard mode={mode} contacts={contacts} intro />
           </div>
         )}
       </div>

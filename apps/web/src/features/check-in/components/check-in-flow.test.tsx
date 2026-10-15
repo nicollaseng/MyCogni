@@ -1,24 +1,32 @@
 import { describe, expect, it, jest } from '@jest/globals'
-import type { CheckIn, CreateCheckInInput } from '@mycogni/contracts'
+import type { CreateCheckInInput } from '@mycogni/contracts'
 import type { Locale } from '@mycogni/domain'
-import { fireEvent, screen } from '@testing-library/react'
+import { fireEvent, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import type { ActionResult } from '@/shared/lib/actions/result'
+import type { SafetyPrompt } from '@/features/safety/model'
 import { renderWithIntl } from '@/test/render'
+import type { SavedCheckIn } from '../actions'
 import { CheckInFlow } from './check-in-flow'
 
-type Save = (input: CreateCheckInInput) => Promise<ActionResult<CheckIn>>
+type Save = (input: CreateCheckInInput) => Promise<ActionResult<SavedCheckIn>>
 
-function savedAs(input: CreateCheckInInput): Promise<ActionResult<CheckIn>> {
-  return Promise.resolve({
-    ok: true,
-    value: {
-      ...input,
-      id: '0b7c6c8e-6a8f-4f53-9f4b-000000000001',
-      recordedAt: '2026-10-14T12:05:00Z',
-    },
-  })
+function savedWith(safety: SafetyPrompt | null) {
+  return (input: CreateCheckInInput): Promise<ActionResult<SavedCheckIn>> =>
+    Promise.resolve({
+      ok: true,
+      value: {
+        checkIn: {
+          ...input,
+          id: '0b7c6c8e-6a8f-4f53-9f4b-000000000001',
+          recordedAt: '2026-10-14T12:05:00Z',
+        },
+        safety,
+      },
+    })
 }
+
+const savedAs = savedWith(null)
 
 function renderFlow(save = jest.fn<Save>(savedAs), locale: Locale = 'pt-BR') {
   renderWithIntl(
@@ -86,6 +94,27 @@ describe('CheckInFlow', () => {
       note: 'Prazo apertado',
     })
     expect(screen.getByRole('link', { name: 'Ver meus dias' })).toHaveAttribute('href', '/today')
+    expect(screen.queryByRole('region', { name: 'Apoio agora' })).not.toBeInTheDocument()
+  })
+
+  it('offers compact support after a note that needs it', async () => {
+    const user = userEvent.setup()
+    renderFlow(jest.fn<Save>(savedWith({ level: 'urgent', professionals: ['Helena Prado'] })))
+
+    fireEvent.change(slider(), { target: { value: '0' } })
+    await user.click(screen.getByRole('button', { name: 'Continuar' }))
+    await user.click(screen.getByRole('button', { name: 'Continuar' }))
+    await user.type(screen.getByRole('textbox', { name: 'Nota sobre hoje' }), 'Vontade de morrer')
+    await user.click(screen.getByRole('button', { name: 'Registrar' }))
+
+    const panel = await screen.findByRole('region', { name: 'Apoio agora' })
+    expect(panel).toHaveTextContent(
+      'Você não precisa passar por isso sem apoio: fale com alguém agora.',
+    )
+    expect(within(panel).getByRole('link', { name: '188 CVV' })).toHaveAttribute('href', 'tel:188')
+    expect(within(panel).getByRole('link', { name: '192 SAMU' })).toHaveAttribute('href', 'tel:192')
+    expect(panel).toHaveTextContent('Helena Prado acompanha você.')
+    expect(screen.getByRole('link', { name: 'Ver meus dias' })).toBeVisible()
   })
 
   it('stores words the person typed as they were written', async () => {

@@ -74,9 +74,11 @@ test('answers a crisis message with the crisis card', async ({ page }) => {
   await chat.getByRole('textbox', { name: 'Mensagem' }).fill('Não aguento mais, quero me matar')
   await chat.getByRole('textbox', { name: 'Mensagem' }).press('Enter')
 
-  await expect(chat.getByRole('log')).toContainText('Que bom que você me contou.')
-  const card = chat.getByRole('region', { name: 'Você não precisa passar por isso sem apoio' })
-  await expect(card.getByRole('link', { name: '188' })).toHaveAttribute('href', 'tel:188')
+  await expect(chat.getByRole('log')).toContainText(
+    'Que bom que você me contou. Você merece o apoio de uma pessoa agora: ligue para um dos contatos abaixo.',
+  )
+  const card = chat.getByRole('region', { name: 'Apoio agora' })
+  await expect(card.getByRole('link', { name: '188 CVV' })).toHaveAttribute('href', 'tel:188')
 })
 
 test('lets a professional ask about a linked patient', async ({ page }) => {
