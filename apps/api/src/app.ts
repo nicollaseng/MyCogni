@@ -7,6 +7,7 @@ import {
 } from 'fastify-type-provider-zod'
 import type { AssistantModel } from './ai/assistant-model.ts'
 import type { AccountAdmin } from './auth/account-admin.ts'
+import { createAccountTypeReader } from './auth/account-types.ts'
 import type { TokenVerifier } from './auth/token-verifier.ts'
 import type { AppConfig } from './config/env.ts'
 import type { Database } from './db/client.ts'
@@ -32,6 +33,7 @@ import type { Fetcher } from './modules/profile/photo-download.ts'
 import { reportModule } from './modules/reports/index.ts'
 import { supportModule } from './modules/support/index.ts'
 import { zenModule } from './modules/zen/index.ts'
+import { requireAccountType } from './plugins/account-type.ts'
 import { requireAuthentication } from './plugins/authentication.ts'
 import { registerErrorHandler } from './plugins/error-handler.ts'
 import { registerSecurity } from './plugins/security.ts'
@@ -87,6 +89,8 @@ function authenticatedRoutes(
 ): FastifyPluginAsyncZod {
   return async (api) => {
     requireAuthentication(api, verifier)
+    const accountTypes = createAccountTypeReader(db)
+    requireAccountType(api, accountTypes)
     await api.register(
       profileModule({
         db,
@@ -96,7 +100,7 @@ function authenticatedRoutes(
         log: api.log,
       }),
     )
-    await api.register(consentModule(db))
+    await api.register(consentModule(db, accountTypes))
     await api.register(assessmentModule(db, jobs))
     await api.register(checkInModule(db, jobs))
     await api.register(onboardingModule(db))

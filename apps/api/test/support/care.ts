@@ -7,7 +7,7 @@ import {
 import { eq, sql } from 'drizzle-orm'
 import { authUsers } from 'drizzle-orm/supabase'
 import type { Database, Transaction } from '../../src/db/client.ts'
-import { invitations, professionalProfiles } from '../../src/db/schema/index.ts'
+import { invitations, professionalProfiles, profiles } from '../../src/db/schema/index.ts'
 
 export function invitationCode(): string {
   return Array.from(
@@ -24,6 +24,7 @@ export async function registerProfessional(
     status = 'verified',
   }: { fullName?: string; status?: ProfessionalStatus } = {},
 ): Promise<void> {
+  await db.update(profiles).set({ accountType: 'professional' }).where(eq(profiles.id, userId))
   await db.insert(professionalProfiles).values({
     userId,
     kind: 'psychologist',
