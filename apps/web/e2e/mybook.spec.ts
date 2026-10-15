@@ -1,24 +1,12 @@
-import { randomUUID } from 'node:crypto'
 import { fileURLToPath } from 'node:url'
-import { expect, test, type Locator, type Page } from '@playwright/test'
+import { expect, test, type Page } from '@playwright/test'
 import { finishOnboarding, inviteByLink, verifiedProfessional } from './support/api'
+import { choosePhotos, pageBody, saveStatus, startPage, unique } from './support/mybook'
 import { signedOut } from './support/session'
 import { createUser, uniqueEmail } from './support/supabase'
 
 const photo = fileURLToPath(new URL('./fixtures/photo.png', import.meta.url))
 const password = 'mybook-e2e-2026'
-
-function unique(text: string): string {
-  return `${text} ${randomUUID().slice(0, 6)}`
-}
-
-function pageBody(page: Page): Locator {
-  return page.getByRole('textbox', { name: 'Texto da página' })
-}
-
-function saveStatus(page: Page): Locator {
-  return page.getByRole('main').getByRole('status')
-}
 
 async function signIn(page: Page, email: string): Promise<void> {
   await page.goto('/sign-in')
@@ -26,17 +14,6 @@ async function signIn(page: Page, email: string): Promise<void> {
   await page.getByLabel('Senha').fill(password)
   await page.getByRole('button', { name: 'Entrar', exact: true }).click()
   await expect(page).not.toHaveURL(/\/sign-in/)
-}
-
-async function startPage(page: Page, title: string, text: string): Promise<string> {
-  await page.goto('/mybook')
-  await page.getByRole('button', { name: 'Nova página' }).click()
-  await expect(page).toHaveURL(/\/mybook\/[0-9a-f-]{36}$/)
-  await page.getByLabel('Título da página').fill(title)
-  await pageBody(page).click()
-  await page.keyboard.type(text)
-  await expect(saveStatus(page)).toHaveText('Salvo')
-  return new URL(page.url()).pathname.split('/').at(-1) ?? ''
 }
 
 async function format(page: Page, name: string): Promise<void> {
@@ -59,9 +36,9 @@ test('writes a page with formatting, a checklist and a photo, finds it and delet
   await page.getByRole('button', { name: 'Lista de tarefas' }).click()
   await page.keyboard.type('Ligar para a minha irmã')
 
-  const chooser = page.waitForEvent('filechooser')
-  await page.getByRole('button', { name: 'Adicionar foto' }).click()
-  await (await chooser).setFiles(photo)
+  const sheet = await choosePhotos(page, photo)
+  await expect(sheet.getByRole('radio', { name: /^Média/ })).toBeChecked()
+  await sheet.getByRole('button', { name: 'Adicionar', exact: true }).click()
   await expect(pageBody(page).locator('img[data-path]')).toBeVisible()
   await expect(saveStatus(page)).toHaveText('Salvo')
 
@@ -103,11 +80,11 @@ test('writes a page with formatting, a checklist and a photo, finds it and delet
 test('rejects a file that is not a photo', async ({ page }) => {
   await startPage(page, unique('Sem foto'), 'Hoje foi um dia comum.')
 
-  const chooser = page.waitForEvent('filechooser')
-  await page.getByRole('button', { name: 'Adicionar foto' }).click()
-  await (
-    await chooser
-  ).setFiles({ name: 'notas.txt', mimeType: 'text/plain', buffer: Buffer.from('texto') })
+  await choosePhotos(page, {
+    name: 'notas.txt',
+    mimeType: 'text/plain',
+    buffer: Buffer.from('texto'),
+  })
 
   await expect(page.getByRole('main').getByRole('alert')).toHaveText(
     'Escolha uma foto em JPG, PNG, WebP ou GIF.',
@@ -124,8 +101,8 @@ test('discards a new page left without writing anything', async ({ page }) => {
   await page.getByRole('main').getByRole('link', { name: 'MyBook' }).click()
 
   await expect(page).toHaveURL('/mybook')
-  const response = await page.goto(blank)
-  expect(response?.status()).toBe(404)
+  await page.goto(blank)
+  await expect(page.getByRole('heading', { name: 'Esta página não existe.' })).toBeVisible()
 })
 
 test.describe('sharing', () => {

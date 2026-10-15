@@ -1,4 +1,6 @@
+import { NodeSelection, TextSelection } from '@tiptap/pm/state'
 import type { Editor } from '@tiptap/react'
+import { imageNodeName } from '../document'
 import { dashListName } from './extensions'
 
 export const textStyles = ['title', 'heading', 'subheading', 'body'] as const
@@ -90,4 +92,25 @@ export function outdent(editor: Editor): void {
   if (type !== null) {
     editor.chain().focus().liftListItem(type).run()
   }
+}
+
+export function insertPhoto(editor: Editor, attrs: Readonly<Record<string, unknown>>): void {
+  editor
+    .chain()
+    .focus()
+    .insertContent({ type: imageNodeName, attrs })
+    .command(({ tr }) => {
+      const paragraph = tr.doc.type.schema.nodes.paragraph
+      if (!(tr.selection instanceof NodeSelection) || paragraph === undefined) {
+        return true
+      }
+      const end = tr.selection.to
+      if (tr.doc.resolve(end).nodeAfter?.isTextblock !== true) {
+        tr.insert(end, paragraph.create())
+      }
+      tr.setSelection(TextSelection.create(tr.doc, end + 1))
+      return true
+    })
+    .scrollIntoView()
+    .run()
 }

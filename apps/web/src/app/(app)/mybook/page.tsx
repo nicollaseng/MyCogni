@@ -2,7 +2,6 @@ import type { JournalShare } from '@mycogni/contracts'
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { getLocale, getTranslations } from 'next-intl/server'
-import { createPage } from '@/features/mybook/actions'
 import { RefreshAfterPageVisit } from '@/features/mybook/components/book-freshness'
 import { Icon } from '@/features/mybook/components/icon'
 import { NewPageButton } from '@/features/mybook/components/new-page-button'
@@ -64,7 +63,7 @@ export default async function MybookPage({ searchParams }: PageProps<'/mybook'>)
             {t('title')}
           </h1>
           <div className="pt-1 sm:pt-2">
-            <NewPageButton create={createPage} label={t('newPage')} />
+            <NewPageButton label={t('newPage')} />
           </div>
         </div>
         <p className="max-w-[36rem] leading-relaxed text-muted-foreground">{t('description')}</p>
@@ -95,7 +94,7 @@ export default async function MybookPage({ searchParams }: PageProps<'/mybook'>)
             {t('empty.body')}
           </p>
           <div className="pt-3">
-            <NewPageButton create={createPage} label={t('empty.action')} size="default" />
+            <NewPageButton label={t('empty.action')} size="default" />
           </div>
         </section>
       ) : (

@@ -3,6 +3,7 @@
 import { locales, type Locale } from '@mycogni/domain'
 import { useLocale, useTranslations } from 'next-intl'
 import { useId, useTransition } from 'react'
+import { unlessOutdated } from '@/shared/lib/actions/outdated'
 import { cn } from '@/shared/lib/utils'
 import { localeNames } from '../locale-names'
 
@@ -30,7 +31,9 @@ export function LocaleSelect({ choose, showLabel = false, className }: LocaleSel
         onChange={(event) => {
           const next = locales.find((locale) => locale === event.currentTarget.value)
           if (next !== undefined) {
-            startTransition(() => choose(next))
+            startTransition(async () => {
+              await unlessOutdated(() => choose(next))
+            })
           }
         }}
         className="min-h-11 cursor-pointer rounded-md border border-rule bg-transparent px-4 text-[15px] disabled:opacity-60"

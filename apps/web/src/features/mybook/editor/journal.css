@@ -5,6 +5,7 @@
   color: var(--foreground);
   overflow-wrap: anywhere;
   min-height: 12rem;
+  --photo-max-height: min(70svh, 44rem);
 }
 
 .journal:focus {
@@ -154,11 +155,18 @@
 
 .journal img {
   display: block;
-  max-width: 100%;
+  width: auto;
   height: auto;
+  max-width: 100%;
+  max-height: var(--photo-max-height);
   margin: 0.9em 0;
   border-radius: 8px;
   background: var(--surface);
+}
+
+.journal img[width][height] {
+  width: min(100%, var(--photo-width), calc(var(--photo-max-height) * var(--photo-ratio)));
+  max-height: none;
 }
 
 .journal img.ProseMirror-selectednode {

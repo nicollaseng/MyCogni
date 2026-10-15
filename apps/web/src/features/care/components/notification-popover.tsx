@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { useLocale, useTranslations } from 'next-intl'
 import { useEffect, useState, useTransition, type MouseEvent } from 'react'
 import { usePopoverMenu } from '@/shared/hooks/use-popover-menu'
+import { unlessOutdated } from '@/shared/lib/actions/outdated'
 import type { ActionResult } from '@/shared/lib/actions/result'
 import { formatRelativeTime } from '@/shared/lib/time'
 import { cn } from '@/shared/lib/utils'
@@ -166,7 +167,7 @@ export function NotificationPopover({
     }
     setReadHere((ids) => [...ids, notification.id])
     startTransition(async () => {
-      await markRead([notification.id])
+      await unlessOutdated(() => markRead([notification.id]))
       navigate(href)
     })
   }

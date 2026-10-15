@@ -2,8 +2,11 @@ import { fileURLToPath } from 'node:url'
 import type { NextConfig } from 'next'
 import createNextIntlPlugin from 'next-intl/plugin'
 
+const commit = process.env.RAILWAY_GIT_COMMIT_SHA
+
 const config: NextConfig = {
   output: 'standalone',
+  deploymentId: commit === undefined || commit === '' ? undefined : commit,
   outputFileTracingRoot: fileURLToPath(new URL('../..', import.meta.url)),
   reactStrictMode: true,
   poweredByHeader: false,

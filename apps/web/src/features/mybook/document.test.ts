@@ -2,6 +2,7 @@ import { describe, expect, it } from '@jest/globals'
 import {
   draftOf,
   imagePathsOf,
+  imageSizeOf,
   isBlankDraft,
   journalDocumentOf,
   plainTextOf,
@@ -58,6 +59,44 @@ describe('image sources', () => {
       path: 'user/entry/two.png',
       src: null,
     })
+  })
+})
+
+describe('image sizes', () => {
+  const sized = {
+    type: 'doc',
+    content: [
+      {
+        type: 'image',
+        attrs: {
+          path: 'user/entry/one.webp',
+          src: 'https://x.y/one.webp',
+          width: 1600,
+          height: 1200,
+        },
+      },
+      { type: 'image', attrs: { path: 'user/entry/two.webp', width: 0, height: 'alto' } },
+    ],
+  }
+
+  it('keeps the size of each photo so the page does not jump while it loads', () => {
+    expect(withoutImageSources(sized).content?.map((node) => node.attrs)).toEqual([
+      { path: 'user/entry/one.webp', width: 1600, height: 1200 },
+      { path: 'user/entry/two.webp' },
+    ])
+    expect(withImageSources(sized, {}).content?.[0]?.attrs).toEqual({
+      path: 'user/entry/one.webp',
+      src: null,
+      width: 1600,
+      height: 1200,
+    })
+  })
+
+  it('reads a size only when both sides are whole pixels', () => {
+    expect(imageSizeOf({ width: 1024, height: 768 })).toEqual({ width: 1024, height: 768 })
+    expect(imageSizeOf({ width: 1024.5, height: 768 })).toBeNull()
+    expect(imageSizeOf({ width: 1024 })).toBeNull()
+    expect(imageSizeOf(undefined)).toBeNull()
   })
 })
 
