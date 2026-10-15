@@ -155,7 +155,7 @@ export async function recordCheckIns(
   }
 }
 
-export async function verifiedProfessional(
+export async function registeredProfessional(
   email: string,
   password: string,
   fullName: string,
@@ -167,6 +167,15 @@ export async function verifiedProfessional(
     fullName,
     registration: 'CRP 06/123456',
   })
+  return userId
+}
+
+export async function verifiedProfessional(
+  email: string,
+  password: string,
+  fullName: string,
+): Promise<string> {
+  const userId = await registeredProfessional(email, password, fullName)
   await sendRegistrationDocument(email, password)
   const adminEmail = uniqueEmail('admin')
   const adminId = await createUser(adminEmail, password)
