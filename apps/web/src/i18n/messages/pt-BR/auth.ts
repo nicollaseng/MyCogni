@@ -26,7 +26,7 @@ export const auth = {
     professional: {
       title: 'Criar conta profissional',
       lead: 'Para quem atende pacientes. Depois de criar a conta, você envia seu registro para verificação.',
-      notProfessional: 'Quer acompanhar o seu próprio humor?',
+      notProfessional: 'Quer acompanhar seu próprio humor?',
       patientSignUp: 'Criar conta de paciente',
     },
     agreement:

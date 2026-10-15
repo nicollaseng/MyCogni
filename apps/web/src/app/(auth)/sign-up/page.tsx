@@ -8,6 +8,7 @@ import { AuthHeading } from '@/features/auth/components/auth-heading'
 import { CredentialsForm } from '@/features/auth/components/credentials-form'
 import { GoogleSignIn } from '@/features/auth/components/google-sign-in'
 import { redirectSignedInUser } from '@/shared/lib/auth/session'
+import { cn } from '@/shared/lib/utils'
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations('auth.meta')
@@ -46,7 +47,7 @@ export default async function SignUpPage({ searchParams }: PageProps<'/sign-up'>
         {accountType === 'professional' && (
           <span className="mt-2 block">
             {t('professional.notProfessional')}{' '}
-            <Link href="/sign-up" className={authLink}>
+            <Link href="/sign-up" className={cn(authLink, 'whitespace-nowrap')}>
               {t('professional.patientSignUp')}
             </Link>
           </span>

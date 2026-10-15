@@ -13,8 +13,10 @@ export function PatientAccountNotice({ signOut }: PatientAccountNoticeProps) {
 
   return (
     <div className="max-w-xl space-y-8">
-      <PageTitle kicker={t('kicker')} title={t('title')} description={t('body')} />
-      <p className="leading-relaxed text-pretty text-muted-foreground">{t('records')}</p>
+      <div className="space-y-3">
+        <PageTitle kicker={t('kicker')} title={t('title')} description={t('body')} />
+        <p className="leading-relaxed text-pretty text-muted-foreground">{t('records')}</p>
+      </div>
       <div className="flex flex-col gap-3 sm:flex-row">
         <form action={signOut}>
           <Button type="submit" className="w-full sm:w-auto">
