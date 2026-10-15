@@ -21,6 +21,7 @@ describe('loadConfig', () => {
       supabaseSecretKey: required.SUPABASE_SECRET_KEY,
       webUrl: 'http://localhost:3000',
       mail: { provider: 'none' },
+      supportEmail: 'support@mycogniapp.com',
       redisUrl: null,
       anthropicApiKey: null,
     })
@@ -37,6 +38,13 @@ describe('loadConfig', () => {
         MAIL_FROM: 'Cogni <a@b.co>',
       }).mail,
     ).toEqual({ provider: 'mailpit', url: 'http://127.0.0.1:55324', from: 'Cogni <a@b.co>' })
+  })
+
+  it('sends new tickets to the support inbox that is configured', () => {
+    expect(loadConfig({ ...required, SUPPORT_EMAIL: 'ajuda@mycogniapp.com' }).supportEmail).toBe(
+      'ajuda@mycogniapp.com',
+    )
+    expect(() => loadConfig({ ...required, SUPPORT_EMAIL: 'support' })).toThrow(InvalidConfigError)
   })
 
   it('parses the port and the comma separated list of origins', () => {

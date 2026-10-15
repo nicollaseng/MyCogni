@@ -1,8 +1,18 @@
-import type { InvitationStatus, NotificationKind, ProfessionalKind } from '@mycogni/domain'
+import type {
+  InvitationStatus,
+  NotificationKind,
+  ProfessionalKind,
+  SupportTicketStatus,
+} from '@mycogni/domain'
 import { and, count, desc, eq, inArray, isNull } from 'drizzle-orm'
 import type { Database } from '../../db/client.ts'
 import { withUser } from '../../db/rls.ts'
-import { invitations, notifications, professionalProfiles } from '../../db/schema/index.ts'
+import {
+  invitations,
+  notifications,
+  professionalProfiles,
+  supportTickets,
+} from '../../db/schema/index.ts'
 
 export interface NotificationRecord {
   id: string
@@ -10,6 +20,7 @@ export interface NotificationRecord {
   createdAt: Date
   readAt: Date | null
   insightId: string | null
+  supportTicket: { id: string; number: number; status: SupportTicketStatus } | null
   invitation: {
     id: string
     status: InvitationStatus
@@ -36,6 +47,9 @@ export function createNotificationRepository(db: Database): NotificationReposito
             createdAt: notifications.createdAt,
             readAt: notifications.readAt,
             insightId: notifications.insightId,
+            supportTicketId: supportTickets.id,
+            supportNumber: supportTickets.number,
+            supportStatus: notifications.supportStatus,
             invitationId: invitations.id,
             invitationStatus: invitations.status,
             invitationExpiresAt: invitations.expiresAt,
@@ -44,6 +58,7 @@ export function createNotificationRepository(db: Database): NotificationReposito
           })
           .from(notifications)
           .leftJoin(invitations, eq(invitations.id, notifications.invitationId))
+          .leftJoin(supportTickets, eq(supportTickets.id, notifications.supportTicketId))
           .leftJoin(
             professionalProfiles,
             eq(professionalProfiles.userId, invitations.professionalId),
@@ -58,6 +73,10 @@ export function createNotificationRepository(db: Database): NotificationReposito
         createdAt: row.createdAt,
         readAt: row.readAt,
         insightId: row.insightId,
+        supportTicket:
+          row.supportTicketId === null || row.supportNumber === null || row.supportStatus === null
+            ? null
+            : { id: row.supportTicketId, number: row.supportNumber, status: row.supportStatus },
         invitation:
           row.invitationId === null ||
           row.invitationStatus === null ||
