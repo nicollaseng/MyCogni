@@ -18,8 +18,8 @@ export const sleepAndMood: Article = {
         {
           heading: 'Quanto sono e quando se preocupar',
           paragraphs: [
-            'Segundo o serviço de saúde britânico, adultos precisam em média de 7 a 9 horas de sono, e há variação de pessoa para pessoa. A insônia que dura três meses ou mais é chamada de insônia crônica. Se dormir mal está afetando o seu dia, ou se mudar os hábitos não ajudou, vale conversar com um profissional de saúde.',
-            'Os registros do app ajudam a enxergar a sua relação entre sono e humor. Marque o contexto sono quando ele pesar no dia e veja, em Padrões, se o humor muda nos dias em que ele aparece. Anotar o horário de deitar e de acordar no MyBook por uma ou duas semanas também mostra padrões que passam despercebidos.',
+            'Segundo o serviço de saúde britânico, adultos precisam em média de 7 a 9 horas de sono, e há variação de pessoa para pessoa. A insônia que dura três meses ou mais é chamada de insônia crônica. Se dormir mal está afetando seu dia, ou se mudar os hábitos não ajudou, vale conversar com um profissional de saúde.',
+            'Os registros do app ajudam a enxergar sua relação entre sono e humor. Marque o contexto sono quando ele pesar no dia e veja, em Padrões, se o humor muda nos dias em que ele aparece. Anotar o horário de deitar e de acordar no MyBook por uma ou duas semanas também mostra padrões que passam despercebidos.',
           ],
         },
         {

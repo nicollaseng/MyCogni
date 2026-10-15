@@ -42,7 +42,7 @@ export const anxietyBasics: Article = {
           paragraphs: [
             'Observe quando a ansiedade aparece, o que estava acontecendo e o que você fez em seguida. Os registros do app ajudam a enxergar padrões que passam despercebidos no dia a dia.',
             'Fugir do que dá medo traz alívio na hora, mas tende a manter o problema. Uma alternativa é se aproximar das situações aos poucos, em passos que pareçam possíveis.',
-            'Se a ansiedade atrapalha o seu dia há semanas, ou se você sente que não dá conta sozinho/a, converse com um profissional de saúde. Pedir ajuda cedo costuma tornar o caminho mais curto.',
+            'Se a ansiedade atrapalha seu dia há semanas, ou se você sente que não dá conta sozinho/a, converse com um profissional de saúde. Pedir ajuda cedo costuma tornar o caminho mais curto.',
           ],
         },
       ],

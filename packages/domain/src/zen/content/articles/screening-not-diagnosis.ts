@@ -18,7 +18,7 @@ export const screeningNotDiagnosis: Article = {
         {
           heading: 'Por que não é diagnóstico',
           paragraphs: [
-            'Diagnóstico é uma conclusão clínica. Ele leva em conta a sua história, há quanto tempo os sinais existem, o quanto atrapalham a vida, outras condições de saúde que podem explicar o que você sente e o que mais está acontecendo. Um questionário não enxerga nada disso.',
+            'Diagnóstico é uma conclusão clínica. Ele leva em conta sua história, há quanto tempo os sinais existem, o quanto atrapalham a vida, outras condições de saúde que podem explicar o que você sente e o que mais está acontecendo. Um questionário não enxerga nada disso.',
             'No estudo original do PHQ-9, a pontuação 10 ou mais identificou corretamente 88% das pessoas com depressão maior confirmada por entrevista com um profissional, e 88% das pessoas sem ela. Uma análise de 2019, com dados de mais de dezessete mil participantes, encontrou números parecidos. São resultados bons para uma triagem, mas que deixam espaço para erros nos dois sentidos.',
             'Outra análise, de 2020, mostrou o tamanho desse espaço: entre mais de nove mil pessoas, 24,6% tiveram PHQ-9 de 10 ou mais, mas só 12,1% preenchiam os critérios de depressão maior numa entrevista diagnóstica com um profissional. Ou seja, a pontuação sozinha tende a apontar mais casos do que existem de fato.',
           ],
@@ -43,9 +43,9 @@ export const screeningNotDiagnosis: Article = {
           ],
         },
         {
-          heading: 'Como usar bem os seus resultados',
+          heading: 'Como usar bem seus resultados',
           paragraphs: [
-            'Responda a cada duas semanas, pensando em como as coisas foram de verdade. Observe a tendência ao longo do tempo, mais do que um número isolado. Leve os resultados e os seus registros para a conversa com o profissional que acompanha você; eles ajudam a contar a sua história.',
+            'Responda a cada duas semanas, pensando em como as coisas foram de verdade. Observe a tendência ao longo do tempo, mais do que um número isolado. Leve os resultados e seus registros para a conversa com o profissional que acompanha você; eles ajudam a contar sua história.',
           ],
         },
       ],

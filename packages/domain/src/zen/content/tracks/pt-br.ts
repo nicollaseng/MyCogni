@@ -82,7 +82,7 @@ export const brazilianTracks: TrackTexts = {
       },
       reflect: {
         title: 'Refletir',
-        body: 'Como estava o seu humor antes e depois da atividade? Houve alguma diferença, mesmo pequena?',
+        body: 'Como estava seu humor antes e depois da atividade? Houve alguma diferença, mesmo pequena?',
       },
       questionnaires: {
         title: 'Acompanhar com os questionários',

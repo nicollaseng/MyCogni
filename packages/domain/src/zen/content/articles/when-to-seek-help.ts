@@ -36,7 +36,7 @@ export const whenToSeekHelp: Article = {
           heading: 'Por onde começar',
           paragraphs: [
             'Um médico de atenção primária, um psicólogo ou um psiquiatra são bons pontos de partida. Se você tem um profissional vinculado no app, ele já acompanha os registros que você escolheu compartilhar, e você pode contar o que mudou.',
-            'Antes da consulta, anote o que tem sentido, desde quando, o que piora e o que ajuda, além de remédios que usa. Os seus resultados do PHQ-9 e do GAD-7 e os seus registros de humor também ajudam a contar a sua história.',
+            'Antes da consulta, anote o que tem sentido, desde quando, o que piora e o que ajuda, além de remédios que usa. Seus resultados do PHQ-9 e do GAD-7 e seus registros de humor também ajudam a contar sua história.',
           ],
         },
         {
