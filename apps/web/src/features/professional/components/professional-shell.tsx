@@ -56,7 +56,6 @@ export function ProfessionalShell({
           <MobileMenu
             name={professional.fullName}
             profession={profession}
-            photoUrl={photoUrl}
             verified={verified}
             alerts={alerts}
             signOut={signOut}

@@ -27,10 +27,13 @@ import { onboardingModule } from './modules/onboarding/index.ts'
 import { professionalModule } from './modules/professionals/index.ts'
 import { profileModule } from './modules/profile/index.ts'
 import { reportModule } from './modules/reports/index.ts'
+import { supportModule } from './modules/support/index.ts'
 import { requireAuthentication } from './plugins/authentication.ts'
 import { registerErrorHandler } from './plugins/error-handler.ts'
 import { registerSecurity } from './plugins/security.ts'
 import type { App } from './shared/http.ts'
+import { createRateLimiter, type RateLimiter } from './shared/rate-limiter.ts'
+import type { BucketStore } from './storage/bucket-store.ts'
 import type { JournalImageStore } from './storage/journal-images.ts'
 import type { ProfileFileStores } from './storage/profile-files.ts'
 
@@ -41,6 +44,7 @@ export interface AppDependencies {
   accountAdmin: AccountAdmin
   journalImages: JournalImageStore
   profileFiles: ProfileFileStores
+  supportAttachments: BucketStore
 }
 
 function publicRoutes(
@@ -54,10 +58,23 @@ function publicRoutes(
   }
 }
 
+interface Services {
+  mailer: Mailer
+  jobs: JobScheduler
+  limiter: RateLimiter
+}
+
 function authenticatedRoutes(
-  { config, db, verifier, accountAdmin, journalImages, profileFiles }: AppDependencies,
-  mailer: Mailer,
-  jobs: JobScheduler,
+  {
+    config,
+    db,
+    verifier,
+    accountAdmin,
+    journalImages,
+    profileFiles,
+    supportAttachments,
+  }: AppDependencies,
+  { mailer, jobs, limiter }: Services,
 ): FastifyPluginAsyncZod {
   return async (api) => {
     requireAuthentication(api, verifier)
@@ -68,7 +85,12 @@ function authenticatedRoutes(
     await api.register(onboardingModule(db))
     await api.register(professionalModule(db))
     await api.register(
-      accountModule(db, accountAdmin, [journalImages, profileFiles.photos, profileFiles.documents]),
+      accountModule(db, accountAdmin, [
+        journalImages,
+        profileFiles.photos,
+        profileFiles.documents,
+        supportAttachments,
+      ]),
     )
     await api.register(
       invitationModule({ db, photos: profileFiles.photos, mailer, webUrl: config.webUrl }),
@@ -80,6 +102,16 @@ function authenticatedRoutes(
     await api.register(insightModule(db))
     await api.register(reportModule(db))
     await api.register(alertModule(db, profileFiles.photos))
+    await api.register(
+      supportModule({
+        db,
+        attachments: supportAttachments,
+        mailer,
+        limiter,
+        webUrl: config.webUrl,
+        supportEmail: config.supportEmail,
+      }),
+    )
   }
 }
 
@@ -103,8 +135,11 @@ export async function buildApp(dependencies: AppDependencies): Promise<App> {
     { redisUrl: dependencies.config.redisUrl, prefix: dependencies.config.queuePrefix },
     app.log,
   )
-  app.addHook('onClose', () => jobs.close())
-  await app.register(authenticatedRoutes(dependencies, mailer, jobs), { prefix: '/v1' })
+  const limiter = createRateLimiter(dependencies.config.redisUrl, app.log)
+  app.addHook('onClose', () => Promise.all([jobs.close(), limiter.close()]).then(() => undefined))
+  await app.register(authenticatedRoutes(dependencies, { mailer, jobs, limiter }), {
+    prefix: '/v1',
+  })
 
   return app
 }

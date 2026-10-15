@@ -18,6 +18,7 @@ export const professional = {
     closeMenu: 'Fechar menu',
     accountMenu: 'Conta',
     settings: 'Configurações',
+    support: 'Suporte',
     signOut: 'Sair',
   },
   join: {

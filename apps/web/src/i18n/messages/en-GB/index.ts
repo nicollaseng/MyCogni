@@ -15,6 +15,7 @@ import { patterns } from './patterns'
 import { professional } from './professional'
 import { report } from './report'
 import { screening } from './screening'
+import { support } from './support'
 import { today } from './today'
 import { verification } from './verification'
 import type { Messages } from '../pt-BR'
@@ -39,4 +40,5 @@ export const messages: Messages = {
   alerts,
   admin,
   verification,
+  support,
 }

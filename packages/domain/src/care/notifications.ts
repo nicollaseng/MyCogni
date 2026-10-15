@@ -4,6 +4,7 @@ export const notificationKinds = [
   'marketing',
   'system',
   'insight',
+  'support',
 ] as const
 
 export type NotificationKind = (typeof notificationKinds)[number]

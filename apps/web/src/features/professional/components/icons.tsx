@@ -177,6 +177,14 @@ export function SettingsIcon({ className }: IconProps) {
   )
 }
 
+export function SupportIcon({ className }: IconProps) {
+  return (
+    <Icon className={className}>
+      <path d="M5 5.5h14a1.5 1.5 0 0 1 1.5 1.5v8a1.5 1.5 0 0 1-1.5 1.5h-8.5l-4 3.5v-3.5H5A1.5 1.5 0 0 1 3.5 15V7A1.5 1.5 0 0 1 5 5.5z" />
+    </Icon>
+  )
+}
+
 export function SignOutIcon({ className }: IconProps) {
   return (
     <Icon className={className}>
