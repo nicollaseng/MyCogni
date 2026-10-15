@@ -1,12 +1,11 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
-import { signIn } from '@/features/auth/actions'
+import { signIn, signInWithGoogle } from '@/features/auth/actions'
 import { AuthFootnote, authLink } from '@/features/auth/components/auth-footnote'
 import { AuthHeading } from '@/features/auth/components/auth-heading'
 import { CredentialsForm } from '@/features/auth/components/credentials-form'
 import { GoogleSignIn } from '@/features/auth/components/google-sign-in'
 import { redirectSignedInUser } from '@/shared/lib/auth/session'
-import { publicEnv } from '@/shared/lib/env'
 
 export const metadata: Metadata = { title: 'Entrar' }
 
@@ -27,7 +26,7 @@ export default async function SignInPage({ searchParams }: PageProps<'/sign-in'>
           Não foi possível entrar com o Google. Tente de novo.
         </p>
       )}
-      {publicEnv().googleAuthEnabled && <GoogleSignIn />}
+      <GoogleSignIn action={signInWithGoogle} />
       <CredentialsForm action={signIn} mode="sign-in" />
       <p className="mt-6 text-sm">
         <Link href="/forgot-password" className={authLink}>
