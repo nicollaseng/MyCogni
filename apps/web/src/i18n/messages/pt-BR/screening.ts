@@ -18,8 +18,8 @@ export const screening = {
   },
   comparison: {
     same: 'Igual a {day}',
-    up: '{points, plural, one {# ponto} other {# pontos}} a mais que em {day}',
-    down: '{points, plural, one {# ponto} other {# pontos}} a menos que em {day}',
+    up: '{points, plural, =0 {# pontos} one {# ponto} other {# pontos}} a mais que em {day}',
+    down: '{points, plural, =0 {# pontos} one {# ponto} other {# pontos}} a menos que em {day}',
   },
   questionnaire: {
     back: 'Voltar',
@@ -54,7 +54,7 @@ export const screening = {
     answeredOn: 'Respondidos em {date}. É uma triagem, não um diagnóstico.',
     retake: 'Refazer os questionários',
     next: 'Sugerimos responder de novo a partir de {date}, para ver como você muda.',
-    due: '{count, plural, one {Já se passou # dia} other {Já se passaram # dias}} desde as últimas respostas. Você já pode responder de novo.',
+    due: '{count, plural, =0 {Já se passaram # dias} one {Já se passou # dia} other {Já se passaram # dias}} desde as últimas respostas. Você já pode responder de novo.',
   },
   history: {
     title: 'Histórico',

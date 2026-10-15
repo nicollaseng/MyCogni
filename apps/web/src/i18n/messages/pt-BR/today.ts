@@ -25,7 +25,7 @@ export const today = {
     day: 'Dia',
     mood: 'Humor médio',
     noRecord: 'Sem registro',
-    records: '{count, plural, one {# registro} other {# registros}}',
+    records: '{count, plural, =0 {# registros} one {# registro} other {# registros}}',
   },
 }
 
