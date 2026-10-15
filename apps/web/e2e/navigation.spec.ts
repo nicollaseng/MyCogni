@@ -27,7 +27,7 @@ test('opens on today with the way into the check-in', async ({ page }) => {
   )
 })
 
-test('keeps four sections in the navigation and the account in the header', async ({ page }) => {
+test('keeps five sections in the navigation and the account in the header', async ({ page }) => {
   await page.goto('/today')
 
   await expect(mainNavigation(page).getByRole('link')).toHaveText([
@@ -35,6 +35,7 @@ test('keeps four sections in the navigation and the account in the header', asyn
     'Registros',
     'MyBook',
     'Padrões',
+    'Zen',
   ])
   await expect(page.getByRole('link', { name: 'Você', exact: true })).toHaveCount(0)
   await expect(page.getByRole('button', { name: 'Sua conta' })).toBeVisible()

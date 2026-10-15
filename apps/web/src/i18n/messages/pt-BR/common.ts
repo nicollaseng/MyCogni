@@ -11,6 +11,7 @@ export const common = {
     entries: 'Registros',
     mybook: 'MyBook',
     patterns: 'Padrões',
+    zen: 'Zen',
   },
   account: {
     open: 'Sua conta',

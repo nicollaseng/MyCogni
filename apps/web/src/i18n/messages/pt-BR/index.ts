@@ -17,6 +17,7 @@ import { report } from './report'
 import { screening } from './screening'
 import { today } from './today'
 import { verification } from './verification'
+import { zen } from './zen'
 
 export const messages = {
   common,
@@ -38,6 +39,7 @@ export const messages = {
   alerts,
   admin,
   verification,
+  zen,
 }
 
 export type Messages = typeof messages
