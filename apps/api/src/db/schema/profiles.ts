@@ -23,6 +23,16 @@ export const profiles = pgTable(
       to: authenticatedRole,
       using: sql`${table.id} = ${authUid}`,
     }),
+    pgPolicy('profiles_select_linked_professional', {
+      for: 'select',
+      to: authenticatedRole,
+      using: sql`exists (
+        select 1 from public.care_links cl
+        where cl.patient_id = ${table.id}
+          and cl.professional_id = ${authUid}
+          and cl.ended_at is null
+      )`,
+    }),
     pgPolicy('profiles_update_own', {
       for: 'update',
       to: authenticatedRole,
