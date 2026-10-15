@@ -51,6 +51,11 @@ export function CareLinks({ links, timeZone, end, isProfessional }: CareLinksPro
             </ul>
           )}
         </Panel>
+        {links.length > 0 && (
+          <p className="max-w-[40rem] text-sm leading-relaxed text-pretty text-muted-foreground">
+            {t('links.alerts')}
+          </p>
+        )}
         <p className="flex flex-wrap gap-x-6 gap-y-2">
           <Link href="/invites" className={footLink}>
             {t('links.invites')}

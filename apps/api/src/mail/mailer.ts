@@ -1,5 +1,5 @@
-import type { FastifyBaseLogger } from 'fastify'
 import type { MailConfig } from '../config/env.ts'
+import type { ErrorLog } from '../shared/log.ts'
 
 export interface Email {
   to: string
@@ -81,7 +81,7 @@ function providerMailer(config: MailConfig): Mailer {
   }
 }
 
-export function createMailer(config: MailConfig, log: Pick<FastifyBaseLogger, 'error'>): Mailer {
+export function createMailer(config: MailConfig, log: ErrorLog): Mailer {
   const mailer = providerMailer(config)
   return {
     async send(email) {

@@ -28,6 +28,10 @@ const envSchema = z.object({
     .optional(),
   MAIL_FROM: z.string().min(3).default('MyCogniAI <onboarding@resend.dev>'),
   REDIS_URL: z.url({ protocol: /^rediss?$/ }).optional(),
+  QUEUE_PREFIX: z
+    .string()
+    .regex(/^[a-z0-9-]+$/)
+    .default('bull'),
   ANTHROPIC_API_KEY: z.string().min(1).optional(),
 })
 
@@ -43,6 +47,7 @@ export interface AppConfig {
   webUrl: string
   mail: MailConfig
   redisUrl: string | null
+  queuePrefix: string
   anthropicApiKey: string | null
 }
 
@@ -76,6 +81,7 @@ export function loadConfig(source: Record<string, string | undefined>): AppConfi
     webUrl: env.WEB_URL,
     mail: mailConfig(env.RESEND_API_KEY, env.MAILPIT_URL, env.MAIL_FROM),
     redisUrl: env.REDIS_URL ?? null,
+    queuePrefix: env.QUEUE_PREFIX,
     anthropicApiKey: env.ANTHROPIC_API_KEY ?? null,
   }
 }

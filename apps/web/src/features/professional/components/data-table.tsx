@@ -11,6 +11,8 @@ export const table = {
   numeric: 'text-right tabular-nums',
 }
 
+export const centeredTable = { ...table, cell: cn(table.cell, 'align-middle') }
+
 interface TableScrollProps {
   label: string
   className?: string

@@ -150,6 +150,8 @@ export const care: CareMessages = {
     title: 'Professionals',
     empty: 'No professional follows your entries.',
     since: 'Since {date}',
+    alerts:
+      'The professionals who follow you receive an alert in specific situations, such as answers that suggest risk, a marked drop in mood or many days without entries.',
     history: {
       shared: 'Includes earlier entries',
       fromStart: 'Only entries since the link',

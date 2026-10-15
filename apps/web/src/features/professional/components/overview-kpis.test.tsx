@@ -10,8 +10,8 @@ const kpis: Kpis = {
   engagement: 0.75,
   checkIns: 31,
   previousCheckIns: 35,
-  attention: 2,
-  risk: 1,
+  pendingAlerts: 2,
+  urgentAlerts: 1,
   pendingInvitations: 3,
   expiringSoon: 2,
 }
@@ -24,7 +24,8 @@ describe('OverviewKpis', () => {
     expect(screen.getByText('Pacientes ativos')).toBeInTheDocument()
     expect(screen.getByText('75% registraram nos últimos 7 dias')).toBeInTheDocument()
     expect(screen.getByText('4 a menos que nos 7 dias anteriores')).toBeInTheDocument()
-    expect(screen.getByText('1 com item 9 do PHQ-9 positivo')).toBeInTheDocument()
+    expect(screen.getByText('Alertas pendentes')).toBeInTheDocument()
+    expect(screen.getByText('1 urgente')).toBeInTheDocument()
     expect(screen.getByText('2 expiram em 24 h')).toBeInTheDocument()
   })
 
@@ -38,8 +39,8 @@ describe('OverviewKpis', () => {
           engagement: null,
           checkIns: 0,
           previousCheckIns: 0,
-          attention: 0,
-          risk: 0,
+          pendingAlerts: 0,
+          urgentAlerts: 0,
           expiringSoon: 0,
         }}
       />,
@@ -47,7 +48,7 @@ describe('OverviewKpis', () => {
 
     expect(screen.getByText('Ninguém vinculado ainda')).toBeInTheDocument()
     expect(screen.getByText('Igual aos 7 dias anteriores')).toBeInTheDocument()
-    expect(screen.getByText('Nenhum sinal de alerta')).toBeInTheDocument()
+    expect(screen.getByText('Nenhum alerta pendente')).toBeInTheDocument()
     expect(screen.getByText('Nenhum expira em 24 h')).toBeInTheDocument()
   })
 })

@@ -1,3 +1,12 @@
+export {
+  alertCountSchema,
+  alertQuerySchema,
+  professionalAlertListSchema,
+  professionalAlertSchema,
+  type AlertCount,
+  type AlertQuery,
+  type ProfessionalAlert,
+} from './alerts.ts'
 export { accountExportSchema, exportedAssessmentSchema, type AccountExport } from './account.ts'
 export {
   assessmentListSchema,

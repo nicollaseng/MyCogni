@@ -6,6 +6,16 @@ const port = Number(process.env.E2E_WEB_PORT ?? '3000')
 const apiPort = process.env.E2E_API_PORT ?? '3333'
 const baseURL = `http://localhost:${String(port)}`
 const apiUrl = `http://127.0.0.1:${apiPort}`
+const services = {
+  LOG_LEVEL: 'warn',
+  DATABASE_URL: 'postgresql://postgres:postgres@127.0.0.1:55322/postgres',
+  SUPABASE_URL: 'http://127.0.0.1:55321',
+  SUPABASE_SECRET_KEY: localSupabase().SECRET_KEY,
+  WEB_URL: baseURL,
+  MAILPIT_URL: 'http://127.0.0.1:55324',
+  REDIS_URL: 'redis://127.0.0.1:56379',
+  QUEUE_PREFIX: `e2e-${apiPort}`,
+}
 
 export default defineConfig({
   testDir: './e2e',
@@ -43,16 +53,13 @@ export default defineConfig({
       cwd: '../api',
       url: `${apiUrl}/health`,
       reuseExistingServer: true,
-      env: {
-        PORT: apiPort,
-        LOG_LEVEL: 'warn',
-        CORS_ORIGINS: baseURL,
-        DATABASE_URL: 'postgresql://postgres:postgres@127.0.0.1:55322/postgres',
-        SUPABASE_URL: 'http://127.0.0.1:55321',
-        SUPABASE_SECRET_KEY: localSupabase().SECRET_KEY,
-        WEB_URL: baseURL,
-        MAILPIT_URL: 'http://127.0.0.1:55324',
-      },
+      env: { ...services, PORT: apiPort, CORS_ORIGINS: baseURL },
+    },
+    {
+      command: 'node src/worker.ts',
+      cwd: '../api',
+      wait: { stdout: /Worker started/ },
+      env: services,
     },
     {
       command: `next dev --port ${String(port)}`,
