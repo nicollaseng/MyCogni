@@ -1,16 +1,11 @@
+import { labelsFor } from '@mycogni/domain'
+
+const labels = labelsFor('pt-BR')
+
 export const screening = {
   title: 'Questionários',
-  topics: {
-    phq9: 'Sinais de depressão',
-    gad7: 'Sinais de ansiedade',
-  },
-  severity: {
-    minimal: 'Mínima',
-    mild: 'Leve',
-    moderate: 'Moderada',
-    moderately_severe: 'Moderadamente grave',
-    severe: 'Grave',
-  },
+  topics: labels.instruments,
+  severity: labels.severities,
   guidance: {
     minimal: 'Nada que peça atenção agora. Continue observando seus dias.',
     mild: 'Vale observar como isso muda nas próximas semanas.',

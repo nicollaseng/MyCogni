@@ -6,7 +6,7 @@ import { averageOf, dayBefore, moodDays, weekdayOf, type MoodDay } from './days.
 import { patternRules } from './rules.ts'
 import { scoreTimeline, severityRanges } from './scores.ts'
 import { contextEffects, frequentTags, notableEffects, type ContextEffect } from './tags.ts'
-import { weekSummary } from './week.ts'
+import { periodSummary, weekSummary } from './week.ts'
 import { moodByWeekday } from './weekdays.ts'
 
 const timeZone = 'America/Sao_Paulo'
@@ -115,6 +115,25 @@ describe('weekSummary', () => {
       change: null,
     })
     expect(weekSummary([])).toEqual({ recent: null, recentDays: 0, previous: null, change: null })
+  })
+})
+
+describe('periodSummary', () => {
+  it('compares a period of any length with the one right before it', () => {
+    const days = week([2, null, 3, 4, 4, 5])
+
+    expect(periodSummary(days, 3)).toEqual({
+      recent: 13 / 3,
+      recentDays: 3,
+      previous: 2.5,
+      change: 'higher',
+    })
+    expect(periodSummary(days, 6)).toEqual({
+      recent: 3.6,
+      recentDays: 5,
+      previous: null,
+      change: null,
+    })
   })
 })
 

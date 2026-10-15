@@ -1,16 +1,11 @@
+import { labelsFor } from '@mycogni/domain'
 import { checkIn as american } from '../en-US/check-in'
 import type { CheckInMessages } from '../pt-BR/check-in'
 
+const labels = labelsFor('en-GB')
+
 export const checkIn: CheckInMessages = {
   ...american,
-  emotions: {
-    ...american.emotions,
-    tranquility: 'tranquillity',
-    vigor: 'vigour',
-  },
-  contexts: {
-    ...american.contexts,
-    children: 'children',
-    coworkers: 'colleagues',
-  },
+  emotions: labels.emotions,
+  contexts: labels.contexts,
 }

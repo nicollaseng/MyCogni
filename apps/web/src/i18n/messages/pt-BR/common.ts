@@ -1,3 +1,5 @@
+import { labelsFor } from '@mycogni/domain'
+
 export const common = {
   meta: {
     description:
@@ -22,13 +24,7 @@ export const common = {
     back: 'Voltar ao início',
   },
   mood: {
-    veryBad: 'Muito mal',
-    bad: 'Mal',
-    slightlyBad: 'Um pouco mal',
-    neutral: 'Neutro',
-    slightlyGood: 'Um pouco bem',
-    good: 'Bem',
-    veryGood: 'Muito bem',
+    ...labelsFor('pt-BR').moods,
     scaleLow: 'muito mal',
     scaleHigh: 'muito bem',
   },
