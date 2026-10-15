@@ -1,13 +1,14 @@
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { getTranslations } from 'next-intl/server'
-import { EntryList } from '@/features/entries/components/entry-list'
-import { groupByDay } from '@/features/entries/group-by-day'
 import { requireVerifiedProfessional } from '@/features/professional/access'
-import { MoodOverview } from '@/features/professional/components/mood-overview'
+import { CheckInTable } from '@/features/professional/components/check-in-table'
+import { MoodChart } from '@/features/professional/components/mood-chart'
 import { PatientHeader } from '@/features/professional/components/patient-header'
-import { ScreeningTimeline } from '@/features/professional/components/screening-timeline'
-import { Panel, Section } from '@/shared/components/section'
+import { PatientKpis } from '@/features/professional/components/patient-kpis'
+import { QuestionnaireTable } from '@/features/professional/components/questionnaire-table'
+import { Surface, WorkspaceSection } from '@/features/professional/components/workspace'
+import { moodDays } from '@/features/professional/mood-days'
 import { fetchPatient, fetchPatientAssessments, fetchPatientCheckIns } from '@/shared/lib/api/care'
 import { requireProfile } from '@/shared/lib/auth/session'
 
@@ -30,28 +31,24 @@ export default async function PatientPage({ params }: PageProps<'/pro/patients/[
   const [checkIns, assessments, t] = await Promise.all([
     fetchPatientCheckIns(patient.id, new Date(now.getTime() - (windowDays + 1) * dayInMs)),
     fetchPatientAssessments(patient.id),
-    getTranslations('professional.patient.entries'),
+    getTranslations('professional.patient'),
   ])
 
   return (
     <>
       <PatientHeader patient={patient} timeZone={timezone} />
-      <MoodOverview checkIns={checkIns} timeZone={timezone} now={now} days={windowDays} />
-      <ScreeningTimeline assessments={assessments} timeZone={timezone} />
-      <Section title={t('title', { days: windowDays })}>
-        {checkIns.length === 0 ? (
-          <Panel>
-            <p className="py-3.5 text-muted-foreground">{t('empty', { days: windowDays })}</p>
-          </Panel>
-        ) : (
-          <div className="max-w-3xl pt-2">
-            <EntryList
-              groups={groupByDay(checkIns, { timeZone: timezone, now })}
-              timeZone={timezone}
-            />
-          </div>
-        )}
-      </Section>
+      <PatientKpis patient={patient} timeZone={timezone} />
+      <WorkspaceSection title={t('mood.title', { days: windowDays })}>
+        <Surface className="px-3 pt-3 pb-2 sm:px-5 sm:pt-4">
+          <MoodChart days={moodDays(checkIns, { timeZone: timezone, now, days: windowDays })} />
+        </Surface>
+      </WorkspaceSection>
+      <WorkspaceSection title={t('entries.title', { days: windowDays })}>
+        <CheckInTable checkIns={checkIns} timeZone={timezone} days={windowDays} />
+      </WorkspaceSection>
+      <WorkspaceSection title={t('screenings.title')} description={t('screenings.note')}>
+        <QuestionnaireTable assessments={assessments} timeZone={timezone} />
+      </WorkspaceSection>
     </>
   )
 }

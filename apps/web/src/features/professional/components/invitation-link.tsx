@@ -2,11 +2,19 @@
 
 import { useTranslations } from 'next-intl'
 import { useState } from 'react'
+import { cn } from '@/shared/lib/utils'
 import { Button } from '@/shared/ui/button'
+import { CopyIcon } from './icons'
 
 type CopyState = 'idle' | 'copied' | 'failed'
 
-export function CopyLinkButton({ link }: { link: string }) {
+interface CopyLinkButtonProps {
+  link: string
+  label?: string
+  compact?: boolean
+}
+
+export function CopyLinkButton({ link, label, compact = false }: CopyLinkButtonProps) {
   const t = useTranslations('professional.invites')
   const [state, setState] = useState<CopyState>('idle')
 
@@ -24,11 +32,16 @@ export function CopyLinkButton({ link }: { link: string }) {
       <Button
         variant="outline"
         size="sm"
-        shape="pill"
+        aria-label={label}
+        className={cn(
+          'gap-1.5 text-sm hover:bg-background',
+          compact ? 'h-8 px-2.5 whitespace-nowrap' : 'h-10 px-3.5',
+        )}
         onClick={() => {
           void copy()
         }}
       >
+        <CopyIcon className="size-4" />
         {state === 'copied' ? t('copied') : t('copy')}
       </Button>
       <span role="status" className="sr-only">
@@ -54,7 +67,7 @@ export function InvitationLink({ link }: { link: string }) {
         onFocus={(event) => {
           event.currentTarget.select()
         }}
-        className="h-10 min-w-0 flex-1 basis-56 rounded-[6px] border border-rule bg-white/60 px-3 text-sm text-muted-foreground outline-none focus:border-foreground focus:text-foreground dark:bg-white/5"
+        className="h-10 min-w-0 flex-1 basis-56 rounded-[6px] border border-rule bg-background px-3 text-sm text-muted-foreground outline-none focus:border-foreground focus:text-foreground dark:bg-white/5"
       />
       <CopyLinkButton key={link} link={link} />
     </div>

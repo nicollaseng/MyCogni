@@ -3,10 +3,12 @@
 import type { ProfessionalForReview } from '@mycogni/contracts'
 import type { ProfessionalStatus } from '@mycogni/domain'
 import { useLocale, useTranslations } from 'next-intl'
-import { useState, type ReactNode } from 'react'
+import { useState } from 'react'
+import { table, TableScroll } from '@/features/professional/components/data-table'
 import { formatShortDate } from '@/features/professional/dates'
 import { useSubmit } from '@/shared/hooks/use-submit'
 import type { ActionResult } from '@/shared/lib/actions/result'
+import { cn } from '@/shared/lib/utils'
 import { Button } from '@/shared/ui/button'
 import type { Review, ReviewDecision } from '../review'
 
@@ -23,14 +25,7 @@ interface Decision {
   status: ReviewDecision
 }
 
-function Fact({ label, children }: { label: string; children: ReactNode }) {
-  return (
-    <div className="min-w-0 space-y-0.5">
-      <dt className="text-sm text-muted-foreground">{label}</dt>
-      <dd className="break-words">{children}</dd>
-    </div>
-  )
-}
+const columns = ['name', 'kind', 'registration', 'email', 'createdAt'] as const
 
 export function ProfessionalReviewList({
   professionals,
@@ -49,83 +44,117 @@ export function ProfessionalReviewList({
     },
     setDone,
   )
+  const format = (value: string) => formatShortDate(new Date(value), timeZone, locale)
 
-  function decide(professional: ProfessionalForReview, status: ReviewDecision) {
+  function decide(professional: ProfessionalForReview, decision: ReviewDecision) {
     setDone(null)
-    submit({ userId: professional.userId, name: professional.fullName, status })
+    submit({ userId: professional.userId, name: professional.fullName, status: decision })
   }
 
   return (
     <div className="space-y-3">
-      {error !== null && (
-        <p role="alert" className="px-1 text-sm text-danger">
-          {error}
-        </p>
-      )}
-      {done !== null && (
-        <p role="status" className="px-1 text-sm">
-          {t(done.status === 'verified' ? 'approved' : 'rejected', { name: done.name })}
-        </p>
-      )}
+      <div className="min-h-5 text-sm">
+        {error !== null ? (
+          <p role="alert" className="text-danger">
+            {error}
+          </p>
+        ) : (
+          done !== null && (
+            <p role="status">
+              {t(done.status === 'verified' ? 'approved' : 'rejected', { name: done.name })}
+            </p>
+          )
+        )}
+      </div>
       {professionals.length === 0 ? (
-        <p className="px-1 text-muted-foreground">{t(`empty.${status}`)}</p>
+        <p className="rounded-[8px] bg-surface px-4 py-5 text-[15px] text-muted-foreground">
+          {t(`empty.${status}`)}
+        </p>
       ) : (
-        <ul className="space-y-3">
-          {professionals.map((professional) => (
-            <li
-              key={professional.userId}
-              aria-label={professional.fullName}
-              className="space-y-4 rounded-[22px] bg-surface px-5 py-5"
-            >
-              <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
-                <h2 className="font-serif text-2xl leading-tight">{professional.fullName}</h2>
-                <p className="text-sm text-muted-foreground">
-                  {t('createdAt', {
-                    date: formatShortDate(new Date(professional.createdAt), timeZone, locale),
-                  })}
-                  {professional.verifiedAt !== null &&
-                    ` · ${t('reviewedAt', {
-                      date: formatShortDate(new Date(professional.verifiedAt), timeZone, locale),
-                    })}`}
-                </p>
-              </div>
-              <dl className="grid gap-x-8 gap-y-3 sm:grid-cols-3">
-                <Fact label={t('kind')}>{kinds(professional.kind)}</Fact>
-                <Fact label={t('registration')}>
-                  {professional.registration ?? t('noRegistration')}
-                </Fact>
-                <Fact label={t('email')}>{professional.email ?? t('noEmail')}</Fact>
-              </dl>
-              <div className="flex flex-wrap gap-2">
-                {professional.status !== 'verified' && (
-                  <Button
-                    size="sm"
-                    shape="pill"
-                    disabled={pending}
-                    onClick={() => {
-                      decide(professional, 'verified')
-                    }}
+        <TableScroll label={t('title')}>
+          <table className={cn(table.base, 'min-w-[860px]')}>
+            <caption className="sr-only">{t('title')}</caption>
+            <thead>
+              <tr>
+                {columns.map((column) => (
+                  <th
+                    key={column}
+                    scope="col"
+                    className={cn(table.head, column === 'name' && table.headFirst)}
                   >
-                    {t('approve')}
-                  </Button>
-                )}
-                {professional.status !== 'rejected' && (
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    shape="pill"
-                    disabled={pending}
-                    onClick={() => {
-                      decide(professional, 'rejected')
-                    }}
-                  >
-                    {t('reject')}
-                  </Button>
-                )}
-              </div>
-            </li>
-          ))}
-        </ul>
+                    {t(`columns.${column}`)}
+                  </th>
+                ))}
+                <th scope="col" className={cn(table.head, 'w-px')}>
+                  <span className="sr-only">{t('columns.actions')}</span>
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {professionals.map((professional) => (
+                <tr
+                  key={professional.userId}
+                  aria-label={professional.fullName}
+                  className={table.row}
+                >
+                  <td className={cn(table.cell, table.first, 'font-medium')}>
+                    {professional.fullName}
+                  </td>
+                  <td className={cn(table.cell, 'whitespace-nowrap')}>
+                    {kinds(professional.kind)}
+                  </td>
+                  <td className={cn(table.cell, 'whitespace-nowrap')}>
+                    {professional.registration ?? (
+                      <span className="text-muted-foreground">{t('noRegistration')}</span>
+                    )}
+                  </td>
+                  <td className={cn(table.cell, 'break-all')}>
+                    {professional.email ?? (
+                      <span className="text-muted-foreground">{t('noEmail')}</span>
+                    )}
+                  </td>
+                  <td className={cn(table.cell, 'whitespace-nowrap')}>
+                    {format(professional.createdAt)}
+                    {professional.verifiedAt !== null && (
+                      <span className="block text-[13px] text-muted-foreground">
+                        {t('reviewedAt', { date: format(professional.verifiedAt) })}
+                      </span>
+                    )}
+                  </td>
+                  <td className={cn(table.cell, 'py-2.5')}>
+                    <div className="flex justify-end gap-1.5">
+                      {professional.status !== 'verified' && (
+                        <Button
+                          size="sm"
+                          className="h-8 px-3 text-sm"
+                          disabled={pending}
+                          onClick={() => {
+                            decide(professional, 'verified')
+                          }}
+                        >
+                          {t('approve')}
+                        </Button>
+                      )}
+                      {professional.status !== 'rejected' && (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="h-8 px-3 text-sm hover:bg-background"
+                          disabled={pending}
+                          onClick={() => {
+                            decide(professional, 'rejected')
+                          }}
+                        >
+                          {t('reject')}
+                        </Button>
+                      )}
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </TableScroll>
       )}
     </div>
   )

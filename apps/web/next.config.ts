@@ -9,6 +9,7 @@ const config: NextConfig = {
   poweredByHeader: false,
   typedRoutes: true,
   agentRules: false,
+  devIndicators: false,
 }
 
 const withNextIntl = createNextIntlPlugin('./src/i18n/request.ts')

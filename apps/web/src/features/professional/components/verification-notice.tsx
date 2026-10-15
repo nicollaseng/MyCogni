@@ -1,9 +1,8 @@
 import type { ProfessionalProfile } from '@mycogni/contracts'
 import { useLocale, useTranslations } from 'next-intl'
-import { PageTitle } from '@/shared/components/page-title'
-import { Panel } from '@/shared/components/section'
 import { teamEmail } from '../contact'
 import { formatDate } from '../dates'
+import { Surface, WorkspaceHeader } from './workspace'
 
 const steps = ['review', 'approve', 'invite'] as const
 
@@ -17,18 +16,18 @@ function Pending({ professional, timeZone }: VerificationNoticeProps) {
   const locale = useLocale()
   return (
     <>
-      <PageTitle title={t('title')} description={t('body')} />
+      <WorkspaceHeader title={t('title')} description={t('body')} />
       <section aria-labelledby="verification-next" className="max-w-2xl space-y-3">
-        <h2 id="verification-next" className="px-1 text-sm text-muted-foreground">
+        <h2 id="verification-next" className="font-serif text-[21px] leading-tight">
           {t('next')}
         </h2>
-        <Panel className="py-5">
+        <Surface className="px-5 py-5">
           <ol className="space-y-4">
             {steps.map((step, index) => (
               <li key={step} className="flex gap-4">
                 <span
                   aria-hidden
-                  className="grid size-7 shrink-0 place-items-center rounded-full bg-sage text-sm font-medium"
+                  className="grid size-7 shrink-0 place-items-center rounded-[6px] bg-primary/10 text-sm font-medium"
                 >
                   {index + 1}
                 </span>
@@ -36,8 +35,8 @@ function Pending({ professional, timeZone }: VerificationNoticeProps) {
               </li>
             ))}
           </ol>
-        </Panel>
-        <p className="px-1 text-sm text-muted-foreground">
+        </Surface>
+        <p className="text-sm text-muted-foreground">
           {t('submitted', {
             date: formatDate(new Date(professional.createdAt), timeZone, locale),
           })}
@@ -50,8 +49,8 @@ function Pending({ professional, timeZone }: VerificationNoticeProps) {
 function Rejected() {
   const t = useTranslations('professional.status.rejected')
   return (
-    <header className="space-y-3">
-      <h1 className="font-serif text-[40px] leading-[1.04] tracking-[-0.02em] sm:text-5xl">
+    <header className="space-y-2">
+      <h1 className="font-serif text-[28px] leading-[1.1] tracking-[-0.015em] sm:text-[34px]">
         {t('title')}
       </h1>
       <p className="max-w-[36rem] leading-relaxed text-muted-foreground">
