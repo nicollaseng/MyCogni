@@ -4,7 +4,7 @@ import type { Assessment } from '@mycogni/contracts'
 import { instruments } from '@mycogni/domain'
 import { StepActions } from '@/shared/components/step-actions'
 import { Button } from '@/shared/ui/button'
-import { instrumentTopics, severityGuidance, severityLabels } from '../copy'
+import { instrumentTopics, severityGuidance, severityLabels } from '@/features/screening/copy'
 import type { OnboardingActions } from '../model'
 import { useSubmit } from '@/shared/hooks/use-submit'
 import { ActionError } from '@/shared/components/action-error'
@@ -18,17 +18,17 @@ function Result({ assessment }: { assessment: Assessment }) {
       aria-label={instrumentTopics[assessment.instrument]}
       className="border-b border-rule py-4"
     >
-      <div className="flex items-baseline justify-between gap-4">
-        <h2 className="text-sm">
-          {instrumentTopics[assessment.instrument]}
-          <span className="text-muted-foreground"> · {instrument.name}</span>
-        </h2>
-        <p className="text-sm font-medium">{severityLabels[assessment.severity]}</p>
-      </div>
-      <p className="mt-2 font-serif text-[34px] leading-none tracking-[-0.02em]">
-        {assessment.totalScore}
-        <span className="ml-1.5 font-sans text-sm tracking-normal text-muted-foreground">
-          de {assessment.maxScore}
+      <h2 className="text-sm">
+        {instrumentTopics[assessment.instrument]}
+        <span className="whitespace-nowrap text-muted-foreground"> · {instrument.name}</span>
+      </h2>
+      <p className="mt-2 flex items-baseline gap-1.5">
+        <span className="font-serif text-[34px] leading-none tracking-[-0.02em]">
+          {assessment.totalScore}
+        </span>
+        <span className="text-sm text-muted-foreground">de {assessment.maxScore}</span>
+        <span className="ml-auto text-right text-sm font-medium">
+          {severityLabels[assessment.severity]}
         </span>
       </p>
       <ScoreScale instrument={instrument} score={assessment.totalScore} />

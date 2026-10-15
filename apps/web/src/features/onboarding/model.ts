@@ -1,5 +1,6 @@
 import type { Assessment, Consent, Profile } from '@mycogni/contracts'
 import { missingConsents, type ConsentKind, type InstrumentId } from '@mycogni/domain'
+import { latestByInstrument, type LatestResults } from '@/features/screening/latest'
 import type { ActionResult } from '@/shared/lib/actions/result'
 
 export type Step = 'consents' | 'name' | 'intro' | 'phq9' | 'support' | 'gad7' | 'results'
@@ -8,7 +9,7 @@ export type Phase = 'consents' | 'name' | 'screening' | 'results'
 
 export const phases: readonly Phase[] = ['consents', 'name', 'screening', 'results']
 
-export type Results = Partial<Record<InstrumentId, Assessment>>
+export type Results = LatestResults
 
 export interface OnboardingStart {
   step: Step
@@ -40,14 +41,6 @@ export function phaseOf(step: Step): Phase {
   return 'screening'
 }
 
-function latestResults(assessments: readonly Assessment[]): Results {
-  const results: Results = {}
-  for (const assessment of assessments) {
-    results[assessment.instrument] ??= assessment
-  }
-  return results
-}
-
 function firstStep(consents: readonly Consent[], results: Results): Step {
   if (missingConsents(consents.map((consent) => consent.kind)).length > 0) {
     return 'consents'
@@ -66,7 +59,7 @@ export function resumeFrom(
   consents: readonly Consent[],
   assessments: readonly Assessment[],
 ): OnboardingStart {
-  const results = latestResults(assessments)
+  const results = latestByInstrument(assessments)
   return {
     step: firstStep(consents, results),
     displayName: profile.displayName ?? '',

@@ -67,7 +67,7 @@ test('takes a new person from consent to results, with support when item 9 is fl
   await expect(page.getByRole('heading', { name: 'Seu ponto de partida.' })).toBeVisible()
   const depression = page.getByRole('region', { name: 'Sinais de depressão' })
   await expect(depression).toContainText('17de 27')
-  await expect(depression).toContainText('Moderadamente graves')
+  await expect(depression).toContainText('Moderadamente grave')
   await expect(page.getByRole('region', { name: 'Sinais de ansiedade' })).toContainText('7de 21')
   await expect(page.getByRole('link', { name: '188' })).toBeVisible()
 
