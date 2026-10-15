@@ -7,5 +7,5 @@
     "noEmit": true,
     "types": ["node"]
   },
-  "include": ["eslint.config.ts", "tooling"]
+  "include": ["eslint.config.ts", "tooling", ".railway/railway.ts"]
 }
