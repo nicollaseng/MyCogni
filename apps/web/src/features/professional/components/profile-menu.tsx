@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import { useTranslations } from 'next-intl'
 import { useEffect, useId, useRef, useState, type KeyboardEvent } from 'react'
+import { Avatar } from '@/shared/components/avatar'
 import { cn } from '@/shared/lib/utils'
 import { SettingsIcon, SignOutIcon } from './icons'
 import { usePresence } from './use-animated-dialog'
@@ -11,6 +12,7 @@ import { initialsOf } from '../initials'
 interface ProfileMenuProps {
   name: string
   profession: string
+  photoUrl: string | null
   signOut: () => Promise<void>
 }
 
@@ -21,7 +23,7 @@ function menuItems(element: HTMLElement | null): HTMLElement[] {
 const itemStyle =
   'flex w-full items-center gap-2.5 rounded-[4px] px-2.5 py-2 text-left text-[15px] outline-none hover:bg-foreground/[0.06] focus-visible:bg-foreground/[0.08] focus-visible:outline-none'
 
-export function ProfileMenu({ name, profession, signOut }: ProfileMenuProps) {
+export function ProfileMenu({ name, profession, photoUrl, signOut }: ProfileMenuProps) {
   const t = useTranslations('professional.shell')
   const [open, setOpen] = useState(false)
   const trigger = useRef<HTMLButtonElement>(null)
@@ -97,12 +99,7 @@ export function ProfileMenu({ name, profession, signOut }: ProfileMenuProps) {
           open && 'bg-foreground/[0.06]',
         )}
       >
-        <span
-          aria-hidden
-          className="grid size-8 shrink-0 place-items-center rounded-[6px] bg-primary/10 text-sm font-medium text-foreground"
-        >
-          {initialsOf(name)}
-        </span>
+        <Avatar src={photoUrl} initials={initialsOf(name)} size="sm" />
         <span className="min-w-0 flex-1">
           <span className="block truncate text-[15px] font-medium">{name}</span>
           <span className="block truncate text-[13px] text-muted-foreground">{profession}</span>

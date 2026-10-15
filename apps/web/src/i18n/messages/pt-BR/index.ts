@@ -14,6 +14,7 @@ import { patterns } from './patterns'
 import { professional } from './professional'
 import { screening } from './screening'
 import { today } from './today'
+import { verification } from './verification'
 
 export const messages = {
   common,
@@ -32,6 +33,7 @@ export const messages = {
   care,
   professional,
   admin,
+  verification,
 }
 
 export type Messages = typeof messages

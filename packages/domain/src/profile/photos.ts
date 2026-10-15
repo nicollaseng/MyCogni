@@ -8,6 +8,10 @@ export type AvatarType = (typeof avatarTypes)[number]
 
 export const avatarMaxBytes = 5 * 1024 * 1024
 
+export const avatarSourceMaxBytes = 20 * 1024 * 1024
+
+export const avatarRenderSize = 512
+
 const extensions: Readonly<Record<AvatarType, string>> = {
   'image/jpeg': 'jpg',
   'image/png': 'png',
@@ -24,6 +28,10 @@ export function avatarExtension(type: AvatarType): string {
 
 export function avatarProblem(file: UploadCandidate): UploadProblem | null {
   return uploadProblem(file, { accepts: isAvatarType, maxBytes: avatarMaxBytes })
+}
+
+export function avatarSourceProblem(file: UploadCandidate): UploadProblem | null {
+  return uploadProblem(file, { accepts: isAvatarType, maxBytes: avatarSourceMaxBytes })
 }
 
 export function isOwnAvatarPath(path: string, userId: string): boolean {

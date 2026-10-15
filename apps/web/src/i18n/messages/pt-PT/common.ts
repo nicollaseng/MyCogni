@@ -40,6 +40,7 @@ export const common: CommonMessages = {
     physician: 'Medicina',
     psychoanalyst: 'Psicanálise',
   },
+  photoOf: 'Fotografia de {name}',
   language: {
     label: 'Idioma',
     hint: 'A aplicação passa a usar este idioma em todos os ecrãs.',

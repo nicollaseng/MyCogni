@@ -202,7 +202,7 @@ export const professional = {
       body: 'Nossa equipe confere seu registro profissional manualmente antes de liberar os convites.',
       next: 'O que acontece agora',
       steps: {
-        review: 'Conferimos seu nome e seu registro no conselho.',
+        review: 'Conferimos seu nome, seu registro e o comprovante enviado.',
         approve: 'Com o cadastro aprovado, esta página passa a mostrar seus pacientes.',
         invite: 'Você convida pacientes por email ou por link, e cada pessoa decide se aceita.',
       },
@@ -210,7 +210,8 @@ export const professional = {
     },
     rejected: {
       title: 'Não conseguimos verificar seu cadastro.',
-      body: 'Se achar que houve um engano ou quiser enviar outros dados, escreva para <link>{email}</link> com seu nome e seu registro.',
+      body: 'Leia a mensagem da equipe e envie um novo comprovante. Seu cadastro volta para análise assim que ele chegar. Dúvidas: <link>{email}</link>.',
+      note: 'Mensagem da equipe MyCogniAI',
     },
   },
   time: {
@@ -254,6 +255,8 @@ export const professional = {
       saving: 'Salvando…',
       invalidName: 'Use entre 3 e 120 caracteres.',
       error: 'Não conseguimos salvar agora. Tente de novo em instantes.',
+      photo: 'Foto',
+      photoHint: 'Aparece para seus pacientes e na página dos seus convites.',
       kind: 'Profissão',
       registration: 'Registro no conselho',
       noRegistration: 'Sem registro',

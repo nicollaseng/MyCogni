@@ -14,6 +14,7 @@ import { patterns } from './patterns'
 import { professional } from './professional'
 import { screening } from './screening'
 import { today } from './today'
+import { verification } from './verification'
 import type { Messages } from '../pt-BR'
 
 export const messages: Messages = {
@@ -33,4 +34,5 @@ export const messages: Messages = {
   care,
   professional,
   admin,
+  verification,
 }

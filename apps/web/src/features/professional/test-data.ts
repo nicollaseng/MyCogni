@@ -34,6 +34,7 @@ export function patient(overrides: Partial<PatientSummary> = {}): PatientSummary
     id: nextId(),
     linkId: nextId(),
     name: 'Marina Costa',
+    photoUrl: null,
     startedAt: '2026-09-01T12:00:00Z',
     sharesHistory: false,
     lastCheckIn: { moodLevel: 5, recordedAt: '2026-10-14T21:00:00Z' },

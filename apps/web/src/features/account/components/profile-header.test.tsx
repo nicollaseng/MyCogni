@@ -1,11 +1,17 @@
 import { describe, expect, it, jest } from '@jest/globals'
 import { screen } from '@testing-library/react'
-import type { ActionResult } from '@/shared/lib/actions/result'
+import type { UploadResult } from '@/shared/lib/uploads'
 import { renderWithIntl } from '@/test/render'
+import type { RenderPhoto } from '../photo-canvas'
 import { ProfileHeader } from './profile-header'
 
-const upload = jest.fn<(data: FormData) => Promise<ActionResult<string>>>()
-const remove = jest.fn<() => Promise<ActionResult<string>>>()
+const transport = {
+  send: jest.fn<(photo: File) => Promise<UploadResult<string | null>>>(),
+  remove: jest.fn<() => Promise<UploadResult<null>>>(),
+  render: jest.fn<RenderPhoto>(),
+}
+
+const onPhotoSaved = jest.fn<() => Promise<void>>()
 
 describe('ProfileHeader', () => {
   it('shows the photo with its controls', () => {
@@ -14,8 +20,8 @@ describe('ProfileHeader', () => {
         name="Marina Alves"
         email="marina@exemplo.com"
         photoUrl="https://exemplo.com/marina.jpg"
-        upload={upload}
-        remove={remove}
+        onPhotoSaved={onPhotoSaved}
+        transport={transport}
       />,
     )
 
@@ -31,8 +37,8 @@ describe('ProfileHeader', () => {
         name={null}
         email="marina@exemplo.com"
         photoUrl={null}
-        upload={upload}
-        remove={remove}
+        onPhotoSaved={onPhotoSaved}
+        transport={transport}
       />,
       { locale: 'pt-PT' },
     )

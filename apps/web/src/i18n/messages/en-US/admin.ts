@@ -7,7 +7,7 @@ export const admin: AdminMessages = {
   professionals: {
     title: 'Professionals',
     description:
-      'Check the name and the license before approving. Only verified professionals can invite patients.',
+      'Open the document and check the name and the license before approving. Only verified professionals can invite patients.',
     tabs: {
       label: 'Sign-up status',
       pending: 'Waiting',
@@ -19,6 +19,7 @@ export const admin: AdminMessages = {
       kind: 'Profession',
       registration: 'License',
       email: 'Email',
+      document: 'Document',
       createdAt: 'Signed up',
       actions: 'Actions',
     },
@@ -34,6 +35,19 @@ export const admin: AdminMessages = {
     noEmail: 'No email',
     createdAt: 'Signed up {date}',
     reviewedAt: 'Reviewed {date}',
+    document: {
+      open: 'Open',
+      openLabel: 'Open the document of {name} in a new tab',
+      missing: 'Waiting for upload',
+    },
+    rejectForm: {
+      label: 'Reason for rejecting {name}',
+      hint: 'The professional reads this note. Say what needs to be fixed.',
+      confirm: 'Confirm rejection',
+      cancel: 'Cancel',
+      required: 'Write the reason, with at least 3 characters.',
+    },
+    note: 'Reason: {note}',
     approve: 'Approve',
     reject: 'Reject',
     approved: '{name} approved.',

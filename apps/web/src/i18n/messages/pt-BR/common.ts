@@ -38,6 +38,7 @@ export const common = {
     physician: 'Medicina',
     psychoanalyst: 'Psicanálise',
   },
+  photoOf: 'Foto de {name}',
   language: {
     label: 'Idioma',
     hint: 'O app passa a usar este idioma em todas as telas.',

@@ -36,6 +36,7 @@ export function fakeActions(overrides: Partial<OnboardingActions> = {}) {
         }),
       ),
     finishOnboarding: jest.fn<OnboardingActions['finishOnboarding']>().mockResolvedValue(saved),
+    photoSaved: jest.fn<OnboardingActions['photoSaved']>().mockResolvedValue(undefined),
     ...overrides,
   }
 }

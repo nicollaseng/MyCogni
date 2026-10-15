@@ -9,14 +9,13 @@ import { emailSchema, newPasswordSchema } from '@/features/auth/schemas'
 import { attempt, failure, type ActionResult } from '@/shared/lib/actions/result'
 import {
   deleteAccount,
-  fetchProfile,
   grantConsents,
   revokeConsent,
   updateProfile,
 } from '@/shared/lib/api/resources'
+import { currentUser } from '@/shared/lib/auth/session'
 import { serverEnv } from '@/shared/lib/env'
 import { createSupabaseServerClient } from '@/shared/lib/supabase/server'
-import { avatarBucket, avatarExtension, avatarMaxBytes } from './avatar'
 
 const nameMaxLength = 80
 
@@ -93,46 +92,10 @@ export async function changePassword(input: {
   return { ok: true, value: t('passwordChanged') }
 }
 
-export async function uploadAvatar(formData: FormData): Promise<ActionResult<string>> {
-  const t = await getTranslations('account.feedback')
-  const file = formData.get('photo')
-  const extension = file instanceof File ? avatarExtension(file.type) : null
-  if (!(file instanceof File) || extension === null || file.size > avatarMaxBytes) {
-    return failure(t('photoInvalid'))
+export async function refreshAfterUpload(): Promise<void> {
+  if ((await currentUser()) !== null) {
+    revalidatePath('/', 'layout')
   }
-  const profile = await fetchProfile()
-  const path = `${profile.id}/avatar-${String(Date.now())}.${extension}`
-  const storage = (await createSupabaseServerClient('read-write')).storage.from(avatarBucket)
-  const uploaded = await storage.upload(path, file, { contentType: file.type })
-  if (uploaded.error !== null) {
-    return failure(t('saveError'))
-  }
-  const saved = await attempt(() => updateProfile({ avatarPath: path }), t('saveError'))
-  if (!saved.ok) {
-    await storage.remove([path])
-    return failure(saved.error)
-  }
-  if (profile.avatarPath !== null) {
-    await storage.remove([profile.avatarPath])
-  }
-  revalidatePath('/me')
-  return { ok: true, value: t('photoSaved') }
-}
-
-export async function removeAvatar(): Promise<ActionResult<string>> {
-  const t = await getTranslations('account.feedback')
-  const profile = await fetchProfile()
-  if (profile.avatarPath === null) {
-    return { ok: true, value: t('photoRemoved') }
-  }
-  const saved = await attempt(() => updateProfile({ avatarPath: null }), t('saveError'))
-  if (!saved.ok) {
-    return failure(saved.error)
-  }
-  const supabase = await createSupabaseServerClient('read-write')
-  await supabase.storage.from(avatarBucket).remove([profile.avatarPath])
-  revalidatePath('/me')
-  return { ok: true, value: t('photoRemoved') }
 }
 
 export async function deleteMyAccount(confirmation: string): Promise<ActionResult<null>> {

@@ -2,6 +2,8 @@ import type { InvitationPreview } from '@mycogni/contracts'
 import Link from 'next/link'
 import { useTranslations } from 'next-intl'
 import type { ReactNode } from 'react'
+import { initialsOf } from '@/features/professional/initials'
+import { Avatar } from '@/shared/components/avatar'
 import { HelpDisclosure } from '@/shared/components/help-disclosure'
 import { Wordmark } from '@/shared/components/wordmark'
 import { cn } from '@/shared/lib/utils'
@@ -53,14 +55,20 @@ interface PendingInviteProps {
 
 export function PendingInvite({ preview, now, children }: PendingInviteProps) {
   const t = useTranslations('care.invite')
-  const kinds = useTranslations('common.professionalKinds')
-  const { name, kind } = preview.professional
+  const common = useTranslations('common')
+  const { name, kind, photoUrl } = preview.professional
   const left = timeLeft(new Date(preview.expiresAt), now)
 
   return (
     <div className="space-y-8">
+      <Avatar
+        src={photoUrl}
+        initials={initialsOf(name)}
+        alt={common('photoOf', { name })}
+        size="xl"
+      />
       <InviteHeading
-        kicker={`${t('kicker')} · ${kinds(kind)}`}
+        kicker={`${t('kicker')} · ${common(`professionalKinds.${kind}`)}`}
         title={t('pending.title', { name })}
       >
         {t('pending.lead', { name })}

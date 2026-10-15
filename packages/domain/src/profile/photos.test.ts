@@ -3,6 +3,8 @@ import {
   avatarExtension,
   avatarMaxBytes,
   avatarProblem,
+  avatarSourceMaxBytes,
+  avatarSourceProblem,
   isAvatarType,
   isOwnAvatarPath,
 } from './photos.ts'
@@ -18,6 +20,12 @@ describe('profile photos', () => {
     expect(avatarProblem({ type: 'image/png', size: avatarMaxBytes })).toBeNull()
     expect(avatarProblem({ type: 'image/png', size: avatarMaxBytes + 1 })).toBe('size')
     expect(avatarProblem({ type: 'application/pdf', size: 10 })).toBe('type')
+  })
+
+  it('takes larger originals, since the photo is cropped and resized before it is sent', () => {
+    expect(avatarSourceProblem({ type: 'image/jpeg', size: avatarSourceMaxBytes })).toBeNull()
+    expect(avatarSourceProblem({ type: 'image/jpeg', size: avatarSourceMaxBytes + 1 })).toBe('size')
+    expect(avatarSourceProblem({ type: 'image/heic', size: 10 })).toBe('type')
   })
 
   it('keeps every photo in the folder of its owner', () => {

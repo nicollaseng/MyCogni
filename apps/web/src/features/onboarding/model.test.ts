@@ -78,6 +78,7 @@ describe('phaseOf', () => {
     const screeningSteps: Step[] = ['intro', 'phq9', 'support', 'gad7']
 
     expect(new Set(screeningSteps.map(phaseOf))).toEqual(new Set(['screening']))
+    expect(phaseOf('photo')).toBe('name')
     expect(phaseOf('consents')).toBe('consents')
     expect(phaseOf('results')).toBe('results')
   })

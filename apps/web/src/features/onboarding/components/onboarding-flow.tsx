@@ -11,8 +11,10 @@ import {
   type Step,
 } from '../model'
 import { ConsentStep } from './consent-step'
+import type { PhotoTransport } from '@/features/account/components/photo-field'
 import { NameStep } from './name-step'
 import { OnboardingHeader } from './onboarding-header'
+import { PhotoStep, type OnboardingPhoto } from './photo-step'
 import { Questionnaire } from '@/features/screening/components/questionnaire'
 import { ResultsStep } from './results-step'
 import { ScreeningIntroStep } from './screening-intro-step'
@@ -21,12 +23,21 @@ import { SupportStep } from '@/features/screening/components/support-step'
 interface OnboardingFlowProps {
   start: OnboardingStart
   actions: OnboardingActions
+  photo: OnboardingPhoto
+  photoTransport?: PhotoTransport
   signOut: () => Promise<void>
 }
 
-export function OnboardingFlow({ start, actions, signOut }: OnboardingFlowProps) {
+export function OnboardingFlow({
+  start,
+  actions,
+  photo,
+  photoTransport,
+  signOut,
+}: OnboardingFlowProps) {
   const [step, setStep] = useState<Step>(start.step)
   const [results, setResults] = useState<Results>(start.results)
+  const [name, setName] = useState(start.displayName)
 
   function record(assessment: Assessment, next: Step) {
     setResults((current) => ({ ...current, [assessment.instrument]: assessment }))
@@ -53,6 +64,18 @@ export function OnboardingFlow({ start, actions, signOut }: OnboardingFlowProps)
             <NameStep
               initialName={start.displayName}
               save={actions.saveName}
+              onDone={(displayName) => {
+                setName(displayName)
+                setStep('photo')
+              }}
+            />
+          )}
+          {step === 'photo' && (
+            <PhotoStep
+              photo={photo}
+              name={name}
+              saved={actions.photoSaved}
+              transport={photoTransport}
               onDone={() => {
                 setStep('intro')
               }}
