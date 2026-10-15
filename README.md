@@ -52,6 +52,8 @@ The web app runs on `http://localhost:3000` and the API on `http://localhost:333
 
 The Supabase Data API (PostgREST) is turned off: every read and write goes through the Fastify API, which scores questionnaires and checks onboarding on the server. Turn it off in the hosted projects too (Project Settings → Data API), otherwise a signed-in user could write to their own rows directly with the public key.
 
+The hosted staging project is declared in the same file under `[remotes.staging]` (project `kbqfcicmszsmvbxrbcgq`, us-west-2): Data API off, the return URL, 6-digit codes and the password rules. Apply it with `supabase config push --project-ref kbqfcicmszsmvbxrbcgq`. The email templates in `supabase/templates` can only be pushed once the project has its own SMTP (Resend), because the Free plan blocks template changes on the default email sender.
+
 ## API
 
 `apps/api` is a Fastify modular monolith running TypeScript directly on Node.js 24 in development and compiled to `dist` for production.

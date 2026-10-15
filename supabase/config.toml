@@ -61,3 +61,23 @@ enabled = false
 [analytics]
 enabled = false
 port = 55327
+
+[remotes.staging]
+project_id = "kbqfcicmszsmvbxrbcgq"
+
+[remotes.staging.api]
+enabled = false
+
+[remotes.staging.auth]
+site_url = "http://localhost:3000"
+additional_redirect_urls = ["http://localhost:3000/auth/callback"]
+minimum_password_length = 8
+password_requirements = "letters_digits"
+
+[remotes.staging.auth.email]
+enable_confirmations = true
+otp_length = 6
+otp_expiry = 3600
+
+[remotes.staging.auth.external.google]
+enabled = false
