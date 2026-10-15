@@ -10,6 +10,7 @@ import {
   patientSummarySchema,
   professionalForReviewListSchema,
   professionalOverviewSchema,
+  professionalInsightListSchema,
   professionalProfileSchema,
   receivedInvitationListSchema,
   receivedInvitationSchema,
@@ -25,6 +26,7 @@ import {
   type NotificationList,
   type PatientSummary,
   type ProfessionalForReview,
+  type ProfessionalInsight,
   type ProfessionalOverview,
   type ProfessionalProfile,
   type ReceivedInvitation,
@@ -226,6 +228,13 @@ export function fetchPatientAssessments(patientId: string): Promise<Assessment[]
   return apiRequest({
     path: `/v1/professional/patients/${encodeURIComponent(patientId)}/assessments`,
     schema: assessmentListSchema,
+  })
+}
+
+export function fetchPatientInsights(patientId: string): Promise<ProfessionalInsight[]> {
+  return apiRequest({
+    path: `/v1/professional/patients/${encodeURIComponent(patientId)}/insights`,
+    schema: professionalInsightListSchema,
   })
 }
 

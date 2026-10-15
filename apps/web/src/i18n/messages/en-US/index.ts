@@ -5,6 +5,7 @@ import { care } from './care'
 import { checkIn } from './check-in'
 import { common } from './common'
 import { entries } from './entries'
+import { insights } from './insights'
 import { landing } from './landing'
 import { legal } from './legal'
 import { mybook } from './mybook'
@@ -26,6 +27,7 @@ export const messages: Messages = {
   mybook,
   today,
   patterns,
+  insights,
   screening,
   account,
   care,

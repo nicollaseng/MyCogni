@@ -7,9 +7,15 @@ import { MoodChart } from '@/features/professional/components/mood-chart'
 import { PatientHeader } from '@/features/professional/components/patient-header'
 import { PatientKpis } from '@/features/professional/components/patient-kpis'
 import { QuestionnaireTable } from '@/features/professional/components/questionnaire-table'
+import { ReadingsSection } from '@/features/professional/components/readings-section'
 import { Surface, WorkspaceSection } from '@/features/professional/components/workspace'
 import { moodDays } from '@/features/professional/mood-days'
-import { fetchPatient, fetchPatientAssessments, fetchPatientCheckIns } from '@/shared/lib/api/care'
+import {
+  fetchPatient,
+  fetchPatientAssessments,
+  fetchPatientCheckIns,
+  fetchPatientInsights,
+} from '@/shared/lib/api/care'
 import { requireProfile } from '@/shared/lib/auth/session'
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -28,9 +34,10 @@ export default async function PatientPage({ params }: PageProps<'/pro/patients/[
     notFound()
   }
   const now = new Date()
-  const [checkIns, assessments, t] = await Promise.all([
+  const [checkIns, assessments, readings, t] = await Promise.all([
     fetchPatientCheckIns(patient.id, new Date(now.getTime() - (windowDays + 1) * dayInMs)),
     fetchPatientAssessments(patient.id),
+    fetchPatientInsights(patient.id),
     getTranslations('professional.patient'),
   ])
 
@@ -38,6 +45,7 @@ export default async function PatientPage({ params }: PageProps<'/pro/patients/[
     <>
       <PatientHeader patient={patient} timeZone={timezone} />
       <PatientKpis patient={patient} timeZone={timezone} />
+      <ReadingsSection readings={readings} timeZone={timezone} />
       <WorkspaceSection title={t('mood.title', { days: windowDays })}>
         <Surface className="px-3 pt-3 pb-2 sm:px-5 sm:pt-4">
           <MoodChart days={moodDays(checkIns, { timeZone: timezone, now, days: windowDays })} />

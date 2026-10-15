@@ -55,6 +55,10 @@ export const account: AccountMessages = {
     notGranted: 'Not granted',
     note: 'Required consents can only be withdrawn by deleting your account, under Your data.',
   },
+  journal: {
+    label: 'Include MyBook in my summaries',
+    hint: 'When on, the text of MyBook pages written during the period is also read to write your summary; summaries for your professional never use MyBook.',
+  },
   data: {
     export: 'Download my data',
     fileName: 'mycogniai-my-data-{day}.json',
@@ -85,5 +89,7 @@ export const account: AccountMessages = {
     deleteError: 'We couldn’t delete your account right now. Please try again in a moment.',
     aiOn: 'AI summaries turned on.',
     aiOff: 'AI summaries turned off.',
+    journalOn: 'MyBook is now part of your summaries.',
+    journalOff: 'MyBook is no longer part of your summaries.',
   },
 }
