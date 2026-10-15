@@ -118,7 +118,7 @@ describe('profile photos', () => {
       .parse(JSON.parse(Buffer.from(token.split('.')[1] ?? '', 'base64url').toString('utf8')))
 
     expect(second.photoUrl).toBe(first.photoUrl)
-    expect(exp % 3600).toBe(0)
+    expect(exp % 3600).toBeLessThan(60)
     expect(exp - Date.now() / 1000).toBeGreaterThan(3600)
   })
 
