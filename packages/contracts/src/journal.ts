@@ -1,6 +1,7 @@
 import { journalLimits } from '@mycogni/domain'
 import { z } from 'zod'
 import { professionalKindSchema } from './professionals.ts'
+import { supportSignalSchema } from './safety.ts'
 
 const timestamp = z.iso.datetime({ offset: true })
 
@@ -56,6 +57,10 @@ export const journalEntrySchema = z.object({
 })
 
 export type JournalEntry = z.infer<typeof journalEntrySchema>
+
+export const savedJournalEntrySchema = journalEntrySchema.extend({ support: supportSignalSchema })
+
+export type SavedJournalEntry = z.infer<typeof savedJournalEntrySchema>
 
 export const updateJournalEntrySchema = z.object({
   title: z.string().trim().max(journalLimits.title).nullable(),

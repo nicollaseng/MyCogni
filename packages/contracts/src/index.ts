@@ -28,6 +28,8 @@ export {
   checkInSearchSchema,
   createCheckInAddendumSchema,
   createCheckInSchema,
+  recordedAddendumSchema,
+  recordedCheckInSchema,
   type CheckIn,
   type CheckInAddendum,
   type CheckInCount,
@@ -37,6 +39,8 @@ export {
   type CheckInSearch,
   type CreateCheckInAddendumInput,
   type CreateCheckInInput,
+  type RecordedAddendum,
+  type RecordedCheckIn,
 } from './check-ins.ts'
 export {
   consentKindSchema,
@@ -143,6 +147,7 @@ export {
   journalQuerySchema,
   journalShareListSchema,
   journalShareSchema,
+  savedJournalEntrySchema,
   updateJournalEntrySchema,
   type CreateJournalShareInput,
   type JournalAccess,
@@ -151,6 +156,7 @@ export {
   type JournalNode,
   type JournalQuery,
   type JournalShare,
+  type SavedJournalEntry,
   type UpdateJournalEntryInput,
 } from './journal.ts'
 export {
@@ -208,7 +214,6 @@ export {
   assistantExchangeSchema,
   assistantMessageSchema,
   assistantOverviewSchema,
-  riskLevelSchema,
   sendAssistantMessageSchema,
   type AssistantAccess,
   type AssistantConversation,
@@ -218,3 +223,4 @@ export {
   type AssistantOverview,
   type SendAssistantMessageInput,
 } from './assistant.ts'
+export { riskLevelSchema, supportSignalSchema, type SupportSignal } from './safety.ts'
