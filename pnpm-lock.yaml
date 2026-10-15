@@ -384,6 +384,9 @@ importers:
       jest-environment-jsdom:
         specifier: 30.5.2
         version: 30.5.2(supports-color@8.1.1)
+      postgres:
+        specifier: 3.4.9
+        version: 3.4.9
       tailwindcss:
         specifier: 4.3.3
         version: 4.3.3

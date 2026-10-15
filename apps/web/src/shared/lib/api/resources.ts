@@ -6,6 +6,7 @@ import {
   checkInListSchema,
   checkInSchema,
   consentListSchema,
+  patientInsightListSchema,
   profileSchema,
   type AccountExport,
   type Assessment,
@@ -13,6 +14,7 @@ import {
   type Consent,
   type CreateCheckInInput,
   type GrantConsentsInput,
+  type PatientInsight,
   type Profile,
   type SubmitAssessmentInput,
   type UpdateProfileInput,
@@ -127,6 +129,10 @@ export async function fetchCheckInsSince(since: Date): Promise<CheckIn[]> {
     }
   }
   return collected
+}
+
+export function fetchInsights(): Promise<PatientInsight[]> {
+  return apiRequest({ path: '/v1/insights', schema: patientInsightListSchema })
 }
 
 export function fetchAccountExport(): Promise<AccountExport> {
