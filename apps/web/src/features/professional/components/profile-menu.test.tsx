@@ -35,7 +35,22 @@ describe('ProfileMenu', () => {
       '/pro/settings',
     )
     expect(screen.getByRole('menuitem', { name: 'Configurações' })).toHaveFocus()
+    expect(screen.getByRole('menuitem', { name: 'Suporte' })).toHaveAttribute(
+      'href',
+      '/pro/settings#support',
+    )
     expect(screen.getByRole('menuitem', { name: 'Sair' })).toBeInTheDocument()
+  })
+
+  it('keeps the photo on the button and lists only the entries in the open menu', async () => {
+    const { user } = renderMenu()
+
+    await user.click(trigger())
+
+    const menu = screen.getByRole('menu', { name: 'Conta' })
+    expect(menu.querySelector('img')).toBeNull()
+    expect(menu).not.toHaveTextContent('HD')
+    expect(trigger()).toHaveTextContent('HD')
   })
 
   it('moves between entries with the arrow keys', async () => {
@@ -44,9 +59,9 @@ describe('ProfileMenu', () => {
     await user.click(trigger())
     await user.keyboard('{ArrowDown}')
 
-    expect(screen.getByRole('menuitem', { name: 'Sair' })).toHaveFocus()
+    expect(screen.getByRole('menuitem', { name: 'Suporte' })).toHaveFocus()
 
-    await user.keyboard('{ArrowDown}')
+    await user.keyboard('{ArrowDown}{ArrowDown}')
 
     expect(screen.getByRole('menuitem', { name: 'Configurações' })).toHaveFocus()
 

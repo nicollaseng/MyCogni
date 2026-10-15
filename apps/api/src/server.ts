@@ -5,6 +5,7 @@ import { loadConfig } from './config/env.ts'
 import { connectDatabase } from './db/client.ts'
 import { createJournalImageStore } from './storage/journal-images.ts'
 import { createProfileFileStores } from './storage/profile-files.ts'
+import { createSupportAttachmentStore } from './storage/support-attachments.ts'
 
 const config = loadConfig(process.env)
 const database = connectDatabase(config.databaseUrl)
@@ -15,6 +16,7 @@ const app = await buildApp({
   accountAdmin: createSupabaseAccountAdmin(config.supabaseUrl, config.supabaseSecretKey),
   journalImages: createJournalImageStore(config.supabaseUrl, config.supabaseSecretKey),
   profileFiles: createProfileFileStores(config.supabaseUrl, config.supabaseSecretKey),
+  supportAttachments: createSupportAttachmentStore(config.supabaseUrl, config.supabaseSecretKey),
 })
 
 app.addHook('onClose', () => database.close())

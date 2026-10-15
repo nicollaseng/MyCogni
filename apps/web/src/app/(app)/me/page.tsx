@@ -26,9 +26,11 @@ import { LatestScreening } from '@/features/screening/components/latest-screenin
 import { ScreeningHistory } from '@/features/screening/components/screening-history'
 import { ScreeningSchedule } from '@/features/screening/components/screening-schedule'
 import { latestByInstrument } from '@/features/screening/latest'
+import { SupportSection } from '@/features/support/components/support-section'
 import { Panel, Section } from '@/shared/components/section'
 import { fetchCareLinks, fetchProfessional } from '@/shared/lib/api/care'
 import { fetchAssessments, fetchConsents } from '@/shared/lib/api/resources'
+import { fetchSupportTickets } from '@/shared/lib/api/support'
 import { requireOnboardedProfile } from '@/shared/lib/auth/session'
 import { fetchMyPhotoUrl } from '@/shared/lib/photos'
 import { guarded } from '@/shared/lib/settled'
@@ -42,19 +44,22 @@ export async function generateMetadata(): Promise<Metadata> {
 const rowLink = 'block py-3.5 underline decoration-1 underline-offset-4'
 
 export default async function MePage() {
-  const [profile, [assessments, consents, photoUrl, careLinks, professional, t, language]] =
-    await guarded(
-      requireOnboardedProfile(),
-      Promise.all([
-        fetchAssessments(),
-        fetchConsents(),
-        fetchMyPhotoUrl(),
-        fetchCareLinks(),
-        fetchProfessional(),
-        getTranslations('account'),
-        getTranslations('common.language'),
-      ]),
-    )
+  const [
+    profile,
+    [assessments, consents, photoUrl, careLinks, professional, tickets, t, language],
+  ] = await guarded(
+    requireOnboardedProfile(),
+    Promise.all([
+      fetchAssessments(),
+      fetchConsents(),
+      fetchMyPhotoUrl(),
+      fetchCareLinks(),
+      fetchProfessional(),
+      fetchSupportTickets(),
+      getTranslations('account'),
+      getTranslations('common.language'),
+    ]),
+  )
   const lastAnswer = assessments[0]?.completedAt
 
   return (
@@ -129,6 +134,8 @@ export default async function MePage() {
           <DeleteAccount remove={deleteMyAccount} />
         </Panel>
       </Section>
+
+      <SupportSection tickets={tickets} timeZone={profile.timezone} />
 
       <form action={signOut}>
         <Button type="submit" variant="outline">

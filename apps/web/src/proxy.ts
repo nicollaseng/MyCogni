@@ -41,6 +41,7 @@ export const config = {
     '/invite/:path*',
     '/invites/:path*',
     '/notifications/:path*',
+    '/support/:path*',
     '/pro/:path*',
     '/admin/:path*',
     '/sign-in',

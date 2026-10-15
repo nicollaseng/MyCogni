@@ -77,27 +77,22 @@ function CrisisLines({ open, id }: { open: boolean; id: string }) {
 interface AccountPanelProps {
   name: string | null
   email: string | null
-  initials: string
-  photoUrl: string | null
   signOut: () => Promise<void>
   onNavigate: () => void
 }
 
-function AccountPanel({ name, email, initials, photoUrl, signOut, onNavigate }: AccountPanelProps) {
+function AccountPanel({ name, email, signOut, onNavigate }: AccountPanelProps) {
   const t = useTranslations('common.account')
   const [helpOpen, setHelpOpen] = useState(false)
   const helpId = useId()
 
   return (
     <>
-      <div className="flex items-center gap-3 px-4 pt-4 pb-3">
-        <Avatar initials={initials} photoUrl={photoUrl} className="size-10 text-[16px]" />
-        <div className="min-w-0">
-          <p className="truncate text-[15px] font-medium">{name ?? email}</p>
-          {name !== null && email !== null && (
-            <p className="truncate text-[13px] text-muted-foreground">{email}</p>
-          )}
-        </div>
+      <div className="min-w-0 px-4 pt-4 pb-3">
+        <p className="truncate text-[15px] font-medium">{name ?? email}</p>
+        {name !== null && email !== null && (
+          <p className="truncate text-[13px] text-muted-foreground">{email}</p>
+        )}
       </div>
       <div role="menu" aria-label={t('menu')} className="border-t border-rule p-1">
         <Link
@@ -119,6 +114,15 @@ function AccountPanel({ name, email, initials, photoUrl, signOut, onNavigate }: 
           className={menuItemStyle}
         >
           {t('professionals')}
+        </Link>
+        <Link
+          href="/me#support"
+          role="menuitem"
+          tabIndex={-1}
+          onClick={onNavigate}
+          className={menuItemStyle}
+        >
+          {t('support')}
         </Link>
         <button
           type="button"
@@ -179,8 +183,6 @@ export function AccountMenu({ name, email, photoUrl = null, signOut }: AccountMe
           <AccountPanel
             name={name}
             email={email}
-            initials={initials}
-            photoUrl={photoUrl}
             signOut={signOut}
             onNavigate={() => {
               close(false)

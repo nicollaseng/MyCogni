@@ -1,4 +1,5 @@
 import type { Notification } from '@mycogni/contracts'
+import { supportTicketLabel } from '@mycogni/domain'
 import Link from 'next/link'
 import { useLocale, useTranslations } from 'next-intl'
 import { formatDay } from '../format-day'
@@ -6,11 +7,17 @@ import { notificationHref } from '../notification-href'
 
 export function NotificationMessage({ notification }: { notification: Notification }) {
   const t = useTranslations('care.notifications')
-  const { invitation, kind } = notification
+  const { invitation, kind, supportTicket } = notification
 
-  return invitation === null
+  if (invitation !== null) {
+    return t('invitation', { name: invitation.professional.name })
+  }
+  return supportTicket === null
     ? t(`kinds.${kind}`)
-    : t('invitation', { name: invitation.professional.name })
+    : t('support', {
+        ticket: supportTicketLabel(supportTicket.number),
+        status: supportTicket.status,
+      })
 }
 
 interface NotificationItemProps {

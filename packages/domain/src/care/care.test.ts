@@ -71,13 +71,14 @@ describe('sharing terms', () => {
 })
 
 describe('notifications', () => {
-  it('separates invitations from messages of professionals, Cogni and the system', () => {
+  it('separates invitations from messages of professionals, Cogni, support and the system', () => {
     expect(notificationKinds).toEqual([
       'invitation',
       'professional',
       'marketing',
       'system',
       'insight',
+      'support',
     ])
   })
 })

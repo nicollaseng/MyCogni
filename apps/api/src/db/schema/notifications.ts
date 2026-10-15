@@ -4,6 +4,7 @@ import { index, pgEnum, pgPolicy, pgTable, timestamp, uuid } from 'drizzle-orm/p
 import { authenticatedRole, authUid, authUsers } from 'drizzle-orm/supabase'
 import { insights } from './insights.ts'
 import { invitations } from './invitations.ts'
+import { supportTickets, supportTicketStatus } from './support-tickets.ts'
 
 export const notificationKind = pgEnum('notification_kind', notificationKinds)
 
@@ -17,6 +18,10 @@ export const notifications = pgTable(
     kind: notificationKind('kind').notNull(),
     invitationId: uuid('invitation_id').references(() => invitations.id, { onDelete: 'cascade' }),
     insightId: uuid('insight_id').references(() => insights.id, { onDelete: 'cascade' }),
+    supportTicketId: uuid('support_ticket_id').references(() => supportTickets.id, {
+      onDelete: 'cascade',
+    }),
+    supportStatus: supportTicketStatus('support_status'),
     createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
     readAt: timestamp('read_at', { withTimezone: true }),
   },
