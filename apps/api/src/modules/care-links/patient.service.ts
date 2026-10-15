@@ -1,6 +1,7 @@
 import type {
   Assessment,
   CheckIn,
+  CheckInDetail,
   CheckInQuery,
   PatientSummary,
   ProfessionalOverview,
@@ -11,6 +12,8 @@ import { ForbiddenError, NotFoundError } from '../../shared/errors.ts'
 import type { BucketStore } from '../../storage/bucket-store.ts'
 import type { AssessmentRepository } from '../assessments/assessment.repository.ts'
 import { toAssessment } from '../assessments/assessment.service.ts'
+import type { CheckInAddendumRepository } from '../check-ins/check-in-addendum.repository.ts'
+import { loadCheckInDetail } from '../check-ins/check-in-detail.ts'
 import type { CheckInRepository } from '../check-ins/check-in.repository.ts'
 import { toCheckIn } from '../check-ins/check-in.service.ts'
 import type { ProfessionalRepository } from '../professionals/professional.repository.ts'
@@ -23,6 +26,7 @@ export interface PatientService {
   find(user: AuthenticatedUser, patientId: string): Promise<PatientSummary>
   overview(user: AuthenticatedUser): Promise<ProfessionalOverview>
   checkIns(user: AuthenticatedUser, patientId: string, query: CheckInQuery): Promise<CheckIn[]>
+  checkIn(user: AuthenticatedUser, patientId: string, checkInId: string): Promise<CheckInDetail>
   assessments(user: AuthenticatedUser, patientId: string): Promise<Assessment[]>
 }
 
@@ -30,6 +34,7 @@ export interface PatientDependencies {
   careLinks: CareLinkRepository
   metrics: PatientMetricsRepository
   checkIns: CheckInRepository
+  addenda: CheckInAddendumRepository
   assessments: AssessmentRepository
   professionals: ProfessionalRepository
   photos: BucketStore
@@ -46,6 +51,7 @@ export function createPatientService({
   careLinks,
   metrics,
   checkIns,
+  addenda,
   assessments,
   professionals,
   photos,
@@ -148,6 +154,13 @@ export function createPatientService({
         limit: query.limit,
       })
       return records.map(toCheckIn)
+    },
+    async checkIn(user, patientId, checkInId) {
+      await linkOrFail(user, patientId)
+      return loadCheckInDetail(
+        { checkIns, addenda },
+        { viewerId: user.id, ownerId: patientId, checkInId },
+      )
     },
     async assessments(user, patientId) {
       await linkOrFail(user, patientId)

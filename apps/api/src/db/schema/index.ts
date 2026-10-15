@@ -1,6 +1,7 @@
 export { alertLevel, alertReason, professionalAlerts } from './alerts.ts'
 export { assessmentInstrument, assessments, assessmentSeverity } from './assessments.ts'
 export { careLinkEndedBy, careLinks } from './care-links.ts'
+export { checkInAddenda } from './check-in-addenda.ts'
 export { checkIns } from './check-ins.ts'
 export { consentKind, consents } from './consents.ts'
 export { insightAudience, insights } from './insights.ts'
