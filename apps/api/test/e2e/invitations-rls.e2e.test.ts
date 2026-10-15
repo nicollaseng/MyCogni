@@ -122,11 +122,7 @@ describe('invitations', () => {
       tx.select().from(notifications).where(eq(notifications.invitationId, id)),
     )
     expect(bell).toEqual([
-      expect.objectContaining({
-        kind: 'invitation',
-        title: 'Dra. Helena Prado convidou você para acompanhar seus registros',
-        href: '/invites',
-      }),
+      expect.objectContaining({ kind: 'invitation', invitationId: id, readAt: null }),
     ])
   })
 
@@ -241,7 +237,7 @@ describe('invitations', () => {
     expect(others).toEqual([])
     await expect(
       withUser(connection.db, ana, (tx) =>
-        tx.update(notifications).set({ title: 'Outro texto' }).where(eq(notifications.userId, ana)),
+        tx.update(notifications).set({ kind: 'marketing' }).where(eq(notifications.userId, ana)),
       ),
     ).rejects.toMatchObject({ cause: { code: '42501' } })
   })

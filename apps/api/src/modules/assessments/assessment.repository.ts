@@ -23,7 +23,7 @@ export interface NewAssessment {
 
 export interface AssessmentRepository {
   create(userId: string, assessment: NewAssessment): Promise<AssessmentRecord>
-  list(userId: string): Promise<AssessmentRecord[]>
+  list(viewerId: string, ownerId: string): Promise<AssessmentRecord[]>
   completedInstruments(userId: string): Promise<InstrumentId[]>
 }
 
@@ -50,12 +50,12 @@ export function createAssessmentRepository(db: Database): AssessmentRepository {
         return row
       })
     },
-    list(userId) {
-      return withUser(db, userId, (tx) =>
+    list(viewerId, ownerId) {
+      return withUser(db, viewerId, (tx) =>
         tx
           .select(columns)
           .from(assessments)
-          .where(eq(assessments.userId, userId))
+          .where(eq(assessments.userId, ownerId))
           .orderBy(desc(assessments.completedAt)),
       )
     },

@@ -28,7 +28,7 @@ export function createAssessmentService(repository: AssessmentRepository): Asses
       return toAssessment(record)
     },
     async list(user) {
-      const records = await repository.list(user.id)
+      const records = await repository.list(user.id, user.id)
       return records.map(toAssessment)
     },
   }

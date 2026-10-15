@@ -49,6 +49,8 @@ export default defineConfig({
         DATABASE_URL: 'postgresql://postgres:postgres@127.0.0.1:55322/postgres',
         SUPABASE_URL: 'http://127.0.0.1:55321',
         SUPABASE_SECRET_KEY: localSupabase().SECRET_KEY,
+        WEB_URL: baseURL,
+        MAILPIT_URL: 'http://127.0.0.1:55324',
       },
     },
     {

@@ -20,6 +20,13 @@ const envSchema = z.object({
   DATABASE_URL: z.url({ protocol: /^postgres(ql)?$/ }),
   SUPABASE_URL: z.url({ protocol: /^https?$/ }).transform((value) => value.replace(/\/+$/, '')),
   SUPABASE_SECRET_KEY: z.string().min(1),
+  WEB_URL: z.url({ protocol: /^https?$/ }).transform((value) => value.replace(/\/+$/, '')),
+  RESEND_API_KEY: z.string().min(1).optional(),
+  MAILPIT_URL: z
+    .url({ protocol: /^https?$/ })
+    .transform((value) => value.replace(/\/+$/, ''))
+    .optional(),
+  MAIL_FROM: z.string().min(3).default('MyCogniAI <onboarding@resend.dev>'),
 })
 
 export interface AppConfig {
@@ -31,7 +38,14 @@ export interface AppConfig {
   databaseUrl: string
   supabaseUrl: string
   supabaseSecretKey: string
+  webUrl: string
+  mail: MailConfig
 }
+
+export type MailConfig =
+  | { provider: 'resend'; apiKey: string; from: string }
+  | { provider: 'mailpit'; url: string; from: string }
+  | { provider: 'none' }
 
 export class InvalidConfigError extends Error {
   constructor(details: string) {
@@ -55,5 +69,21 @@ export function loadConfig(source: Record<string, string | undefined>): AppConfi
     databaseUrl: env.DATABASE_URL,
     supabaseUrl: env.SUPABASE_URL,
     supabaseSecretKey: env.SUPABASE_SECRET_KEY,
+    webUrl: env.WEB_URL,
+    mail: mailConfig(env.RESEND_API_KEY, env.MAILPIT_URL, env.MAIL_FROM),
   }
+}
+
+function mailConfig(
+  resendApiKey: string | undefined,
+  mailpitUrl: string | undefined,
+  from: string,
+): MailConfig {
+  if (resendApiKey !== undefined) {
+    return { provider: 'resend', apiKey: resendApiKey, from }
+  }
+  if (mailpitUrl !== undefined) {
+    return { provider: 'mailpit', url: mailpitUrl, from }
+  }
+  return { provider: 'none' }
 }

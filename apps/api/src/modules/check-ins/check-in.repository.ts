@@ -22,7 +22,7 @@ export interface CheckInWindow {
 
 export interface CheckInRepository {
   create(userId: string, checkIn: NewCheckIn): Promise<CheckInRecord>
-  list(userId: string, window: CheckInWindow): Promise<CheckInRecord[]>
+  list(viewerId: string, ownerId: string, window: CheckInWindow): Promise<CheckInRecord[]>
 }
 
 const columns = {
@@ -48,14 +48,14 @@ export function createCheckInRepository(db: Database): CheckInRepository {
         return row
       })
     },
-    list(userId, { since, before, limit }) {
-      return withUser(db, userId, (tx) =>
+    list(viewerId, ownerId, { since, before, limit }) {
+      return withUser(db, viewerId, (tx) =>
         tx
           .select(columns)
           .from(checkIns)
           .where(
             and(
-              eq(checkIns.userId, userId),
+              eq(checkIns.userId, ownerId),
               since === undefined ? undefined : gte(checkIns.recordedAt, since),
               before === undefined ? undefined : lt(checkIns.recordedAt, before),
             ),

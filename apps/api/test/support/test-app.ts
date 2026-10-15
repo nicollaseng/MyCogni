@@ -6,7 +6,7 @@ import type { Database } from '../../src/db/client.ts'
 import { UnauthorizedError } from '../../src/shared/errors.ts'
 import type { App } from '../../src/shared/http.ts'
 import { testDatabaseUrl } from './database.ts'
-import { testSupabaseUrl } from './supabase.ts'
+import { testMailpitUrl, testSupabaseUrl } from './supabase.ts'
 
 export const allowedOrigin = 'http://localhost:3000'
 
@@ -17,6 +17,8 @@ export const testConfig = loadConfig({
   DATABASE_URL: testDatabaseUrl,
   SUPABASE_URL: testSupabaseUrl,
   SUPABASE_SECRET_KEY: process.env.SUPABASE_SECRET_KEY,
+  WEB_URL: allowedOrigin,
+  MAILPIT_URL: testMailpitUrl,
 })
 
 export const rejectingVerifier: TokenVerifier = {
