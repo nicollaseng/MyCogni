@@ -17,3 +17,7 @@ const keysByCode: Readonly<Record<string, AuthErrorKey>> = {
 export function authErrorKey(code: string | undefined): AuthErrorKey {
   return (code === undefined ? undefined : keysByCode[code]) ?? 'generic'
 }
+
+export function isExistingAccount(user: { identities?: readonly unknown[] } | null): boolean {
+  return user?.identities?.length === 0
+}

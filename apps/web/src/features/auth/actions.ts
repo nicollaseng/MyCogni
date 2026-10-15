@@ -10,7 +10,7 @@ import { rememberAccountIntent } from '@/shared/lib/auth/continue-path'
 import { currentUser } from '@/shared/lib/auth/session'
 import { createSupabaseServerClient } from '@/shared/lib/supabase/server'
 import { emailLinkCallback, type EmailLinkType } from './email-link'
-import { authErrorKey, type AuthErrorKey } from './error-messages'
+import { authErrorKey, isExistingAccount, type AuthErrorKey } from './error-messages'
 import { failed, invalidFields, noticed, type FormState } from './form-state'
 import {
   forgetPendingEmail,
@@ -73,7 +73,7 @@ export async function signUp(
     return invalidFields(parsed.error)
   }
   const supabase = await createSupabaseServerClient('read-write')
-  const { error } = await supabase.auth.signUp({
+  const { data, error } = await supabase.auth.signUp({
     ...parsed.data,
     options: {
       data: { locale: await getLocale(), account_type: signUpAccountType(accountType) },
@@ -82,6 +82,9 @@ export async function signUp(
   })
   if (error !== null) {
     return authFailure(authErrorKey(error.code))
+  }
+  if (isExistingAccount(data.user)) {
+    return authFailure('accountExists')
   }
   await rememberPendingEmail(parsed.data.email)
   await rememberCodeSent()

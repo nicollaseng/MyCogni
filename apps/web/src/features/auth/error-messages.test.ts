@@ -1,7 +1,7 @@
 import { describe, expect, it } from '@jest/globals'
 import { createTranslator } from 'next-intl'
 import { messagesFor } from '@/i18n/messages'
-import { authErrorKey } from './error-messages'
+import { authErrorKey, isExistingAccount } from './error-messages'
 
 const portuguese = createTranslator({
   locale: 'pt-BR',
@@ -38,5 +38,14 @@ describe('authErrorKey', () => {
     })
 
     expect(english(authErrorKey('invalid_credentials'))).toBe('Incorrect email or password.')
+  })
+})
+
+describe('isExistingAccount', () => {
+  it('recognises the empty identity list hosted sign-up returns for an email that already has an account', () => {
+    expect(isExistingAccount({ identities: [] })).toBe(true)
+    expect(isExistingAccount({ identities: [{ provider: 'email' }] })).toBe(false)
+    expect(isExistingAccount({})).toBe(false)
+    expect(isExistingAccount(null)).toBe(false)
   })
 })
