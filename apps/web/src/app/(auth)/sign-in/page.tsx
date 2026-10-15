@@ -6,6 +6,7 @@ import { AuthFootnote, authLink } from '@/features/auth/components/auth-footnote
 import { AuthHeading } from '@/features/auth/components/auth-heading'
 import { CredentialsForm } from '@/features/auth/components/credentials-form'
 import { GoogleSignIn } from '@/features/auth/components/google-sign-in'
+import { SignInAlert } from '@/features/auth/components/sign-in-alert'
 import { redirectSignedInUser } from '@/shared/lib/auth/session'
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -20,16 +21,7 @@ export default async function SignInPage({ searchParams }: PageProps<'/sign-in'>
   return (
     <>
       <AuthHeading title={t('title')}>{t('lead')}</AuthHeading>
-      {error === 'session' && (
-        <p role="alert" className="mb-6 text-sm text-danger">
-          {t('sessionEnded')}
-        </p>
-      )}
-      {error === 'oauth' && (
-        <p role="alert" className="mb-6 text-sm text-danger">
-          {t('googleFailed')}
-        </p>
-      )}
+      <SignInAlert error={error} />
       <GoogleSignIn action={signInWithGoogle} />
       <CredentialsForm action={signIn} mode="sign-in" />
       <p className="mt-6 text-sm">

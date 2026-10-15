@@ -7,12 +7,15 @@ export const auth: AuthMessages = {
     verify: 'Confirme o seu email',
     forgotPassword: 'Esqueci-me da palavra-passe',
     resetPassword: 'Nova palavra-passe',
+    newPassword: 'Nova palavra-passe',
   },
   signIn: {
     title: 'Iniciar sessão',
     lead: 'Que bom que voltou.',
     sessionEnded: 'A sua sessão terminou. Inicie sessão novamente para continuar.',
     googleFailed: 'Não foi possível iniciar sessão com o Google. Tente novamente.',
+    linkFailed:
+      'O link expirou ou foi aberto noutro navegador. Use o código do email ou peça um novo.',
     forgotPassword: 'Esqueci-me da palavra-passe',
     noAccount: 'Ainda não tem conta?',
     signUp: 'Criar conta',
@@ -27,7 +30,7 @@ export const auth: AuthMessages = {
   },
   verify: {
     title: 'Verifique o seu email',
-    lead: 'Enviámos um código de 6 dígitos para <highlight>{email}</highlight>. É válido durante 1 hora.',
+    lead: 'Enviámos um código de 6 dígitos para <highlight>{email}</highlight>. Introduza o código abaixo ou toque no link do email. É válido durante 1 hora.',
     submit: 'Confirmar email',
     resend: 'Reenviar código',
     resending: 'A reenviar…',
@@ -37,17 +40,22 @@ export const auth: AuthMessages = {
   },
   forgotPassword: {
     title: 'Esqueceu-se da palavra-passe?',
-    lead: 'Introduza o seu email. Se existir uma conta, enviamos-lhe um código para criar uma nova palavra-passe.',
+    lead: 'Introduza o seu email. Se existir uma conta, enviamos-lhe um código e um link para criar uma nova palavra-passe.',
     submit: 'Enviar código',
     remembered: 'Já se lembrou?',
     signIn: 'Iniciar sessão',
   },
   resetPassword: {
     title: 'Crie uma nova palavra-passe',
-    lead: 'Introduza o código que enviámos para <highlight>{email}</highlight> e escolha a nova palavra-passe.',
+    lead: 'Introduza o código que enviámos para <highlight>{email}</highlight> e escolha a nova palavra-passe, ou toque no link do email.',
     submit: 'Guardar nova palavra-passe',
     notReceived: 'Não recebeu?',
     sendAnother: 'Enviar outro código',
+  },
+  newPassword: {
+    title: 'Crie uma nova palavra-passe',
+    lead: 'Escolha a nova palavra-passe da sua conta. Depois de guardar, continua com a sessão iniciada.',
+    submit: 'Guardar nova palavra-passe',
   },
   form: {
     email: 'Email',
@@ -61,6 +69,7 @@ export const auth: AuthMessages = {
     signingIn: 'A iniciar sessão…',
     confirming: 'A confirmar…',
     sending: 'A enviar…',
+    saving: 'A guardar…',
   },
   google: {
     continue: 'Continuar com o Google',
