@@ -106,8 +106,7 @@ test('explains the first reading and counts the records toward it', async ({ pag
   await expect(page.getByRole('region', { name: 'Seu último resumo' })).toHaveCount(0)
   await page.goto('/patterns')
   const upcoming = page.getByRole('region', { name: 'Em breve' })
-  await expect(upcoming).toContainText('Resumo automáticoDesligado · Ligar')
-  await expect(upcoming.getByRole('link', { name: 'Ligar' })).toHaveAttribute('href', '/me')
+  await expect(upcoming.getByText('Resumo automático')).toHaveCount(0)
 
   await allowSummaries(person.email, password)
   await recordCheckIns(
@@ -118,7 +117,6 @@ test('explains the first reading and counts the records toward it', async ({ pag
   await page.reload()
 
   await expect(upcoming).toContainText('Resumo automático3 de 7 registros')
-  await expect(upcoming).not.toContainText('Desligado')
 })
 
 test('lets the person include MyBook in the readings', async ({ page }) => {

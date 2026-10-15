@@ -118,11 +118,30 @@ describe('/v1/check-ins filters', () => {
     expect(await notes(ana, 'qTags=tiredness')).toHaveLength(4)
   })
 
-  it('keeps records that carry every chosen tag, among emotions and contexts', async () => {
-    expect(await notes(ana, 'tags=work')).toEqual(['Dormi mal', 'Reunião com 100% de pressão'])
-    expect(await notes(ana, 'tags=work,anxiety')).toEqual(['Reunião com 100% de pressão'])
-    expect(await notes(ana, 'tags=exercise,%20mudança%20,exercise')).toEqual([null])
-    expect(await notes(ana, 'tags=,')).toHaveLength(4)
+  it('keeps records with any of the chosen emotions', async () => {
+    expect(await notes(ana, 'emotions=anxiety')).toEqual(['Reunião com 100% de pressão'])
+    expect(await notes(ana, 'emotions=anxiety,tiredness')).toEqual([
+      'Dormi mal',
+      'Reunião com 100% de pressão',
+    ])
+    expect(await notes(ana, 'emotions=work')).toEqual([])
+    expect(await notes(ana, 'emotions=,')).toHaveLength(4)
+  })
+
+  it('keeps records with any of the chosen contexts', async () => {
+    expect(await notes(ana, 'contexts=work')).toEqual(['Dormi mal', 'Reunião com 100% de pressão'])
+    expect(await notes(ana, 'contexts=sleep,%20mudança%20,sleep')).toEqual([null, 'Dormi mal'])
+  })
+
+  it('needs a match in both groups when emotions and contexts are chosen', async () => {
+    expect(await notes(ana, 'emotions=anxiety,joy&contexts=work')).toEqual([
+      'Reunião com 100% de pressão',
+    ])
+    expect(await notes(ana, 'emotions=calm,joy&contexts=exercise,work')).toEqual([
+      'Corrida_leve no parque',
+      null,
+    ])
+    expect(await notes(ana, 'emotions=calm&contexts=work')).toEqual([])
   })
 
   it('narrows by mood range and by having a note', async () => {
@@ -137,7 +156,7 @@ describe('/v1/check-ins filters', () => {
   })
 
   it('combines filters with the window and pages with the cursor', async () => {
-    expect(await notes(ana, 'tags=work&since=2026-10-02T00:00:00Z')).toEqual(['Dormi mal'])
+    expect(await notes(ana, 'contexts=work&since=2026-10-02T00:00:00Z')).toEqual(['Dormi mal'])
     expect(await notes(ana, 'hasNote=true&limit=1')).toEqual(['Corrida_leve no parque'])
     expect(await notes(ana, 'hasNote=true&limit=1&before=2026-10-07T12:00:00Z')).toEqual([
       'Dormi mal',
@@ -147,7 +166,7 @@ describe('/v1/check-ins filters', () => {
   it('counts every record that matches, beyond one page', async () => {
     const all = await count(ana, '')
     const filtered = await count(ana, 'q=reuni&since=2026-09-01T00:00:00Z')
-    const none = await count(ana, 'tags=family')
+    const none = await count(ana, 'contexts=family')
 
     expect(all.json()).toEqual({ count: 4 })
     expect(filtered.json()).toEqual({ count: 1 })
@@ -156,7 +175,7 @@ describe('/v1/check-ins filters', () => {
 
   it('keeps search and counts to the person own records', async () => {
     expect(await notes(bruno, 'q=reuni')).toEqual(['Reunião do Bruno'])
-    expect((await count(bruno, 'tags=anxiety')).json()).toEqual({ count: 1 })
+    expect((await count(bruno, 'emotions=anxiety')).json()).toEqual({ count: 1 })
   })
 
   it('refuses to count without a session', async () => {
@@ -170,8 +189,11 @@ describe('/v1/check-ins filters', () => {
     ['a fractional mood', 'maxMood=2.5'],
     ['a note flag that is not a yes or no', 'hasNote=maybe'],
     ['a search that is too long', `q=${'a'.repeat(101)}`],
-    ['too many tags', `tags=${Array.from({ length: 13 }, (_, i) => `t${String(i)}`).join(',')}`],
-    ['a tag that is too long', `tags=${'a'.repeat(41)}`],
+    [
+      'too many emotions',
+      `emotions=${Array.from({ length: 13 }, (_, i) => `t${String(i)}`).join(',')}`,
+    ],
+    ['a context that is too long', `contexts=${'a'.repeat(41)}`],
   ])('rejects %s', async (_, query) => {
     const listed = await app.inject({
       method: 'GET',
