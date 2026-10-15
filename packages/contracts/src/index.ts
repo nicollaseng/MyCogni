@@ -28,8 +28,10 @@ export {
   professionalKindSchema,
   professionalProfileSchema,
   registerProfessionalSchema,
+  updateProfessionalSchema,
   type ProfessionalProfile,
   type RegisterProfessionalInput,
+  type UpdateProfessionalInput,
 } from './professionals.ts'
 export {
   profileSchema,
@@ -47,13 +49,19 @@ export {
   type ReviewProfessionalInput,
 } from './admin.ts'
 export {
+  activityDaySchema,
   careLinkListSchema,
   careLinkSchema,
   patientSummaryListSchema,
   patientSummarySchema,
+  professionalOverviewSchema,
+  recentCheckInSchema,
   screeningSummarySchema,
+  type ActivityDay,
   type CareLink,
   type PatientSummary,
+  type ProfessionalOverview,
+  type RecentCheckIn,
   type ScreeningSummary,
 } from './care-links.ts'
 export {

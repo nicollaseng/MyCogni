@@ -51,12 +51,12 @@ describe('ProfessionalReviewList', () => {
   it('shows what the team needs to check before approving', () => {
     renderList([helena, rafael])
 
-    const first = within(screen.getByRole('listitem', { name: 'Helena Prado' }))
+    const first = within(screen.getByRole('row', { name: 'Helena Prado' }))
     expect(first.getByText('Psicologia')).toBeInTheDocument()
     expect(first.getByText('CRP 06/123456')).toBeInTheDocument()
     expect(first.getByText('helena@exemplo.com')).toBeInTheDocument()
 
-    const second = within(screen.getByRole('listitem', { name: 'Rafael Lima' }))
+    const second = within(screen.getByRole('row', { name: 'Rafael Lima' }))
     expect(second.getByText('Psicanálise')).toBeInTheDocument()
     expect(second.getByText('Sem registro')).toBeInTheDocument()
   })
@@ -65,7 +65,7 @@ describe('ProfessionalReviewList', () => {
     const { review, user } = renderList([helena, rafael])
 
     await user.click(
-      within(screen.getByRole('listitem', { name: 'Helena Prado' })).getByRole('button', {
+      within(screen.getByRole('row', { name: 'Helena Prado' })).getByRole('button', {
         name: 'Aprovar',
       }),
     )
@@ -80,7 +80,7 @@ describe('ProfessionalReviewList', () => {
     const { review, user } = renderList([helena, rafael])
 
     await user.click(
-      within(screen.getByRole('listitem', { name: 'Rafael Lima' })).getByRole('button', {
+      within(screen.getByRole('row', { name: 'Rafael Lima' })).getByRole('button', {
         name: 'Recusar',
       }),
     )

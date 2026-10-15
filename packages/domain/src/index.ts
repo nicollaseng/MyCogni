@@ -19,6 +19,15 @@ export {
   type AssessmentScore,
 } from './assessments/scoring.ts'
 export {
+  attentionReasons,
+  attentionReasonsOf,
+  inactiveAfterDays,
+  lowMoodAverage,
+  moodDropPoints,
+  type AttentionReason,
+  type AttentionSignals,
+} from './care/attention.ts'
+export {
   effectiveStatus,
   generateInvitationCode,
   invitationChannels,

@@ -51,7 +51,7 @@ test.describe('as the MyCogniAI team', () => {
     await page.goto('/admin/professionals')
 
     await expect(page.getByRole('heading', { level: 1, name: 'Profissionais' })).toBeVisible()
-    const pending = page.getByRole('listitem', { name: fullName })
+    const pending = page.getByRole('row', { name: fullName })
     await expect(pending).toContainText('Psicologia')
     await expect(pending).toContainText('CRP 06/112233')
     await pending.getByRole('button', { name: 'Aprovar' }).click()
@@ -61,7 +61,7 @@ test.describe('as the MyCogniAI team', () => {
 
     await page.getByRole('link', { name: 'Verificados' }).click()
     await expect(page).toHaveURL('/admin/professionals?status=verified')
-    const verified = page.getByRole('listitem', { name: fullName })
+    const verified = page.getByRole('row', { name: fullName })
     await expect(verified.getByRole('button', { name: 'Recusar' })).toBeVisible()
     await expect(verified.getByRole('button', { name: 'Aprovar' })).toHaveCount(0)
   })

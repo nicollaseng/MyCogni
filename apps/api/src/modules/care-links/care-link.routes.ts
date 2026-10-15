@@ -5,6 +5,7 @@ import {
   checkInQuerySchema,
   patientSummaryListSchema,
   patientSummarySchema,
+  professionalOverviewSchema,
 } from '@mycogni/contracts'
 import type { FastifyPluginCallbackZod } from 'fastify-type-provider-zod'
 import { z } from 'zod'
@@ -34,6 +35,11 @@ export function careLinkRoutes(
       '/professional/patients',
       { schema: { response: { 200: patientSummaryListSchema } } },
       (request) => patients.list(currentUser(request)),
+    )
+    app.get(
+      '/professional/overview',
+      { schema: { response: { 200: professionalOverviewSchema } } },
+      (request) => patients.overview(currentUser(request)),
     )
     app.get(
       '/professional/patients/:patientId',

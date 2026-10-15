@@ -28,8 +28,10 @@ function ChannelOption({
   return (
     <label
       className={cn(
-        'flex flex-1 cursor-pointer items-center justify-center rounded-full px-4 py-2 text-[15px] transition-colors has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-focus-visible:outline-foreground',
-        checked ? 'bg-background font-medium shadow-sm' : 'text-muted-foreground',
+        'flex flex-1 cursor-pointer items-center justify-center rounded-[4px] px-4 py-2 text-[15px] transition-colors has-focus-visible:outline-2 has-focus-visible:outline-offset-1 has-focus-visible:outline-foreground',
+        checked
+          ? 'bg-surface font-medium shadow-[0_0_0_1px_var(--rule)]'
+          : 'text-muted-foreground hover:text-foreground',
       )}
     >
       <input
@@ -60,7 +62,7 @@ function CreatedNotice({ created, timeZone }: { created: CreatedInvitation; time
         : t('emailNotSent', { email })
 
   return (
-    <div className="space-y-3 rounded-[18px] bg-background/70 px-4 py-4">
+    <div className="space-y-3 rounded-[8px] bg-surface px-4 py-4">
       <p
         role="status"
         className={cn(
@@ -102,7 +104,7 @@ export function InviteForm({ invite, timeZone }: { invite: Invite; timeZone: str
       <form noValidate onSubmit={handleSubmit} className="space-y-5">
         <fieldset>
           <legend className="mb-2 text-sm font-medium">{t('channel')}</legend>
-          <div className="flex gap-1 rounded-full bg-sage p-1">
+          <div className="flex gap-0.5 rounded-[6px] border border-rule p-0.5">
             {channels.map((option) => (
               <ChannelOption
                 key={option}
@@ -130,7 +132,7 @@ export function InviteForm({ invite, timeZone }: { invite: Invite; timeZone: str
         )}
         <div>
           <ActionError error={error} />
-          <Button type="submit" shape="pill" disabled={pending || !ready}>
+          <Button type="submit" size="sm" className="px-5" disabled={pending || !ready}>
             {pending ? t('sending') : channel === 'email' ? t('sendEmail') : t('createLink')}
           </Button>
         </div>

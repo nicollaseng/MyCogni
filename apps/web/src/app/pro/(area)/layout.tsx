@@ -6,7 +6,5 @@ export default async function ProfessionalAreaLayout({
   children,
 }: Readonly<{ children: ReactNode }>) {
   const professional = await requireProfessional()
-  return (
-    <ProfessionalShell verified={professional.status === 'verified'}>{children}</ProfessionalShell>
-  )
+  return <ProfessionalShell professional={professional}>{children}</ProfessionalShell>
 }

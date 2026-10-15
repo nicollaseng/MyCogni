@@ -1,4 +1,11 @@
-import type { Assessment, CheckIn, CheckInQuery, PatientSummary } from '@mycogni/contracts'
+import type {
+  Assessment,
+  CheckIn,
+  CheckInQuery,
+  PatientSummary,
+  ProfessionalOverview,
+} from '@mycogni/contracts'
+import { attentionReasonsOf, dayKey, previousDays } from '@mycogni/domain'
 import type { AuthenticatedUser } from '../../auth/token-verifier.ts'
 import { ForbiddenError, NotFoundError } from '../../shared/errors.ts'
 import type { AssessmentRepository } from '../assessments/assessment.repository.ts'
@@ -7,26 +14,38 @@ import type { CheckInRepository } from '../check-ins/check-in.repository.ts'
 import { toCheckIn } from '../check-ins/check-in.service.ts'
 import type { ProfessionalRepository } from '../professionals/professional.repository.ts'
 import type { CareLinkRepository, PatientLinkRecord } from './care-link.repository.ts'
+import type { PatientMetricsRepository, ScreeningRecord } from './patient-metrics.repository.ts'
 
 export interface PatientService {
   list(user: AuthenticatedUser): Promise<PatientSummary[]>
   find(user: AuthenticatedUser, patientId: string): Promise<PatientSummary>
+  overview(user: AuthenticatedUser): Promise<ProfessionalOverview>
   checkIns(user: AuthenticatedUser, patientId: string, query: CheckInQuery): Promise<CheckIn[]>
   assessments(user: AuthenticatedUser, patientId: string): Promise<Assessment[]>
 }
 
 export interface PatientDependencies {
   careLinks: CareLinkRepository
+  metrics: PatientMetricsRepository
   checkIns: CheckInRepository
   assessments: AssessmentRepository
   professionals: ProfessionalRepository
   now: () => Date
 }
 
-const weekInMilliseconds = 7 * 24 * 60 * 60 * 1000
+const activityDays = 30
+
+const recentLimit = 8
+
+const dayInMilliseconds = 24 * 60 * 60 * 1000
+
+function latestOf(screenings: ScreeningRecord[], instrument: ScreeningRecord['instrument']) {
+  return screenings.find((screening) => screening.instrument === instrument) ?? null
+}
 
 export function createPatientService({
   careLinks,
+  metrics,
   checkIns,
   assessments,
   professionals,
@@ -44,13 +63,18 @@ export function createPatientService({
     links: PatientLinkRecord[],
   ): Promise<PatientSummary[]> {
     const ids = links.map((link) => link.patientId)
-    const [lastCheckIns, counts, screenings] = await Promise.all([
-      careLinks.lastCheckIns(professionalId, ids),
-      careLinks.checkInCounts(professionalId, ids, new Date(now().getTime() - weekInMilliseconds)),
-      careLinks.latestScreenings(professionalId, ids),
+    const moment = now()
+    const [lastCheckIns, stats, screenings] = await Promise.all([
+      metrics.lastCheckIns(professionalId, ids),
+      metrics.checkInStats(professionalId, ids, moment),
+      metrics.latestScreenings(professionalId, ids),
     ])
     return links.map((link) => {
       const last = lastCheckIns.find((checkIn) => checkIn.patientId === link.patientId)
+      const own = screenings.filter((screening) => screening.patientId === link.patientId)
+      const patientStats = stats.get(link.patientId)
+      const moodAverage = patientStats?.moodAverage ?? null
+      const previousMoodAverage = patientStats?.previousMoodAverage ?? null
       return {
         id: link.patientId,
         linkId: link.linkId,
@@ -61,16 +85,26 @@ export function createPatientService({
           last === undefined
             ? null
             : { moodLevel: last.moodLevel, recordedAt: last.recordedAt.toISOString() },
-        checkInsLastWeek: counts.get(link.patientId) ?? 0,
-        screenings: screenings
-          .filter((screening) => screening.patientId === link.patientId)
-          .map((screening) => ({
-            instrument: screening.instrument,
-            totalScore: screening.totalScore,
-            severity: screening.severity,
-            hasRiskFlag: screening.hasRiskFlag,
-            completedAt: screening.completedAt.toISOString(),
-          })),
+        checkInsLastWeek: patientStats?.lastWeek ?? 0,
+        checkInsLast30Days: patientStats?.lastMonth ?? 0,
+        moodAverage,
+        previousMoodAverage,
+        screenings: own.map((screening) => ({
+          instrument: screening.instrument,
+          totalScore: screening.totalScore,
+          severity: screening.severity,
+          hasRiskFlag: screening.hasRiskFlag,
+          completedAt: screening.completedAt.toISOString(),
+        })),
+        attention: attentionReasonsOf({
+          latestPhq9: latestOf(own, 'phq9'),
+          latestGad7: latestOf(own, 'gad7'),
+          moodAverage,
+          previousMoodAverage,
+          lastCheckInAt: last?.recordedAt ?? null,
+          linkedAt: link.startedAt,
+          now: moment,
+        }),
       }
     })
   }
@@ -100,6 +134,27 @@ export function createPatientService({
         throw new NotFoundError('Patient not found')
       }
       return summary
+    },
+    async overview(user) {
+      await requireVerified(user)
+      const moment = now()
+      const ids = (await careLinks.listPatients(user.id)).map((link) => link.patientId)
+      const timeZone = await metrics.timeZoneOf(user.id)
+      const days = previousDays(dayKey(moment, timeZone), activityDays)
+      const since = new Date(moment.getTime() - (activityDays + 1) * dayInMilliseconds)
+      const [activity, recent, invitations] = await Promise.all([
+        metrics.activity(user.id, ids, since, timeZone),
+        metrics.recentCheckIns(user.id, ids, recentLimit),
+        metrics.invitationCounts(user.id),
+      ])
+      const byDay = new Map(activity.map((entry) => [entry.day, entry]))
+      return {
+        activity: days.map(
+          (day) => byDay.get(day) ?? { day, checkIns: 0, patients: 0, moodAverage: null },
+        ),
+        recent: recent.map((entry) => ({ ...entry, recordedAt: entry.recordedAt.toISOString() })),
+        invitations,
+      }
     },
     async checkIns(user, patientId, query) {
       await linkOrFail(user, patientId)

@@ -22,6 +22,7 @@ export interface NewProfessional {
 export interface ProfessionalRepository {
   find(userId: string): Promise<ProfessionalRecord | undefined>
   create(userId: string, professional: NewProfessional): Promise<ProfessionalRecord | undefined>
+  rename(userId: string, fullName: string): Promise<ProfessionalRecord | undefined>
 }
 
 const columns = {
@@ -50,6 +51,16 @@ export function createProfessionalRepository(db: Database): ProfessionalReposito
           .insert(professionalProfiles)
           .values({ ...professional, userId })
           .onConflictDoNothing()
+          .returning(columns)
+        return row
+      })
+    },
+    rename(userId, fullName) {
+      return withUser(db, userId, async (tx) => {
+        const [row] = await tx
+          .update(professionalProfiles)
+          .set({ fullName })
+          .where(eq(professionalProfiles.userId, userId))
           .returning(columns)
         return row
       })
