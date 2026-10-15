@@ -195,3 +195,4 @@ export {
   type SupportAttachment,
   type SupportTicket,
 } from './support.ts'
+export { narrationManifestSchema } from './narration.ts'

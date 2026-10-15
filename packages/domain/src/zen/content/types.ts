@@ -1,6 +1,8 @@
-import type { ArticleId, TrackId } from '@mycogni/domain'
+import type { ArticleId, TrackId } from '../catalog.ts'
 
-export type ContentLanguage = 'pt-BR' | 'pt-PT' | 'en'
+export const contentLanguages = ['pt-BR', 'pt-PT', 'en'] as const
+
+export type ContentLanguage = (typeof contentLanguages)[number]
 
 export interface Reference {
   citation: string

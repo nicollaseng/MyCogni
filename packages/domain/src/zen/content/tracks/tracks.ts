@@ -1,8 +1,8 @@
-import type { TrackId } from '@mycogni/domain'
-import type { ContentLanguage, TrackText, TrackTexts } from '../types'
-import { englishTracks } from './en'
-import { brazilianTracks } from './pt-br'
-import { europeanTracks } from './pt-pt'
+import type { TrackId } from '../../catalog.ts'
+import type { ContentLanguage, TrackText, TrackTexts } from '../types.ts'
+import { englishTracks } from './en.ts'
+import { brazilianTracks } from './pt-br.ts'
+import { europeanTracks } from './pt-pt.ts'
 
 const tracksByLanguage: Readonly<Record<ContentLanguage, TrackTexts>> = {
   'pt-BR': brazilianTracks,

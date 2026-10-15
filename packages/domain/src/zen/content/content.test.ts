@@ -1,11 +1,12 @@
 import { describe, expect, it } from '@jest/globals'
-import { articleIds, trackIds, tracks } from '@mycogni/domain'
-import { wordCountOf } from '../reading'
-import { articles } from './articles'
-import { trackText } from './tracks'
-import type { ContentLanguage } from './types'
+import { articleIds, trackIds, tracks } from '../catalog.ts'
+import { readingMinutes, wordCountOf } from '../reading.ts'
+import { articles } from './articles/articles.ts'
+import { contentLanguageOf } from './language.ts'
+import { trackText } from './tracks/tracks.ts'
+import { contentLanguages } from './types.ts'
 
-const languages: readonly ContentLanguage[] = ['pt-BR', 'pt-PT', 'en']
+const languages = contentLanguages
 
 describe('articles', () => {
   it.each(articleIds)('keeps %s between 500 and 900 words in every language', (id) => {
@@ -30,7 +31,7 @@ describe('articles', () => {
     for (const id of articleIds) {
       for (const reference of articles[id].references) {
         expect(reference.citation.trim()).not.toBe('')
-        expect(new URL(reference.url).protocol).toBe('https:')
+        expect(reference.url).toMatch(/^https:\/\/[^\s/]+\.[^\s]+$/)
       }
     }
   })
@@ -43,5 +44,23 @@ describe('tracks', () => {
       expect(Object.keys(text.steps).sort()).toEqual(tracks[id].steps.map((step) => step.id).sort())
       expect(text.title).not.toBe('')
     }
+  })
+})
+
+describe('readingMinutes', () => {
+  it('rounds up at 200 words a minute and never says zero', () => {
+    const paragraph = (words: number) => Array.from({ length: words }, () => 'palavra').join(' ')
+    expect(
+      readingMinutes({ title: 'T', summary: '', sections: [{ paragraphs: [paragraph(401)] }] }),
+    ).toBe(3)
+    expect(readingMinutes({ title: 'T', summary: '', sections: [{ paragraphs: [''] }] })).toBe(1)
+  })
+})
+
+describe('contentLanguageOf', () => {
+  it('shares the English content between the American and British locales', () => {
+    expect(contentLanguageOf('en-GB')).toBe('en')
+    expect(contentLanguageOf('en-US')).toBe('en')
+    expect(contentLanguageOf('pt-PT')).toBe('pt-PT')
   })
 })

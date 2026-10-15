@@ -1,4 +1,4 @@
-import type { TrackTexts } from '../types'
+import type { TrackTexts } from '../types.ts'
 
 export const englishTracks: TrackTexts = {
   'everyday-anxiety': {

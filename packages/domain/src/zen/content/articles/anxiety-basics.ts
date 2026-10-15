@@ -1,4 +1,4 @@
-import type { Article } from '../types'
+import type { Article } from '../types.ts'
 
 export const anxietyBasics: Article = {
   id: 'anxiety-basics',

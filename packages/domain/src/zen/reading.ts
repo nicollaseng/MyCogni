@@ -1,4 +1,4 @@
-import type { ArticleText } from './content/types'
+import type { ArticleText } from './content/types.ts'
 
 const wordsPerMinute = 200
 

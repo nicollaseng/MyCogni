@@ -1,9 +1,6 @@
-import { articleIds } from '@mycogni/domain'
+import { articleIds, contentLanguageOf, readingMinutes, zenArticles } from '@mycogni/domain'
 import Link from 'next/link'
 import { useLocale, useTranslations } from 'next-intl'
-import { articles } from '../content/articles'
-import { contentLanguageOf } from '../content/language'
-import { readingMinutes } from '../reading'
 
 const rowStyles =
   'block rounded-lg px-5 py-4 transition-colors duration-150 hover:bg-surface motion-reduce:transition-none'
@@ -19,7 +16,7 @@ export function ArticleList() {
       </h2>
       <ul className="-mx-5">
         {articleIds.map((id) => {
-          const text = articles[id].text[language]
+          const text = zenArticles[id].text[language]
           return (
             <li key={id}>
               <Link href={`/zen/articles/${id}`} className={rowStyles}>

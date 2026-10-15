@@ -1,10 +1,14 @@
-import { trackIds, tracks, type ArticleId } from '@mycogni/domain'
+import {
+  contentLanguageOf,
+  readingMinutes,
+  trackIds,
+  trackText,
+  tracks,
+  zenArticles,
+  type ArticleId,
+} from '@mycogni/domain'
 import Link from 'next/link'
 import { useLocale, useTranslations } from 'next-intl'
-import { articles } from '../content/articles'
-import { contentLanguageOf } from '../content/language'
-import { trackText } from '../content/tracks'
-import { readingMinutes } from '../reading'
 import { HelpLines } from './help-lines'
 
 const textLink = 'underline decoration-1 underline-offset-4'
@@ -16,8 +20,8 @@ function hostOf(url: string): string {
 export function ArticleView({ id }: { id: ArticleId }) {
   const t = useTranslations('zen')
   const language = contentLanguageOf(useLocale())
-  const text = articles[id].text[language]
-  const { references } = articles[id]
+  const text = zenArticles[id].text[language]
+  const { references } = zenArticles[id]
   const inTracks = trackIds.filter((trackId) =>
     tracks[trackId].steps.some((step) => step.kind === 'read' && step.article === id),
   )

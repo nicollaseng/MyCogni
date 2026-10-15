@@ -1,13 +1,18 @@
-import { progressOf, suggestedArticles, type DoneStep, type ZenSuggestion } from '@mycogni/domain'
+import {
+  contentLanguageOf,
+  progressOf,
+  readingMinutes,
+  suggestedArticles,
+  trackText,
+  zenArticles,
+  type ContentLanguage,
+  type DoneStep,
+  type ZenSuggestion,
+} from '@mycogni/domain'
 import Link from 'next/link'
 import { useLocale, useTranslations } from 'next-intl'
 import { Disclosure } from '@/shared/components/disclosure'
 import { buttonVariants } from '@/shared/ui/button'
-import { articles } from '../content/articles'
-import { contentLanguageOf } from '../content/language'
-import type { ContentLanguage } from '../content/types'
-import { trackText } from '../content/tracks'
-import { readingMinutes } from '../reading'
 import { HelpLines } from './help-lines'
 import { ProgressLine } from './progress-line'
 
@@ -75,7 +80,7 @@ export function ForYou({ suggestion, doneSteps, professionals }: ForYouProps) {
           <p className="text-sm text-muted-foreground">{t('readings')}</p>
           <ul className="space-y-3">
             {readings.map((id) => {
-              const text = articles[id].text[language]
+              const text = zenArticles[id].text[language]
               return (
                 <li key={id}>
                   <Link href={`/zen/articles/${id}`} className={textLink}>

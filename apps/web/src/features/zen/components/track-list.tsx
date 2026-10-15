@@ -1,8 +1,6 @@
-import { progressOf, trackIds, type DoneStep } from '@mycogni/domain'
+import { contentLanguageOf, progressOf, trackIds, trackText, type DoneStep } from '@mycogni/domain'
 import Link from 'next/link'
 import { useLocale, useTranslations } from 'next-intl'
-import { contentLanguageOf } from '../content/language'
-import { trackText } from '../content/tracks'
 import { trackStatusOf } from '../model'
 import { StatusDot } from './status-dot'
 
