@@ -58,3 +58,7 @@ export async function createTestUser(metadata: Record<string, string> = {}): Pro
 export async function deleteTestUser(id: string): Promise<void> {
   await request(`/auth/v1/admin/users/${id}`, { method: 'DELETE', headers: adminHeaders() })
 }
+
+export function bearer(user: TestUser): Record<string, string> {
+  return { authorization: `Bearer ${user.accessToken}` }
+}

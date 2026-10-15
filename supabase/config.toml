@@ -1,6 +1,7 @@
 project_id = "mycogni"
 
 [api]
+enabled = false
 port = 55321
 
 [db]

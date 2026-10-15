@@ -4,7 +4,6 @@ import { fileURLToPath } from 'node:url'
 import { z } from 'zod'
 
 const statusSchema = z.object({
-  API_URL: z.url(),
   SERVICE_ROLE_KEY: z.string(),
   MAILPIT_URL: z.url(),
 })
@@ -14,6 +13,8 @@ export type LocalSupabase = z.infer<typeof statusSchema>
 const repositoryRoot = fileURLToPath(new URL('../../../../', import.meta.url))
 
 export const testEmailDomain = 'e2e.mycogni.local'
+
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL ?? 'http://127.0.0.1:55321'
 
 let cached: LocalSupabase | undefined
 
@@ -47,7 +48,7 @@ export async function createUser(
   password: string,
   confirmed = true,
 ): Promise<string> {
-  const response = await fetch(`${localSupabase().API_URL}/auth/v1/admin/users`, {
+  const response = await fetch(`${supabaseUrl}/auth/v1/admin/users`, {
     method: 'POST',
     headers: adminHeaders(),
     body: JSON.stringify({ email, password, email_confirm: confirmed }),
@@ -59,8 +60,7 @@ export async function createUser(
 }
 
 export async function deleteTestUsers(): Promise<void> {
-  const { API_URL } = localSupabase()
-  const response = await fetch(`${API_URL}/auth/v1/admin/users?per_page=1000`, {
+  const response = await fetch(`${supabaseUrl}/auth/v1/admin/users?per_page=1000`, {
     headers: adminHeaders(),
   })
   const { users } = usersSchema.parse(await response.json())
@@ -68,7 +68,7 @@ export async function deleteTestUsers(): Promise<void> {
     users
       .filter((user) => user.email.endsWith(`@${testEmailDomain}`))
       .map((user) =>
-        fetch(`${API_URL}/auth/v1/admin/users/${user.id}`, {
+        fetch(`${supabaseUrl}/auth/v1/admin/users/${user.id}`, {
           method: 'DELETE',
           headers: adminHeaders(),
         }),

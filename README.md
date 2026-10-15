@@ -43,12 +43,14 @@ The web app runs on `http://localhost:3000` and the API on `http://localhost:333
 
 | Service          | URL                                                       |
 | ---------------- | --------------------------------------------------------- |
-| API (Auth, REST) | `http://127.0.0.1:55321`                                  |
+| Auth             | `http://127.0.0.1:55321`                                  |
 | Postgres         | `postgresql://postgres:postgres@127.0.0.1:55322/postgres` |
 | Studio           | `http://127.0.0.1:55323`                                  |
 | Mailpit (emails) | `http://127.0.0.1:55324`                                  |
 
 `pnpm db:stop` stops it. The API tests run against this database, so it must be running for `pnpm test`.
+
+The Supabase Data API (PostgREST) is turned off: every read and write goes through the Fastify API, which scores questionnaires and checks onboarding on the server. Turn it off in the hosted projects too (Project Settings → Data API), otherwise a signed-in user could write to their own rows directly with the public key.
 
 ## API
 
@@ -70,7 +72,16 @@ test/
   e2e/       HTTP and database behavior against real dependencies
 ```
 
-Routes under `/v1` require a Supabase access token (`Authorization: Bearer <token>`). The API verifies it against the project's JWKS (`SUPABASE_URL/auth/v1/.well-known/jwks.json`), checking issuer and audience, so no shared secret is needed. `GET /v1/me` and `PATCH /v1/me` read and update the profile.
+Routes under `/v1` require a Supabase access token (`Authorization: Bearer <token>`). The API verifies it against the project's JWKS (`SUPABASE_URL/auth/v1/.well-known/jwks.json`), checking issuer and audience, so no shared secret is needed.
+
+| Route                          | Purpose                                                                                    |
+| ------------------------------ | ------------------------------------------------------------------------------------------ |
+| `GET /v1/me`, `PATCH /v1/me`   | Read and update the profile (name, time zone)                                              |
+| `GET /v1/consents`             | Consents granted for the current version of the legal documents                            |
+| `POST /v1/consents`            | Grant consents (`terms`, `privacy`, `health_data`, `adult`, optional `ai_processing`)      |
+| `GET /v1/assessments`          | PHQ-9 and GAD-7 results, newest first                                                      |
+| `POST /v1/assessments`         | Submit answers; the server computes total, severity and the PHQ-9 item 9 risk flag         |
+| `POST /v1/onboarding/complete` | Marks onboarding as done once the required consents and both screenings exist (422 before) |
 
 Errors always answer with `{ code, message }`, plus `issues` for validation errors. Unexpected errors are logged and answered with a generic 500 that never leaks details.
 
