@@ -26,10 +26,10 @@ describe('ResultsStep', () => {
     const gad7 = screen.getByRole('region', { name: 'Sinais de ansiedade' })
 
     expect(phq9).toHaveTextContent('11de 27')
-    expect(within(phq9).getByText('Moderados')).toBeInTheDocument()
+    expect(within(phq9).getByText('Moderada')).toBeInTheDocument()
     expect(within(phq9).getByText(/conversar com um profissional de saúde/)).toBeInTheDocument()
     expect(gad7).toHaveTextContent('4de 21')
-    expect(within(gad7).getByText('Mínimos')).toBeInTheDocument()
+    expect(within(gad7).getByText('Mínima')).toBeInTheDocument()
     expect(screen.getByText(/É uma triagem, não um diagnóstico/)).toBeInTheDocument()
   })
 

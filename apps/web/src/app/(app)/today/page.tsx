@@ -4,8 +4,10 @@ import Link from 'next/link'
 import { MoodMap } from '@/features/mood/components/mood-map'
 import { MoodStrip } from '@/features/mood/components/mood-strip'
 import { isMoodLevel } from '@/features/mood/mood-levels'
+import { LatestScreening } from '@/features/screening/components/latest-screening'
+import { latestByInstrument } from '@/features/screening/latest'
 import { PageTitle } from '@/shared/components/page-title'
-import { fetchCheckIns } from '@/shared/lib/api/resources'
+import { fetchAssessments, fetchCheckIns } from '@/shared/lib/api/resources'
 import { requireOnboardedProfile } from '@/shared/lib/auth/session'
 import { formatLongDate } from '@/shared/lib/time'
 import { cn } from '@/shared/lib/utils'
@@ -20,10 +22,10 @@ export default async function TodayPage() {
   const { timezone } = await requireOnboardedProfile()
   const now = new Date()
   const today = formatLongDate(now, timezone)
-  const checkIns = await fetchCheckIns({
-    since: new Date(now.getTime() - (windowDays + 1) * dayInMs),
-    limit: 200,
-  })
+  const [checkIns, assessments] = await Promise.all([
+    fetchCheckIns({ since: new Date(now.getTime() - (windowDays + 1) * dayInMs), limit: 200 }),
+    fetchAssessments(),
+  ])
   const days = dailyMoods(
     checkIns.map((checkIn) => ({
       moodLevel: checkIn.moodLevel,
@@ -66,15 +68,7 @@ export default async function TodayPage() {
         </p>
       </section>
 
-      <section className="border-t border-rule pt-8">
-        <h2 className="sr-only">Avaliações</h2>
-        <p className="leading-relaxed">
-          PHQ-9 e GAD-7{' '}
-          <span className="text-muted-foreground">
-            · voltam a cada duas semanas para mostrar como você muda.
-          </span>
-        </p>
-      </section>
+      <LatestScreening results={latestByInstrument(assessments)} timeZone={timezone} />
     </>
   )
 }
