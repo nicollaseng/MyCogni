@@ -53,6 +53,10 @@ export const account = {
     notGranted: 'Não autorizado',
     note: 'Os consentimentos obrigatórios só podem ser retirados com a exclusão da conta, em Seus dados.',
   },
+  journal: {
+    label: 'Incluir o MyBook nos meus resumos',
+    hint: 'Ligado, o texto das páginas do MyBook escritas no período também é lido para escrever o seu resumo; os resumos para o profissional nunca usam o MyBook.',
+  },
   data: {
     export: 'Baixar meus dados',
     fileName: 'mycogniai-meus-dados-{day}.json',
@@ -83,6 +87,8 @@ export const account = {
     deleteError: 'Não conseguimos excluir sua conta agora. Tente de novo em instantes.',
     aiOn: 'Resumos por IA ligados.',
     aiOff: 'Resumos por IA desligados.',
+    journalOn: 'MyBook incluído nos seus resumos.',
+    journalOff: 'MyBook fora dos seus resumos.',
   },
 }
 

@@ -1,4 +1,4 @@
-import { requiredConsentKinds } from '@mycogni/domain'
+import { requiredConsentKinds, sharingConsentVersion } from '@mycogni/domain'
 import { z } from 'zod'
 import {
   createUser,
@@ -9,7 +9,8 @@ import {
   uniqueEmail,
 } from './supabase'
 
-const apiUrl = process.env.API_URL ?? `http://127.0.0.1:${process.env.E2E_API_PORT ?? '3333'}`
+export const apiUrl =
+  process.env.API_URL ?? `http://127.0.0.1:${process.env.E2E_API_PORT ?? '3333'}`
 
 const sessionSchema = z.object({ access_token: z.string() })
 
@@ -90,6 +91,8 @@ export async function verifiedProfessional(
   return userId
 }
 
+const claimedSchema = z.object({ id: z.uuid() })
+
 const createdInvitationSchema = z.object({
   invitation: z.object({ code: z.string(), link: z.url() }),
 })
@@ -111,4 +114,22 @@ export async function claimInvitation(
 ): Promise<void> {
   const post = await poster(email, password)
   await post('/v1/invitations/claim', { code })
+}
+
+export async function allowSummaries(email: string, password: string): Promise<void> {
+  const post = await poster(email, password)
+  await post('/v1/consents', { kinds: ['ai_processing'] })
+}
+
+export async function acceptInvitation(
+  email: string,
+  password: string,
+  code: string,
+): Promise<void> {
+  const post = await poster(email, password)
+  const { id } = claimedSchema.parse(await post('/v1/invitations/claim', { code }))
+  await post(`/v1/invitations/${id}/accept`, {
+    sharesHistory: true,
+    consentVersion: sharingConsentVersion,
+  })
 }

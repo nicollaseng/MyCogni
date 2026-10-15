@@ -2,13 +2,15 @@ import { moodDays, patternRules } from '@mycogni/domain'
 import type { Metadata } from 'next'
 import { getLocale, getTranslations } from 'next-intl/server'
 import { TodayActions } from '@/features/check-in/components/today-actions'
+import { ReadingTeaser } from '@/features/insights/components/reading-teaser'
+import { isRecentReading } from '@/features/insights/readings'
 import { MoodMap } from '@/features/mood/components/mood-map'
 import { RecentMood } from '@/features/mood/components/recent-mood'
 import { LatestScreening } from '@/features/screening/components/latest-screening'
 import { ScreeningSchedule } from '@/features/screening/components/screening-schedule'
 import { latestByInstrument } from '@/features/screening/latest'
 import { PageTitle } from '@/shared/components/page-title'
-import { fetchAssessments, fetchCheckIns } from '@/shared/lib/api/resources'
+import { fetchAssessments, fetchCheckIns, fetchInsights } from '@/shared/lib/api/resources'
 import { requireOnboardedProfile } from '@/shared/lib/auth/session'
 import { formatDayTitle } from '@/shared/lib/time'
 
@@ -24,9 +26,10 @@ export default async function TodayPage() {
   const { timezone } = await requireOnboardedProfile()
   const [t, locale] = await Promise.all([getTranslations('today'), getLocale()])
   const now = new Date()
-  const [checkIns, assessments] = await Promise.all([
+  const [checkIns, assessments, readings] = await Promise.all([
     fetchCheckIns({ since: new Date(now.getTime() - (windowDays + 1) * dayInMs), limit: 200 }),
     fetchAssessments(),
+    fetchInsights(),
   ])
   const days = moodDays(
     checkIns.map((checkIn) => ({
@@ -36,6 +39,7 @@ export default async function TodayPage() {
     { timeZone: timezone, today: now, days: windowDays },
   )
   const lastAnswer = assessments[0]?.completedAt
+  const latestReading = readings[0]
 
   return (
     <>
@@ -50,6 +54,10 @@ export default async function TodayPage() {
       </section>
 
       <RecentMood days={days} />
+
+      {latestReading !== undefined && isRecentReading(latestReading.createdAt, now) && (
+        <ReadingTeaser reading={latestReading} timeZone={timezone} />
+      )}
 
       <LatestScreening results={latestByInstrument(assessments)} timeZone={timezone}>
         {lastAnswer !== undefined && (

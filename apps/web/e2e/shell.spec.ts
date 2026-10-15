@@ -6,7 +6,7 @@ import {
   inviteByLink,
   verifiedProfessional,
 } from './support/api'
-import { seedInsightNotification } from './support/database'
+import { notifyInsight, seedPatientInsight } from './support/database'
 import { signedOut } from './support/session'
 import { createUser, uniqueEmail } from './support/supabase'
 
@@ -110,14 +110,35 @@ test.describe('a person with their own session', () => {
 
   test('opens the reading of a weekly summary from its notification', async ({ page }) => {
     const { id } = await signInAsReadyPerson(page)
-    const insightId = await seedInsightNotification(id)
+    const earlier = {
+      summary: 'Semana mais tranquila, com o sono em dia.',
+      highlights: ['As caminhadas apareceram nos dias melhores.'],
+      suggestions: [],
+    }
+    const earlierId = await seedPatientInsight({
+      patientId: id,
+      daysAgo: 9,
+      checkInCount: 7,
+      content: earlier,
+    })
+    await seedPatientInsight({
+      patientId: id,
+      daysAgo: 1,
+      checkInCount: 7,
+      content: { summary: 'Semana estável.', highlights: [], suggestions: [] },
+    })
+    await notifyInsight(id, earlierId)
     await page.reload()
 
     await page.getByRole('button', { name: 'Notificações, 1 não lida' }).click()
     await page.getByRole('menuitem', { name: /Seu resumo da semana está pronto/ }).click()
 
-    await expect(page).toHaveURL(`/patterns#reading-${insightId}`)
-    await expect(page.getByRole('heading', { level: 1, name: 'Padrões' })).toBeVisible()
+    await expect(page).toHaveURL(`/patterns#reading-${earlierId}`)
+    await expect(page.locator(`#reading-${earlierId}`).getByRole('button')).toHaveAttribute(
+      'aria-expanded',
+      'true',
+    )
+    await expect(page.getByText(earlier.summary)).toBeVisible()
     await expect(page.getByRole('button', { name: 'Notificações', exact: true })).toBeVisible()
   })
 

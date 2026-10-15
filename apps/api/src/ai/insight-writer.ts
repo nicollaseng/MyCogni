@@ -29,7 +29,7 @@ export interface InsightWriter {
   forProfessional(records: InsightRecords): Promise<ProfessionalInsightContent | null>
 }
 
-export const insightModel = 'claude-opus-5-5'
+export const insightModel = 'claude-haiku-5-5'
 
 export function createClaudeInsightWriter(apiKey: string): InsightWriter {
   const client = new Anthropic({ apiKey })
@@ -38,8 +38,6 @@ export function createClaudeInsightWriter(apiKey: string): InsightWriter {
     return {
       model: insightModel,
       max_tokens: 4000,
-      betas: ['server-side-fallback-2026-07-01'],
-      fallbacks: 'default' as const,
       system: [
         { type: 'text' as const, text: system, cache_control: { type: 'ephemeral' as const } },
       ],
@@ -50,14 +48,14 @@ export function createClaudeInsightWriter(apiKey: string): InsightWriter {
   return {
     model: insightModel,
     async forPatient(records) {
-      const response = await client.beta.messages.parse({
+      const response = await client.messages.parse({
         ...request(patientInsightSystemPrompt, records),
         output_config: { effort: 'low', format: zodOutputFormat(patientInsightContentSchema) },
       })
       return response.stop_reason === 'refusal' ? null : response.parsed_output
     },
     async forProfessional(records) {
-      const response = await client.beta.messages.parse({
+      const response = await client.messages.parse({
         ...request(professionalInsightSystemPrompt, records),
         output_config: {
           effort: 'low',

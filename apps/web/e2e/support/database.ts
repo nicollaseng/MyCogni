@@ -1,26 +1,70 @@
+import type { PatientInsightContent, ProfessionalInsightContent } from '@mycogni/contracts'
 import postgres from 'postgres'
+import { localSupabase } from './supabase'
 
-const databaseUrl =
-  process.env.DATABASE_URL ?? 'postgresql://postgres:postgres@127.0.0.1:55322/postgres'
+interface InsightSeed {
+  patientId: string
+  daysAgo: number
+  checkInCount: number
+}
 
-export async function seedInsightNotification(userId: string): Promise<string> {
-  const sql = postgres(databaseUrl, { max: 1 })
+type InsightRow = InsightSeed &
+  (
+    | { audience: 'patient'; professionalId: null; content: PatientInsightContent }
+    | { audience: 'professional'; professionalId: string; content: ProfessionalInsightContent }
+  )
+
+const periodDays = 7
+
+async function withDatabase<T>(work: (sql: postgres.Sql) => Promise<T>): Promise<T> {
+  const sql = postgres(localSupabase().DB_URL, { max: 1, onnotice: () => undefined })
   try {
-    const [insight] = await sql<{ id: string }[]>`
-      insert into public.insights
-        (patient_id, audience, period_start, period_end, check_in_count, content, model)
-      values
-        (${userId}, 'patient', now() - interval '8 days', now(), 7,
-         ${sql.json({ summary: 'Semana estável.', highlights: [], suggestions: [] })}, 'e2e')
-      returning id`
-    if (insight === undefined) {
-      throw new Error('The weekly summary was not seeded')
-    }
-    await sql`
-      insert into public.notifications (user_id, kind, insight_id)
-      values (${userId}, 'insight', ${insight.id})`
-    return insight.id
+    return await work(sql)
   } finally {
     await sql.end()
   }
+}
+
+function insertInsight(row: InsightRow): Promise<string> {
+  return withDatabase(async (sql) => {
+    const [inserted] = await sql<{ id: string }[]>`
+      insert into public.insights
+        (patient_id, audience, professional_id, period_start, period_end, check_in_count, content, model, created_at)
+      values (
+        ${row.patientId},
+        ${row.audience},
+        ${row.professionalId},
+        now() - make_interval(days => ${row.daysAgo + periodDays}),
+        now() - make_interval(days => ${row.daysAgo}),
+        ${row.checkInCount},
+        ${sql.json(row.content)},
+        'e2e-seed',
+        now() - make_interval(days => ${row.daysAgo})
+      )
+      returning id`
+    if (inserted === undefined) {
+      throw new Error('The insight was not seeded')
+    }
+    return inserted.id
+  })
+}
+
+export function seedPatientInsight(
+  seed: InsightSeed & { content: PatientInsightContent },
+): Promise<string> {
+  return insertInsight({ ...seed, audience: 'patient', professionalId: null })
+}
+
+export function seedProfessionalInsight(
+  seed: InsightSeed & { professionalId: string; content: ProfessionalInsightContent },
+): Promise<string> {
+  return insertInsight({ ...seed, audience: 'professional' })
+}
+
+export async function notifyInsight(patientId: string, insightId: string): Promise<void> {
+  await withDatabase(
+    (sql) => sql`
+      insert into public.notifications (user_id, kind, insight_id)
+      values (${patientId}, 'insight', ${insightId})`,
+  )
 }

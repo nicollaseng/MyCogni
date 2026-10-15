@@ -8,6 +8,7 @@ const statusSchema = z.object({
   SECRET_KEY: z.string(),
   SERVICE_ROLE_KEY: z.string(),
   MAILPIT_URL: z.url(),
+  DB_URL: z.url(),
 })
 
 export type LocalSupabase = z.infer<typeof statusSchema>
