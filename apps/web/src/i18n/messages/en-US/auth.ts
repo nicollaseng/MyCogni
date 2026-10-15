@@ -21,8 +21,16 @@ export const auth: AuthMessages = {
     signUp: 'Create account',
   },
   signUp: {
-    title: 'Create account',
-    lead: 'It takes a minute. Then two short assessments to understand how you are doing.',
+    patient: {
+      title: 'Create account',
+      lead: 'It takes a minute. Then two short assessments to understand how you are doing.',
+    },
+    professional: {
+      title: 'Create a professional account',
+      lead: 'For people who care for patients. Once the account exists, you send your registration for verification.',
+      notProfessional: 'Want to follow your own mood?',
+      patientSignUp: 'Create a patient account',
+    },
     agreement:
       'By creating an account, you agree to the <terms>Terms of use</terms> and the <privacy>Privacy policy</privacy>.',
     hasAccount: 'Already have an account?',

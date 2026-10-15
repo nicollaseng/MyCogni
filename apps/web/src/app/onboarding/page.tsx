@@ -8,8 +8,9 @@ import { OnboardingFlow } from '@/features/onboarding/components/onboarding-flow
 import { resumeFrom } from '@/features/onboarding/model'
 import { submitScreening } from '@/features/screening/actions'
 import { fetchAssessments, fetchConsents } from '@/shared/lib/api/resources'
-import { requireProfile, requireUser } from '@/shared/lib/auth/session'
+import { requirePatientProfile } from '@/shared/lib/auth/session'
 import { ownPhotoUrl } from '@/shared/lib/photos'
+import { guarded } from '@/shared/lib/settled'
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations('onboarding.meta')
@@ -17,12 +18,10 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function OnboardingPage() {
-  await requireUser()
-  const [profile, consents, assessments] = await Promise.all([
-    requireProfile(),
-    fetchConsents(),
-    fetchAssessments(),
-  ])
+  const [profile, [consents, assessments]] = await guarded(
+    requirePatientProfile(),
+    Promise.all([fetchConsents(), fetchAssessments()]),
+  )
   if (profile.onboardingCompletedAt !== null) {
     redirect('/today')
   }

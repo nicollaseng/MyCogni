@@ -1,10 +1,12 @@
 'use server'
 
+import { signUpAccountType, type AccountType } from '@mycogni/domain'
 import { getLocale, getTranslations } from 'next-intl/server'
 import { redirect } from 'next/navigation'
 import { rememberLocaleOf } from '@/features/locale/remember-locale'
 import { afterSignIn } from './after-sign-in'
 import { serverEnv } from '@/shared/lib/env'
+import { rememberAccountIntent } from '@/shared/lib/auth/continue-path'
 import { currentUser } from '@/shared/lib/auth/session'
 import { createSupabaseServerClient } from '@/shared/lib/supabase/server'
 import { emailLinkCallback, type EmailLinkType } from './email-link'
@@ -58,7 +60,11 @@ async function codeResent(): Promise<FormState> {
   return noticed(t('sent'))
 }
 
-export async function signUp(_state: FormState, formData: FormData): Promise<FormState> {
+export async function signUp(
+  accountType: AccountType,
+  _state: FormState,
+  formData: FormData,
+): Promise<FormState> {
   const parsed = (await schemas()).signUp.safeParse({
     email: field(formData, 'email'),
     password: field(formData, 'password'),
@@ -69,7 +75,10 @@ export async function signUp(_state: FormState, formData: FormData): Promise<For
   const supabase = await createSupabaseServerClient('read-write')
   const { error } = await supabase.auth.signUp({
     ...parsed.data,
-    options: { data: { locale: await getLocale() }, emailRedirectTo: linkCallback('email') },
+    options: {
+      data: { locale: await getLocale(), account_type: signUpAccountType(accountType) },
+      emailRedirectTo: linkCallback('email'),
+    },
   })
   if (error !== null) {
     return authFailure(authErrorKey(error.code))
@@ -140,7 +149,10 @@ export async function signIn(_state: FormState, formData: FormData): Promise<For
   redirect(await afterSignIn())
 }
 
-export async function signInWithGoogle(): Promise<FormState> {
+export async function signInWithGoogle(intent: AccountType | null): Promise<FormState> {
+  if (intent !== null) {
+    await rememberAccountIntent(signUpAccountType(intent))
+  }
   const supabase = await createSupabaseServerClient('read-write')
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider: 'google',
@@ -230,4 +242,10 @@ export async function signOut(): Promise<void> {
   const supabase = await createSupabaseServerClient('read-write')
   await supabase.auth.signOut()
   redirect('/')
+}
+
+export async function signOutForProfessionalSignUp(): Promise<void> {
+  const supabase = await createSupabaseServerClient('read-write')
+  await supabase.auth.signOut()
+  redirect('/sign-up?account=professional')
 }

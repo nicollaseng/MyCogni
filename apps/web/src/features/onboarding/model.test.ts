@@ -5,6 +5,7 @@ import { phaseOf, resumeFrom, type Step } from './model'
 const profile: Profile = {
   id: '6f1c4a52-61f7-4c1b-9d3c-1b0d2a4f2a10',
   email: 'ana@exemplo.com',
+  accountType: 'patient',
   displayName: 'Ana',
   avatarPath: null,
   timezone: 'America/Sao_Paulo',

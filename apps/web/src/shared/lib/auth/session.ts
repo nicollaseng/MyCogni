@@ -5,7 +5,8 @@ import { ApiError } from '../api/client'
 import { fetchProfile } from '../api/resources'
 import { createSupabaseServerClient } from '../supabase/server'
 import { continuePath } from './continue-path'
-import { homePath } from './home-path'
+import { destinationOf } from './destination'
+import { currentAccountType } from './account-type'
 
 export interface SessionUser {
   id: string
@@ -41,9 +42,17 @@ export async function requireProfile(): Promise<Profile> {
   }
 }
 
-export async function requireOnboardedProfile(): Promise<Profile> {
+export async function requirePatientProfile(): Promise<Profile> {
   await requireUser()
   const profile = await requireProfile()
+  if (profile.accountType !== 'patient') {
+    redirect('/pro')
+  }
+  return profile
+}
+
+export async function requireOnboardedProfile(): Promise<Profile> {
+  const profile = await requirePatientProfile()
   if (profile.onboardingCompletedAt === null) {
     redirect('/onboarding')
   }
@@ -52,6 +61,6 @@ export async function requireOnboardedProfile(): Promise<Profile> {
 
 export async function redirectSignedInUser(): Promise<void> {
   if ((await currentUser()) !== null) {
-    redirect((await continuePath()) ?? (await homePath()))
+    redirect(destinationOf(await currentAccountType(), await continuePath()))
   }
 }

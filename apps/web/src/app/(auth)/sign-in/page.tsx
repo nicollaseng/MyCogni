@@ -22,7 +22,7 @@ export default async function SignInPage({ searchParams }: PageProps<'/sign-in'>
     <>
       <AuthHeading title={t('title')}>{t('lead')}</AuthHeading>
       <SignInAlert error={error} />
-      <GoogleSignIn action={signInWithGoogle} />
+      <GoogleSignIn action={signInWithGoogle.bind(null, null)} />
       <CredentialsForm action={signIn} mode="sign-in" />
       <p className="mt-6 text-sm">
         <Link href="/forgot-password" className={authLink}>
