@@ -74,6 +74,44 @@ $locale "en-GB") (eq $locale "pt-PT") }}{{ $lang = $locale }}{{ end -}}
                   color: #5b6762;
                 "
               >
+                {{ if or (eq $locale "en-US") (eq $locale "en-GB") }}Prefer not to type the code?
+                Choose the new password with one tap.{{ else if eq $locale "pt-PT" }}Prefere não
+                introduzir o código? Escolha a nova palavra-passe com um toque.{{ else }}Prefere não
+                digitar o código? Escolha a nova senha com um toque.{{ end }}
+              </td>
+            </tr>
+            <tr>
+              <td style="padding-top: 12px">
+                <a
+                  href="{{ .SiteURL }}/auth/confirm?token_hash={{ .TokenHash }}&type=recovery"
+                  style="
+                    display: inline-block;
+                    padding: 12px 20px;
+                    border: 1px solid #1e2925;
+                    border-radius: 6px;
+                    font-family: Arial, sans-serif;
+                    font-size: 15px;
+                    font-weight: bold;
+                    color: #1e2925;
+                    text-decoration: none;
+                  "
+                >
+                  {{ if or (eq $locale "en-US") (eq $locale "en-GB") }}Choose a new password{{ else
+                  if eq $locale "pt-PT" }}Escolher nova palavra-passe{{ else }}Escolher nova senha{{
+                  end }}
+                </a>
+              </td>
+            </tr>
+            <tr>
+              <td
+                style="
+                  padding-top: 24px;
+                  font-family: Arial, sans-serif;
+                  font-size: 14px;
+                  line-height: 1.6;
+                  color: #5b6762;
+                "
+              >
                 {{ if or (eq $locale "en-US") (eq $locale "en-GB") }}If you did not ask to change
                 your password, you can ignore this email. Your current password still works.{{ else
                 if eq $locale "pt-PT" }}Se não pediu para alterar a palavra-passe, ignore este

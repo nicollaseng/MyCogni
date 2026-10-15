@@ -79,3 +79,15 @@ export async function notifyInsight(patientId: string, insightId: string): Promi
       values (${patientId}, 'insight', ${insightId})`,
   )
 }
+
+export function emailedTokenHash(email: string, type: 'signup' | 'recovery'): Promise<string> {
+  return withDatabase(async (sql) => {
+    const [user] = await sql<{ confirmation_token: string; recovery_token: string }[]>`
+      select confirmation_token, recovery_token from auth.users where email = ${email}`
+    const token = type === 'signup' ? user?.confirmation_token : user?.recovery_token
+    if (token === undefined || token === '') {
+      throw new Error(`No ${type} email was sent to ${email}`)
+    }
+    return token
+  })
+}

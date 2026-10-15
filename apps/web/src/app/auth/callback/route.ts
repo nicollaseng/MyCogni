@@ -1,17 +1,23 @@
-import { NextResponse, type NextRequest } from 'next/server'
-import { afterSignIn } from '@/features/auth/after-sign-in'
+import type { NextRequest } from 'next/server'
+import { afterEmailLink, afterSignIn } from '@/features/auth/after-sign-in'
+import { emailLinkFailedPath, emailLinkTypeOf } from '@/features/auth/email-link'
 import { adoptLocaleOf } from '@/features/locale/adopt-locale'
 import { createSupabaseServerClient } from '@/shared/lib/supabase/server'
+import { siteRedirect } from '@/shared/lib/site-redirect'
 
 export async function GET(request: NextRequest) {
-  const code = request.nextUrl.searchParams.get('code')
+  const { searchParams } = request.nextUrl
+  const flow = emailLinkTypeOf(searchParams.get('flow'))
+  const code = searchParams.get('code')
   if (code !== null) {
     const supabase = await createSupabaseServerClient('read-write')
     const { data, error } = await supabase.auth.exchangeCodeForSession(code)
     if (error === null) {
       await adoptLocaleOf(data.user.user_metadata)
-      return NextResponse.redirect(new URL(await afterSignIn(), request.url))
+      const destination = flow === null ? await afterSignIn() : await afterEmailLink(flow)
+      return siteRedirect(destination)
     }
   }
-  return NextResponse.redirect(new URL('/sign-in?error=oauth', request.url))
+  const failure = flow === null ? '/sign-in?error=oauth' : emailLinkFailedPath
+  return siteRedirect(failure)
 }
