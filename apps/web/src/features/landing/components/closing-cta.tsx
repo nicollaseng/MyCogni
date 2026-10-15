@@ -16,7 +16,7 @@ export function ClosingCta() {
       </h2>
       <p className="mt-4 text-lg text-muted-foreground">Leva menos de um minuto.</p>
       <Link
-        href="/today"
+        href="/sign-up"
         className={cn(buttonVariants({ size: 'lg', shape: 'pill' }), 'mt-9 px-9')}
       >
         Começar

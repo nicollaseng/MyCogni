@@ -13,6 +13,7 @@
   --color-primary-foreground: var(--primary-foreground);
   --color-emphasis: var(--emphasis);
   --color-help: var(--help);
+  --color-danger: var(--danger);
 }
 
 :root {
@@ -26,6 +27,7 @@
   --primary-foreground: #f2f5ef;
   --emphasis: #3f6b5c;
   --help: #3f5874;
+  --danger: #9c3a2b;
   --mood-low: #3f5874;
   --mood-mid: #8a9a94;
   --mood-high: #3f7458;
@@ -43,6 +45,7 @@
     --primary-foreground: #142019;
     --emphasis: #9cc3ae;
     --help: #a9bfd6;
+    --danger: #f0a493;
     --mood-low: #7f9cc0;
     --mood-mid: #6b7772;
     --mood-high: #93c29c;

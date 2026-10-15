@@ -18,9 +18,17 @@ export function SiteHeader() {
           ))}
         </ul>
       </nav>
-      <Link href="/today" className={buttonVariants({ size: 'sm', shape: 'pill' })}>
-        Começar
-      </Link>
+      <div className="flex items-center gap-5">
+        <Link
+          href="/sign-in"
+          className="text-[15px] text-muted-foreground transition-colors hover:text-foreground"
+        >
+          Entrar
+        </Link>
+        <Link href="/sign-up" className={buttonVariants({ size: 'sm', shape: 'pill' })}>
+          Criar conta
+        </Link>
+      </div>
     </header>
   )
 }

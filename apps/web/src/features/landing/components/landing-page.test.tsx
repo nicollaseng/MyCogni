@@ -69,15 +69,27 @@ describe('LandingPage', () => {
     expect(details).toHaveAttribute('open')
   })
 
-  it('leads into the app from the top and the end of the page', () => {
+  it('leads to creating an account from the hero and the end of the page', () => {
     render(<LandingPage />)
 
     const links = screen.getAllByRole('link', { name: 'Começar' })
 
-    expect(links.length).toBeGreaterThanOrEqual(3)
+    expect(links).toHaveLength(2)
     for (const link of links) {
-      expect(link).toHaveAttribute('href', '/today')
+      expect(link).toHaveAttribute('href', '/sign-up')
     }
+  })
+
+  it('lets returning people sign in from the header', () => {
+    render(<LandingPage />)
+
+    const header = screen.getByRole('banner')
+
+    expect(within(header).getByRole('link', { name: 'Entrar' })).toHaveAttribute('href', '/sign-in')
+    expect(within(header).getByRole('link', { name: 'Criar conta' })).toHaveAttribute(
+      'href',
+      '/sign-up',
+    )
   })
 
   it('has a footer with crisis lines and legal pages', () => {

@@ -1,4 +1,19 @@
 import { expect, test } from '@playwright/test'
+import { signedOut } from './support/session'
+
+test.use({ storageState: signedOut })
+
+test('invites the visitor to try the scale and create an account', async ({ page }) => {
+  await page.goto('/')
+
+  await expect(page.getByRole('heading', { level: 1 })).toHaveText('Como você está agora?')
+  await expect(page.getByRole('slider', { name: 'Como você está agora?' })).toBeVisible()
+
+  await page.getByRole('main').getByRole('link', { name: 'Começar' }).first().click()
+
+  await expect(page).toHaveURL('/sign-up')
+  await expect(page.getByRole('heading', { level: 1, name: 'Criar conta' })).toBeVisible()
+})
 
 test('jumps to a section from the header on desktop', async ({ page, isMobile }) => {
   test.skip(isMobile, 'the section links live in the desktop header')

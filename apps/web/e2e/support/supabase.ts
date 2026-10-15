@@ -1,0 +1,77 @@
+import { execFileSync } from 'node:child_process'
+import { randomUUID } from 'node:crypto'
+import { fileURLToPath } from 'node:url'
+import { z } from 'zod'
+
+const statusSchema = z.object({
+  API_URL: z.url(),
+  SERVICE_ROLE_KEY: z.string(),
+  MAILPIT_URL: z.url(),
+})
+
+export type LocalSupabase = z.infer<typeof statusSchema>
+
+const repositoryRoot = fileURLToPath(new URL('../../../../', import.meta.url))
+
+export const testEmailDomain = 'e2e.mycogni.local'
+
+let cached: LocalSupabase | undefined
+
+export function localSupabase(): LocalSupabase {
+  cached ??= statusSchema.parse(
+    JSON.parse(
+      execFileSync('supabase', ['status', '-o', 'json'], {
+        cwd: repositoryRoot,
+        encoding: 'utf8',
+        stdio: ['ignore', 'pipe', 'ignore'],
+      }),
+    ),
+  )
+  return cached
+}
+
+export function uniqueEmail(prefix: string): string {
+  return `${prefix}-${randomUUID()}@${testEmailDomain}`
+}
+
+function adminHeaders(): Record<string, string> {
+  const key = localSupabase().SERVICE_ROLE_KEY
+  return { apikey: key, authorization: `Bearer ${key}`, 'content-type': 'application/json' }
+}
+
+const createdSchema = z.object({ id: z.uuid() })
+const usersSchema = z.object({ users: z.array(z.object({ id: z.uuid(), email: z.string() })) })
+
+export async function createUser(
+  email: string,
+  password: string,
+  confirmed = true,
+): Promise<string> {
+  const response = await fetch(`${localSupabase().API_URL}/auth/v1/admin/users`, {
+    method: 'POST',
+    headers: adminHeaders(),
+    body: JSON.stringify({ email, password, email_confirm: confirmed }),
+  })
+  if (!response.ok) {
+    throw new Error(`Could not create ${email}: ${await response.text()}`)
+  }
+  return createdSchema.parse(await response.json()).id
+}
+
+export async function deleteTestUsers(): Promise<void> {
+  const { API_URL } = localSupabase()
+  const response = await fetch(`${API_URL}/auth/v1/admin/users?per_page=1000`, {
+    headers: adminHeaders(),
+  })
+  const { users } = usersSchema.parse(await response.json())
+  await Promise.all(
+    users
+      .filter((user) => user.email.endsWith(`@${testEmailDomain}`))
+      .map((user) =>
+        fetch(`${API_URL}/auth/v1/admin/users/${user.id}`, {
+          method: 'DELETE',
+          headers: adminHeaders(),
+        }),
+      ),
+  )
+}
