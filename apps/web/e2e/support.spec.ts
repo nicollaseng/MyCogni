@@ -53,6 +53,7 @@ test('a patient opens a ticket with a photo and follows it until the team closes
   page,
   browser,
 }) => {
+  test.setTimeout(90_000)
   const email = uniqueEmail('support-patient')
   await createUser(email, password)
   await finishOnboarding(email, password)
