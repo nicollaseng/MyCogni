@@ -1,10 +1,10 @@
 'use client'
 
+import { crisisLinesFor } from '@mycogni/domain'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useLocale, useTranslations } from 'next-intl'
 import { useId, useState } from 'react'
-import { crisisLinesFor } from '@/i18n/crisis-lines'
 import { Chevron, DisclosurePanel } from '@/shared/components/disclosure'
 import { usePopoverMenu } from '@/shared/hooks/use-popover-menu'
 import { initialsOf } from '@/shared/lib/initials'
