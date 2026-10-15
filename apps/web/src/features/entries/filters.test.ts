@@ -2,10 +2,12 @@ import { describe, expect, it } from '@jest/globals'
 import {
   checkInFilterOf,
   entriesHref,
+  entryHref,
   entryQuery,
   isFiltered,
   noFilters,
   parseEntryFilters,
+  selectionOf,
 } from './filters'
 
 describe('entry filters', () => {
@@ -14,24 +16,24 @@ describe('entry filters', () => {
       parseEntryFilters({
         q: '  prazo ',
         period: '30',
-        mood: 'hard',
-        emotion: 'anxiety',
-        context: ['work', 'sleep'],
+        mood: '0-2',
+        emotion: 'anxiety,luto',
+        context: ['work,sleep', 'family'],
         note: '1',
       }),
     ).toEqual({
       q: 'prazo',
       period: '30',
-      mood: 'hard',
-      emotion: 'anxiety',
-      context: 'work',
+      mood: { min: 0, max: 2 },
+      emotions: ['anxiety', 'luto'],
+      contexts: ['work', 'sleep'],
       withNote: true,
     })
     expect(
       parseEntryFilters({
         period: '365',
         mood: 'great',
-        emotion: 'a,b',
+        emotion: ' , ',
         context: ' ',
         note: 'yes',
       }),
@@ -42,24 +44,58 @@ describe('entry filters', () => {
     })
   })
 
+  it('keeps links made with the earlier mood names working', () => {
+    expect(parseEntryFilters({ mood: 'good' }).mood).toEqual({ min: 4, max: 6 })
+  })
+
+  it('never asks the API for more tags than a record can hold', () => {
+    const many = Array.from({ length: 10 }, (_, index) => `t${String(index)}`).join(',')
+    const filters = parseEntryFilters({ emotion: many, context: many })
+
+    expect(filters.emotions).toHaveLength(10)
+    expect(filters.contexts).toEqual(['t0', 't1'])
+  })
+
   it('writes back only the filters in use, keeping the page cursor', () => {
-    const filters = { ...noFilters, q: 'café', mood: 'good' as const, withNote: true }
+    const filters = {
+      ...noFilters,
+      q: 'café',
+      mood: { min: 4, max: 6 },
+      contexts: ['work', 'sleep'],
+      withNote: true,
+    }
 
     expect(entryQuery(filters, '2026-10-01T12:00:00.000Z')).toEqual({
       q: 'café',
-      mood: 'good',
+      mood: '4-6',
+      context: 'work,sleep',
       note: '1',
       before: '2026-10-01T12:00:00.000Z',
     })
-    expect(entriesHref(filters)).toBe('/entries?q=caf%C3%A9&mood=good&note=1')
+    expect(entriesHref(filters)).toBe('/entries?q=caf%C3%A9&mood=4-6&context=work%2Csleep&note=1')
     expect(entriesHref(noFilters)).toBe('/entries')
+    expect(entryHref('abc', { ...noFilters, period: '7' })).toBe('/entries/abc?period=7')
+    expect(entryHref('abc', noFilters)).toBe('/entries/abc')
   })
 
   it('knows when anything narrows the list', () => {
     expect(isFiltered(noFilters)).toBe(false)
     expect(isFiltered({ ...noFilters, q: 'chuva' })).toBe(true)
-    expect(isFiltered({ ...noFilters, context: 'luto' })).toBe(true)
+    expect(isFiltered({ ...noFilters, contexts: ['luto'] })).toBe(true)
+    expect(isFiltered({ ...noFilters, emotions: ['calm'] })).toBe(true)
+    expect(isFiltered({ ...noFilters, mood: { min: 3, max: 3 } })).toBe(true)
     expect(isFiltered({ ...noFilters, withNote: true })).toBe(true)
+  })
+
+  it('hands the selection to the shared filter rules', () => {
+    expect(selectionOf({ ...noFilters, period: '30', emotions: ['calm'] })).toEqual({
+      period: 30,
+      mood: null,
+      emotions: ['calm'],
+      contexts: [],
+      withNote: false,
+    })
+    expect(selectionOf(noFilters).period).toBeNull()
   })
 
   it('turns the filters into what the API understands', () => {
@@ -67,7 +103,14 @@ describe('entry filters', () => {
 
     expect(
       checkInFilterOf(
-        { ...noFilters, q: 'ansied', period: '7', mood: 'hard', emotion: 'luto', context: 'work' },
+        {
+          ...noFilters,
+          q: 'ansied',
+          period: '7',
+          mood: { min: 0, max: 2 },
+          emotions: ['luto'],
+          contexts: ['work'],
+        },
         { now, qTags: ['anxiety'] },
       ),
     ).toEqual({

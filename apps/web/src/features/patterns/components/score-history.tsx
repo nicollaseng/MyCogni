@@ -8,6 +8,7 @@ import {
   type InstrumentId,
 } from '@mycogni/domain'
 import { useLocale, useTranslations } from 'next-intl'
+import { Section } from '@/shared/components/section'
 import { formatShortDate } from '@/shared/lib/time'
 
 const bandShades = [0, 0.03, 0.055, 0.08, 0.105] as const
@@ -62,19 +63,16 @@ function ScoreChart({ instrument: id, assessments, timeZone }: ScoreChartProps) 
         <span className="block font-medium">
           {instrument.name} · {screening(`topics.${id}`)}
         </span>
-        <span className="block text-sm text-muted-foreground">
-          {latest === undefined
-            ? t('empty')
-            : t('latest', {
-                score: latest.totalScore,
-                max,
-                severity: screening(`severity.${latest.severity}`).toLocaleLowerCase(locale),
-              })}
-        </span>
+        {latest !== undefined && (
+          <span className="block text-sm text-muted-foreground">
+            {t('latest', {
+              score: latest.totalScore,
+              max,
+              severity: screening(`severity.${latest.severity}`).toLocaleLowerCase(locale),
+            })}
+          </span>
+        )}
       </figcaption>
-      {latest !== undefined && timeline.length < patternRules.minScoreSessions && (
-        <p className="text-sm text-muted-foreground">{t('single')}</p>
-      )}
       {timeline.length >= patternRules.minScoreSessions && (
         <div className="grid grid-cols-[1.25rem_minmax(0,1fr)] gap-x-2">
           <div aria-hidden className="relative h-32 text-right text-[10px] text-muted-foreground">
@@ -160,15 +158,19 @@ export function ScoreHistory({
   timeZone: string
 }) {
   const t = useTranslations('patterns.scores')
+  const shown = instrumentIds.filter(
+    (id) =>
+      assessments.filter((assessment) => assessment.instrument === id).length >=
+      patternRules.minScoreSessions,
+  )
 
   return (
-    <div className="space-y-6 pt-1">
-      <div className="grid gap-8 md:grid-cols-2 md:gap-10">
-        {instrumentIds.map((id) => (
+    <Section title={t('title')}>
+      <div className="grid gap-8 pt-1 md:grid-cols-2 md:gap-10">
+        {shown.map((id) => (
           <ScoreChart key={id} instrument={id} assessments={assessments} timeZone={timeZone} />
         ))}
       </div>
-      <p className="text-sm text-pretty text-muted-foreground">{t('note')}</p>
-    </div>
+    </Section>
   )
 }

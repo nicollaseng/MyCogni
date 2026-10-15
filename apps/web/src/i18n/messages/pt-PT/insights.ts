@@ -2,20 +2,14 @@ import type { InsightsMessages } from '../pt-BR/insights'
 
 export const insights: InsightsMessages = {
   patient: {
-    title: 'Resumo dos seus registos',
+    digest: 'Resumo automático',
+    open: 'Ler resumo',
+    close: 'Fechar resumo',
     period: '{period} · {count, plural, one {# registo} other {# registos}}',
     records: '{count, plural, one {# registo} other {# registos}}',
     highlights: 'O que se destacou',
     suggestions: 'Para os próximos dias',
-    disclaimer: 'Escrito automaticamente a partir dos seus registos. Não é um diagnóstico.',
     earlier: 'Resumos anteriores',
-    empty: {
-      explanation:
-        'A cada {threshold} registos, aparece aqui um resumo curto do que se destacou nos seus dias, com algumas sugestões. É escrito automaticamente a partir dos registos e não é um diagnóstico.',
-      progress: '{count} de {threshold} registos para o primeiro resumo',
-      disabled: 'Os resumos estão desativados na sua conta.',
-      enable: 'Ativar no seu perfil',
-    },
   },
   teaser: {
     title: 'O seu último resumo',

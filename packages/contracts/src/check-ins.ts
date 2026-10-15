@@ -73,3 +73,23 @@ export type CheckInSearch = z.infer<typeof checkInSearchSchema>
 export const checkInCountSchema = z.object({ count: z.int().min(0) })
 
 export type CheckInCount = z.infer<typeof checkInCountSchema>
+
+export const createCheckInAddendumSchema = z.object({
+  text: z.string().trim().min(1).max(checkInLimits.addendum),
+})
+
+export type CreateCheckInAddendumInput = z.infer<typeof createCheckInAddendumSchema>
+
+export const checkInAddendumSchema = z.object({
+  id: z.uuid(),
+  text: z.string(),
+  createdAt: z.iso.datetime({ offset: true }),
+})
+
+export type CheckInAddendum = z.infer<typeof checkInAddendumSchema>
+
+export const checkInDetailSchema = checkInSchema.extend({
+  addenda: z.array(checkInAddendumSchema),
+})
+
+export type CheckInDetail = z.infer<typeof checkInDetailSchema>

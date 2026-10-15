@@ -8,15 +8,17 @@ import { EntryFilters } from './entry-filters'
 
 interface EntriesBrowserProps {
   filters: Filters
-  usedEmotions: readonly string[]
-  usedContexts: readonly string[]
+  customEmotions: readonly string[]
+  customContexts: readonly string[]
+  total: number
   children: ReactNode
 }
 
 export function EntriesBrowser({
   filters,
-  usedEmotions,
-  usedContexts,
+  customEmotions,
+  customContexts,
+  total,
   children,
 }: EntriesBrowserProps) {
   const router = useRouter()
@@ -27,12 +29,17 @@ export function EntriesBrowser({
     <div className="space-y-6">
       <EntryFilters
         filters={shown}
-        usedEmotions={usedEmotions}
-        usedContexts={usedContexts}
-        onChange={(next) => {
+        customEmotions={customEmotions}
+        customContexts={customContexts}
+        total={total}
+        onChange={(next, change) => {
           startTransition(() => {
             showFilters(next)
-            router.push(entriesHref(next), { scroll: false })
+            if (change === 'push') {
+              router.push(entriesHref(next), { scroll: false })
+            } else {
+              router.replace(entriesHref(next), { scroll: false })
+            }
           })
         }}
       />

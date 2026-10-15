@@ -19,11 +19,9 @@ export default function PatternsLoading() {
         description={<LinesSkeleton widths={descriptionWidths} className="pt-1" />}
         action={<Skeleton className="h-10 w-48 rounded-md" />}
       />
+      <Skeleton className="h-10 w-full rounded-md sm:w-72" />
       <SectionSkeleton>
-        <LinesSkeleton widths={['w-40', 'w-4/5', 'w-3/5']} />
-      </SectionSkeleton>
-      <SectionSkeleton>
-        <SkeletonPanel className="h-28" />
+        <SkeletonPanel className="h-64 sm:h-32" />
       </SectionSkeleton>
       <SectionSkeleton>
         <SkeletonPanel className="h-48" />
