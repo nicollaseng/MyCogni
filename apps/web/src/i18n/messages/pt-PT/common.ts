@@ -12,7 +12,14 @@ export const common: CommonMessages = {
     entries: 'Registos',
     mybook: 'MyBook',
     patterns: 'Padrões',
-    me: 'Perfil',
+  },
+  account: {
+    open: 'A sua conta',
+    menu: 'Conta',
+    profile: 'Perfil e definições',
+    professionals: 'Profissionais',
+    help: 'Ajuda agora',
+    signOut: 'Terminar sessão',
   },
   help: {
     summary: 'Precisa de ajuda agora?',

@@ -2,6 +2,16 @@ import type { Notification } from '@mycogni/contracts'
 import Link from 'next/link'
 import { useLocale, useTranslations } from 'next-intl'
 import { formatDay } from '../format-day'
+import { notificationHref } from '../notification-href'
+
+export function NotificationMessage({ notification }: { notification: Notification }) {
+  const t = useTranslations('care.notifications')
+  const { invitation, kind } = notification
+
+  return invitation === null
+    ? t(`kinds.${kind}`)
+    : t('invitation', { name: invitation.professional.name })
+}
 
 interface NotificationItemProps {
   notification: Notification
@@ -13,7 +23,8 @@ export function NotificationItem({ notification, fresh, timeZone }: Notification
   const t = useTranslations('care.notifications')
   const kinds = useTranslations('common.professionalKinds')
   const locale = useLocale()
-  const { invitation } = notification
+  const { invitation, kind } = notification
+  const href = notificationHref(notification)
 
   return (
     <li className="space-y-1">
@@ -23,21 +34,21 @@ export function NotificationItem({ notification, fresh, timeZone }: Notification
           {formatDay(notification.createdAt, timeZone, locale)}
         </time>
       </p>
-      {invitation === null ? (
-        <p className="text-pretty">{t(`kinds.${notification.kind}`)}</p>
-      ) : (
-        <>
-          <p className="text-pretty">{t('invitation', { name: invitation.professional.name })}</p>
-          <p className="text-sm text-muted-foreground">
-            {kinds(invitation.professional.kind)} · {t(`invitationStatus.${invitation.status}`)}
-          </p>
-          <Link
-            href={`/invites/${invitation.id}`}
-            className="inline-block pt-1 text-sm underline decoration-1 underline-offset-4"
-          >
-            {t('open')}
-          </Link>
-        </>
+      <p className="text-pretty">
+        <NotificationMessage notification={notification} />
+      </p>
+      {invitation !== null && (
+        <p className="text-sm text-muted-foreground">
+          {kinds(invitation.professional.kind)} · {t(`invitationStatus.${invitation.status}`)}
+        </p>
+      )}
+      {kind !== 'system' && kind !== 'marketing' && href !== '/notifications' && (
+        <Link
+          href={href}
+          className="inline-block pt-1 text-sm underline decoration-1 underline-offset-4"
+        >
+          {t(`open.${kind}`)}
+        </Link>
       )}
     </li>
   )

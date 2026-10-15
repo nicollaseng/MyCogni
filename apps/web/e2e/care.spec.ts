@@ -112,12 +112,13 @@ test.describe('a visitor', () => {
     await expect(
       page.getByRole('region', { name: 'Aguardando sua resposta' }).getByRole('link'),
     ).toContainText(name)
-    await page.getByRole('link', { name: 'Notificações, 1 não lida' }).click()
+    await page.getByRole('button', { name: 'Notificações, 1 não lida' }).click()
+    await page.getByRole('menuitem', { name: 'Ver todas' }).click()
 
     await expect(page).toHaveURL('/notifications')
     await expect(page.getByRole('main').getByRole('listitem')).toContainText(
       `${name} convidou você para acompanhar seus registros.`,
     )
-    await expect(page.getByRole('link', { name: 'Notificações', exact: true })).toBeVisible()
+    await expect(page.getByRole('button', { name: 'Notificações', exact: true })).toBeVisible()
   })
 })

@@ -12,4 +12,11 @@ describe('initialsOf', () => {
     expect(initialsOf('Helena')).toBe('H')
     expect(initialsOf('  Dr.  ')).toBe('D')
   })
+
+  it('falls back to the email when there is no name', () => {
+    expect(initialsOf('Marina Alves Costa', 'm@exemplo.com')).toBe('MC')
+    expect(initialsOf('  ', 'nicollas.linhares@exemplo.com')).toBe('NL')
+    expect(initialsOf(null, 'ana@exemplo.com')).toBe('A')
+    expect(initialsOf(null, null)).toBe('')
+  })
 })

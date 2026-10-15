@@ -1,17 +1,30 @@
+import type { NotificationList } from '@mycogni/contracts'
 import { unstable_rethrow } from 'next/navigation'
 import { fetchNotifications } from '@/shared/lib/api/care'
-import { BellLink } from './bell-link'
+import { readNotifications } from '../actions'
+import { NotificationMenu } from './notification-menu'
 
-async function unreadCount(): Promise<number> {
+const previewSize = 8
+
+async function latestNotifications(): Promise<NotificationList> {
   try {
-    return (await fetchNotifications()).unread
+    return await fetchNotifications()
   } catch (cause) {
     unstable_rethrow(cause)
     console.error(cause)
-    return 0
+    return { items: [], unread: 0 }
   }
 }
 
-export async function NotificationBell() {
-  return <BellLink unread={await unreadCount()} />
+export async function NotificationBell({ timeZone }: { timeZone: string }) {
+  const { items, unread } = await latestNotifications()
+
+  return (
+    <NotificationMenu
+      notifications={items.slice(0, previewSize)}
+      unread={unread}
+      timeZone={timeZone}
+      markRead={readNotifications}
+    />
+  )
 }

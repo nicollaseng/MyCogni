@@ -48,7 +48,7 @@ export const screening: ScreeningMessages = {
     resultsTitle: 'Your results for today.',
     disclaimer:
       'This is a screening, not a diagnosis. Only a professional can assess your situation.',
-    back: 'Back to You',
+    back: 'Back to profile',
   },
   latest: {
     title: 'Your questionnaires',

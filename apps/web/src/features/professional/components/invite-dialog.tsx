@@ -3,10 +3,10 @@
 import { invitationLifetimeHours } from '@mycogni/domain'
 import { useTranslations } from 'next-intl'
 import { useId, useState } from 'react'
+import { drawerMotion, useAnimatedDialog } from '@/shared/hooks/use-animated-dialog'
 import type { Invite } from '../invites'
 import { CloseIcon, PlusIcon } from './icons'
 import { InviteForm } from './invite-form'
-import { drawerMotion, useAnimatedDialog } from './use-animated-dialog'
 import { compactButton } from './workspace'
 
 interface InviteDialogProps {
