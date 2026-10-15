@@ -76,5 +76,4 @@ export const assistant: AssistantMessages = {
     delete: 'Não foi possível apagar agora. Tente novamente dentro de instantes.',
     consent: 'Não foi possível guardar a autorização agora.',
   },
-  count: '{count, plural, =0 {Nenhuma conversa} one {# conversa} other {# conversas}}',
 }

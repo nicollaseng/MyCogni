@@ -74,7 +74,6 @@ export const assistant = {
     delete: 'Não deu para apagar agora. Tente de novo em instantes.',
     consent: 'Não deu para salvar a permissão agora.',
   },
-  count: '{count, plural, =0 {Nenhuma conversa} one {# conversa} other {# conversas}}',
 }
 
 export type AssistantMessages = typeof assistant

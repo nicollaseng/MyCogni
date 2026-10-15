@@ -76,5 +76,4 @@ export const assistant: AssistantMessages = {
     delete: 'Couldn’t delete just now. Please try again in a moment.',
     consent: 'Couldn’t save the permission just now.',
   },
-  count: '{count, plural, =0 {No conversations} one {# conversation} other {# conversations}}',
 }
