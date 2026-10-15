@@ -13,6 +13,7 @@ import { checkInModule } from './modules/check-ins/index.ts'
 import { consentModule } from './modules/consents/index.ts'
 import { healthRoutes } from './modules/health/health.routes.ts'
 import { onboardingModule } from './modules/onboarding/index.ts'
+import { professionalModule } from './modules/professionals/index.ts'
 import { profileModule } from './modules/profile/index.ts'
 import { requireAuthentication } from './plugins/authentication.ts'
 import { registerErrorHandler } from './plugins/error-handler.ts'
@@ -33,6 +34,7 @@ function authenticatedRoutes({ db, verifier }: AppDependencies): FastifyPluginAs
     await api.register(assessmentModule(db))
     await api.register(checkInModule(db))
     await api.register(onboardingModule(db))
+    await api.register(professionalModule(db))
   }
 }
 

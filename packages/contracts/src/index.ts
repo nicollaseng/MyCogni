@@ -24,6 +24,13 @@ export {
   type GrantConsentsInput,
 } from './consents.ts'
 export {
+  professionalKindSchema,
+  professionalProfileSchema,
+  registerProfessionalSchema,
+  type ProfessionalProfile,
+  type RegisterProfessionalInput,
+} from './professionals.ts'
+export {
   profileSchema,
   updateProfileSchema,
   type Profile,

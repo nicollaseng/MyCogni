@@ -37,6 +37,17 @@ export const assessments = pgTable(
       to: authenticatedRole,
       using: sql`${table.userId} = ${authUid}`,
     }),
+    pgPolicy('assessments_select_linked_professional', {
+      for: 'select',
+      to: authenticatedRole,
+      using: sql`exists (
+        select 1 from public.care_links cl
+        where cl.patient_id = ${table.userId}
+          and cl.professional_id = ${authUid}
+          and cl.ended_at is null
+          and (cl.shares_history or ${table.completedAt} >= cl.started_at)
+      )`,
+    }),
     pgPolicy('assessments_insert_own', {
       for: 'insert',
       to: authenticatedRole,

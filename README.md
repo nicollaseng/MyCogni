@@ -74,16 +74,17 @@ test/
 
 Routes under `/v1` require a Supabase access token (`Authorization: Bearer <token>`). The API verifies it against the project's JWKS (`SUPABASE_URL/auth/v1/.well-known/jwks.json`), checking issuer and audience, so no shared secret is needed.
 
-| Route                          | Purpose                                                                                    |
-| ------------------------------ | ------------------------------------------------------------------------------------------ |
-| `GET /v1/me`, `PATCH /v1/me`   | Read and update the profile (name, time zone)                                              |
-| `GET /v1/consents`             | Consents granted for the current version of the legal documents                            |
-| `POST /v1/consents`            | Grant consents (`terms`, `privacy`, `health_data`, `adult`, optional `ai_processing`)      |
-| `GET /v1/assessments`          | PHQ-9 and GAD-7 results, newest first                                                      |
-| `POST /v1/assessments`         | Submit answers; the server computes total, severity and the PHQ-9 item 9 risk flag         |
-| `POST /v1/onboarding/complete` | Marks onboarding as done once the required consents and both screenings exist (422 before) |
-| `POST /v1/check-ins`           | Record mood (0–6), emotions, context and an optional note                                  |
-| `GET /v1/check-ins`            | Records, newest first, with optional `since`, `before` and `limit` (up to 200)             |
+| Route                                           | Purpose                                                                                                               |
+| ----------------------------------------------- | --------------------------------------------------------------------------------------------------------------------- |
+| `GET /v1/me`, `PATCH /v1/me`                    | Read and update the profile (name, time zone)                                                                         |
+| `GET /v1/consents`                              | Consents granted for the current version of the legal documents                                                       |
+| `POST /v1/consents`                             | Grant consents (`terms`, `privacy`, `health_data`, `adult`, optional `ai_processing`)                                 |
+| `GET /v1/assessments`                           | PHQ-9 and GAD-7 results, newest first                                                                                 |
+| `POST /v1/assessments`                          | Submit answers; the server computes total, severity and the PHQ-9 item 9 risk flag                                    |
+| `POST /v1/onboarding/complete`                  | Marks onboarding as done once the required consents and both screenings exist (422 before)                            |
+| `POST /v1/check-ins`                            | Record mood (0–6), emotions, context and an optional note                                                             |
+| `GET /v1/check-ins`                             | Records, newest first, with optional `since`, `before` and `limit` (up to 200)                                        |
+| `POST /v1/professional`, `GET /v1/professional` | Register and read a professional profile (type, name, council registration), which starts as `pending` until verified |
 
 Errors always answer with `{ code, message }`, plus `issues` for validation errors. Unexpected errors are logged and answered with a generic 500 that never leaks details.
 
@@ -92,6 +93,13 @@ Errors always answer with `{ code, message }`, plus `issues` for validation erro
 - Every table holding user data enables row level security, with owner-only policies declared next to the table in the Drizzle schema, so they ship inside the migrations.
 - User queries run through `withUser(db, userId, work)`, which opens a transaction as the `authenticated` role with the user's JWT claims. Postgres enforces the policies even if a query forgets to filter by user.
 - A trigger on `auth.users` creates the `profiles` row on sign up; deleting the account cascades to every user table.
+- Professionals and patients:
+  - `professional_profiles`: the professional's type and council registration. Only the Cogni team can set `verified`, from the database. Only verified professionals can create `invitations`
+  - An invitation lasts 72 hours, enforced by a check. Whoever opens the link claims it through `claim_invitation(code)`. Invitations sent to a confirmed email are attached by `attach_invitations_by_email()`. Both notify the person in `notifications`
+  - `invitation_preview(code)` lets anyone holding the code see only who is inviting, the status and the expiry
+  - Only the patient creates a `care_links` row, and only after accepting. Either side can end it
+  - A professional reads a patient's profile, check-ins and screenings only while the link is active. Records from before the link are visible only when the patient chose to share history
+  - Column-level grants restrict which fields each update can touch, so status changes cannot alter anything else
 - `pnpm --filter @mycogni/api db:generate` creates a migration from schema changes; `db:migrate` applies pending migrations.
 
 ## Web

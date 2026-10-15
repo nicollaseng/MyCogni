@@ -16,6 +16,27 @@ export {
   scoreAssessment,
   type AssessmentScore,
 } from './assessments/scoring.ts'
+export {
+  effectiveStatus,
+  invitationChannels,
+  invitationCodeAlphabet,
+  invitationCodeLength,
+  invitationExpiry,
+  invitationLifetimeHours,
+  invitationStatuses,
+  isInvitationCode,
+  normalizeInvitationCode,
+  sharingConsentVersion,
+  type InvitationChannel,
+  type InvitationStatus,
+} from './care/invitations.ts'
+export {
+  professionalKinds,
+  professionalStatuses,
+  requiresRegistration,
+  type ProfessionalKind,
+  type ProfessionalStatus,
+} from './care/professionals.ts'
 export { checkInLimits, maxMoodLevel } from './check-ins/check-ins.ts'
 export { dailyMoods, dayKey, previousDays, type DatedMood } from './check-ins/days.ts'
 export {
