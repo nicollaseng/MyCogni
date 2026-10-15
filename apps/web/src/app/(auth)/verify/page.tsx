@@ -6,8 +6,8 @@ import { resendCode, verifyEmail } from '@/features/auth/actions'
 import { AuthFootnote, authLink } from '@/features/auth/components/auth-footnote'
 import { AuthIntro } from '@/features/auth/components/auth-intro'
 import { CodeForm } from '@/features/auth/components/code-form'
-import { SingleActionButton } from '@/features/auth/components/single-action-button'
-import { pendingEmail } from '@/features/auth/pending-email'
+import { ResendCode } from '@/features/auth/components/resend-code'
+import { codeTiming, pendingEmail } from '@/features/auth/pending-email'
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations('auth.meta')
@@ -19,17 +19,14 @@ export default async function VerifyPage() {
   if (email === null) {
     redirect('/sign-up')
   }
-  const t = await getTranslations('auth.verify')
+  const [t, timing] = await Promise.all([getTranslations('auth.verify'), codeTiming()])
 
   return (
     <>
       <AuthIntro section="verify" email={email} />
-      <CodeForm action={verifyEmail} submitLabel={t('submit')} />
-      <div className="mt-4">
-        <SingleActionButton action={resendCode} pendingLabel={t('resending')} variant="ghost">
-          {t('resend')}
-        </SingleActionButton>
-      </div>
+      <CodeForm action={verifyEmail} submitLabel={t('submit')}>
+        <ResendCode action={resendCode} sentAt={timing.sentAt} now={timing.now} />
+      </CodeForm>
       <AuthFootnote>
         {t('wrongEmail')}{' '}
         <Link href="/sign-up" className={authLink}>
