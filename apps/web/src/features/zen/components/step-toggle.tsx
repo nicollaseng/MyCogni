@@ -19,15 +19,24 @@ interface StepToggleProps {
 export function StepToggle({ step, done, describedBy, save }: StepToggleProps) {
   const t = useTranslations('zen.track')
   const [pending, startTransition] = useTransition()
-  const [shown, setShown] = useOptimistic(done)
+  const [received, setReceived] = useState(done)
+  const [saved, setSaved] = useState(done)
+  const [shown, setShown] = useOptimistic(saved)
   const [error, setError] = useState<string | null>(null)
+  if (received !== done) {
+    setReceived(done)
+    setSaved(done)
+  }
 
   function toggle() {
+    const next = !saved
     setError(null)
     startTransition(async () => {
-      setShown(!done)
-      const result = await save(step, !done)
-      if (!result.ok) {
+      setShown(next)
+      const result = await save(step, next)
+      if (result.ok) {
+        setSaved(next)
+      } else {
         setError(result.error)
       }
     })
