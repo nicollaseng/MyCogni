@@ -1,5 +1,6 @@
 import { describe, expect, it, jest } from '@jest/globals'
 import type { CareLink, CreateJournalShareInput } from '@mycogni/contracts'
+import { sharingConsentVersion } from '@mycogni/domain'
 import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import type { ActionResult } from '@/shared/lib/actions/result'
@@ -19,6 +20,8 @@ const link: CareLink = {
   },
   sharesHistory: false,
   startedAt: '2026-10-01T15:00:00.000Z',
+  consentVersion: sharingConsentVersion,
+  termsOutdated: false,
 }
 
 function succeed(): Promise<ActionResult<null>> {

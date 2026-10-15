@@ -37,6 +37,7 @@ export {
   invitationLifetimeHours,
   invitationStatuses,
   isInvitationCode,
+  isSharingConsentCurrent,
   normalizeInvitationCode,
   sharingConsentVersion,
   type InvitationChannel,

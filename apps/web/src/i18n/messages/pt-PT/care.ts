@@ -73,6 +73,7 @@ export const care: CareMessages = {
       privacy:
         'A ligação não dá acesso a mais nada da sua conta. Saiba mais na <link>política de privacidade</link>.',
       agreement: 'Aceitar significa concordar com estes termos.',
+      confirmAgreement: 'Confirmar significa concordar com estes termos.',
     },
     submit: 'Aceitar',
     accepting: 'A aceitar…',
@@ -162,11 +163,27 @@ export const care: CareMessages = {
     invites: 'Ver convites',
     professionalArea: 'Área profissional',
   },
+  terms: {
+    meta: { title: 'Termos atualizados' },
+    kicker: 'Termos atualizados',
+    title: 'Reveja e confirme os novos termos.',
+    lead: 'Enquanto não confirmar, {name} continua a ver os seus registos tal como aceitou antes. Se preferir, pode terminar a ligação.',
+    changes: {
+      title: 'O que mudou',
+      body: 'Apenas o nome do local onde termina a ligação: agora é Perfil e definições. O resto mantém-se igual.',
+    },
+    confirm: 'Confirmar',
+    confirming: 'A confirmar…',
+    notice: 'Atualizámos os termos de partilha. <link>Reveja e confirme</link>.',
+    status: 'Confirme os novos termos',
+  },
   feedback: {
     unavailable: 'Este convite já não está disponível. Peça um novo a quem o enviou.',
     notPending: 'Este convite já foi respondido ou deixou de ser válido.',
     alreadyLinked: 'Já partilha os seus registos com {name}.',
     error: 'Não foi possível concluir agora. Tente novamente dentro de instantes.',
     endError: 'Não foi possível terminar a ligação agora. Tente novamente dentro de instantes.',
+    linkEnded: 'Esta ligação já foi terminada.',
+    termsError: 'Não foi possível confirmar os termos agora. Tente novamente dentro de instantes.',
   },
 }
