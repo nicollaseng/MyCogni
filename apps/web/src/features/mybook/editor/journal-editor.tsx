@@ -1,76 +1,77 @@
 'use client'
 
-import type { JournalEntry, UpdateJournalEntryInput } from '@mycogni/contracts'
+import type { JournalEntry } from '@mycogni/contracts'
 import type { Node as DocumentNode } from '@tiptap/pm/model'
 import { EditorContent, useEditor } from '@tiptap/react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useLocale, useTranslations } from 'next-intl'
 import { useCallback, useEffect, useLayoutEffect, useRef, useState, useTransition } from 'react'
+import { ReloadNotice } from '@/shared/components/reload-notice'
 import { useSubmit } from '@/shared/hooks/use-submit'
-import type { ActionResult } from '@/shared/lib/actions/result'
+import { reportOutdatedApp } from '@/shared/lib/actions/outdated'
+import { failure, type ActionResult } from '@/shared/lib/actions/result'
 import { Icon } from '../components/icon'
 import { formatWritten } from '../dates'
-import {
-  draftOf,
-  imageNodeName,
-  isBlankDraft,
-  journalDocumentOf,
-  withImageSources,
-} from '../document'
+import { draftOf, isBlankDraft, journalDocumentOf, withImageSources } from '../document'
+import { browserPageClient, type PageClient } from '../page-client'
 import { EditorToolbar } from './editor-toolbar'
 import { editorContentOf, journalExtensions } from './extensions'
 import { PageMenu } from './page-menu'
+import { browserPhotoTools, type PhotoTools } from './photo-canvas'
 import { PhotoNotice } from './photo-notice'
-import { fitsInPage, photoProblem, uploadPhoto, type PhotoProblem } from './photos'
+import { PhotoSizeSheet } from './photo-size-sheet'
 import { SaveIndicator } from './save-indicator'
-import { useAutosave } from './use-autosave'
+import { usePagePhotos } from './use-page-photos'
+import { usePageSaving, type PageContent } from './use-page-saving'
 import './journal.css'
 
 interface JournalEditorProps {
   entry: JournalEntry
   timeZone: string
-  save: (id: string, input: UpdateJournalEntryInput) => Promise<ActionResult<null>>
-  remove: (id: string) => Promise<ActionResult<null>>
-}
-
-function imagesIn(doc: DocumentNode): number {
-  let count = 0
-  doc.descendants((node) => {
-    if (node.type.name === imageNodeName) {
-      count += 1
-    }
-  })
-  return count
+  client?: PageClient
+  photoTools?: PhotoTools
 }
 
 function imageFiles(list: FileList | null | undefined): File[] {
   return Array.from(list ?? []).filter((file) => file.type.startsWith('image/'))
 }
 
-export function JournalEditor({ entry, timeZone, save, remove }: JournalEditorProps) {
+export function JournalEditor({
+  entry,
+  timeZone,
+  client = browserPageClient,
+  photoTools = browserPhotoTools,
+}: JournalEditorProps) {
   const t = useTranslations('mybook.editor')
+  const feedback = useTranslations('mybook.feedback')
   const locale = useLocale()
   const router = useRouter()
   const [title, setTitle] = useState(entry.title ?? '')
-  const [uploads, setUploads] = useState(0)
-  const [photoNotice, setPhotoNotice] = useState<PhotoProblem | null>(null)
   const [leaving, startLeaving] = useTransition()
   const titleRef = useRef(title)
   const titleField = useRef<HTMLTextAreaElement>(null)
   const docRef = useRef<DocumentNode | null>(null)
   const addPhotosRef = useRef<(files: File[]) => void>(() => undefined)
 
-  const currentDraft = useCallback((): UpdateJournalEntryInput | null => {
-    const doc = docRef.current === null ? entry.body : journalDocumentOf(docRef.current.toJSON())
-    return doc === null ? null : draftOf(titleRef.current, doc)
+  const read = useCallback((): PageContent => {
+    const body: unknown = docRef.current?.toJSON()
+    return { title: titleRef.current, body: body ?? entry.body }
   }, [entry.body])
+  const saving = usePageSaving(entry, client, read)
+  const { autosave } = saving
 
-  const autosave = useAutosave(async () => {
-    const draft = currentDraft()
-    return draft !== null && (await save(entry.id, draft)).ok
+  async function removePage(): Promise<ActionResult<null> | null> {
+    const outcome = await saving.remove()
+    if (outcome === 'outdated') {
+      reportOutdatedApp()
+      return null
+    }
+    return outcome === 'removed' ? { ok: true, value: null } : failure(feedback('deleteError'))
+  }
+  const deletion = useSubmit(removePage, () => {
+    router.push('/mybook')
   })
-  const deletion = useSubmit(remove, () => undefined)
 
   const editor = useEditor({
     immediatelyRender: false,
@@ -103,50 +104,38 @@ export function JournalEditor({ entry, timeZone, save, remove }: JournalEditorPr
         return files.length > 0
       },
     },
+    onCreate: ({ editor: created }) => {
+      const restored = saving.takeDraft()
+      if (restored === null) {
+        return
+      }
+      created
+        .chain()
+        .setMeta('addToHistory', false)
+        .setContent(editorContentOf(restored.body), { emitUpdate: false })
+        .run()
+      docRef.current = created.state.doc
+      titleRef.current = restored.title
+      setTitle(restored.title)
+      saving.changed()
+    },
     onUpdate: ({ editor: current }) => {
       docRef.current = current.state.doc
-      autosave.touch()
+      saving.changed()
     },
   })
 
-  const addPhotos = useCallback(
-    async (files: File[]) => {
-      if (editor === null) {
-        return
-      }
-      setPhotoNotice(null)
-      if (!fitsInPage(imagesIn(editor.state.doc), files.length)) {
-        setPhotoNotice('tooMany')
-        return
-      }
-      for (const file of files) {
-        const problem = photoProblem(file)
-        if (problem !== null) {
-          setPhotoNotice(problem)
-          continue
-        }
-        setUploads((count) => count + 1)
-        const uploaded = await uploadPhoto(entry.id, file)
-        setUploads((count) => count - 1)
-        if (uploaded === null) {
-          setPhotoNotice('failed')
-          continue
-        }
-        editor
-          .chain()
-          .focus()
-          .insertContent({ type: imageNodeName, attrs: { path: uploaded.path, src: uploaded.url } })
-          .run()
-      }
-    },
-    [editor, entry.id],
-  )
+  const photos = usePagePhotos({
+    editor,
+    entryId: entry.id,
+    tools: photoTools,
+    onUploaded: saving.addImage,
+  })
+  const { choose } = photos
 
   useEffect(() => {
-    addPhotosRef.current = (files) => {
-      void addPhotos(files)
-    }
-  }, [addPhotos])
+    addPhotosRef.current = choose
+  }, [choose])
 
   useLayoutEffect(() => {
     const field = titleField.current
@@ -156,13 +145,19 @@ export function JournalEditor({ entry, timeZone, save, remove }: JournalEditorPr
     }
   }, [title])
 
+  function currentDraft() {
+    const { title: currentTitle, body } = read()
+    const doc = journalDocumentOf(body)
+    return doc === null ? null : draftOf(currentTitle, doc)
+  }
+
   function leave() {
     startLeaving(async () => {
       const draft = currentDraft()
       if (draft !== null && isBlankDraft(draft)) {
         autosave.cancel()
-        const removed = await remove(entry.id)
-        if (removed.ok) {
+        if ((await removePage())?.ok === true) {
+          router.push('/mybook')
           return
         }
       }
@@ -198,7 +193,7 @@ export function JournalEditor({ entry, timeZone, save, remove }: JournalEditorPr
         <div className="flex min-w-0 items-center gap-1">
           <SaveIndicator
             status={autosave.status}
-            uploading={uploads > 0}
+            uploading={photos.uploading}
             onRetry={() => {
               void autosave.flush()
             }}
@@ -210,29 +205,20 @@ export function JournalEditor({ entry, timeZone, save, remove }: JournalEditorPr
             onShare={share}
             onDelete={() => {
               autosave.cancel()
-              deletion.submit(entry.id)
+              deletion.submit()
             }}
           />
         </div>
       </div>
 
-      {photoNotice !== null && (
-        <PhotoNotice
-          problem={photoNotice}
-          onDismiss={() => {
-            setPhotoNotice(null)
-          }}
-        />
+      {autosave.status === 'outdated' && <ReloadNotice message={t('status.outdated')} />}
+
+      {photos.notice !== null && (
+        <PhotoNotice problem={photos.notice} onDismiss={photos.dismissNotice} />
       )}
 
       {editor !== null && (
-        <EditorToolbar
-          editor={editor}
-          onPhotos={(files) => {
-            void addPhotos(files)
-          }}
-          photosDisabled={uploads > 0}
-        />
+        <EditorToolbar editor={editor} onPhotos={choose} photosDisabled={photos.uploading} />
       )}
 
       <div className="space-y-2">
@@ -252,7 +238,7 @@ export function JournalEditor({ entry, timeZone, save, remove }: JournalEditorPr
           onChange={(event) => {
             setTitle(event.target.value)
             titleRef.current = event.target.value
-            autosave.touch()
+            saving.changed()
           }}
           onKeyDown={(event) => {
             if (event.key === 'Enter') {
@@ -265,6 +251,15 @@ export function JournalEditor({ entry, timeZone, save, remove }: JournalEditorPr
       </div>
 
       <EditorContent editor={editor} />
+
+      {photos.choosing !== null && (
+        <PhotoSizeSheet
+          photos={photos.choosing}
+          tools={photoTools}
+          onAdd={photos.add}
+          onClose={photos.closeChooser}
+        />
+      )}
     </div>
   )
 }

@@ -3,6 +3,7 @@ import { Newsreader, Schibsted_Grotesk } from 'next/font/google'
 import { NextIntlClientProvider } from 'next-intl'
 import { getLocale, getTranslations } from 'next-intl/server'
 import type { ReactNode } from 'react'
+import { OutdatedAppNotice } from '@/shared/components/outdated-app-notice'
 import './globals.css'
 
 const serif = Newsreader({
@@ -43,7 +44,10 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
   return (
     <html lang={locale} className={`${serif.variable} ${sans.variable}`}>
       <body className="min-h-dvh">
-        <NextIntlClientProvider>{children}</NextIntlClientProvider>
+        <NextIntlClientProvider>
+          {children}
+          <OutdatedAppNotice />
+        </NextIntlClientProvider>
       </body>
     </html>
   )

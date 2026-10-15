@@ -47,6 +47,10 @@ export const common = {
     label: 'Idioma',
     hint: 'O app passa a usar este idioma em todas as telas.',
   },
+  outdated: {
+    message: 'O app foi atualizado. Recarregue para continuar.',
+    reload: 'Recarregar',
+  },
 }
 
 export type CommonMessages = typeof common

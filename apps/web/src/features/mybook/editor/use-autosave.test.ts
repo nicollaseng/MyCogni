@@ -1,12 +1,12 @@
 import { afterEach, beforeEach, describe, expect, it, jest } from '@jest/globals'
 import { act, renderHook } from '@testing-library/react'
-import { useAutosave } from './use-autosave'
+import { useAutosave, type SaveResult } from './use-autosave'
 
-type Save = () => Promise<boolean>
+type Save = () => Promise<SaveResult>
 
 function deferred() {
-  let settle: (value: boolean) => void = () => undefined
-  const promise = new Promise<boolean>((resolve) => {
+  let settle: (value: SaveResult) => void = () => undefined
+  const promise = new Promise<SaveResult>((resolve) => {
     settle = resolve
   })
   return { promise, settle }
@@ -28,7 +28,7 @@ describe('useAutosave', () => {
   })
 
   it('saves once after the person stops typing for a moment', async () => {
-    const save = jest.fn<Save>(() => Promise.resolve(true))
+    const save = jest.fn<Save>(() => Promise.resolve<SaveResult>('saved'))
     const { result } = renderHook(() => useAutosave(save))
 
     expect(result.current.status).toBe('idle')
@@ -52,7 +52,7 @@ describe('useAutosave', () => {
 
   it('shows the save in progress and saves again what changed meanwhile', async () => {
     const first = deferred()
-    const save = jest.fn<Save>().mockReturnValueOnce(first.promise).mockResolvedValue(true)
+    const save = jest.fn<Save>().mockReturnValueOnce(first.promise).mockResolvedValue('saved')
     const { result } = renderHook(() => useAutosave(save))
 
     act(() => {
@@ -65,7 +65,7 @@ describe('useAutosave', () => {
       result.current.touch()
     })
     await act(async () => {
-      first.settle(true)
+      first.settle('saved')
       await Promise.resolve()
     })
     expect(save).toHaveBeenCalledTimes(1)
@@ -77,7 +77,7 @@ describe('useAutosave', () => {
   })
 
   it('reports a failed save and tries again when asked', async () => {
-    const save = jest.fn<Save>().mockResolvedValueOnce(false).mockResolvedValue(true)
+    const save = jest.fn<Save>().mockResolvedValueOnce('failed').mockResolvedValue('saved')
     const { result } = renderHook(() => useAutosave(save))
 
     act(() => {
@@ -96,6 +96,30 @@ describe('useAutosave', () => {
     expect(result.current.status).toBe('saved')
   })
 
+  it('stops trying once the app was updated and keeps the changes marked as unsaved', async () => {
+    const save = jest.fn<Save>().mockResolvedValue('outdated')
+    const { result } = renderHook(() => useAutosave(save))
+
+    act(() => {
+      result.current.touch()
+    })
+    await advance(800)
+    expect(result.current.status).toBe('outdated')
+
+    act(() => {
+      result.current.touch()
+    })
+    await advance(2000)
+    let saved = true
+    await act(async () => {
+      saved = await result.current.flush()
+    })
+
+    expect(saved).toBe(false)
+    expect(save).toHaveBeenCalledTimes(1)
+    expect(result.current.status).toBe('outdated')
+  })
+
   it('treats a thrown error as a failed save', async () => {
     const save = jest.fn<Save>(() => Promise.reject(new Error('offline')))
     const { result } = renderHook(() => useAutosave(save))
@@ -109,7 +133,7 @@ describe('useAutosave', () => {
   })
 
   it('saves pending changes right away when flushed', async () => {
-    const save = jest.fn<Save>(() => Promise.resolve(true))
+    const save = jest.fn<Save>(() => Promise.resolve<SaveResult>('saved'))
     const { result } = renderHook(() => useAutosave(save))
 
     act(() => {
@@ -125,7 +149,7 @@ describe('useAutosave', () => {
   })
 
   it('drops pending changes when cancelled', async () => {
-    const save = jest.fn<Save>(() => Promise.resolve(true))
+    const save = jest.fn<Save>(() => Promise.resolve<SaveResult>('saved'))
     const { result, unmount } = renderHook(() => useAutosave(save))
 
     act(() => {
@@ -140,7 +164,7 @@ describe('useAutosave', () => {
   })
 
   it('saves what is pending when the editor goes away', async () => {
-    const save = jest.fn<Save>(() => Promise.resolve(true))
+    const save = jest.fn<Save>(() => Promise.resolve<SaveResult>('saved'))
     const { result, unmount } = renderHook(() => useAutosave(save))
 
     act(() => {
@@ -153,7 +177,7 @@ describe('useAutosave', () => {
   })
 
   it('saves what is pending when the page is hidden', async () => {
-    const save = jest.fn<Save>(() => Promise.resolve(true))
+    const save = jest.fn<Save>(() => Promise.resolve<SaveResult>('saved'))
     const { result } = renderHook(() => useAutosave(save))
     const visibility = jest.spyOn(document, 'visibilityState', 'get').mockReturnValue('hidden')
 

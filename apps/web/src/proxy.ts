@@ -32,6 +32,7 @@ export const config = {
     '/entries/:path*',
     '/mybook',
     '/mybook/:path',
+    '/mybook/:id/content',
     '/patterns/:path*',
     '/me/:path*',
     '/check-in/:path*',
