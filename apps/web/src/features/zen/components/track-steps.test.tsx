@@ -8,6 +8,7 @@ import type { ActionResult } from '@/shared/lib/actions/result'
 import { renderWithIntl } from '@/test/render'
 import { fakeRouter, WithRouter } from '@/test/router'
 import { promptPage } from '../prompt-page'
+import { stepTitle } from '../titles'
 import { TrackSteps } from './track-steps'
 
 type Save = (step: ZenStepParams, done: boolean) => Promise<ActionResult<null>>
@@ -36,6 +37,7 @@ function renderTrack({
   const text = trackText('pt-BR', 'everyday-anxiety')
   const steps = tracks['everyday-anxiety'].steps.map((step) => ({
     step,
+    title: stepTitle(step, text.steps[step.id] ?? { title: step.id, body: '' }, 'pt-BR'),
     text: text.steps[step.id] ?? { title: step.id, body: '' },
     done: done.includes(step.id),
     minutes: stepMinutes(step, 'pt-BR'),

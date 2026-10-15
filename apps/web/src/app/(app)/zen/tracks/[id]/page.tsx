@@ -17,6 +17,7 @@ import { CrisisNumbers } from '@/features/zen/components/crisis-numbers'
 import { ProgressLine } from '@/features/zen/components/progress-line'
 import { TrackSteps } from '@/features/zen/components/track-steps'
 import { ZenTopBar } from '@/features/zen/components/zen-top-bar'
+import { stepTitle } from '@/features/zen/titles'
 import { fetchCareLinks } from '@/shared/lib/api/care'
 import { fetchStepProgress } from '@/shared/lib/api/zen'
 import { requireOnboardedProfile } from '@/shared/lib/auth/session'
@@ -77,6 +78,7 @@ export default async function ZenTrackPage({ params }: PageProps<'/zen/tracks/[i
           const stepText = text.steps[step.id] ?? { title: step.id, body: '' }
           return {
             step,
+            title: stepTitle(step, stepText, language),
             text: stepText,
             done: progress.done.includes(step.id),
             minutes: stepMinutes(step, language),

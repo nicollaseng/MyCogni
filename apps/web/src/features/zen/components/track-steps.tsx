@@ -1,7 +1,7 @@
 'use client'
 
-import { contentLanguageOf, type StepText, type TrackId, type TrackStep } from '@mycogni/domain'
-import { useLocale, useTranslations } from 'next-intl'
+import type { StepText, TrackId, TrackStep } from '@mycogni/domain'
+import { useTranslations } from 'next-intl'
 import { useId, useState, type ReactNode } from 'react'
 import { NarrationPlayer } from '@/features/audio/components/narration-player'
 import type { NarrationSource } from '@/features/audio/narration'
@@ -9,7 +9,7 @@ import { Chevron, DisclosurePanel } from '@/shared/components/disclosure'
 import { useLocationHash } from '@/shared/hooks/use-location-hash'
 import { cn } from '@/shared/lib/utils'
 import { Button } from '@/shared/ui/button'
-import { hasStepAction, stepTitle } from '../model'
+import { hasStepAction } from '../model'
 import { StepAction, type PromptPages } from './step-action'
 import { StepToggle, type SaveStep } from './step-toggle'
 
@@ -17,6 +17,7 @@ export type { PromptPages } from './step-action'
 
 export interface StepView {
   step: TrackStep
+  title: string
   text: StepText
   done: boolean
   minutes: number
@@ -114,7 +115,6 @@ export function TrackSteps({
   pages,
 }: TrackStepsProps) {
   const t = useTranslations('zen')
-  const language = contentLanguageOf(useLocale())
   const hash = useLocationHash()
   const [chosen, setChosen] = useState<string | null>(null)
   const linked = steps.find((view) => hash === `#step-${view.step.id}`)?.step.id ?? null
@@ -131,10 +131,7 @@ export function TrackSteps({
       {next !== undefined && (
         <div className="space-y-3">
           <p className="text-sm text-muted-foreground">
-            {t('track.next', {
-              title: stepTitle(next.step, next.text, language),
-              minutes: next.minutes,
-            })}
+            {t('track.next', { title: next.title, minutes: next.minutes })}
           </p>
           {hasStepAction(next.step) ? (
             <StepAction
