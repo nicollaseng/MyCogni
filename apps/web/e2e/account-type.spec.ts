@@ -98,6 +98,23 @@ test('a professional signs up from the professional page and starts the verifica
   await expect(page).toHaveURL('/pro')
 })
 
+test('a professional who has not sent the registration yet can sign out', async ({ page }) => {
+  const email = uniqueEmail('pro-leaves')
+  await createUser(email, password, { accountType: 'professional' })
+
+  await page.goto('/sign-in')
+  await signIn(page, email)
+  await expect(page).toHaveURL('/pro/join')
+  await expect(
+    page.getByRole('heading', { level: 1, name: 'Seu cadastro profissional' }),
+  ).toBeVisible()
+  await page.getByRole('button', { name: 'Sair', exact: true }).click()
+
+  await expect(page).toHaveURL('/')
+  await page.goto('/pro/join')
+  await expect(page.getByRole('link', { name: 'Criar conta profissional' }).first()).toBeVisible()
+})
+
 test('a professional never reaches the patient pages', async ({ page }) => {
   const email = uniqueEmail('pro-type')
   await registeredProfessional(email, password, `Rui Andrade ${randomUUID().slice(0, 6)}`)
