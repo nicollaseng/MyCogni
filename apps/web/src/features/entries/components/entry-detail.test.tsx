@@ -47,7 +47,8 @@ describe('EntryDetail', () => {
 
     expect(screen.getByRole('link', { name: 'Registros' })).toHaveAttribute('href', '/entries')
     expect(screen.getByRole('heading', { level: 1, name: 'Um pouco mal' })).toBeVisible()
-    expect(screen.getByText(/Quarta-feira, 14 de outubro · 09:05/)).toBeVisible()
+    expect(screen.getByText('Quarta-feira, 14 de outubro')).toBeVisible()
+    expect(screen.getByText('09:05')).toBeVisible()
     expect(container.querySelectorAll('svg path').length).toBeGreaterThan(5)
     expect(
       within(screen.getByRole('list', { name: 'Emoções' }))
@@ -101,7 +102,7 @@ describe('EntryDetail', () => {
       'listitem',
     )
     expect(items.map((item) => item.textContent)).toEqual([
-      '15 de outubro · 10:30O prazo foi cumprido.',
+      '15 de outubro · 10:30O\u00a0prazo foi cumprido.',
       '15 de outubro · 22:00Dormi bem depois.',
     ])
     expect(screen.queryByRole('textbox')).not.toBeInTheDocument()
