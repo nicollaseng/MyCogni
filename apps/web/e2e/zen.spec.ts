@@ -159,6 +159,7 @@ test('keeps help compact and one tap away when the results call for it', async (
   await expect(panel.getByRole('link', { name: '188 CVV' })).toHaveAttribute('href', 'tel:188')
   await expect(today(page).getByRole('heading', { name: 'Quando buscar ajuda' })).toBeVisible()
 
+  await expect(page.getByRole('button', { name: 'Precisa de ajuda agora?' })).toHaveCount(0)
   await page.getByRole('button', { name: 'Ajuda agora', exact: true }).click()
   const sheet = page.getByRole('dialog', { name: 'Ajuda agora' })
   await expect(sheet.getByRole('link', { name: /192/ })).toHaveAttribute('href', 'tel:192')
