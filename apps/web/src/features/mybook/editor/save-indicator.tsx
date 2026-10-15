@@ -18,6 +18,7 @@ export function SaveIndicator({ status, uploading, onRetry }: SaveIndicatorProps
     }
     switch (status) {
       case 'idle':
+      case 'outdated':
         return null
       case 'pending':
       case 'saving':
