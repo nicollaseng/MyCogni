@@ -18,6 +18,7 @@ export const common: CommonMessages = {
     menu: 'Account',
     profile: 'Profile and settings',
     professionals: 'Professionals',
+    support: 'Support',
     help: 'Help now',
     signOut: 'Sign out',
   },

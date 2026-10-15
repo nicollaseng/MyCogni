@@ -7,7 +7,7 @@ import { usePopoverMenu } from '@/shared/hooks/use-popover-menu'
 import { initialsOf } from '@/shared/lib/initials'
 import { cn } from '@/shared/lib/utils'
 import { menuItemStyle, menuSurface } from '@/shared/ui/menu'
-import { SettingsIcon, SignOutIcon } from './icons'
+import { SettingsIcon, SignOutIcon, SupportIcon } from './icons'
 
 export type ProfileMenuPlacement = 'sidebar' | 'header'
 
@@ -87,6 +87,18 @@ export function ProfileMenu({
           >
             <SettingsIcon className="size-4 text-muted-foreground" />
             {t('settings')}
+          </Link>
+          <Link
+            href="/pro/settings#support"
+            role="menuitem"
+            tabIndex={-1}
+            onClick={() => {
+              close(false)
+            }}
+            className={menuItemStyle}
+          >
+            <SupportIcon className="size-4 text-muted-foreground" />
+            {t('support')}
           </Link>
           <form action={signOut}>
             <button type="submit" role="menuitem" tabIndex={-1} className={menuItemStyle}>

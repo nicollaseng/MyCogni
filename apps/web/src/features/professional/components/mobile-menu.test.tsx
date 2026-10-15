@@ -20,13 +20,7 @@ function renderMenu() {
   const user = userEvent.setup()
   renderWithIntl(
     <PathnameContext.Provider value="/pro/patients">
-      <MobileMenu
-        name="Helena Duarte"
-        profession="Psicologia"
-        photoUrl={null}
-        alerts={null}
-        signOut={signOut}
-      />
+      <MobileMenu name="Helena Duarte" profession="Psicologia" alerts={null} signOut={signOut} />
     </PathnameContext.Provider>,
   )
   return { user }
@@ -48,9 +42,15 @@ describe('MobileMenu', () => {
     expect(screen.getByRole('button', { name: 'Fechar menu' })).toHaveFocus()
     expect(screen.getByText('Helena Duarte')).toBeInTheDocument()
     expect(screen.getByRole('link', { name: 'Pacientes' })).toHaveAttribute('aria-current', 'page')
+    expect(drawer.querySelector('img')).toBeNull()
+    expect(drawer).not.toHaveTextContent('HD')
     expect(screen.getByRole('link', { name: 'Configurações' })).toHaveAttribute(
       'href',
       '/pro/settings',
+    )
+    expect(screen.getByRole('link', { name: 'Suporte' })).toHaveAttribute(
+      'href',
+      '/pro/settings#support',
     )
     expect(screen.getByRole('button', { name: 'Sair' })).toBeInTheDocument()
   })

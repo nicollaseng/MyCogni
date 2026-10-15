@@ -35,6 +35,7 @@ test('opens the account menu from the header and goes to the settings', async ({
   await expect(menu.getByRole('menuitem')).toHaveText([
     'Perfil e configurações',
     'Profissionais',
+    'Suporte',
     'Ajuda agora',
     'Sair',
   ])

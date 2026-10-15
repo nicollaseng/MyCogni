@@ -217,3 +217,34 @@ export {
   type AvatarType,
 } from './profile/photos.ts'
 export { googlePhotoUrl, isGooglePhotoHost } from './profile/provider-photos.ts'
+export {
+  isConvertibleSupportImage,
+  isOwnSupportAttachmentPath,
+  isSupportAttachmentType,
+  supportAttachmentBucket,
+  supportAttachmentExtension,
+  supportAttachmentKind,
+  supportAttachmentLimits,
+  supportAttachmentMaxBytes,
+  supportAttachmentName,
+  supportAttachmentProblem,
+  supportAttachmentTypes,
+  supportConvertibleImageTypes,
+  supportFileTypes,
+  supportImageTypes,
+  type SupportAttachmentKind,
+  type SupportAttachmentType,
+} from './support/attachments.ts'
+export {
+  canMoveSupportTicket,
+  needsCustomSubject,
+  nextSupportStatuses,
+  supportLimits,
+  supportRequesterRoles,
+  supportSubjects,
+  supportTicketLabel,
+  supportTicketStatuses,
+  type SupportRequesterRole,
+  type SupportSubject,
+  type SupportTicketStatus,
+} from './support/tickets.ts'

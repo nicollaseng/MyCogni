@@ -1,5 +1,10 @@
 import { afterAll, beforeAll, describe, expect, it } from '@jest/globals'
-import { avatarBucket, journalBucket, professionalDocumentBucket } from '@mycogni/domain'
+import {
+  avatarBucket,
+  journalBucket,
+  professionalDocumentBucket,
+  supportAttachmentBucket,
+} from '@mycogni/domain'
 import { connectDatabase, type DatabaseConnection } from '../../src/db/client.ts'
 import type { App } from '../../src/shared/http.ts'
 import { registerProfessional } from '../support/care.ts'
@@ -9,6 +14,7 @@ import {
   uploadAvatar,
   uploadJournalImage,
   uploadProfessionalDocument,
+  uploadSupportAttachment,
 } from '../support/storage.ts'
 import {
   bearer,
@@ -105,6 +111,7 @@ describe('/v1/me account', () => {
     const entry = (await post(ana, '/v1/journal', {})).json<{ id: string }>()
     await uploadJournalImage(ana, entry.id)
     await uploadAvatar(ana)
+    await uploadSupportAttachment(ana)
     const response = await app.inject({ method: 'DELETE', url: '/v1/me', headers: bearer(ana) })
     const afterwards = await app.inject({ method: 'GET', url: '/v1/me', headers: bearer(ana) })
     const user = await fetch(`${testSupabaseUrl}/auth/v1/admin/users/${ana.id}`, {
@@ -116,6 +123,7 @@ describe('/v1/me account', () => {
     expect(afterwards.statusCode).toBe(404)
     expect(await storedFiles(journalBucket, ana.id)).toEqual([])
     expect(await storedFiles(avatarBucket, ana.id)).toEqual([])
+    expect(await storedFiles(supportAttachmentBucket, ana.id)).toEqual([])
   })
 
   it('deletes the registration documents of a professional who leaves', async () => {

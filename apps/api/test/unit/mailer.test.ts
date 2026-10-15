@@ -35,6 +35,28 @@ describe('createMailer', () => {
     })
   })
 
+  it('asks both providers to send replies to the given address', async () => {
+    const fetchMock = jest
+      .spyOn(globalThis, 'fetch')
+      .mockResolvedValue(new Response('{}', { status: 200 }))
+    const reply = { ...email, replyTo: 'suporte@exemplo.com' }
+
+    await createMailer({ provider: 'resend', apiKey: 're_test', from: 'a@b.co' }, logger()).send(
+      reply,
+    )
+    await createMailer({ provider: 'mailpit', url: 'http://m', from: 'a@b.co' }, logger()).send(
+      reply,
+    )
+
+    const bodies = fetchMock.mock.calls.map(([, init]): unknown =>
+      JSON.parse(typeof init?.body === 'string' ? init.body : '{}'),
+    )
+    expect(bodies[0]).toEqual(expect.objectContaining({ reply_to: 'suporte@exemplo.com' }))
+    expect(bodies[1]).toEqual(
+      expect.objectContaining({ ReplyTo: [{ Email: 'suporte@exemplo.com' }] }),
+    )
+  })
+
   it('reports a failed delivery without throwing', async () => {
     jest.spyOn(globalThis, 'fetch').mockResolvedValue(new Response('quota', { status: 429 }))
     const log = logger()

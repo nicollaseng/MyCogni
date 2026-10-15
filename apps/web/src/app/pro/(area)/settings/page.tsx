@@ -20,6 +20,7 @@ import { ProfessionalNameForm } from '@/features/professional/components/profess
 import { BackIcon, SignOutIcon } from '@/features/professional/components/icons'
 import { TeamNote } from '@/features/professional/components/team-note'
 import {
+  compactButton,
   quietButton,
   Surface,
   WorkspaceHeader,
@@ -27,7 +28,9 @@ import {
 } from '@/features/professional/components/workspace'
 import { teamEmail } from '@/features/professional/contact'
 import { formatDate } from '@/features/professional/dates'
+import { TicketTable } from '@/features/support/components/ticket-table'
 import { initialsOf } from '@/shared/lib/initials'
+import { fetchSupportTickets } from '@/shared/lib/api/support'
 import { requireProfile } from '@/shared/lib/auth/session'
 import { fetchMyPhotoUrl } from '@/shared/lib/photos'
 
@@ -46,18 +49,31 @@ function ReadOnlyRow({ label, value }: { label: string; value: string }) {
 }
 
 export default async function ProfessionalSettingsPage() {
-  const [professional, profile, photoUrl, t, account, common, verification, steps, locale] =
-    await Promise.all([
-      requireProfessional(),
-      requireProfile(),
-      fetchMyPhotoUrl(),
-      getTranslations('professional.settings'),
-      getTranslations('account'),
-      getTranslations('common'),
-      getTranslations('verification.document'),
-      getTranslations('verification.steps'),
-      getLocale(),
-    ])
+  const [
+    professional,
+    profile,
+    photoUrl,
+    tickets,
+    t,
+    account,
+    common,
+    verification,
+    steps,
+    locale,
+    support,
+  ] = await Promise.all([
+    requireProfessional(),
+    requireProfile(),
+    fetchMyPhotoUrl(),
+    fetchSupportTickets(),
+    getTranslations('professional.settings'),
+    getTranslations('account'),
+    getTranslations('common'),
+    getTranslations('verification.document'),
+    getTranslations('verification.steps'),
+    getLocale(),
+    getTranslations('support.section'),
+  ])
   const mailLink = (chunks: ReactNode) => (
     <a
       href={`mailto:${teamEmail}`}
@@ -164,6 +180,20 @@ export default async function ProfessionalSettingsPage() {
           <LocaleSelect choose={chooseLocale} showLabel className="justify-between py-3.5" />
         </Surface>
       </WorkspaceSection>
+      <div id="support" className="scroll-mt-8">
+        <WorkspaceSection
+          title={support('title')}
+          description={support('description')}
+          className="max-w-3xl"
+          action={
+            <Link href="/pro/support/new" className={compactButton}>
+              {support('new')}
+            </Link>
+          }
+        >
+          <TicketTable tickets={tickets} timeZone={profile.timezone} />
+        </WorkspaceSection>
+      </div>
       <WorkspaceSection title={t('session.title')} description={t('session.body')}>
         <form action={signOut}>
           <button type="submit" className={quietButton}>
