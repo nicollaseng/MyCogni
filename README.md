@@ -105,12 +105,14 @@ e2e/           Playwright specs, run on a mobile and a desktop profile
 
 ## Deploy
 
-The API runs on Railway (project `mycogni`, region US East) from the image in `apps/api/Dockerfile`, configured by `apps/api/railway.json`:
+The API runs on Railway (project `mycogni`, workspace "Nicollas Linhares's Projects", region US East) from the image in `apps/api/Dockerfile`. The service is described as code in `.railway/railway.ts`:
 
-- The image installs and builds only the API and the workspace packages it depends on, then keeps production dependencies only and runs as the `node` user
-- Before each deploy, Railway runs the migrations (`node apps/api/dist/scripts/migrate.js`); the new version only takes traffic after `/health` answers
-- Variables per environment: `DATABASE_URL` (Supabase session pooler, IPv4), `SUPABASE_URL`, `CORS_ORIGINS`, `LOG_LEVEL`; Railway provides `PORT`
-- To build the image locally: `docker build -f apps/api/Dockerfile -t mycogni-api .`
+- The source is the GitHub repo. The `staging` environment follows the `staging` branch, and `production` will follow `main`
+- Docker build with watch patterns limited to the API, the packages and the lockfile, so web-only changes don't redeploy the API
+- Before each deploy Railway runs the migrations (`node apps/api/dist/scripts/migrate.js`). The new version only takes traffic after `/health` answers
+- `NODE_ENV` and `LOG_LEVEL` are set in the file. `DATABASE_URL` (Supabase session pooler, IPv4), `SUPABASE_URL` and `CORS_ORIGINS` are set per environment with `railway variables` and kept by `preserve()`. Railway provides `PORT`
+- After changing the file: `railway config plan` to preview, then `railway config apply` (with the `staging` environment linked)
+- The image installs and builds only the API and the workspace packages it depends on, keeps production dependencies only, and runs as the `node` user. To build it locally: `docker build -f apps/api/Dockerfile -t mycogni-api .`
 
 ## Scripts
 
