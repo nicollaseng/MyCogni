@@ -1,7 +1,12 @@
 import { useTranslations } from 'next-intl'
 import { WorkspaceHeader } from '@/features/professional/components/workspace'
 import { TableSkeleton } from '@/features/professional/components/workspace-skeleton'
-import { LoadingState, Skeleton } from '@/shared/components/skeleton'
+import {
+  descriptionWidths,
+  LinesSkeleton,
+  LoadingState,
+  Skeleton,
+} from '@/shared/components/skeleton'
 
 export default function ProfessionalPatientsLoading() {
   const t = useTranslations('professional.patients')
@@ -10,7 +15,7 @@ export default function ProfessionalPatientsLoading() {
     <LoadingState className="space-y-7 lg:space-y-9">
       <WorkspaceHeader
         title={t('title')}
-        description={t('description')}
+        description={<LinesSkeleton widths={descriptionWidths} className="pt-1" />}
         actions={<Skeleton className="h-9 w-40 rounded-md" />}
       />
       <div className="space-y-3">

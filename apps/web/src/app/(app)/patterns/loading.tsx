@@ -1,6 +1,7 @@
 import { useTranslations } from 'next-intl'
 import { PageTitle } from '@/shared/components/page-title'
 import {
+  descriptionWidths,
   LinesSkeleton,
   LoadingState,
   SectionSkeleton,
@@ -15,7 +16,7 @@ export default function PatternsLoading() {
     <LoadingState className="space-y-10">
       <PageTitle
         title={t('title')}
-        description={t('description')}
+        description={<LinesSkeleton widths={descriptionWidths} className="pt-1" />}
         action={<Skeleton className="h-10 w-48 rounded-md" />}
       />
       <SectionSkeleton>

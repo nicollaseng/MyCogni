@@ -1,6 +1,8 @@
 import { useTranslations } from 'next-intl'
 import { PageTitle } from '@/shared/components/page-title'
 import {
+  descriptionWidths,
+  LinesSkeleton,
   LoadingState,
   RowsSkeleton,
   SectionSkeleton,
@@ -12,7 +14,10 @@ export default function ZenLoading() {
 
   return (
     <LoadingState className="space-y-10">
-      <PageTitle title={t('title')} description={t('description')} />
+      <PageTitle
+        title={t('title')}
+        description={<LinesSkeleton widths={descriptionWidths} className="pt-1" />}
+      />
       <SectionSkeleton>
         <SkeletonPanel className="h-32" />
       </SectionSkeleton>

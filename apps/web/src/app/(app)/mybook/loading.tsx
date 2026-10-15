@@ -1,5 +1,12 @@
 import { useTranslations } from 'next-intl'
-import { LoadingState, RowsSkeleton, SectionSkeleton, Skeleton } from '@/shared/components/skeleton'
+import {
+  descriptionWidths,
+  LinesSkeleton,
+  LoadingState,
+  RowsSkeleton,
+  SectionSkeleton,
+  Skeleton,
+} from '@/shared/components/skeleton'
 
 export default function MybookLoading() {
   const t = useTranslations('mybook.list')
@@ -15,7 +22,7 @@ export default function MybookLoading() {
             <Skeleton className="h-10 w-36 rounded-md" />
           </div>
         </div>
-        <p className="max-w-[36rem] leading-relaxed text-muted-foreground">{t('description')}</p>
+        <LinesSkeleton widths={descriptionWidths} className="pt-1" />
         <Skeleton className="mt-2 h-4 w-64" />
       </header>
       <div className="space-y-8">

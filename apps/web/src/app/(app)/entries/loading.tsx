@@ -1,6 +1,13 @@
 import { useTranslations } from 'next-intl'
 import { PageTitle } from '@/shared/components/page-title'
-import { LoadingState, RowsSkeleton, SectionSkeleton, Skeleton } from '@/shared/components/skeleton'
+import {
+  descriptionWidths,
+  LinesSkeleton,
+  LoadingState,
+  RowsSkeleton,
+  SectionSkeleton,
+  Skeleton,
+} from '@/shared/components/skeleton'
 
 export default function EntriesLoading() {
   const t = useTranslations('entries')
@@ -9,7 +16,7 @@ export default function EntriesLoading() {
     <LoadingState className="space-y-10">
       <PageTitle
         title={t('title')}
-        description={t('description')}
+        description={<LinesSkeleton widths={descriptionWidths} className="pt-1" />}
         action={<Skeleton className="h-10 w-48 rounded-md" />}
       />
       <div className="space-y-4">

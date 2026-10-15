@@ -2,9 +2,10 @@ import { moodDays, patternRules } from '@mycogni/domain'
 import type { Metadata } from 'next'
 import { getLocale, getTranslations } from 'next-intl/server'
 import { TermsNotice } from '@/features/care/components/terms-notice'
-import { TodayIntro } from '@/features/check-in/components/today-intro'
+import { TodayActions } from '@/features/check-in/components/today-actions'
 import { ReadingTeaser } from '@/features/insights/components/reading-teaser'
 import { isRecentReading } from '@/features/insights/readings'
+import { MoodMap } from '@/features/mood/components/mood-map'
 import { RecentMood } from '@/features/mood/components/recent-mood'
 import { LatestScreening } from '@/features/screening/components/latest-screening'
 import { ScreeningSchedule } from '@/features/screening/components/screening-schedule'
@@ -53,7 +54,13 @@ export default async function TodayPage() {
 
       <TermsNotice links={careLinks} />
 
-      <TodayIntro />
+      <section className="flex items-center gap-6 sm:gap-10">
+        <MoodMap valence={0.5} rings={9} className="size-32 shrink-0 sm:size-40" />
+        <div className="space-y-4">
+          <p className="leading-relaxed text-muted-foreground">{t('intro')}</p>
+          <TodayActions />
+        </div>
+      </section>
 
       <RecentMood days={days} />
 

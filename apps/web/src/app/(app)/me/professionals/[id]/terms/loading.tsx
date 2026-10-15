@@ -4,6 +4,7 @@ import {
   LinesSkeleton,
   LoadingState,
   SectionSkeleton,
+  Skeleton,
   SkeletonPanel,
 } from '@/shared/components/skeleton'
 
@@ -12,7 +13,7 @@ export default function SharingTermsLoading() {
 
   return (
     <LoadingState className="space-y-10">
-      <PageTitle kicker={t('kicker')} title={t('title')} />
+      <PageTitle kicker={<Skeleton className="my-[3px] h-3.5 w-36" />} title={t('title')} />
       <SkeletonPanel className="h-24" />
       <SectionSkeleton>
         <LinesSkeleton widths={['w-full', 'w-4/5']} />

@@ -4,6 +4,8 @@ import { cn } from '@/shared/lib/utils'
 
 const breathing = 'motion-safe:animate-breathe'
 
+export const descriptionWidths = ['w-full max-w-[36rem]', 'w-2/3 max-w-sm']
+
 export function Skeleton({ className }: { className?: string }) {
   return (
     <span
