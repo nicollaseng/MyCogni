@@ -1,5 +1,5 @@
 {
-  "id": "30b7ac38-a531-42cb-a24e-63ad11234a01",
+  "id": "b7bf86da-3f68-4df9-ab81-3e6c0bb764f3",
   "prevId": "bd921f24-3e4f-4f2b-96b1-4c6952331efe",
   "version": "7",
   "dialect": "postgresql",
@@ -2187,18 +2187,6 @@
           "type": "timestamp with time zone",
           "primaryKey": false,
           "notNull": false
-        },
-        "check_in_id": {
-          "name": "check_in_id",
-          "type": "uuid",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "journal_entry_id": {
-          "name": "journal_entry_id",
-          "type": "uuid",
-          "primaryKey": false,
-          "notNull": false
         }
       },
       "indexes": {
@@ -2314,32 +2302,6 @@
             "id"
           ],
           "onDelete": "cascade",
-          "onUpdate": "no action"
-        },
-        "professional_alerts_check_in_id_check_ins_id_fk": {
-          "name": "professional_alerts_check_in_id_check_ins_id_fk",
-          "tableFrom": "professional_alerts",
-          "tableTo": "check_ins",
-          "columnsFrom": [
-            "check_in_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "set null",
-          "onUpdate": "no action"
-        },
-        "professional_alerts_journal_entry_id_journal_entries_id_fk": {
-          "name": "professional_alerts_journal_entry_id_journal_entries_id_fk",
-          "tableFrom": "professional_alerts",
-          "tableTo": "journal_entries",
-          "columnsFrom": [
-            "journal_entry_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "set null",
           "onUpdate": "no action"
         }
       },
@@ -2650,6 +2612,14 @@
           "type": "uuid",
           "primaryKey": true,
           "notNull": true
+        },
+        "account_type": {
+          "name": "account_type",
+          "type": "account_type",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'patient'"
         },
         "display_name": {
           "name": "display_name",
@@ -3172,6 +3142,14 @@
     }
   },
   "enums": {
+    "public.account_type": {
+      "name": "account_type",
+      "schema": "public",
+      "values": [
+        "patient",
+        "professional"
+      ]
+    },
     "public.alert_level": {
       "name": "alert_level",
       "schema": "public",
@@ -3191,9 +3169,7 @@
         "summary_watch",
         "low_mood",
         "mood_drop",
-        "inactive",
-        "note_risk",
-        "note_concern"
+        "inactive"
       ]
     },
     "public.assessment_instrument": {

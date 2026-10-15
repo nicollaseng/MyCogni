@@ -1,3 +1,5 @@
+import type { AccountType } from '@mycogni/domain'
+
 export class AppError extends Error {
   readonly statusCode: number
   readonly code: string
@@ -19,6 +21,23 @@ export class UnauthorizedError extends AppError {
 export class ForbiddenError extends AppError {
   constructor(message = 'Access denied') {
     super(403, 'FORBIDDEN', message)
+  }
+}
+
+const accountTypeCodes: Readonly<Record<AccountType, string>> = {
+  patient: 'PATIENT_ACCOUNT_REQUIRED',
+  professional: 'PROFESSIONAL_ACCOUNT_REQUIRED',
+}
+
+export class AccountTypeError extends AppError {
+  constructor(required: AccountType) {
+    super(403, accountTypeCodes[required], `Only ${required} accounts can do this`)
+  }
+}
+
+export class AccountTypeLockedError extends AppError {
+  constructor() {
+    super(409, 'ACCOUNT_TYPE_LOCKED', 'The account type was already set and cannot change')
   }
 }
 

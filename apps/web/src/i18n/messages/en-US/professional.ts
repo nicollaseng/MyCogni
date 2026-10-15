@@ -170,6 +170,14 @@ export const professional: ProfessionalMessages = {
       body: 'Once you are verified, invitations are available in your area, and each patient decides whether to accept.',
     },
   },
+  patientAccount: {
+    kicker: 'Professional area',
+    title: 'This is a patient account.',
+    body: 'To see patients as a professional, create a professional account with another email.',
+    records: 'Nothing changes in this account: your records stay here, just as they are.',
+    signOut: 'Sign out and create a professional account',
+    back: 'Back to the app',
+  },
   form: {
     title: 'Your professional details',
     lead: 'Once you send them, our team checks your license before enabling invitations.',

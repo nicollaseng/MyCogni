@@ -144,9 +144,9 @@ describe('sharing terms', () => {
   })
 
   it('lets only the patient of the active link confirm the terms', async () => {
-    expect((await confirm(helena, pending)).statusCode).toBe(404)
+    expect((await confirm(helena, pending)).statusCode).toBe(403)
     expect((await confirm(bruno, pending)).statusCode).toBe(404)
-    expect((await confirm(caio, ended)).statusCode).toBe(404)
+    expect((await confirm(caio, ended)).statusCode).toBe(403)
     expect((await confirm(ana, ended)).statusCode).toBe(404)
     expect((await confirm(ana, randomUUID())).statusCode).toBe(404)
     expect((await stored(pending))?.consentVersion).toBe(previousVersion)

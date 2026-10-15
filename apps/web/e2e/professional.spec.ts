@@ -208,7 +208,7 @@ test('a new professional signs in from the professional page and is asked for th
   page,
 }) => {
   const email = uniqueEmail('new-pro')
-  await createUser(email, password)
+  await createUser(email, password, { accountType: 'professional' })
 
   await page.goto('/pro/join')
   await page.getByRole('link', { name: 'Já tenho conta' }).first().click()

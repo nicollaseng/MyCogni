@@ -80,7 +80,5 @@ export const patterns: PatternsMessages = {
       answers: '{current} of {required} answers',
     },
     contexts: 'Mark contexts in your entries',
-    disabled: 'Off',
-    enable: 'Turn on',
   },
 }

@@ -2,6 +2,7 @@ import { moodReportQuerySchema } from '@mycogni/contracts'
 import type { FastifyReply } from 'fastify'
 import type { FastifyPluginCallbackZod } from 'fastify-type-provider-zod'
 import { z } from 'zod'
+import { forPatients, forProfessionals } from '../../plugins/account-type.ts'
 import { currentUser } from '../../plugins/authentication.ts'
 import type { ReportFile, ReportService } from './report.service.ts'
 
@@ -17,13 +18,14 @@ export function reportRoutes(service: ReportService): FastifyPluginCallbackZod {
   return (app, _options, done) => {
     app.get(
       '/reports/mood',
-      { schema: { querystring: moodReportQuerySchema } },
+      { config: forPatients, schema: { querystring: moodReportQuerySchema } },
       async (request, reply) =>
         sendPdf(reply, await service.mine(currentUser(request), request.query)),
     )
     app.get(
       '/professional/patients/:patientId/reports/mood',
       {
+        config: forProfessionals,
         schema: {
           params: z.object({ patientId: z.uuid() }),
           querystring: moodReportQuerySchema,

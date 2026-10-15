@@ -4,7 +4,13 @@ import type { App } from '../../src/shared/http.ts'
 import { makeAdmin } from '../support/care.ts'
 import { testDatabaseUrl } from '../support/database.ts'
 import { sendRegistrationDocument } from '../support/documents.ts'
-import { bearer, createTestUser, deleteTestUser, type TestUser } from '../support/supabase.ts'
+import {
+  bearer,
+  createTestUser,
+  deleteTestUser,
+  professionalAccount,
+  type TestUser,
+} from '../support/supabase.ts'
 import { buildTestApp, supabaseVerifier } from '../support/test-app.ts'
 
 describe('/v1/admin/professionals', () => {
@@ -38,9 +44,9 @@ describe('/v1/admin/professionals', () => {
     app = await buildTestApp({ db: connection.db, verifier: supabaseVerifier() })
     await app.ready()
     admin = await createTestUser()
-    marta = await createTestUser()
-    rui = await createTestUser()
-    lia = await createTestUser()
+    marta = await createTestUser(professionalAccount)
+    rui = await createTestUser(professionalAccount)
+    lia = await createTestUser(professionalAccount)
     await makeAdmin(connection.db, admin.id)
     await register(marta, 'Marta Sousa')
     await register(lia, 'Lia Campos')

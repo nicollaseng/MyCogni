@@ -53,7 +53,7 @@ export const journalEntries = pgTable(
     pgPolicy('journal_entries_insert_own', {
       for: 'insert',
       to: authenticatedRole,
-      withCheck: sql`${table.userId} = ${authUid}`,
+      withCheck: sql`${table.userId} = ${authUid} and public.current_account_type() = 'patient'`,
     }),
     pgPolicy('journal_entries_update_own', {
       for: 'update',

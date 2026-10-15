@@ -264,8 +264,29 @@
     {
       "idx": 37,
       "version": "7",
-      "when": 1792101830820,
-      "tag": "0037_note_risk_alerts",
+      "when": 1792101433107,
+      "tag": "0037_add_profile_account_type",
+      "breakpoints": true
+    },
+    {
+      "idx": 38,
+      "version": "7",
+      "when": 1792101434107,
+      "tag": "0038_account_type_functions_and_backfill",
+      "breakpoints": true
+    },
+    {
+      "idx": 39,
+      "version": "7",
+      "when": 1792101435107,
+      "tag": "0039_account_type_insert_policies",
+      "breakpoints": true
+    },
+    {
+      "idx": 40,
+      "version": "7",
+      "when": 1792103877055,
+      "tag": "0040_note_risk_alerts",
       "breakpoints": true
     }
   ]

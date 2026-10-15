@@ -174,7 +174,7 @@ export async function registeredProfessional(
   password: string,
   fullName: string,
 ): Promise<string> {
-  const userId = await createUser(email, password, true, { account_type: 'professional' })
+  const userId = await createUser(email, password, { accountType: 'professional' })
   const register = await poster(email, password)
   await register('/v1/professional', {
     kind: 'psychologist',

@@ -1,5 +1,4 @@
 import type { SectionStatus } from '@mycogni/domain'
-import Link from 'next/link'
 import { useTranslations } from 'next-intl'
 import { Panel, Section } from '@/shared/components/section'
 
@@ -16,16 +15,6 @@ function Progress({ status }: { status: SectionStatus }) {
           />
         </span>
         {t(`progress.${status.unit}`, { current: status.current, required: status.required })}
-      </span>
-    )
-  }
-  if (status.state === 'blocked' && status.reason === 'disabled') {
-    return (
-      <span className="text-sm text-muted-foreground">
-        {t('disabled')} ·{' '}
-        <Link href="/me" className="text-foreground underline decoration-1 underline-offset-4">
-          {t('enable')}
-        </Link>
       </span>
     )
   }

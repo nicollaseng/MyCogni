@@ -8,7 +8,13 @@ import { makeAdmin } from '../support/care.ts'
 import { testDatabaseUrl } from '../support/database.ts'
 import { sendRegistrationDocument } from '../support/documents.ts'
 import { downloadAs, tinyPdf, uploadAs, uploadProfessionalDocument } from '../support/storage.ts'
-import { bearer, createTestUser, deleteTestUser, type TestUser } from '../support/supabase.ts'
+import {
+  bearer,
+  createTestUser,
+  deleteTestUser,
+  professionalAccount,
+  type TestUser,
+} from '../support/supabase.ts'
 import { buildTestApp, supabaseVerifier } from '../support/test-app.ts'
 
 const profileSchema = z.object({
@@ -59,8 +65,8 @@ describe('/v1/professional/documents', () => {
     app = await buildTestApp({ db: connection.db, verifier: supabaseVerifier() })
     await app.ready()
     admin = await createTestUser()
-    helena = await createTestUser()
-    caio = await createTestUser()
+    helena = await createTestUser(professionalAccount)
+    caio = await createTestUser(professionalAccount)
     ana = await createTestUser()
     await makeAdmin(connection.db, admin.id)
     await register(helena, 'Helena Prado')
@@ -212,7 +218,7 @@ describe('/v1/professional/documents', () => {
     expect(late.statusCode).toBe(409)
   })
 
-  it('answers 404 to someone who is not a professional', async () => {
+  it('refuses a patient account, which never holds a registration', async () => {
     const response = await submit(ana, {
       path: `${ana.id}/${randomUUID()}.pdf`,
       fileName: 'CRP.pdf',
@@ -220,6 +226,9 @@ describe('/v1/professional/documents', () => {
       sizeBytes: 10,
     })
 
-    expect(response.statusCode).toBe(404)
+    expect(response.statusCode).toBe(403)
+    expect(response.json()).toEqual(
+      expect.objectContaining({ code: 'PROFESSIONAL_ACCOUNT_REQUIRED' }),
+    )
   })
 })

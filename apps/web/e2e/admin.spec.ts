@@ -19,7 +19,7 @@ async function signIn(page: Page, email: string) {
 
 async function pendingProfessional(fullName: string, registration: string): Promise<void> {
   const email = uniqueEmail('pending-pro')
-  await createUser(email, password)
+  await createUser(email, password, { accountType: 'professional' })
   const session = await fetch(`${supabaseUrl}/auth/v1/token?grant_type=password`, {
     method: 'POST',
     headers: { apikey: localSupabase().PUBLISHABLE_KEY, 'content-type': 'application/json' },

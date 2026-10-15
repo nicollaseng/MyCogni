@@ -95,6 +95,18 @@ test('filters through one panel, sums the filters up and keeps them in the addre
   await expect(page.getByRole('status')).toHaveText('4 registros')
 })
 
+test('shows records with any chosen emotion and narrows them by context', async ({ page }) => {
+  await signInWithEntries(page)
+
+  await page.goto('/entries?emotion=luto,anxiety')
+  await expect(page.getByRole('status')).toHaveText('2 registros encontrados')
+  await expect(page.getByText('Luto ou ansiedade')).toBeVisible()
+
+  await page.goto('/entries?emotion=luto,anxiety&context=work')
+  await expect(page.getByRole('status')).toHaveText('1 registro encontrado')
+  await expect(page.getByText('Prazo apertado no trabalho')).toBeVisible()
+})
+
 test('opens a record read-only and adds a dated note below it', async ({ page }) => {
   await signInWithEntries(page)
   await page.goto('/entries?note=1')

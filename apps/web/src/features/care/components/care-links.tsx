@@ -13,10 +13,9 @@ interface CareLinksProps {
   links: readonly CareLink[]
   timeZone: string
   end: (id: string) => Promise<ActionResult<null>>
-  isProfessional: boolean
 }
 
-export function CareLinks({ links, timeZone, end, isProfessional }: CareLinksProps) {
+export function CareLinks({ links, timeZone, end }: CareLinksProps) {
   const t = useTranslations('care')
 
   return (
@@ -60,11 +59,6 @@ export function CareLinks({ links, timeZone, end, isProfessional }: CareLinksPro
           <Link href="/invites" className={footLink}>
             {t('links.invites')}
           </Link>
-          {isProfessional && (
-            <Link href="/pro" className={footLink}>
-              {t('links.professionalArea')}
-            </Link>
-          )}
         </p>
       </Section>
     </div>
