@@ -12,6 +12,7 @@ export const common: CommonMessages = {
     entries: 'Registos',
     mybook: 'MyBook',
     patterns: 'Padrões',
+    zen: 'Zen',
   },
   account: {
     open: 'A sua conta',

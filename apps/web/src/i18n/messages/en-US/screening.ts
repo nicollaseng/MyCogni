@@ -49,6 +49,7 @@ export const screening: ScreeningMessages = {
     disclaimer:
       'This is a screening, not a diagnosis. Only a professional can assess your situation.',
     back: 'Back to profile',
+    zen: 'See suggestions in Zen Space',
   },
   latest: {
     title: 'Your questionnaires',

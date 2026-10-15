@@ -18,6 +18,7 @@ export async function submitScreening(input: ScreeningInput): Promise<ActionResu
     revalidatePath('/me')
     revalidatePath('/today')
     revalidatePath('/patterns')
+    revalidatePath('/zen')
   }
   return result
 }

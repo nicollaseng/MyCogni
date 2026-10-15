@@ -18,6 +18,7 @@ import { screening } from './screening'
 import { support } from './support'
 import { today } from './today'
 import { verification } from './verification'
+import { zen } from './zen'
 import type { Messages } from '../pt-BR'
 
 export const messages: Messages = {
@@ -40,5 +41,6 @@ export const messages: Messages = {
   alerts,
   admin,
   verification,
+  zen,
   support,
 }
