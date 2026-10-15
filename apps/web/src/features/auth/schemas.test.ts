@@ -75,7 +75,7 @@ describe('auth schemas', () => {
       }),
     )
 
-    expect(messageOf(european.resetPassword.safeParse({ code: '123456', password: 'curta' }))).toBe(
+    expect(messageOf(european.newPassword.safeParse({ password: 'curta' }))).toBe(
       'A palavra-passe tem de ter pelo menos 8 caracteres.',
     )
   })
