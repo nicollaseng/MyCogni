@@ -79,3 +79,18 @@ export function uploadProfessionalDocument(user: TestUser): Promise<string> {
     tinyPdf,
   )
 }
+
+export async function storedFiles(bucket: string, folder: string): Promise<string[]> {
+  const secret = process.env.SUPABASE_SECRET_KEY ?? ''
+  const response = await fetch(`${testSupabaseUrl}/storage/v1/object/list/${bucket}`, {
+    method: 'POST',
+    headers: {
+      apikey: secret,
+      authorization: `Bearer ${secret}`,
+      'content-type': 'application/json',
+    },
+    body: JSON.stringify({ prefix: `${folder}/`, limit: 100 }),
+  })
+  const items = (await response.json()) as { name: string }[]
+  return items.map((item) => item.name)
+}

@@ -3,6 +3,7 @@ import { z } from 'zod'
 export interface BucketStore {
   sign(paths: readonly string[]): Promise<Record<string, string>>
   remove(paths: readonly string[]): Promise<void>
+  removeFolder(folder: string): Promise<void>
 }
 
 export interface BucketStoreOptions {
@@ -16,6 +17,10 @@ const signedSchema = z.array(
   z.object({ path: z.string().nullable(), signedURL: z.string().nullable() }),
 )
 
+const listedSchema = z.array(z.object({ name: z.string(), id: z.string().nullable() }))
+
+const listPageSize = 1000
+
 export function createBucketStore({
   supabaseUrl,
   secretKey,
@@ -28,6 +33,46 @@ export function createBucketStore({
     'content-type': 'application/json',
   }
   const base = `${supabaseUrl}/storage/v1`
+
+  async function listPage(prefix: string, offset: number) {
+    const response = await fetch(`${base}/object/list/${bucket}`, {
+      method: 'POST',
+      headers,
+      body: JSON.stringify({ prefix, limit: listPageSize, offset }),
+    })
+    if (!response.ok) {
+      throw new Error(`Storage refused to list ${bucket} files: ${String(response.status)}`)
+    }
+    return listedSchema.parse(await response.json())
+  }
+
+  async function filesIn(folder: string): Promise<string[]> {
+    const paths: string[] = []
+    for (let offset = 0; ; offset += listPageSize) {
+      const page = await listPage(`${folder}/`, offset)
+      for (const item of page) {
+        const path = `${folder}/${item.name}`
+        paths.push(...(item.id === null ? await filesIn(path) : [path]))
+      }
+      if (page.length < listPageSize) {
+        return paths
+      }
+    }
+  }
+
+  async function remove(paths: readonly string[]) {
+    if (paths.length === 0) {
+      return
+    }
+    const response = await fetch(`${base}/object/${bucket}`, {
+      method: 'DELETE',
+      headers,
+      body: JSON.stringify({ prefixes: paths }),
+    })
+    if (!response.ok) {
+      throw new Error(`Storage refused to remove ${bucket} files: ${String(response.status)}`)
+    }
+  }
 
   return {
     async sign(paths) {
@@ -50,18 +95,9 @@ export function createBucketStore({
         ),
       )
     },
-    async remove(paths) {
-      if (paths.length === 0) {
-        return
-      }
-      const response = await fetch(`${base}/object/${bucket}`, {
-        method: 'DELETE',
-        headers,
-        body: JSON.stringify({ prefixes: paths }),
-      })
-      if (!response.ok) {
-        throw new Error(`Storage refused to remove ${bucket} files: ${String(response.status)}`)
-      }
+    remove,
+    async removeFolder(folder) {
+      await remove(await filesIn(folder))
     },
   }
 }
