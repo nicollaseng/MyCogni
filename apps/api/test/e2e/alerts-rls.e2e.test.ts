@@ -73,7 +73,12 @@ describe('professional alerts access', () => {
 
   it('shows the professional their alerts with the patient name and the open count', async () => {
     expect(risk).toEqual(
-      expect.objectContaining({ patientId: ana.id, patientName: 'Ana Lima', status: 'open' }),
+      expect.objectContaining({
+        patientId: ana.id,
+        patientName: 'Ana Lima',
+        patientPhotoUrl: null,
+        status: 'open',
+      }),
     )
     const count = await request('GET', '/v1/professional/alerts/count', helena)
     expect(count.json<AlertCount>()).toEqual({ pending: 2, urgent: 1 })

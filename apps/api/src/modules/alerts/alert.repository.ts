@@ -8,6 +8,7 @@ export interface AlertRecord {
   id: string
   patientId: string
   patientName: string | null
+  patientAvatarPath: string | null
   reason: AlertReason
   level: AlertLevel
   createdAt: Date
@@ -58,6 +59,7 @@ export function createAlertRepository(db: Database): AlertRepository {
             id: professionalAlerts.id,
             patientId: professionalAlerts.patientId,
             patientName: profiles.displayName,
+            patientAvatarPath: profiles.avatarPath,
             reason: professionalAlerts.reason,
             level: professionalAlerts.level,
             createdAt: professionalAlerts.createdAt,

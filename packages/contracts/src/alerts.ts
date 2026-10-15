@@ -7,6 +7,7 @@ export const professionalAlertSchema = z.object({
   id: z.uuid(),
   patientId: z.uuid(),
   patientName: z.string().nullable(),
+  patientPhotoUrl: z.string().nullable(),
   reason: z.enum(alertReasons),
   level: z.enum(alertLevels),
   status: z.enum(alertStatuses),

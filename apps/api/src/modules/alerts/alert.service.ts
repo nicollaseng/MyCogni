@@ -2,6 +2,7 @@ import type { AlertCount, AlertQuery, ProfessionalAlert } from '@mycogni/contrac
 import { alertStatusOf } from '@mycogni/domain'
 import type { AuthenticatedUser } from '../../auth/token-verifier.ts'
 import { ForbiddenError, NotFoundError } from '../../shared/errors.ts'
+import type { BucketStore } from '../../storage/bucket-store.ts'
 import type { ProfessionalRepository } from '../professionals/professional.repository.ts'
 import type { AlertRecord, AlertRepository } from './alert.repository.ts'
 
@@ -15,13 +16,18 @@ export interface AlertService {
 export interface AlertServiceDependencies {
   alerts: AlertRepository
   professionals: ProfessionalRepository
+  photos: BucketStore
 }
 
 const listLimit = 500
 
-function toAlert(record: AlertRecord): ProfessionalAlert {
+function toAlert(
+  { patientAvatarPath, ...record }: AlertRecord,
+  photoUrls: Readonly<Record<string, string>>,
+): ProfessionalAlert {
   return {
     ...record,
+    patientPhotoUrl: patientAvatarPath === null ? null : (photoUrls[patientAvatarPath] ?? null),
     status: alertStatusOf(record),
     createdAt: record.createdAt.toISOString(),
     acknowledgedAt: record.acknowledgedAt?.toISOString() ?? null,
@@ -32,6 +38,7 @@ function toAlert(record: AlertRecord): ProfessionalAlert {
 export function createAlertService({
   alerts,
   professionals,
+  photos,
 }: AlertServiceDependencies): AlertService {
   async function requireVerified(user: AuthenticatedUser): Promise<void> {
     const professional = await professionals.find(user.id)
@@ -54,7 +61,13 @@ export function createAlertService({
   return {
     async list(user, { patientId }) {
       await requireVerified(user)
-      return (await alerts.list(user.id, { patientId, limit: listLimit })).map(toAlert)
+      const records = await alerts.list(user.id, { patientId, limit: listLimit })
+      const photoUrls = await photos.sign(
+        records.flatMap(({ patientAvatarPath }) =>
+          patientAvatarPath === null ? [] : [patientAvatarPath],
+        ),
+      )
+      return records.map((record) => toAlert(record, photoUrls))
     },
     async count(user) {
       await requireVerified(user)

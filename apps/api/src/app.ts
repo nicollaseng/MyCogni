@@ -77,7 +77,7 @@ function authenticatedRoutes(
     await api.register(journalModule({ db, images: journalImages, log: api.log }))
     await api.register(insightModule(db))
     await api.register(reportModule(db))
-    await api.register(alertModule(db))
+    await api.register(alertModule(db, profileFiles.photos))
   }
 }
 
