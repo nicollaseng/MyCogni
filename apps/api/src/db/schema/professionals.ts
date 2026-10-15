@@ -45,7 +45,10 @@ export const professionalProfiles = pgTable(
     pgPolicy('professional_profiles_insert_own_pending', {
       for: 'insert',
       to: authenticatedRole,
-      withCheck: sql`${table.userId} = ${authUid} and ${table.status} = 'pending' and ${table.verifiedAt} is null`,
+      withCheck: sql`${table.userId} = ${authUid}
+        and ${table.status} = 'pending'
+        and ${table.verifiedAt} is null
+        and public.current_account_type() = 'professional'`,
     }),
     pgPolicy('professional_profiles_update_own_name', {
       for: 'update',

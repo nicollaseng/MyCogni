@@ -31,7 +31,7 @@ describe('account types', () => {
 })
 
 describe('isBrandNewAccount', () => {
-  const fresh = { createdAt: minutesAgo(5), onboardingCompletedAt: null, records: 0 }
+  const fresh = { createdAt: minutesAgo(5), onboardingCompletedAt: null, hasRecords: false }
 
   it('accepts an account created moments ago that has not been used', () => {
     expect(isBrandNewAccount(fresh, now)).toBe(true)
@@ -53,6 +53,6 @@ describe('isBrandNewAccount', () => {
 
   it('refuses an account that finished onboarding or already holds records', () => {
     expect(isBrandNewAccount({ ...fresh, onboardingCompletedAt: minutesAgo(1) }, now)).toBe(false)
-    expect(isBrandNewAccount({ ...fresh, records: 1 }, now)).toBe(false)
+    expect(isBrandNewAccount({ ...fresh, hasRecords: true }, now)).toBe(false)
   })
 })

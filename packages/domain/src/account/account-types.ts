@@ -7,7 +7,7 @@ export const accountTypeChoiceMinutes = 60
 export interface AccountFootprint {
   createdAt: Date
   onboardingCompletedAt: Date | null
-  records: number
+  hasRecords: boolean
 }
 
 export function isAccountType(value: unknown): value is AccountType {
@@ -22,7 +22,7 @@ export function isBrandNewAccount(account: AccountFootprint, now: Date): boolean
   const age = now.getTime() - account.createdAt.getTime()
   return (
     account.onboardingCompletedAt === null &&
-    account.records === 0 &&
+    !account.hasRecords &&
     age >= 0 &&
     age <= accountTypeChoiceMinutes * 60_000
   )

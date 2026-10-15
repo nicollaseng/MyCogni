@@ -260,6 +260,27 @@
       "when": 1792100572828,
       "tag": "0036_check_in_addenda_grants",
       "breakpoints": true
+    },
+    {
+      "idx": 37,
+      "version": "7",
+      "when": 1792101433107,
+      "tag": "0037_add_profile_account_type",
+      "breakpoints": true
+    },
+    {
+      "idx": 38,
+      "version": "7",
+      "when": 1792101434107,
+      "tag": "0038_account_type_functions_and_backfill",
+      "breakpoints": true
+    },
+    {
+      "idx": 39,
+      "version": "7",
+      "when": 1792101435107,
+      "tag": "0039_account_type_insert_policies",
+      "breakpoints": true
     }
   ]
 }
