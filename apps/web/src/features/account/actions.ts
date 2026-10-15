@@ -1,5 +1,7 @@
 'use server'
 
+import { consentKindSchema } from '@mycogni/contracts'
+import { isRevocable, type ConsentKind } from '@mycogni/domain'
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 import { getTranslations } from 'next-intl/server'
@@ -113,15 +115,24 @@ export async function deleteMyAccount(confirmation: string): Promise<ActionResul
   redirect('/')
 }
 
-export async function setAiConsent(enabled: boolean): Promise<ActionResult<string>> {
+export async function setConsent(
+  kind: ConsentKind,
+  enabled: boolean,
+): Promise<ActionResult<string>> {
   const t = await getTranslations('account.feedback')
+  if (!consentKindSchema.safeParse(kind).success || !isRevocable(kind)) {
+    return failure(t('saveError'))
+  }
   const result = await attempt(async () => {
     if (enabled) {
-      await grantConsents({ kinds: ['ai_processing'] })
+      await grantConsents({ kinds: [kind] })
     } else {
-      await revokeConsent('ai_processing')
+      await revokeConsent(kind)
     }
-    return enabled ? t('aiOn') : t('aiOff')
+    if (kind === 'ai_processing') {
+      return enabled ? t('aiOn') : t('aiOff')
+    }
+    return enabled ? t('consentOn') : t('consentOff')
   }, t('saveError'))
   if (result.ok) {
     revalidatePath('/me')

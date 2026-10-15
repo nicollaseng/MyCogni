@@ -10,14 +10,14 @@ const consents: Consent[] = [
   { kind: 'privacy', version: '2026-10-01', grantedAt: '2026-10-01T13:00:00Z' },
 ]
 
-function setAiConsent(): Promise<ActionResult<string>> {
+function setConsent(): Promise<ActionResult<string>> {
   return Promise.resolve({ ok: true, value: 'ok' })
 }
 
 describe('ConsentList', () => {
   it('names each consent, links the documents and says when it was given', () => {
     renderWithIntl(
-      <ConsentList consents={consents} timeZone="America/Sao_Paulo" setAiConsent={setAiConsent} />,
+      <ConsentList consents={consents} timeZone="America/Sao_Paulo" setConsent={setConsent} />,
     )
 
     const [terms, , health] = screen.getAllByRole('listitem')
@@ -28,6 +28,11 @@ describe('ConsentList', () => {
       'aria-checked',
       'false',
     )
+    expect(screen.getByRole('switch', { name: 'Perguntar: ler meus registros' })).toHaveAttribute(
+      'aria-checked',
+      'false',
+    )
+    expect(screen.getByRole('switch', { name: 'Perguntar: ler o MyBook' })).toBeInTheDocument()
   })
 
   it('speaks English with the date written the American way', () => {
@@ -38,7 +43,7 @@ describe('ConsentList', () => {
           { kind: 'ai_processing', version: '2026-10-01', grantedAt: '2026-10-01T13:00:00Z' },
         ]}
         timeZone="America/New_York"
-        setAiConsent={jest.fn(setAiConsent)}
+        setConsent={jest.fn(setConsent)}
       />,
       { locale: 'en-US' },
     )

@@ -7,7 +7,7 @@ import {
   deleteMyAccount,
   refreshAfterUpload,
   renameMe,
-  setAiConsent,
+  setConsent,
   setJournalInInsights,
 } from '@/features/account/actions'
 import { endLink } from '@/features/care/actions'
@@ -108,11 +108,7 @@ export default async function MePage() {
 
       <Section title={t('sections.privacy')}>
         <Panel>
-          <ConsentList
-            consents={consents}
-            timeZone={profile.timezone}
-            setAiConsent={setAiConsent}
-          />
+          <ConsentList consents={consents} timeZone={profile.timezone} setConsent={setConsent} />
           <JournalInsightsSwitch
             enabled={profile.journalInInsights}
             setJournalInInsights={setJournalInInsights}

@@ -1,5 +1,7 @@
 import { useTranslations } from 'next-intl'
 import { Suspense, type ReactNode } from 'react'
+import { assistantActions } from '@/features/assistant/bound-actions'
+import { AssistantLauncher } from '@/features/assistant/components/assistant-launcher'
 import { signOut } from '@/features/auth/actions'
 import { BellLink } from '@/features/care/components/bell-link'
 import { NotificationBell } from '@/features/care/components/notification-bell'
@@ -45,6 +47,8 @@ export function AppShell({ name, email, photoUrl, timeZone, children }: AppShell
       <footer className="mx-auto w-full max-w-3xl px-6 pb-28 sm:pb-12">
         <HelpDisclosure />
       </footer>
+
+      <AssistantLauncher actions={assistantActions} timeZone={timeZone} />
 
       <nav
         aria-label={navigationLabel}
