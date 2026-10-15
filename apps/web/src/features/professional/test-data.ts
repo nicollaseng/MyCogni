@@ -101,6 +101,8 @@ export function alert(overrides: Partial<ProfessionalAlert> = {}): ProfessionalA
     createdAt: '2026-10-15T12:00:00Z',
     acknowledgedAt: null,
     resolvedAt: null,
+    checkInId: null,
+    journalEntryId: null,
     ...overrides,
   }
 }
