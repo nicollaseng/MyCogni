@@ -25,7 +25,7 @@ import {
 } from '@/features/professional/components/workspace'
 import { teamEmail } from '@/features/professional/contact'
 import { formatDate } from '@/features/professional/dates'
-import { initialsOf } from '@/features/professional/initials'
+import { initialsOf } from '@/shared/lib/initials'
 import { requireProfile } from '@/shared/lib/auth/session'
 import { fetchMyPhotoUrl } from '@/shared/lib/photos'
 

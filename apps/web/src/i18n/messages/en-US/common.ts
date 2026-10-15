@@ -11,7 +11,14 @@ export const common: CommonMessages = {
     entries: 'Entries',
     mybook: 'MyBook',
     patterns: 'Patterns',
-    me: 'You',
+  },
+  account: {
+    open: 'Your account',
+    menu: 'Account',
+    profile: 'Profile and settings',
+    professionals: 'Professionals',
+    help: 'Help now',
+    signOut: 'Sign out',
   },
   help: {
     summary: 'Need help right now?',

@@ -1,7 +1,7 @@
 import type { CareLink } from '@mycogni/contracts'
 import Link from 'next/link'
 import { useLocale, useTranslations } from 'next-intl'
-import { initialsOf } from '@/features/professional/initials'
+import { initialsOf } from '@/shared/lib/initials'
 import { Avatar } from '@/shared/components/avatar'
 import { Panel, Section } from '@/shared/components/section'
 import type { ActionResult } from '@/shared/lib/actions/result'

@@ -1,17 +1,15 @@
 import Link from 'next/link'
 import { useTranslations } from 'next-intl'
+import { cn } from '@/shared/lib/utils'
 
 const badgeLimit = 9
 
-export function BellLink({ unread }: { unread: number }) {
-  const t = useTranslations('care.bell')
+export const bellStyle =
+  'inline-flex h-10 min-w-10 shrink-0 items-center justify-center gap-1 text-muted-foreground transition-colors hover:text-foreground'
 
+export function BellGlyph({ unread }: { unread: number }) {
   return (
-    <Link
-      href="/notifications"
-      aria-label={t('label', { count: unread })}
-      className="-my-2 inline-flex h-10 min-w-10 shrink-0 items-center justify-center gap-1 text-muted-foreground transition-colors hover:text-foreground"
-    >
+    <>
       <svg
         aria-hidden
         viewBox="0 0 24 24"
@@ -34,6 +32,20 @@ export function BellLink({ unread }: { unread: number }) {
           {unread > badgeLimit ? `${String(badgeLimit)}+` : unread}
         </span>
       )}
+    </>
+  )
+}
+
+export function BellLink({ unread }: { unread: number }) {
+  const t = useTranslations('care.bell')
+
+  return (
+    <Link
+      href="/notifications"
+      aria-label={t('label', { count: unread })}
+      className={cn('-my-2', bellStyle)}
+    >
+      <BellGlyph unread={unread} />
     </Link>
   )
 }

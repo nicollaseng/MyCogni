@@ -1,7 +1,7 @@
 import type { PatientSummary } from '@mycogni/contracts'
 import Link from 'next/link'
 import { useLocale, useTranslations } from 'next-intl'
-import { initialsOf } from '@/features/account/avatar'
+import { initialsOf } from '@/shared/lib/initials'
 import { Avatar } from '@/shared/components/avatar'
 import { formatDate, formatShortDate } from '../dates'
 import { latestScreenings } from '../screenings'

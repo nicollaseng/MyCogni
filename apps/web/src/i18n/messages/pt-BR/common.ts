@@ -9,7 +9,14 @@ export const common = {
     entries: 'Registros',
     mybook: 'MyBook',
     patterns: 'Padrões',
-    me: 'Você',
+  },
+  account: {
+    open: 'Sua conta',
+    menu: 'Conta',
+    profile: 'Perfil e configurações',
+    professionals: 'Profissionais',
+    help: 'Ajuda agora',
+    signOut: 'Sair',
   },
   help: {
     summary: 'Precisa de ajuda agora?',

@@ -24,7 +24,7 @@ export const care: CareMessages = {
       },
       accepted: {
         title: 'This invitation has already been accepted.',
-        body: 'The professionals who follow your entries are listed under You, in Professionals.',
+        body: 'The professionals who follow your entries are listed in Profile and settings, under Professionals.',
       },
       declined: {
         title: 'This invitation was declined.',
@@ -71,7 +71,7 @@ export const care: CareMessages = {
         'By accepting, you allow {name} to see your mood entries, with emotions, contexts and notes, and your PHQ-9 and GAD-7 results, to follow how you are doing.',
       history:
         'By default, only entries made from today on are included. Earlier ones are included only if you turn on the option above.',
-      end: 'You can end the link at any time, under You. From then on, {name} can no longer see your entries.',
+      end: 'You can end the link at any time, in Profile and settings. From then on, {name} can no longer see your entries.',
       privacy:
         'The link gives no access to anything else in your account. Learn more in the <link>privacy policy</link>.',
       agreement: 'Accepting means you agree to these terms.',
@@ -126,7 +126,11 @@ export const care: CareMessages = {
       canceled: 'Invitation canceled',
       expired: 'Invitation expired',
     },
-    open: 'View invitation',
+    open: {
+      invitation: 'View invitation',
+      professional: 'View professionals',
+      insight: 'View summary',
+    },
     kinds: {
       invitation: 'An invitation from a professional',
       professional: 'A message from a professional',
@@ -138,6 +142,8 @@ export const care: CareMessages = {
   bell: {
     label:
       '{count, plural, =0 {Notifications} one {Notifications, # unread} other {Notifications, # unread}}',
+    unread: '{count} unread',
+    seeAll: 'See all',
   },
   links: {
     title: 'Professionals',

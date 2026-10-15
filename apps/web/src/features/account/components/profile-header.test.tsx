@@ -44,7 +44,7 @@ describe('ProfileHeader', () => {
     )
 
     expect(screen.getByRole('heading', { level: 1, name: 'Perfil' })).toBeInTheDocument()
-    expect(screen.getByText('ME')).toBeInTheDocument()
+    expect(screen.getByText('M')).toBeInTheDocument()
     expect(screen.getByLabelText('Adicionar fotografia')).toBeInTheDocument()
     expect(screen.queryByRole('button', { name: 'Remover fotografia' })).not.toBeInTheDocument()
   })

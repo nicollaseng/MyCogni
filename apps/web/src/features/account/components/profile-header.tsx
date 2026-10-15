@@ -1,5 +1,5 @@
 import { useTranslations } from 'next-intl'
-import { initialsOf } from '../avatar'
+import { initialsOf } from '@/shared/lib/initials'
 import { PhotoField, type PhotoTransport } from './photo-field'
 
 interface ProfileHeaderProps {

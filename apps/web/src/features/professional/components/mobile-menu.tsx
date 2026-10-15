@@ -5,10 +5,10 @@ import { useTranslations } from 'next-intl'
 import { useId, useRef, useState } from 'react'
 import { Avatar } from '@/shared/components/avatar'
 import { Wordmark } from '@/shared/components/wordmark'
+import { initialsOf } from '@/shared/lib/initials'
+import { drawerMotion, useAnimatedDialog } from '@/shared/hooks/use-animated-dialog'
 import { CloseIcon, MenuIcon, SettingsIcon, SignOutIcon } from './icons'
 import { ProfessionalNavigation } from './professional-navigation'
-import { initialsOf } from '../initials'
-import { drawerMotion, useAnimatedDialog } from './use-animated-dialog'
 
 interface MobileMenuProps {
   name: string

@@ -2,7 +2,7 @@
 
 import { useTranslations } from 'next-intl'
 import { useState } from 'react'
-import { initialsOf } from '@/features/account/avatar'
+import { initialsOf } from '@/shared/lib/initials'
 import { PhotoField, type PhotoTransport } from '@/features/account/components/photo-field'
 import { StepActions } from '@/shared/components/step-actions'
 import { StepHeading } from '@/shared/components/step-heading'

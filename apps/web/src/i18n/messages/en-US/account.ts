@@ -1,7 +1,7 @@
 import type { AccountMessages } from '../pt-BR/account'
 
 export const account: AccountMessages = {
-  title: 'You',
+  title: 'Profile and settings',
   sections: {
     account: 'Account',
     preferences: 'Preferences',
