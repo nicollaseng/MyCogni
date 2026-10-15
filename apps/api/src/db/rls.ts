@@ -13,3 +13,10 @@ export function withUser<T>(
     return work(tx)
   })
 }
+
+export function asAnonymous<T>(db: Database, work: (tx: Transaction) => Promise<T>): Promise<T> {
+  return db.transaction(async (tx) => {
+    await tx.execute(sql`set local role anon`)
+    return work(tx)
+  })
+}

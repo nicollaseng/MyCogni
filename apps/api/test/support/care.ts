@@ -78,3 +78,9 @@ export async function seedInvitation(
   }
   return row
 }
+
+export async function makeAdmin(db: Database, userId: string): Promise<void> {
+  await db.execute(
+    sql`update auth.users set raw_app_meta_data = coalesce(raw_app_meta_data, '{}'::jsonb) || '{"role":"admin"}'::jsonb where id = ${userId}`,
+  )
+}

@@ -1,10 +1,13 @@
 import { describe, expect, it } from '@jest/globals'
 import {
   effectiveStatus,
+  generateInvitationCode,
+  invitationCodeAlphabet,
   invitationExpiry,
   isInvitationCode,
   normalizeInvitationCode,
 } from './invitations.ts'
+import { notificationKinds } from './notifications.ts'
 import { professionalKinds, requiresRegistration } from './professionals.ts'
 
 describe('professionals', () => {
@@ -46,5 +49,19 @@ describe('invitations', () => {
     expect(isInvitationCode('K7M2X9Q')).toBe(false)
     expect(isInvitationCode('K7M2X9Q0')).toBe(false)
     expect(isInvitationCode('K7M2X9QI')).toBe(false)
+  })
+
+  it('generates valid codes from the random source it is given', () => {
+    const picks = [0, 1, 2, 3, 4, 5, 6, invitationCodeAlphabet.length - 1]
+    const code = generateInvitationCode(() => picks.shift() ?? 0)
+
+    expect(code).toBe('2345678Z')
+    expect(isInvitationCode(code)).toBe(true)
+  })
+})
+
+describe('notifications', () => {
+  it('separates invitations from messages of professionals, Cogni and the system', () => {
+    expect(notificationKinds).toEqual(['invitation', 'professional', 'marketing', 'system'])
   })
 })

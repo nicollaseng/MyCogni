@@ -5,6 +5,7 @@ const required = {
   DATABASE_URL: 'postgresql://postgres:postgres@127.0.0.1:55322/postgres',
   SUPABASE_URL: 'http://127.0.0.1:55321',
   SUPABASE_SECRET_KEY: 'sb_secret_test',
+  WEB_URL: 'http://localhost:3000/',
 }
 
 describe('loadConfig', () => {
@@ -18,7 +19,22 @@ describe('loadConfig', () => {
       databaseUrl: required.DATABASE_URL,
       supabaseUrl: required.SUPABASE_URL,
       supabaseSecretKey: required.SUPABASE_SECRET_KEY,
+      webUrl: 'http://localhost:3000',
+      mail: { provider: 'none' },
     })
+  })
+
+  it('sends email through Resend when there is a key, otherwise through Mailpit', () => {
+    expect(
+      loadConfig({ ...required, RESEND_API_KEY: 're_test', MAILPIT_URL: 'http://m' }).mail,
+    ).toEqual({ provider: 'resend', apiKey: 're_test', from: 'MyCogniAI <onboarding@resend.dev>' })
+    expect(
+      loadConfig({
+        ...required,
+        MAILPIT_URL: 'http://127.0.0.1:55324/',
+        MAIL_FROM: 'Cogni <a@b.co>',
+      }).mail,
+    ).toEqual({ provider: 'mailpit', url: 'http://127.0.0.1:55324', from: 'Cogni <a@b.co>' })
   })
 
   it('parses the port and the comma separated list of origins', () => {

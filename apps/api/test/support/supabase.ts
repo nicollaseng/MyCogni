@@ -12,6 +12,8 @@ const sessionSchema = z.object({ access_token: z.string() })
 
 export const testSupabaseUrl = process.env.SUPABASE_URL ?? 'http://127.0.0.1:55321'
 
+export const testMailpitUrl = process.env.MAILPIT_URL ?? 'http://127.0.0.1:55324'
+
 function requiredEnv(name: string): string {
   const value = process.env[name]
   if (value === undefined || value === '') {

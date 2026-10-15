@@ -27,7 +27,7 @@ export function createCheckInService(repository: CheckInRepository): CheckInServ
       return toCheckIn(record)
     },
     async list(user, query) {
-      const records = await repository.list(user.id, {
+      const records = await repository.list(user.id, user.id, {
         since: optionalDate(query.since),
         before: optionalDate(query.before),
         limit: query.limit,

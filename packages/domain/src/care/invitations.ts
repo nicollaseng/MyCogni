@@ -22,6 +22,12 @@ export const invitationCodeLength = 8
 
 const codePattern = new RegExp(`^[${invitationCodeAlphabet}]{${String(invitationCodeLength)}}$`)
 
+export function generateInvitationCode(pickIndex: (size: number) => number): string {
+  return Array.from({ length: invitationCodeLength }, () =>
+    invitationCodeAlphabet.charAt(pickIndex(invitationCodeAlphabet.length)),
+  ).join('')
+}
+
 export function normalizeInvitationCode(value: string): string {
   return value.trim().toUpperCase()
 }

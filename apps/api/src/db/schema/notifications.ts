@@ -1,14 +1,10 @@
+import { notificationKinds } from '@mycogni/domain'
 import { sql } from 'drizzle-orm'
-import { index, pgEnum, pgPolicy, pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core'
+import { index, pgEnum, pgPolicy, pgTable, timestamp, uuid } from 'drizzle-orm/pg-core'
 import { authenticatedRole, authUid, authUsers } from 'drizzle-orm/supabase'
 import { invitations } from './invitations.ts'
 
-export const notificationKind = pgEnum('notification_kind', [
-  'invitation',
-  'professional',
-  'marketing',
-  'system',
-])
+export const notificationKind = pgEnum('notification_kind', notificationKinds)
 
 export const notifications = pgTable(
   'notifications',
@@ -18,9 +14,6 @@ export const notifications = pgTable(
       .notNull()
       .references(() => authUsers.id, { onDelete: 'cascade' }),
     kind: notificationKind('kind').notNull(),
-    title: text('title').notNull(),
-    body: text('body'),
-    href: text('href'),
     invitationId: uuid('invitation_id').references(() => invitations.id, { onDelete: 'cascade' }),
     createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
     readAt: timestamp('read_at', { withTimezone: true }),
