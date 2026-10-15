@@ -4,8 +4,9 @@ import { useId } from 'react'
 import { MoodMap } from '@/features/mood/components/mood-map'
 import { MoodSlider } from '@/features/mood/components/mood-slider'
 import { labelOf, moodColor, valenceOf, type MoodLevel } from '@/features/mood/mood-levels'
-import { Button } from '@/shared/ui/button'
+import { ActionError } from '@/shared/components/action-error'
 import { StepActions } from '@/shared/components/step-actions'
+import { Button } from '@/shared/ui/button'
 
 interface MoodStepProps {
   today: string
@@ -13,9 +14,19 @@ interface MoodStepProps {
   onChange: (level: MoodLevel) => void
   onContinue: () => void
   onFinish: () => void
+  pending: boolean
+  error: string | null
 }
 
-export function MoodStep({ today, level, onChange, onContinue, onFinish }: MoodStepProps) {
+export function MoodStep({
+  today,
+  level,
+  onChange,
+  onContinue,
+  onFinish,
+  pending,
+  error,
+}: MoodStepProps) {
   const questionId = useId()
   const valence = valenceOf(level)
 
@@ -39,11 +50,12 @@ export function MoodStep({ today, level, onChange, onContinue, onFinish }: MoodS
         <MoodSlider level={level} labelledBy={questionId} onChange={onChange} />
       </div>
       <StepActions>
-        <Button size="lg" shape="pill" onClick={onContinue}>
+        <ActionError error={error} />
+        <Button size="lg" shape="pill" onClick={onContinue} disabled={pending}>
           Continuar
         </Button>
-        <Button variant="ghost" size="sm" onClick={onFinish} className="mt-1">
-          Registrar só o humor
+        <Button variant="ghost" size="sm" onClick={onFinish} disabled={pending} className="mt-1">
+          {pending ? 'Registrando…' : 'Registrar só o humor'}
         </Button>
       </StepActions>
     </section>

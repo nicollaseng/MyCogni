@@ -6,8 +6,8 @@ import { useState } from 'react'
 import { cn } from '@/shared/lib/utils'
 import { Button } from '@/shared/ui/button'
 import type { OnboardingActions } from '../model'
-import { useSubmit } from '../use-submit'
-import { ActionError } from './action-error'
+import { useSubmit } from '@/shared/hooks/use-submit'
+import { ActionError } from '@/shared/components/action-error'
 
 const advanceDelay = 220
 

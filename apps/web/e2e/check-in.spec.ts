@@ -55,6 +55,27 @@ test('records only the mood in one tap', async ({ page }) => {
   await expect(page.getByText('muito mal', { exact: true })).toBeVisible()
 })
 
+test('keeps the record and shows it in Registros and on Hoje', async ({ page }) => {
+  const note = `Caminhei no fim da tarde ${String(Date.now())}`
+  await page.goto('/check-in')
+
+  await moodSlider(page).fill('5')
+  await page.getByRole('button', { name: 'Continuar' }).click()
+  await page.getByRole('button', { name: 'Pular' }).click()
+  await page.getByRole('textbox', { name: 'Nota sobre hoje' }).fill(note)
+  await page.getByRole('button', { name: 'Registrar', exact: true }).click()
+  await expect(page.getByRole('heading', { name: /^Registrado às \d{2}:\d{2}\.$/ })).toBeVisible()
+
+  await page.getByRole('link', { name: 'Ver registros' }).click()
+  await expect(page).toHaveURL('/entries')
+  const today = page.getByRole('region', { name: 'Hoje' })
+  await expect(today.getByText(note)).toBeVisible()
+  await expect(today.getByRole('listitem').filter({ hasText: note })).toContainText('Bem')
+
+  await page.goto('/today')
+  await expect(page.getByText(/de 14 dias com registro\./)).toBeVisible()
+})
+
 test.describe('on a small phone', () => {
   test.use({ viewport: { width: 375, height: 667 } })
 

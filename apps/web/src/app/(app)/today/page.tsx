@@ -1,20 +1,37 @@
+import { dailyMoods } from '@mycogni/domain'
 import type { Metadata } from 'next'
 import Link from 'next/link'
-import { connection } from 'next/server'
 import { MoodMap } from '@/features/mood/components/mood-map'
 import { MoodStrip } from '@/features/mood/components/mood-strip'
+import { isMoodLevel } from '@/features/mood/mood-levels'
 import { PageTitle } from '@/shared/components/page-title'
+import { fetchCheckIns } from '@/shared/lib/api/resources'
+import { requireOnboardedProfile } from '@/shared/lib/auth/session'
+import { formatLongDate } from '@/shared/lib/time'
 import { cn } from '@/shared/lib/utils'
-import { defaultTimeZone, formatLongDate } from '@/shared/lib/time'
 import { buttonVariants } from '@/shared/ui/button'
 
 export const metadata: Metadata = { title: 'Hoje' }
 
-const emptyFortnight = Array.from({ length: 14 }, () => null)
+const windowDays = 14
+const dayInMs = 24 * 60 * 60 * 1000
 
 export default async function TodayPage() {
-  await connection()
-  const today = formatLongDate(new Date(), defaultTimeZone)
+  const { timezone } = await requireOnboardedProfile()
+  const now = new Date()
+  const today = formatLongDate(now, timezone)
+  const checkIns = await fetchCheckIns({
+    since: new Date(now.getTime() - (windowDays + 1) * dayInMs),
+    limit: 200,
+  })
+  const days = dailyMoods(
+    checkIns.map((checkIn) => ({
+      moodLevel: checkIn.moodLevel,
+      recordedAt: new Date(checkIn.recordedAt),
+    })),
+    { timeZone: timezone, today: now, days: windowDays },
+  ).map((level) => (level !== null && isMoodLevel(level) ? level : null))
+  const recordedDays = days.filter((level) => level !== null).length
 
   return (
     <>
@@ -34,9 +51,18 @@ export default async function TodayPage() {
 
       <section className="space-y-4 border-t border-rule pt-8">
         <h2 className="text-xs tracking-[0.04em] text-muted-foreground">últimos 14 dias</h2>
-        <MoodStrip days={emptyFortnight} label="Nenhum dia registrado nos últimos 14 dias" />
+        <MoodStrip
+          days={days}
+          label={
+            recordedDays === 0
+              ? 'Nenhum dia registrado nos últimos 14 dias'
+              : `Humor de ${String(recordedDays)} dos últimos 14 dias`
+          }
+        />
         <p className="text-sm text-muted-foreground">
-          Seus dias aparecem aqui conforme você registra.
+          {recordedDays === 0
+            ? 'Seus dias aparecem aqui conforme você registra.'
+            : `${String(recordedDays)} de 14 dias com registro.`}
         </p>
       </section>
 

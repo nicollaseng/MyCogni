@@ -1,6 +1,7 @@
 import { jest } from '@jest/globals'
 import type { Assessment } from '@mycogni/contracts'
-import type { ActionResult, OnboardingActions } from '../model'
+import type { ActionResult } from '@/shared/lib/actions/result'
+import type { OnboardingActions } from '../model'
 
 export function assessmentOf(overrides: Partial<Assessment> = {}): Assessment {
   return {

@@ -1,20 +1,31 @@
 import {
   assessmentListSchema,
   assessmentSchema,
+  checkInListSchema,
+  checkInSchema,
   consentListSchema,
   profileSchema,
   type Assessment,
+  type CheckIn,
   type Consent,
+  type CreateCheckInInput,
   type GrantConsentsInput,
   type Profile,
   type SubmitAssessmentInput,
   type UpdateProfileInput,
 } from '@mycogni/contracts'
+import { cache } from 'react'
 import { apiRequest } from './client'
 
-export function fetchProfile(): Promise<Profile> {
-  return apiRequest({ path: '/v1/me', schema: profileSchema })
+export interface CheckInFilter {
+  since?: Date
+  before?: string
+  limit?: number
 }
+
+export const fetchProfile = cache((): Promise<Profile> =>
+  apiRequest({ path: '/v1/me', schema: profileSchema }),
+)
 
 export function updateProfile(body: UpdateProfileInput): Promise<Profile> {
   return apiRequest({ path: '/v1/me', schema: profileSchema, method: 'PATCH', body })
@@ -38,4 +49,22 @@ export function submitAssessment(body: SubmitAssessmentInput): Promise<Assessmen
 
 export function completeOnboarding(): Promise<Profile> {
   return apiRequest({ path: '/v1/onboarding/complete', schema: profileSchema, method: 'POST' })
+}
+
+export function createCheckIn(body: CreateCheckInInput): Promise<CheckIn> {
+  return apiRequest({ path: '/v1/check-ins', schema: checkInSchema, method: 'POST', body })
+}
+
+export function fetchCheckIns({ since, before, limit }: CheckInFilter): Promise<CheckIn[]> {
+  const query = new URLSearchParams()
+  if (since !== undefined) {
+    query.set('since', since.toISOString())
+  }
+  if (before !== undefined) {
+    query.set('before', before)
+  }
+  if (limit !== undefined) {
+    query.set('limit', String(limit))
+  }
+  return apiRequest({ path: `/v1/check-ins?${query.toString()}`, schema: checkInListSchema })
 }

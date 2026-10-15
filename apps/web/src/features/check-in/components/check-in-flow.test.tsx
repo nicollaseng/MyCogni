@@ -1,10 +1,28 @@
-import { describe, expect, it } from '@jest/globals'
+import { describe, expect, it, jest } from '@jest/globals'
+import type { CheckIn, CreateCheckInInput } from '@mycogni/contracts'
 import { fireEvent, render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import type { ActionResult } from '@/shared/lib/actions/result'
 import { CheckInFlow } from './check-in-flow'
 
-function renderFlow() {
-  render(<CheckInFlow today="Quarta-feira, 14 de outubro" />)
+type Save = (input: CreateCheckInInput) => Promise<ActionResult<CheckIn>>
+
+function savedAs(input: CreateCheckInInput): Promise<ActionResult<CheckIn>> {
+  return Promise.resolve({
+    ok: true,
+    value: {
+      ...input,
+      id: '0b7c6c8e-6a8f-4f53-9f4b-000000000001',
+      recordedAt: '2026-10-14T12:05:00Z',
+    },
+  })
+}
+
+function renderFlow(save = jest.fn<Save>(savedAs)) {
+  render(
+    <CheckInFlow today="Quarta-feira, 14 de outubro" timeZone="America/Sao_Paulo" save={save} />,
+  )
+  return save
 }
 
 function slider(): HTMLElement {
@@ -29,9 +47,7 @@ describe('CheckInFlow', () => {
     fireEvent.change(slider(), { target: { value: '0' } })
     await user.click(screen.getByRole('button', { name: 'Registrar só o humor' }))
 
-    expect(
-      screen.getByRole('heading', { name: /^Registrado às \d{2}:\d{2}\.$/ }),
-    ).toBeInTheDocument()
+    expect(await screen.findByRole('heading', { name: 'Registrado às 09:05.' })).toBeInTheDocument()
     expect(screen.getByText('muito mal')).toBeInTheDocument()
   })
 
@@ -47,9 +63,9 @@ describe('CheckInFlow', () => {
     expect(screen.queryByRole('button', { name: 'alegria' })).not.toBeInTheDocument()
   })
 
-  it('walks through emotions and context and sums everything up', async () => {
+  it('walks through emotions and context, saves them and sums everything up', async () => {
     const user = userEvent.setup()
-    renderFlow()
+    const save = renderFlow()
 
     fireEvent.change(slider(), { target: { value: '1' } })
     await user.click(screen.getByRole('button', { name: 'Continuar' }))
@@ -59,7 +75,13 @@ describe('CheckInFlow', () => {
     await user.type(screen.getByRole('textbox', { name: 'Nota sobre hoje' }), 'Prazo apertado')
     await user.click(screen.getByRole('button', { name: 'Registrar' }))
 
-    expect(screen.getByText('mal · ansiedade · trabalho')).toBeInTheDocument()
+    expect(await screen.findByText('mal · ansiedade · trabalho')).toBeInTheDocument()
+    expect(save).toHaveBeenCalledWith({
+      moodLevel: 1,
+      emotions: ['ansiedade'],
+      contexts: ['trabalho'],
+      note: 'Prazo apertado',
+    })
     expect(screen.getByRole('link', { name: 'Ver meus dias' })).toHaveAttribute('href', '/today')
   })
 
@@ -75,12 +97,15 @@ describe('CheckInFlow', () => {
     expect(screen.getByRole('button', { name: 'tédio' })).toHaveAttribute('aria-pressed', 'true')
   })
 
-  it('tells the person the record is not saved yet', async () => {
+  it('keeps the person on the step when saving fails', async () => {
     const user = userEvent.setup()
-    renderFlow()
+    renderFlow(
+      jest.fn<Save>().mockResolvedValue({ ok: false, error: 'Não conseguimos registrar agora.' }),
+    )
 
     await user.click(screen.getByRole('button', { name: 'Registrar só o humor' }))
 
-    expect(screen.getByText('Nesta versão, o registro ainda não fica salvo.')).toBeInTheDocument()
+    expect(await screen.findByRole('alert')).toHaveTextContent('Não conseguimos registrar agora.')
+    expect(slider()).toBeInTheDocument()
   })
 })

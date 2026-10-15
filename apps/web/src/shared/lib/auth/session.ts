@@ -38,13 +38,13 @@ export async function requireProfile(): Promise<Profile> {
   }
 }
 
-export async function requireOnboardedUser(): Promise<SessionUser> {
-  const user = await requireUser()
+export async function requireOnboardedProfile(): Promise<Profile> {
+  await requireUser()
   const profile = await requireProfile()
   if (profile.onboardingCompletedAt === null) {
     redirect('/onboarding')
   }
-  return user
+  return profile
 }
 
 export async function redirectSignedInUser(): Promise<void> {

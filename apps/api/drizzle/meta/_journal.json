@@ -29,6 +29,13 @@
       "when": 1792007146024,
       "tag": "0003_create_consents_and_assessments",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1792025455963,
+      "tag": "0004_create_check_ins",
+      "breakpoints": true
     }
   ]
 }

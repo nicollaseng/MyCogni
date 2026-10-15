@@ -1,3 +1,5 @@
+import { maxMoodLevel } from '@mycogni/domain'
+
 export const moodLabels = [
   'Muito mal',
   'Mal',
@@ -10,7 +12,7 @@ export const moodLabels = [
 
 export type MoodLevel = 0 | 1 | 2 | 3 | 4 | 5 | 6
 
-export const maxMoodLevel = 6
+export { maxMoodLevel }
 
 export const neutralMood: MoodLevel = 3
 

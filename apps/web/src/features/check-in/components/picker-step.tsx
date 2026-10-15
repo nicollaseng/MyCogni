@@ -2,10 +2,11 @@
 
 import type { ReactNode } from 'react'
 import { MoodMap } from '@/features/mood/components/mood-map'
+import { ActionError } from '@/shared/components/action-error'
+import { StepActions } from '@/shared/components/step-actions'
 import { Button } from '@/shared/ui/button'
 import type { ChoiceGroup } from '../catalog'
 import { ChoicePicker } from './choice-picker'
-import { StepActions } from '@/shared/components/step-actions'
 
 interface PickerStepProps {
   title: string
@@ -17,6 +18,8 @@ interface PickerStepProps {
   primaryLabel: string
   onPrimary: () => void
   onSkip?: () => void
+  pending?: boolean
+  error?: string | null
   children?: ReactNode
 }
 
@@ -30,6 +33,8 @@ export function PickerStep({
   primaryLabel,
   onPrimary,
   onSkip,
+  pending = false,
+  error = null,
   children,
 }: PickerStepProps) {
   return (
@@ -41,7 +46,8 @@ export function PickerStep({
       <ChoicePicker tabs={tabs} selected={selected} onToggle={onToggle} searchLabel={searchLabel} />
       {children}
       <StepActions>
-        <Button size="lg" shape="pill" onClick={onPrimary}>
+        <ActionError error={error} />
+        <Button size="lg" shape="pill" onClick={onPrimary} disabled={pending}>
           {primaryLabel}
         </Button>
         {onSkip !== undefined && (
