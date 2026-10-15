@@ -6,7 +6,6 @@ import Link from 'next/link'
 import { useTranslations } from 'next-intl'
 import { useState, type ReactNode } from 'react'
 import { ActionError } from '@/shared/components/action-error'
-import { Panel } from '@/shared/components/section'
 import { useSubmit } from '@/shared/hooks/use-submit'
 import type { ActionResult } from '@/shared/lib/actions/result'
 import { Button, buttonVariants } from '@/shared/ui/button'
@@ -33,7 +32,7 @@ export function AcceptanceForm({
 
   return (
     <>
-      <Panel className="flex items-center justify-between gap-5 py-4">
+      <div className="flex items-center justify-between gap-5">
         <div className="space-y-1">
           <p className="leading-snug">{t('history.label')}</p>
           <p className="text-sm text-pretty text-muted-foreground">
@@ -46,7 +45,7 @@ export function AcceptanceForm({
           disabled={busy}
           onChange={setSharesHistory}
         />
-      </Panel>
+      </div>
 
       {children}
 
@@ -54,7 +53,6 @@ export function AcceptanceForm({
         <ActionError error={accepting.error ?? declining.error} />
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
           <Button
-            shape="pill"
             disabled={busy}
             onClick={() => {
               accepting.submit({ sharesHistory, consentVersion: sharingConsentVersion })
@@ -64,7 +62,7 @@ export function AcceptanceForm({
           </Button>
           <Button
             variant="outline"
-            shape="pill"
+
             disabled={busy}
             onClick={() => {
               declining.submit()
@@ -72,7 +70,7 @@ export function AcceptanceForm({
           >
             {declining.pending ? t('declining') : t('decline')}
           </Button>
-          <Link href="/invites" className={buttonVariants({ variant: 'ghost', shape: 'pill' })}>
+          <Link href="/invites" className={buttonVariants({ variant: 'ghost' })}>
             {t('later')}
           </Link>
         </div>

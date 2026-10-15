@@ -55,7 +55,7 @@ export function DeleteAccount({ remove }: DeleteAccountProps) {
         <Button
           type="submit"
           size="sm"
-          shape="pill"
+
           disabled={!confirmed || pending}
           className="bg-danger text-background hover:bg-danger/90"
         >
@@ -64,7 +64,7 @@ export function DeleteAccount({ remove }: DeleteAccountProps) {
         <Button
           type="button"
           size="sm"
-          shape="pill"
+
           variant="ghost"
           onClick={() => {
             setOpen(false)

@@ -57,7 +57,7 @@ export function RetakeFlow({ previous: initial, timeZone, send }: RetakeFlowProp
               <StepActions>
                 <Button
                   size="lg"
-                  shape="pill"
+
                   onClick={() => {
                     setStep('phq9')
                   }}
@@ -108,10 +108,7 @@ export function RetakeFlow({ previous: initial, timeZone, send }: RetakeFlowProp
                 <p className="mb-3 text-center text-sm text-balance text-muted-foreground">
                   {t('retake.disclaimer')}
                 </p>
-                <Link
-                  href="/me"
-                  className={cn(buttonVariants({ size: 'lg', shape: 'pill' }), 'w-full')}
-                >
+                <Link href="/me" className={cn(buttonVariants({ size: 'lg' }), 'w-full')}>
                   {t('retake.back')}
                 </Link>
               </StepActions>

@@ -3,7 +3,6 @@
 import type { Notification } from '@mycogni/contracts'
 import { useTranslations } from 'next-intl'
 import { useEffect, useRef, useState } from 'react'
-import { Panel } from '@/shared/components/section'
 import type { ActionResult } from '@/shared/lib/actions/result'
 import { NotificationItem } from './notification-item'
 
@@ -29,25 +28,19 @@ export function NotificationFeed({ notifications, timeZone, markRead }: Notifica
   }, [fresh, markRead])
 
   if (notifications.length === 0) {
-    return (
-      <Panel>
-        <p className="py-3.5 text-muted-foreground">{t('empty')}</p>
-      </Panel>
-    )
+    return <p className="text-muted-foreground">{t('empty')}</p>
   }
 
   return (
-    <Panel>
-      <ul>
-        {notifications.map((notification) => (
-          <NotificationItem
-            key={notification.id}
-            notification={notification}
-            fresh={fresh.includes(notification.id)}
-            timeZone={timeZone}
-          />
-        ))}
-      </ul>
-    </Panel>
+    <ul className="space-y-7">
+      {notifications.map((notification) => (
+        <NotificationItem
+          key={notification.id}
+          notification={notification}
+          fresh={fresh.includes(notification.id)}
+          timeZone={timeZone}
+        />
+      ))}
+    </ul>
   )
 }

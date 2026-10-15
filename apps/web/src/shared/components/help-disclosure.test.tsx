@@ -6,18 +6,25 @@ import { HelpDisclosure } from './help-disclosure'
 
 describe('HelpDisclosure', () => {
   it('stays discreet until the person asks for help', () => {
-    const { container } = renderWithIntl(<HelpDisclosure />)
+    renderWithIntl(<HelpDisclosure />)
 
-    expect(container.querySelector('details')).not.toHaveAttribute('open')
+    expect(screen.getByRole('button', { name: 'Precisa de ajuda agora?' })).toHaveAttribute(
+      'aria-expanded',
+      'false',
+    )
+    expect(screen.queryByRole('link', { name: '188' })).not.toBeInTheDocument()
   })
 
   it('opens with the numbers to call', async () => {
     const user = userEvent.setup()
-    const { container } = renderWithIntl(<HelpDisclosure />)
+    renderWithIntl(<HelpDisclosure />)
 
-    await user.click(screen.getByText('Precisa de ajuda agora?'))
+    await user.click(screen.getByRole('button', { name: 'Precisa de ajuda agora?' }))
 
-    expect(container.querySelector('details')).toHaveAttribute('open')
+    expect(screen.getByRole('button', { name: 'Precisa de ajuda agora?' })).toHaveAttribute(
+      'aria-expanded',
+      'true',
+    )
     expect(screen.getByRole('link', { name: '188' })).toHaveAttribute('href', 'tel:188')
     expect(screen.getByRole('link', { name: '192' })).toHaveAttribute('href', 'tel:192')
     expect(screen.getByText('O MyCogniAI não substitui acompanhamento profissional.')).toBeVisible()

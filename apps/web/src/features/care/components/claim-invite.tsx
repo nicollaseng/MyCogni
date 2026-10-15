@@ -15,7 +15,7 @@ export function ClaimInvite({ claim }: { claim: () => Promise<ActionResult<null>
       <ActionError error={error} />
       <Button
         size="lg"
-        shape="pill"
+
         className="w-full"
         disabled={pending}
         onClick={() => {

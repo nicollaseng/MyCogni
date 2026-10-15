@@ -33,7 +33,7 @@ export function ResultsStep({ depression, anxiety, finish }: ResultsStepProps) {
         <ActionError error={error} />
         <Button
           size="lg"
-          shape="pill"
+
           disabled={pending}
           onClick={() => {
             submit()

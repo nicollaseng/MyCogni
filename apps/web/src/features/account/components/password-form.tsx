@@ -54,7 +54,7 @@ export function PasswordForm({ changePassword }: PasswordFormProps) {
       <Button
         type="submit"
         size="sm"
-        shape="pill"
+
         disabled={pending || current === '' || next === ''}
       >
         {pending ? t('saving') : t('save')}

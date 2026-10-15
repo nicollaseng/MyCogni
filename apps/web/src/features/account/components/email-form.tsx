@@ -36,7 +36,7 @@ export function EmailForm({ changeEmail }: EmailFormProps) {
         }}
       />
       <FormMessage error={error} notice={notice} />
-      <Button type="submit" size="sm" shape="pill" disabled={pending || email.trim() === ''}>
+      <Button type="submit" size="sm" disabled={pending || email.trim() === ''}>
         {pending ? t('sending') : t('send')}
       </Button>
     </form>

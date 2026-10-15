@@ -32,14 +32,11 @@ export function SupportStep({ onContinue }: { onContinue: () => void }) {
       <p className="mt-5 text-[15px] leading-relaxed text-muted-foreground">{t('danger')}</p>
       <StepActions className="gap-3">
         {first !== undefined && (
-          <a
-            href={`tel:${first.phone}`}
-            className={cn(buttonVariants({ size: 'lg', shape: 'pill' }), 'w-full')}
-          >
+          <a href={`tel:${first.phone}`} className={cn(buttonVariants({ size: 'lg' }), 'w-full')}>
             {t('call')}
           </a>
         )}
-        <Button size="lg" shape="pill" variant="outline" onClick={onContinue}>
+        <Button size="lg" variant="outline" onClick={onContinue}>
           {t('continue')}
         </Button>
       </StepActions>

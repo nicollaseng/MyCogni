@@ -1,7 +1,9 @@
 import {
+  checkInCountSchema,
+  checkInFilterSchema,
   checkInListSchema,
-  checkInQuerySchema,
   checkInSchema,
+  checkInSearchSchema,
   createCheckInSchema,
 } from '@mycogni/contracts'
 import type { FastifyPluginCallbackZod } from 'fastify-type-provider-zod'
@@ -12,8 +14,13 @@ export function checkInRoutes(service: CheckInService): FastifyPluginCallbackZod
   return (app, _options, done) => {
     app.get(
       '/check-ins',
-      { schema: { querystring: checkInQuerySchema, response: { 200: checkInListSchema } } },
+      { schema: { querystring: checkInSearchSchema, response: { 200: checkInListSchema } } },
       (request) => service.list(currentUser(request), request.query),
+    )
+    app.get(
+      '/check-ins/count',
+      { schema: { querystring: checkInFilterSchema, response: { 200: checkInCountSchema } } },
+      (request) => service.count(currentUser(request), request.query),
     )
     app.post(
       '/check-ins',

@@ -1,9 +1,13 @@
 import { useTranslations } from 'next-intl'
-import { Panel, Section } from '@/shared/components/section'
+import { Section } from '@/shared/components/section'
 
 const sharedItems = ['checkIns', 'screenings'] as const
 
 const privateItems = ['account', 'others'] as const
+
+const itemStyle = 'flex gap-3'
+
+const dotStyle = 'mt-[0.55em] size-1.5 shrink-0 rounded-full bg-foreground/40'
 
 export function SharingSummary({ name }: { name: string }) {
   const t = useTranslations('care.sharing')
@@ -11,22 +15,24 @@ export function SharingSummary({ name }: { name: string }) {
   return (
     <div className="space-y-8">
       <Section title={t('sharedTitle', { name })}>
-        <Panel className="py-3">
-          <ul className="space-y-2.5 py-1 leading-snug">
-            {sharedItems.map((item) => (
-              <li key={item}>{t(`shared.${item}`)}</li>
-            ))}
-          </ul>
-        </Panel>
+        <ul className="space-y-2 leading-snug">
+          {sharedItems.map((item) => (
+            <li key={item} className={itemStyle}>
+              <span aria-hidden className={dotStyle} />
+              {t(`shared.${item}`)}
+            </li>
+          ))}
+        </ul>
       </Section>
       <Section title={t('privateTitle')}>
-        <Panel className="py-3">
-          <ul className="space-y-2.5 py-1 leading-snug">
-            {privateItems.map((item) => (
-              <li key={item}>{t(`private.${item}`)}</li>
-            ))}
-          </ul>
-        </Panel>
+        <ul className="space-y-2 leading-snug">
+          {privateItems.map((item) => (
+            <li key={item} className={itemStyle}>
+              <span aria-hidden className={dotStyle} />
+              {t(`private.${item}`)}
+            </li>
+          ))}
+        </ul>
       </Section>
     </div>
   )

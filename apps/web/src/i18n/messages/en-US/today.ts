@@ -9,11 +9,23 @@ export const today: TodayMessages = {
   checkIn: 'Log how I feel',
   recent: {
     title: 'Last {days} days',
-    emptyLabel: 'No days logged in the last {days} days',
-    label: 'Mood on {count} of the last {days} days',
-    emptyHint: 'Your days show up here as you log them.',
-    summary: '{count} of {days} days logged.',
+    average: 'Over the last 7 days, your average mood was {average} out of 6 ({mood}).',
+    change: {
+      higher: 'Higher than the week before ({previous}).',
+      slightlyHigher: 'A little higher than the week before ({previous}).',
+      similar: 'About the same as the week before ({previous}).',
+      slightlyLower: 'A little lower than the week before ({previous}).',
+      lower: 'Lower than the week before ({previous}).',
+    },
+    noRecentWeek: 'No check-ins in the last 7 days.',
+    empty: 'Your days show up here as you log them.',
+    recorded: '{count} of {days} days logged.',
+    chartLabel: 'Average mood of each of the last {days} days',
   },
-  screeningDue:
-    'It has been {count, plural, one {# day} other {# days}}. Retake the questionnaires',
+  chart: {
+    day: 'Day',
+    mood: 'Average mood',
+    noRecord: 'No check-in',
+    records: '{count, plural, one {# check-in} other {# check-ins}}',
+  },
 }

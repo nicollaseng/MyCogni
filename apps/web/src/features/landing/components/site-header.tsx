@@ -34,7 +34,7 @@ export function SiteHeader({ chooseLocale }: { chooseLocale: (locale: Locale) =>
         </Link>
         <Link
           href="/sign-up"
-          className={cn(buttonVariants({ size: 'sm', shape: 'pill' }), 'hidden sm:inline-flex')}
+          className={cn(buttonVariants({ size: 'sm' }), 'hidden sm:inline-flex')}
         >
           {t('cta.signUp')}
         </Link>

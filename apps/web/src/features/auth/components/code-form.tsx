@@ -43,7 +43,7 @@ export function CodeForm({ action, withNewPassword = false, submitLabel }: CodeF
         />
       )}
       <FormFeedback state={state} />
-      <Button type="submit" size="lg" shape="pill" disabled={pending} className="w-full">
+      <Button type="submit" size="lg" disabled={pending} className="w-full">
         {pending ? t('confirming') : submitLabel}
       </Button>
     </form>
