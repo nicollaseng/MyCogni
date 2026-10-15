@@ -18,8 +18,8 @@ describe('ScreeningHistory', () => {
 
     expect(screen.getByRole('heading', { name: 'Histórico' })).toBeInTheDocument()
     const rows = screen.getAllByRole('listitem')
-    expect(rows[0]).toHaveTextContent('Quinta-feira, 15 de outubroPHQ-9 12 · GAD-7 9')
-    expect(rows[1]).toHaveTextContent('Quinta-feira, 1 de outubroPHQ-9 17')
+    expect(rows[0]).toHaveTextContent('15 de outubroPHQ-9 12 · GAD-7 9')
+    expect(rows[1]).toHaveTextContent('1 de outubroPHQ-9 17')
   })
 
   it('writes the days in the language of the person', () => {
@@ -28,9 +28,7 @@ describe('ScreeningHistory', () => {
     })
 
     expect(screen.getByRole('heading', { name: 'History' })).toBeInTheDocument()
-    expect(screen.getAllByRole('listitem')[0]).toHaveTextContent(
-      'Thursday 15 OctoberPHQ-9 12 · GAD-7 9',
-    )
+    expect(screen.getAllByRole('listitem')[0]).toHaveTextContent('15 OctoberPHQ-9 12 · GAD-7 9')
   })
 
   it('stays hidden until there is something to compare', () => {

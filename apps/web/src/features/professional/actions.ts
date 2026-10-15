@@ -2,6 +2,7 @@
 
 import {
   createInvitationSchema,
+  updateProfessionalSchema,
   type CreatedInvitation,
   type RegisterProfessionalInput,
 } from '@mycogni/contracts'
@@ -16,6 +17,7 @@ import {
   createInvitation,
   registerProfessional,
   resendInvitation,
+  updateProfessional,
 } from '@/shared/lib/api/care'
 import { grantConsents } from '@/shared/lib/api/resources'
 import { forgetContinuePath } from '@/shared/lib/auth/continue-path'
@@ -60,6 +62,7 @@ export async function invite(input: InviteInput): Promise<ActionResult<CreatedIn
   return attempt(async () => {
     const created = await createInvitation(parsed.data)
     revalidatePath('/pro/invites')
+    revalidatePath('/pro')
     return created
   }, t('error'))
 }
@@ -72,6 +75,7 @@ export async function resendInvite(id: string): Promise<ActionResult<CreatedInvi
   return attempt(async () => {
     const created = await resendInvitation(id, locale)
     revalidatePath('/pro/invites')
+    revalidatePath('/pro')
     return created
   }, t('error'))
 }
@@ -84,6 +88,20 @@ export async function cancelInvite(id: string): Promise<ActionResult<null>> {
   return attempt(async () => {
     await cancelInvitation(id)
     revalidatePath('/pro/invites')
+    revalidatePath('/pro')
     return null
+  }, t('error'))
+}
+
+export async function renameProfessional(fullName: string): Promise<ActionResult<string>> {
+  const t = await getTranslations('professional.settings.profile')
+  const parsed = updateProfessionalSchema.safeParse({ fullName })
+  if (!parsed.success) {
+    return failure(t('invalidName'))
+  }
+  return attempt(async () => {
+    const updated = await updateProfessional(parsed.data)
+    revalidatePath('/pro', 'layout')
+    return updated.fullName
   }, t('error'))
 }

@@ -19,3 +19,15 @@ export function formatTime(date: Date, timeZone: string, locale: Locale): string
     date,
   )
 }
+
+export function formatDayMonth(date: Date, timeZone: string, locale: Locale): string {
+  return new Intl.DateTimeFormat(locale, { day: 'numeric', month: 'long', timeZone }).format(date)
+}
+
+export function formatShortDate(date: Date, timeZone: string, locale: Locale): string {
+  return new Intl.DateTimeFormat(locale, { day: 'numeric', month: 'short', timeZone }).format(date)
+}
+
+export function dateOfDay(day: string): Date {
+  return new Date(`${day}T12:00:00Z`)
+}

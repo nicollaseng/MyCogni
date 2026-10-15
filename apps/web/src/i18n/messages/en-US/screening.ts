@@ -61,7 +61,8 @@ export const screening: ScreeningMessages = {
     empty: 'You haven’t answered the PHQ-9 and GAD-7 yet.',
     answeredOn: 'Answered on {date}. This is a screening, not a diagnosis.',
     retake: 'Retake the questionnaires',
-    cadence: 'We suggest every {days} days, to see how you change.',
+    next: 'We suggest answering again from {date}, to see how you change.',
+    due: 'It has been {count, plural, one {# day} other {# days}} since your last answers. You can answer again now.',
   },
   history: {
     title: 'History',

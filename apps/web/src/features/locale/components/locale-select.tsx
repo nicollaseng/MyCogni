@@ -33,7 +33,7 @@ export function LocaleSelect({ choose, showLabel = false, className }: LocaleSel
             startTransition(() => choose(next))
           }
         }}
-        className="min-h-11 cursor-pointer rounded-full border border-rule bg-transparent px-4 text-[15px] disabled:opacity-60"
+        className="min-h-11 cursor-pointer rounded-md border border-rule bg-transparent px-4 text-[15px] disabled:opacity-60"
       >
         {locales.map((locale) => (
           <option key={locale} value={locale}>

@@ -48,7 +48,7 @@ export function CareLinks({ links, timeZone, end, isProfessional }: CareLinksPro
             </ul>
           )}
         </Panel>
-        <p className="flex flex-wrap gap-x-6 gap-y-2 px-1">
+        <p className="flex flex-wrap gap-x-6 gap-y-2">
           <Link href="/invites" className={footLink}>
             {t('invites')}
           </Link>

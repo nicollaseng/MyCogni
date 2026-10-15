@@ -10,7 +10,7 @@ export function BellLink({ unread }: { unread: number }) {
     <Link
       href="/notifications"
       aria-label={t('label', { count: unread })}
-      className="relative -my-2 grid size-10 shrink-0 place-items-center rounded-full text-muted-foreground transition-colors hover:text-foreground"
+      className="-my-2 inline-flex h-10 min-w-10 shrink-0 items-center justify-center gap-1 text-muted-foreground transition-colors hover:text-foreground"
     >
       <svg
         aria-hidden
@@ -28,8 +28,9 @@ export function BellLink({ unread }: { unread: number }) {
       {unread > 0 && (
         <span
           aria-hidden
-          className="absolute top-0.5 right-0 grid h-[18px] min-w-[18px] place-items-center rounded-full bg-primary px-1 text-[11px] leading-none font-medium text-primary-foreground"
+          className="flex items-center gap-1 text-xs font-medium text-foreground tabular-nums"
         >
+          <span className="size-1.5 rounded-full bg-emphasis" />
           {unread > badgeLimit ? `${String(badgeLimit)}+` : unread}
         </span>
       )}

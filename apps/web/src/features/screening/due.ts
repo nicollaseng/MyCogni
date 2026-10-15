@@ -9,3 +9,7 @@ export function daysSince(iso: string, now: Date): number {
 export function isScreeningDue(latestIso: string | undefined, now: Date): boolean {
   return latestIso === undefined || daysSince(latestIso, now) >= screeningIntervalDays
 }
+
+export function nextScreeningDate(latestIso: string): Date {
+  return new Date(new Date(latestIso).getTime() + screeningIntervalDays * dayInMs)
+}

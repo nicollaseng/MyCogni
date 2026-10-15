@@ -1,7 +1,6 @@
 export const admin = {
   shell: {
     team: 'Equipe MyCogniAI',
-    diary: 'Meu diário',
   },
   professionals: {
     title: 'Profissionais',
@@ -12,6 +11,14 @@ export const admin = {
       pending: 'Aguardando',
       verified: 'Verificados',
       rejected: 'Recusados',
+    },
+    columns: {
+      name: 'Nome',
+      kind: 'Profissão',
+      registration: 'Registro',
+      email: 'Email',
+      createdAt: 'Cadastro',
+      actions: 'Ações',
     },
     empty: {
       pending: 'Nenhum cadastro aguardando verificação.',

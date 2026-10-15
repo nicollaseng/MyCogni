@@ -1,4 +1,5 @@
 import { useTranslations } from 'next-intl'
+import { Disclosure } from '@/shared/components/disclosure'
 import { questions, sections } from '../content'
 import { SectionHeading } from './section-heading'
 
@@ -16,20 +17,18 @@ export function Faq() {
         <SectionHeading id={titleId} kicker={t('sections.faq')} title={t('faq.title')} />
         <div className="divide-y divide-rule border-y border-rule">
           {questions.map((key) => (
-            <details key={key} className="group py-5">
-              <summary className="flex cursor-pointer list-none items-start justify-between gap-6 text-[17px] font-medium [&::-webkit-details-marker]:hidden">
-                {t(`faq.questions.${key}.question`)}
-                <span
-                  aria-hidden
-                  className="mt-0.5 text-xl leading-none font-normal text-muted-foreground transition-transform duration-200 group-open:rotate-45 motion-reduce:transition-none"
-                >
-                  +
-                </span>
-              </summary>
-              <p className="mt-3 max-w-xl leading-relaxed text-muted-foreground">
+            <Disclosure
+              key={key}
+              className="py-5"
+              buttonClassName="w-full justify-between gap-6 text-[17px] font-medium"
+              panelClassName="pt-3"
+              keepMounted
+              summary={t(`faq.questions.${key}.question`)}
+            >
+              <p className="max-w-xl leading-relaxed text-muted-foreground">
                 {t(`faq.questions.${key}.answer`)}
               </p>
-            </details>
+            </Disclosure>
           ))}
         </div>
       </div>

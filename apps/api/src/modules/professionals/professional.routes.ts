@@ -1,4 +1,8 @@
-import { professionalProfileSchema, registerProfessionalSchema } from '@mycogni/contracts'
+import {
+  professionalProfileSchema,
+  registerProfessionalSchema,
+  updateProfessionalSchema,
+} from '@mycogni/contracts'
 import type { FastifyPluginCallbackZod } from 'fastify-type-provider-zod'
 import { currentUser } from '../../plugins/authentication.ts'
 import type { ProfessionalService } from './professional.service.ts'
@@ -17,6 +21,11 @@ export function professionalRoutes(service: ProfessionalService): FastifyPluginC
       },
       async (request, reply) =>
         reply.status(201).send(await service.register(currentUser(request), request.body)),
+    )
+    app.patch(
+      '/professional',
+      { schema: { body: updateProfessionalSchema, response: { 200: professionalProfileSchema } } },
+      (request) => service.rename(currentUser(request), request.body),
     )
     done()
   }

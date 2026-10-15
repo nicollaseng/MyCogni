@@ -58,7 +58,8 @@ export const screening = {
     empty: 'Você ainda não respondeu o PHQ-9 e o GAD-7.',
     answeredOn: 'Respondidos em {date}. É uma triagem, não um diagnóstico.',
     retake: 'Refazer os questionários',
-    cadence: 'Sugerimos a cada {days} dias, para ver como você muda.',
+    next: 'Sugerimos responder de novo a partir de {date}, para ver como você muda.',
+    due: '{count, plural, one {Já se passou # dia} other {Já se passaram # dias}} desde as últimas respostas. Você já pode responder de novo.',
   },
   history: {
     title: 'Histórico',

@@ -54,7 +54,7 @@ export function MoodStep({
       </div>
       <StepActions>
         <ActionError error={error} />
-        <Button size="lg" shape="pill" onClick={onContinue} disabled={pending}>
+        <Button size="lg" onClick={onContinue} disabled={pending}>
           {t('flow.continue')}
         </Button>
         <Button variant="ghost" size="sm" onClick={onFinish} disabled={pending} className="mt-1">

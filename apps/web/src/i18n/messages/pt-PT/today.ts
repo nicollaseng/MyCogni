@@ -9,11 +9,23 @@ export const today: TodayMessages = {
   checkIn: 'Registar como estou',
   recent: {
     title: 'Últimos {days} dias',
-    emptyLabel: 'Nenhum dia registado nos últimos {days} dias',
-    label: 'Humor de {count} dos últimos {days} dias',
-    emptyHint: 'Os seus dias aparecem aqui à medida que os regista.',
-    summary: '{count} de {days} dias com registo.',
+    average: 'Nos últimos 7 dias, o seu humor médio foi {average} em 6 ({mood}).',
+    change: {
+      higher: 'Acima da semana anterior ({previous}).',
+      slightlyHigher: 'Ligeiramente acima da semana anterior ({previous}).',
+      similar: 'Semelhante à semana anterior ({previous}).',
+      slightlyLower: 'Ligeiramente abaixo da semana anterior ({previous}).',
+      lower: 'Abaixo da semana anterior ({previous}).',
+    },
+    noRecentWeek: 'Nenhum registo nos últimos 7 dias.',
+    empty: 'Os seus dias aparecem aqui à medida que os regista.',
+    recorded: '{count} de {days} dias com registo.',
+    chartLabel: 'Humor médio de cada dia nos últimos {days} dias',
   },
-  screeningDue:
-    '{count, plural, one {Já passou # dia} other {Já passaram # dias}}. Refazer os questionários',
+  chart: {
+    day: 'Dia',
+    mood: 'Humor médio',
+    noRecord: 'Sem registo',
+    records: '{count, plural, one {# registo} other {# registos}}',
+  },
 }

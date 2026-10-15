@@ -20,7 +20,7 @@ for (const path of ['/sign-in', '/sign-up']) {
 
     await expect.poll(() => google?.origin).toBe('https://accounts.google.com')
     expect(authorize?.searchParams.get('provider')).toBe('google')
-    expect(authorize?.searchParams.get('redirect_to')).toBe(`${baseURL ?? ''}/auth/callback`)
+    expect(authorize?.searchParams.get('redirect_to')).toBe(`${String(baseURL)}/auth/callback`)
     expect(google?.pathname).toBe('/o/oauth2/v2/auth')
     expect(google?.searchParams.get('redirect_uri')).toBe(`${supabaseUrl}/auth/v1/callback`)
     expect(google?.searchParams.get('prompt')).toBe('select_account')

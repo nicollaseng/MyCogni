@@ -3,7 +3,6 @@ import type { AdminMessages } from '../pt-BR/admin'
 export const admin: AdminMessages = {
   shell: {
     team: 'MyCogniAI team',
-    diary: 'My journal',
   },
   professionals: {
     title: 'Professionals',
@@ -14,6 +13,14 @@ export const admin: AdminMessages = {
       pending: 'Waiting',
       verified: 'Verified',
       rejected: 'Rejected',
+    },
+    columns: {
+      name: 'Name',
+      kind: 'Profession',
+      registration: 'License',
+      email: 'Email',
+      createdAt: 'Signed up',
+      actions: 'Actions',
     },
     empty: {
       pending: 'No sign-ups waiting for verification.',

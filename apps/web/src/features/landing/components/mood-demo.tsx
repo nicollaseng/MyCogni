@@ -53,10 +53,7 @@ export function MoodDemo() {
           <MoodSlider level={level} labelledBy={questionId} onChange={setLevel} />
         </div>
 
-        <Link
-          href="/sign-up"
-          className={cn(buttonVariants({ size: 'lg', shape: 'pill' }), 'mt-9 px-9')}
-        >
+        <Link href="/sign-up" className={cn(buttonVariants({ size: 'lg' }), 'mt-9 px-9')}>
           {t('cta.start')}
         </Link>
       </div>

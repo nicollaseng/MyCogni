@@ -18,10 +18,7 @@ export function ClosingCta() {
         {t('closing.title')}
       </h2>
       <p className="mt-4 text-lg text-muted-foreground">{t('closing.lead')}</p>
-      <Link
-        href="/sign-up"
-        className={cn(buttonVariants({ size: 'lg', shape: 'pill' }), 'mt-9 px-9')}
-      >
+      <Link href="/sign-up" className={cn(buttonVariants({ size: 'lg' }), 'mt-9 px-9')}>
         {t('cta.start')}
       </Link>
     </section>

@@ -43,3 +43,7 @@ export function moodColor(valence: number): string {
   const high = Math.round(((value - 0.5) / 0.5) * 100)
   return `color-mix(in oklab, var(--mood-high) ${String(high)}%, var(--mood-mid))`
 }
+
+export function nearestMoodKey(average: number): MoodKey {
+  return moodKeys[Math.min(maxMoodLevel, Math.max(0, Math.round(average)))] ?? 'neutral'
+}

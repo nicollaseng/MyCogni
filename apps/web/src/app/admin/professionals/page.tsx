@@ -5,7 +5,7 @@ import { reviewAs } from '@/features/admin/actions'
 import { ProfessionalReviewList } from '@/features/admin/components/professional-review-list'
 import { ReviewTabs } from '@/features/admin/components/review-tabs'
 import { statusOf } from '@/features/admin/review'
-import { PageTitle } from '@/shared/components/page-title'
+import { WorkspaceHeader } from '@/features/professional/components/workspace'
 import { fetchProfessionalsForReview } from '@/shared/lib/api/care'
 import { requireProfile } from '@/shared/lib/auth/session'
 
@@ -29,7 +29,7 @@ export default async function AdminProfessionalsPage({
 
   return (
     <>
-      <PageTitle title={t('title')} description={t('description')} />
+      <WorkspaceHeader title={t('title')} description={t('description')} />
       <ReviewTabs current={status} />
       <ProfessionalReviewList
         key={status}

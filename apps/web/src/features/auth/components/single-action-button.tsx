@@ -26,7 +26,7 @@ export function SingleActionButton({
         type="submit"
         variant={variant}
         size="lg"
-        shape="pill"
+
         disabled={pending}
         className="w-full"
       >

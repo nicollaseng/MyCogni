@@ -49,6 +49,24 @@ export async function finishOnboarding(email: string, password: string): Promise
   await post('/v1/onboarding/complete')
 }
 
+export interface CheckInSeed {
+  moodLevel: number
+  emotions: string[]
+  contexts: string[]
+  note: string | null
+}
+
+export async function recordCheckIns(
+  email: string,
+  password: string,
+  checkIns: readonly CheckInSeed[],
+): Promise<void> {
+  const post = await poster(email, password)
+  for (const checkIn of checkIns) {
+    await post('/v1/check-ins', checkIn)
+  }
+}
+
 export async function verifiedProfessional(
   email: string,
   password: string,

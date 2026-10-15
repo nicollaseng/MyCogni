@@ -37,7 +37,7 @@ export function NameForm({ initialName, rename }: NameFormProps) {
         }}
       />
       <FormMessage error={error} notice={null} />
-      <Button type="submit" size="sm" shape="pill" disabled={pending || name.trim() === ''}>
+      <Button type="submit" size="sm" disabled={pending || name.trim() === ''}>
         {pending ? t('saving') : t('save')}
       </Button>
     </form>

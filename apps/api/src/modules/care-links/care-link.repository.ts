@@ -1,14 +1,7 @@
-import type { InstrumentId, Severity } from '@mycogni/domain'
-import { and, count, desc, eq, gte, inArray, isNull } from 'drizzle-orm'
+import { and, desc, eq, isNull } from 'drizzle-orm'
 import type { Database } from '../../db/client.ts'
 import { withUser } from '../../db/rls.ts'
-import {
-  assessments,
-  careLinks,
-  checkIns,
-  professionalProfiles,
-  profiles,
-} from '../../db/schema/index.ts'
+import { careLinks, professionalProfiles, profiles } from '../../db/schema/index.ts'
 import type { ProfessionalSummaryRecord } from '../invitations/invitation.repository.ts'
 
 export interface CareLinkRecord {
@@ -26,33 +19,11 @@ export interface PatientLinkRecord {
   startedAt: Date
 }
 
-export interface LastCheckInRecord {
-  patientId: string
-  moodLevel: number
-  recordedAt: Date
-}
-
-export interface ScreeningRecord {
-  patientId: string
-  instrument: InstrumentId
-  totalScore: number
-  severity: Severity
-  hasRiskFlag: boolean
-  completedAt: Date
-}
-
 export interface CareLinkRepository {
   listForPatient(patientId: string): Promise<CareLinkRecord[]>
   findForPatient(patientId: string, linkId: string): Promise<CareLinkRecord | undefined>
   end(userId: string, linkId: string): Promise<boolean>
   listPatients(professionalId: string): Promise<PatientLinkRecord[]>
-  lastCheckIns(professionalId: string, patientIds: string[]): Promise<LastCheckInRecord[]>
-  checkInCounts(
-    professionalId: string,
-    patientIds: string[],
-    since: Date,
-  ): Promise<Map<string, number>>
-  latestScreenings(professionalId: string, patientIds: string[]): Promise<ScreeningRecord[]>
 }
 
 const linkColumns = {
@@ -126,54 +97,6 @@ export function createCareLinkRepository(db: Database): CareLinkRepository {
           .innerJoin(profiles, eq(profiles.id, careLinks.patientId))
           .where(and(eq(careLinks.professionalId, professionalId), isNull(careLinks.endedAt)))
           .orderBy(profiles.displayName),
-      )
-    },
-    lastCheckIns(professionalId, patientIds) {
-      if (patientIds.length === 0) {
-        return Promise.resolve([])
-      }
-      return withUser(db, professionalId, (tx) =>
-        tx
-          .selectDistinctOn([checkIns.userId], {
-            patientId: checkIns.userId,
-            moodLevel: checkIns.moodLevel,
-            recordedAt: checkIns.recordedAt,
-          })
-          .from(checkIns)
-          .where(inArray(checkIns.userId, patientIds))
-          .orderBy(checkIns.userId, desc(checkIns.recordedAt)),
-      )
-    },
-    async checkInCounts(professionalId, patientIds, since) {
-      if (patientIds.length === 0) {
-        return new Map()
-      }
-      const rows = await withUser(db, professionalId, (tx) =>
-        tx
-          .select({ patientId: checkIns.userId, total: count() })
-          .from(checkIns)
-          .where(and(inArray(checkIns.userId, patientIds), gte(checkIns.recordedAt, since)))
-          .groupBy(checkIns.userId),
-      )
-      return new Map(rows.map((row) => [row.patientId, row.total]))
-    },
-    latestScreenings(professionalId, patientIds) {
-      if (patientIds.length === 0) {
-        return Promise.resolve([])
-      }
-      return withUser(db, professionalId, (tx) =>
-        tx
-          .selectDistinctOn([assessments.userId, assessments.instrument], {
-            patientId: assessments.userId,
-            instrument: assessments.instrument,
-            totalScore: assessments.totalScore,
-            severity: assessments.severity,
-            hasRiskFlag: assessments.hasRiskFlag,
-            completedAt: assessments.completedAt,
-          })
-          .from(assessments)
-          .where(inArray(assessments.userId, patientIds))
-          .orderBy(assessments.userId, assessments.instrument, desc(assessments.completedAt)),
       )
     },
   }

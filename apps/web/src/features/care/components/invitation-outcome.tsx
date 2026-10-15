@@ -1,6 +1,5 @@
 import Link from 'next/link'
 import { useLocale, useTranslations } from 'next-intl'
-import { Panel } from '@/shared/components/section'
 import { formatDay } from '../format-day'
 import type { ClosedStatus } from '../invitations'
 
@@ -19,12 +18,10 @@ export function InvitationOutcome({ status, name, date, timeZone }: InvitationOu
 
   return (
     <>
-      <Panel>
-        <p className="py-3.5 leading-relaxed text-pretty">
-          {t(`closed.${status}`, { name, date: formatDay(date, timeZone, locale) })}
-        </p>
-      </Panel>
-      <p className="flex flex-wrap gap-x-6 gap-y-2 px-1">
+      <p className="max-w-xl leading-relaxed text-pretty">
+        {t(`closed.${status}`, { name, date: formatDay(date, timeZone, locale) })}
+      </p>
+      <p className="flex flex-wrap gap-x-6 gap-y-2">
         {status === 'accepted' && (
           <Link href="/me#professionals" className={footLink}>
             {t('seeProfessionals')}

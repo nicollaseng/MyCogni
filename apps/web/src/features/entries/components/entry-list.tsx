@@ -14,27 +14,31 @@ function Entry({ checkIn, timeZone }: { checkIn: CheckIn; timeZone: string }) {
   }
   const tags = [...checkIn.emotions.map(labels.emotion), ...checkIn.contexts.map(labels.context)]
   return (
-    <li className="flex gap-5 border-b border-rule py-4">
+    <li className="grid grid-cols-[minmax(0,1fr)_auto] items-baseline gap-x-4 gap-y-1.5 sm:grid-cols-[4rem_9.5rem_minmax(0,1fr)]">
       <time
         dateTime={checkIn.recordedAt}
-        className="min-w-11 shrink-0 pt-px text-sm text-muted-foreground"
+        className="col-start-2 row-start-1 text-right text-sm text-muted-foreground sm:col-start-1 sm:text-left"
       >
         {formatTime(new Date(checkIn.recordedAt), timeZone, locale)}
       </time>
-      <div className="min-w-0 space-y-1">
-        <p className="flex items-center gap-2.5">
-          <span
-            aria-hidden
-            className="size-2.5 shrink-0 rounded-full"
-            style={{ backgroundColor: moodColor(valenceOf(checkIn.moodLevel)) }}
-          />
-          {t(moodKeyOf(checkIn.moodLevel))}
+      <p className="col-start-1 row-start-1 flex items-center gap-2.5 sm:col-start-2">
+        <span
+          aria-hidden
+          className="size-2.5 shrink-0 rounded-full"
+          style={{ backgroundColor: moodColor(valenceOf(checkIn.moodLevel)) }}
+        />
+        {t(moodKeyOf(checkIn.moodLevel))}
+      </p>
+      {tags.length > 0 && (
+        <p className="col-span-2 text-sm text-muted-foreground sm:col-span-1 sm:col-start-3 sm:row-start-1">
+          {tags.join(' · ')}
         </p>
-        {tags.length > 0 && <p className="text-sm text-muted-foreground">{tags.join(' · ')}</p>}
-        {checkIn.note !== null && (
-          <p className="pt-1 font-serif text-[17px] leading-relaxed text-pretty">{checkIn.note}</p>
-        )}
-      </div>
+      )}
+      {checkIn.note !== null && (
+        <p className="col-span-2 font-serif text-[17px] leading-relaxed text-pretty sm:col-span-1 sm:col-start-3">
+          {checkIn.note}
+        </p>
+      )}
     </li>
   )
 }
@@ -49,9 +53,9 @@ export function EntryList({ groups, timeZone }: { groups: readonly DayGroup[]; t
         const title =
           group.day === 'earlier' ? formatDayTitle(group.date, timeZone, locale) : t(group.day)
         return (
-          <section key={group.key} aria-label={title}>
-            <h2 className="pb-3 text-xs tracking-[0.04em] text-muted-foreground">{title}</h2>
-            <ol className="border-t border-rule">
+          <section key={group.key} aria-label={title} className="space-y-4">
+            <h2 className="text-sm font-medium">{title}</h2>
+            <ol className="space-y-5">
               {group.checkIns.map((checkIn) => (
                 <Entry key={checkIn.id} checkIn={checkIn} timeZone={timeZone} />
               ))}

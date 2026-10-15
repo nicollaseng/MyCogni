@@ -1,14 +1,14 @@
 import { sharingConsentVersion } from '@mycogni/domain'
 import Link from 'next/link'
 import { useTranslations } from 'next-intl'
-import { Panel, Section } from '@/shared/components/section'
+import { Section } from '@/shared/components/section'
 
 export function SharingTerms({ name }: { name: string }) {
   const t = useTranslations('care.accept.terms')
 
   return (
     <Section title={t('title')}>
-      <Panel className="space-y-3 py-5 text-[15px] leading-relaxed text-pretty">
+      <div className="max-w-xl space-y-3 text-[15px] leading-relaxed text-pretty">
         <p className="text-sm text-muted-foreground">
           {t('version', { version: sharingConsentVersion })}
         </p>
@@ -29,7 +29,7 @@ export function SharingTerms({ name }: { name: string }) {
           })}
         </p>
         <p className="text-muted-foreground">{t('agreement')}</p>
-      </Panel>
+      </div>
     </Section>
   )
 }

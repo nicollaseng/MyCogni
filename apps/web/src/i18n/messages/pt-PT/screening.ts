@@ -60,7 +60,8 @@ export const screening: ScreeningMessages = {
     empty: 'Ainda não respondeu ao PHQ-9 e ao GAD-7.',
     answeredOn: 'Respondidos em {date}. É um rastreio, não um diagnóstico.',
     retake: 'Responder novamente aos questionários',
-    cadence: 'Sugerimos a cada {days} dias, para ver como vai mudando.',
+    next: 'Sugerimos responder novamente a partir de {date}, para ver como vai mudando.',
+    due: '{count, plural, one {Já passou # dia} other {Já passaram # dias}} desde as últimas respostas. Já pode responder novamente.',
   },
   history: {
     title: 'Histórico',

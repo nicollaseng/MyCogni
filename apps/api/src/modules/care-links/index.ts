@@ -6,6 +6,7 @@ import { createProfessionalRepository } from '../professionals/professional.repo
 import { createCareLinkRepository } from './care-link.repository.ts'
 import { careLinkRoutes } from './care-link.routes.ts'
 import { createCareLinkService } from './care-link.service.ts'
+import { createPatientMetricsRepository } from './patient-metrics.repository.ts'
 import { createPatientService } from './patient.service.ts'
 
 export function careLinkModule(db: Database): FastifyPluginCallbackZod {
@@ -14,6 +15,7 @@ export function careLinkModule(db: Database): FastifyPluginCallbackZod {
     createCareLinkService(careLinks),
     createPatientService({
       careLinks,
+      metrics: createPatientMetricsRepository(db),
       checkIns: createCheckInRepository(db),
       assessments: createAssessmentRepository(db),
       professionals: createProfessionalRepository(db),

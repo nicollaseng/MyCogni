@@ -57,7 +57,7 @@ export function CredentialsForm({ action, mode }: CredentialsFormProps) {
         required
       />
       <FormFeedback state={state} />
-      <Button type="submit" size="lg" shape="pill" disabled={pending} className="w-full">
+      <Button type="submit" size="lg" disabled={pending} className="w-full">
         {pending ? t(text.pending) : t(text.submit)}
       </Button>
     </form>
