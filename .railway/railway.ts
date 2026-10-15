@@ -18,7 +18,7 @@ export default defineRailway((ctx) => {
     preDeploy: 'node apps/api/dist/scripts/migrate.js',
     healthcheck: '/health',
     healthcheckTimeout: 60,
-    replicas: { 'us-east4-eqdc4a': 1 },
+    replicas: { 'us-west2-aws': 1 },
     env: {
       NODE_ENV: 'production',
       LOG_LEVEL: 'info',

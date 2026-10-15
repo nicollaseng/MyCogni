@@ -105,7 +105,7 @@ e2e/           Playwright specs, run on a mobile and a desktop profile
 
 ## Deploy
 
-The API runs on Railway (project `mycogni`, workspace "Nicollas Linhares's Projects", region US East) from the image in `apps/api/Dockerfile`. The service is described as code in `.railway/railway.ts`:
+The API runs on Railway (project `mycogni`, workspace "Nicollas Linhares's Projects", region US West, AWS Oregon, next to the Supabase project in us-west-2) from the image in `apps/api/Dockerfile`. The service is described as code in `.railway/railway.ts`:
 
 - The source is the GitHub repo. The `staging` environment follows the `staging` branch, and `production` will follow `main`
 - Docker build with watch patterns limited to the API, the packages and the lockfile, so web-only changes don't redeploy the API
