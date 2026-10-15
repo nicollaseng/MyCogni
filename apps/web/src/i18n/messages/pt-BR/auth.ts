@@ -5,12 +5,15 @@ export const auth = {
     verify: 'Confirme seu email',
     forgotPassword: 'Esqueci a senha',
     resetPassword: 'Nova senha',
+    newPassword: 'Nova senha',
   },
   signIn: {
     title: 'Entrar',
     lead: 'Que bom ter você de volta.',
     sessionEnded: 'Sua sessão terminou. Entre de novo para continuar.',
     googleFailed: 'Não foi possível entrar com o Google. Tente de novo.',
+    linkFailed:
+      'O link expirou ou foi aberto em outro navegador. Use o código do email ou peça um novo.',
     forgotPassword: 'Esqueci a senha',
     noAccount: 'Ainda não tem conta?',
     signUp: 'Criar conta',
@@ -25,7 +28,7 @@ export const auth = {
   },
   verify: {
     title: 'Confira seu email',
-    lead: 'Enviamos um código de 6 números para <highlight>{email}</highlight>. Ele vale por 1 hora.',
+    lead: 'Enviamos um código de 6 números para <highlight>{email}</highlight>. Digite o código abaixo ou toque no link do email. Ele vale por 1 hora.',
     submit: 'Confirmar email',
     resend: 'Reenviar código',
     resending: 'Reenviando…',
@@ -35,17 +38,22 @@ export const auth = {
   },
   forgotPassword: {
     title: 'Esqueceu a senha?',
-    lead: 'Digite seu email. Se houver uma conta, enviamos um código para você criar uma nova senha.',
+    lead: 'Digite seu email. Se houver uma conta, enviamos um código e um link para você criar uma nova senha.',
     submit: 'Enviar código',
     remembered: 'Lembrou?',
     signIn: 'Entrar',
   },
   resetPassword: {
     title: 'Crie uma nova senha',
-    lead: 'Digite o código que enviamos para <highlight>{email}</highlight> e escolha a nova senha.',
+    lead: 'Digite o código que enviamos para <highlight>{email}</highlight> e escolha a nova senha, ou toque no link do email.',
     submit: 'Salvar nova senha',
     notReceived: 'Não recebeu?',
     sendAnother: 'Enviar outro código',
+  },
+  newPassword: {
+    title: 'Crie uma nova senha',
+    lead: 'Escolha a nova senha da sua conta. Depois de salvar, você continua conectado.',
+    submit: 'Salvar nova senha',
   },
   form: {
     email: 'Email',
@@ -59,6 +67,7 @@ export const auth = {
     signingIn: 'Entrando…',
     confirming: 'Confirmando…',
     sending: 'Enviando…',
+    saving: 'Salvando…',
   },
   google: {
     continue: 'Continuar com o Google',

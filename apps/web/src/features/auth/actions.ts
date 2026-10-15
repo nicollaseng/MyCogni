@@ -5,7 +5,9 @@ import { redirect } from 'next/navigation'
 import { rememberLocaleOf } from '@/features/locale/remember-locale'
 import { afterSignIn } from './after-sign-in'
 import { serverEnv } from '@/shared/lib/env'
+import { currentUser } from '@/shared/lib/auth/session'
 import { createSupabaseServerClient } from '@/shared/lib/supabase/server'
+import { emailLinkCallback, type EmailLinkType } from './email-link'
 import { authErrorKey, type AuthErrorKey } from './error-messages'
 import { failed, invalidFields, noticed, type FormState } from './form-state'
 import { forgetPendingEmail, pendingEmail, rememberPendingEmail } from './pending-email'
@@ -20,6 +22,10 @@ function isExternalUrl(value: string): value is ExternalUrl {
 function field(formData: FormData, name: string): string {
   const value = formData.get(name)
   return typeof value === 'string' ? value : ''
+}
+
+function linkCallback(type: EmailLinkType): string {
+  return emailLinkCallback(serverEnv().siteUrl, type)
 }
 
 async function schemas() {
@@ -50,7 +56,7 @@ export async function signUp(_state: FormState, formData: FormData): Promise<For
   const supabase = await createSupabaseServerClient('read-write')
   const { error } = await supabase.auth.signUp({
     ...parsed.data,
-    options: { data: { locale: await getLocale() } },
+    options: { data: { locale: await getLocale() }, emailRedirectTo: linkCallback('email') },
   })
   if (error !== null) {
     return authFailure(authErrorKey(error.code))
@@ -82,7 +88,11 @@ export async function verifyEmail(_state: FormState, formData: FormData): Promis
 export async function resendCode(): Promise<FormState> {
   const email = await requirePendingEmail()
   const supabase = await createSupabaseServerClient('read-write')
-  const { error } = await supabase.auth.resend({ type: 'signup', email })
+  const { error } = await supabase.auth.resend({
+    type: 'signup',
+    email,
+    options: { emailRedirectTo: linkCallback('email') },
+  })
   if (error !== null) {
     return authFailure(authErrorKey(error.code))
   }
@@ -101,7 +111,11 @@ export async function signIn(_state: FormState, formData: FormData): Promise<For
   const supabase = await createSupabaseServerClient('read-write')
   const { data, error } = await supabase.auth.signInWithPassword(parsed.data)
   if (error?.code === 'email_not_confirmed') {
-    await supabase.auth.resend({ type: 'signup', email: parsed.data.email })
+    await supabase.auth.resend({
+      type: 'signup',
+      email: parsed.data.email,
+      options: { emailRedirectTo: linkCallback('email') },
+    })
     await rememberPendingEmail(parsed.data.email)
     redirect('/verify')
   }
@@ -139,7 +153,9 @@ export async function requestPasswordReset(
     return invalidFields(parsed.error)
   }
   const supabase = await createSupabaseServerClient('read-write')
-  const { error } = await supabase.auth.resetPasswordForEmail(parsed.data.email)
+  const { error } = await supabase.auth.resetPasswordForEmail(parsed.data.email, {
+    redirectTo: linkCallback('recovery'),
+  })
   if (error !== null && error.code !== 'user_not_found') {
     return authFailure(authErrorKey(error.code))
   }
@@ -171,6 +187,24 @@ export async function resetPassword(_state: FormState, formData: FormData): Prom
   }
   await forgetPendingEmail()
   await rememberLocaleOf(updated.data.user.user_metadata)
+  redirect(await afterSignIn())
+}
+
+export async function setNewPassword(_state: FormState, formData: FormData): Promise<FormState> {
+  if ((await currentUser()) === null) {
+    redirect('/forgot-password')
+  }
+  const parsed = (await schemas()).newPassword.safeParse({ password: field(formData, 'password') })
+  if (!parsed.success) {
+    return invalidFields(parsed.error)
+  }
+  const supabase = await createSupabaseServerClient('read-write')
+  const { data, error } = await supabase.auth.updateUser({ password: parsed.data.password })
+  if (error !== null) {
+    return authFailure(authErrorKey(error.code))
+  }
+  await forgetPendingEmail()
+  await rememberLocaleOf(data.user.user_metadata)
   redirect(await afterSignIn())
 }
 

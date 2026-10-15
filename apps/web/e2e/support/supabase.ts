@@ -62,6 +62,24 @@ export async function createUser(
   return createdSchema.parse(await response.json()).id
 }
 
+const linkSchema = z.object({ hashed_token: z.string().min(1) })
+
+export async function emailLinkTokenHash(
+  type: 'signup' | 'recovery',
+  email: string,
+  password?: string,
+): Promise<string> {
+  const response = await fetch(`${supabaseUrl}/auth/v1/admin/generate_link`, {
+    method: 'POST',
+    headers: adminHeaders(),
+    body: JSON.stringify({ type, email, password }),
+  })
+  if (!response.ok) {
+    throw new Error(`Could not create a ${type} link for ${email}: ${await response.text()}`)
+  }
+  return linkSchema.parse(await response.json()).hashed_token
+}
+
 export async function makeAdmin(id: string): Promise<void> {
   const response = await fetch(`${supabaseUrl}/auth/v1/admin/users/${id}`, {
     method: 'PUT',

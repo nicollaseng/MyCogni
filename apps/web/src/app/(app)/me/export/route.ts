@@ -1,9 +1,10 @@
 import { getTranslations } from 'next-intl/server'
-import { NextResponse, type NextRequest } from 'next/server'
+import { NextResponse } from 'next/server'
 import { ApiError } from '@/shared/lib/api/client'
 import { fetchAccountExport } from '@/shared/lib/api/resources'
+import { siteRedirect } from '@/shared/lib/site-redirect'
 
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
     const [data, t] = await Promise.all([fetchAccountExport(), getTranslations('account.data')])
     const fileName = t('fileName', { day: data.exportedAt.slice(0, 10) })
@@ -16,7 +17,7 @@ export async function GET(request: NextRequest) {
     })
   } catch (error) {
     if (error instanceof ApiError && (error.status === 401 || error.status === 404)) {
-      return NextResponse.redirect(new URL('/auth/session-ended', request.url))
+      return siteRedirect('/auth/session-ended')
     }
     throw error
   }

@@ -59,6 +59,13 @@ describe('auth schemas', () => {
     )
   })
 
+  it('checks only the strength of the password chosen after the recovery link', () => {
+    expect(schemas.newPassword.safeParse({ password: 'nova-senha-2026' }).success).toBe(true)
+    expect(messageOf(schemas.newPassword.safeParse({ password: 'somenteletras' }))).toBe(
+      'Use letras e números na senha.',
+    )
+  })
+
   it('explains the problems in the visitor language', () => {
     const european = authSchemas(
       createTranslator({

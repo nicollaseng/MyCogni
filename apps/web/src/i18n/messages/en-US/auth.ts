@@ -7,12 +7,15 @@ export const auth: AuthMessages = {
     verify: 'Confirm your email',
     forgotPassword: 'Forgot password',
     resetPassword: 'New password',
+    newPassword: 'New password',
   },
   signIn: {
     title: 'Sign in',
     lead: 'Good to have you back.',
     sessionEnded: 'Your session ended. Sign in again to continue.',
     googleFailed: 'We could not sign you in with Google. Please try again.',
+    linkFailed:
+      'The link has expired or was opened in a different browser. Use the code from the email or ask for a new one.',
     forgotPassword: 'Forgot your password?',
     noAccount: 'No account yet?',
     signUp: 'Create account',
@@ -27,7 +30,7 @@ export const auth: AuthMessages = {
   },
   verify: {
     title: 'Check your email',
-    lead: 'We sent a 6-digit code to <highlight>{email}</highlight>. It is valid for 1 hour.',
+    lead: 'We sent a 6-digit code to <highlight>{email}</highlight>. Enter the code below or tap the link in the email. It is valid for 1 hour.',
     submit: 'Confirm email',
     resend: 'Resend code',
     resending: 'Resending…',
@@ -37,17 +40,22 @@ export const auth: AuthMessages = {
   },
   forgotPassword: {
     title: 'Forgot your password?',
-    lead: 'Enter your email. If there is an account, we will send you a code to create a new password.',
+    lead: 'Enter your email. If there is an account, we will send you a code and a link to create a new password.',
     submit: 'Send code',
     remembered: 'Remembered it?',
     signIn: 'Sign in',
   },
   resetPassword: {
     title: 'Create a new password',
-    lead: 'Enter the code we sent to <highlight>{email}</highlight> and choose your new password.',
+    lead: 'Enter the code we sent to <highlight>{email}</highlight> and choose your new password, or tap the link in the email.',
     submit: 'Save new password',
     notReceived: 'Did not get it?',
     sendAnother: 'Send another code',
+  },
+  newPassword: {
+    title: 'Create a new password',
+    lead: 'Choose a new password for your account. You stay signed in after saving.',
+    submit: 'Save new password',
   },
   form: {
     email: 'Email',
@@ -61,6 +69,7 @@ export const auth: AuthMessages = {
     signingIn: 'Signing in…',
     confirming: 'Confirming…',
     sending: 'Sending…',
+    saving: 'Saving…',
   },
   google: {
     continue: 'Continue with Google',
