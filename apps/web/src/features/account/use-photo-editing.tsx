@@ -3,6 +3,7 @@
 import { avatarSourceProblem } from '@mycogni/domain'
 import { useTranslations } from 'next-intl'
 import { useState, type ChangeEvent, type ReactNode } from 'react'
+import { unlessOutdated } from '@/shared/lib/actions/outdated'
 import type { UploadFailure, UploadResult } from '@/shared/lib/uploads'
 import { PhotoEditor } from './components/photo-editor'
 import { renderPhoto, type RenderPhoto } from './photo-canvas'
@@ -85,7 +86,7 @@ export function usePhotoEditing({
     if (result.ok) {
       setUrl(result.value)
       onChange?.(result.value)
-      await onSaved()
+      await unlessOutdated(onSaved)
       setFeedback({ kind: 'notice', text: t('feedback.photoSaved') })
     } else {
       fail(result.problem)
@@ -100,7 +101,7 @@ export function usePhotoEditing({
     if (result.ok) {
       setUrl(null)
       onChange?.(null)
-      await onSaved()
+      await unlessOutdated(onSaved)
       setFeedback({ kind: 'notice', text: t('feedback.photoRemoved') })
     } else {
       fail(result.problem)

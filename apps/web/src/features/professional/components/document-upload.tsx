@@ -8,6 +8,7 @@ import {
 } from '@mycogni/domain'
 import { useLocale, useTranslations } from 'next-intl'
 import { useId, useState, type ChangeEvent, type DragEvent } from 'react'
+import { unlessOutdated } from '@/shared/lib/actions/outdated'
 import type { UploadFailure, UploadResult } from '@/shared/lib/uploads'
 import { cn } from '@/shared/lib/utils'
 import { Button } from '@/shared/ui/button'
@@ -85,7 +86,7 @@ export function DocumentUpload({ proof, onSent, send = sendDocument }: DocumentU
     const result = await send(file)
     if (result.ok) {
       setFeedback({ kind: 'sent' })
-      await onSent()
+      await unlessOutdated(onSent)
       setChosen(null)
     } else {
       setFeedback({ kind: 'error', problem: result.problem })

@@ -1,10 +1,10 @@
 'use client'
 
 import { useTranslations } from 'next-intl'
-import { useState, useTransition } from 'react'
 import { FormMessage } from '@/features/account/components/form-message'
 import { usePhotoEditing, type PhotoTransport } from '@/features/account/use-photo-editing'
 import { Avatar } from '@/shared/components/avatar'
+import { useSubmit } from '@/shared/hooks/use-submit'
 import type { ActionResult } from '@/shared/lib/actions/result'
 import { initialsOf } from '@/shared/lib/initials'
 import { cn } from '@/shared/lib/utils'
@@ -39,19 +39,8 @@ export function ProfilePhotoStep({
     onSaved,
     transport,
   })
-  const [finishing, startFinishing] = useTransition()
-  const [failed, setFailed] = useState<string | null>(null)
+  const { submit: moveOn, pending: finishing, error: failed } = useSubmit(finish, () => undefined)
   const idle = busy === null && !finishing
-
-  function moveOn() {
-    setFailed(null)
-    startFinishing(async () => {
-      const result = await finish()
-      if (!result.ok) {
-        setFailed(result.error)
-      }
-    })
-  }
 
   const picker = (
     <input
