@@ -13,12 +13,41 @@ interface EndCareLinkProps {
   end: (id: string) => Promise<ActionResult<null>>
 }
 
+export function EndCareLinkConfirmation({
+  id,
+  name,
+  end,
+  onClose,
+}: EndCareLinkProps & { onClose: () => void }) {
+  const t = useTranslations('care.links.end')
+  const { submit, pending, error } = useSubmit(end, onClose)
+
+  return (
+    <div className="space-y-3 pt-1">
+      <p className="leading-relaxed text-pretty">{t('warning', { name })}</p>
+      <ActionError error={error} />
+      <div className="flex gap-3">
+        <Button
+          size="sm"
+          disabled={pending}
+          className="bg-danger text-background hover:bg-danger/90"
+          onClick={() => {
+            submit(id)
+          }}
+        >
+          {pending ? t('ending') : t('confirm')}
+        </Button>
+        <Button size="sm" variant="ghost" disabled={pending} onClick={onClose}>
+          {t('cancel')}
+        </Button>
+      </div>
+    </div>
+  )
+}
+
 export function EndCareLink({ id, name, end }: EndCareLinkProps) {
   const t = useTranslations('care.links.end')
   const [open, setOpen] = useState(false)
-  const { submit, pending, error } = useSubmit(end, () => {
-    setOpen(false)
-  })
 
   if (!open) {
     return (
@@ -35,33 +64,13 @@ export function EndCareLink({ id, name, end }: EndCareLinkProps) {
   }
 
   return (
-    <div className="space-y-3 pt-1">
-      <p className="leading-relaxed text-pretty">{t('warning', { name })}</p>
-      <ActionError error={error} />
-      <div className="flex gap-3">
-        <Button
-          size="sm"
-
-          disabled={pending}
-          className="bg-danger text-background hover:bg-danger/90"
-          onClick={() => {
-            submit(id)
-          }}
-        >
-          {pending ? t('ending') : t('confirm')}
-        </Button>
-        <Button
-          size="sm"
-
-          variant="ghost"
-          disabled={pending}
-          onClick={() => {
-            setOpen(false)
-          }}
-        >
-          {t('cancel')}
-        </Button>
-      </div>
-    </div>
+    <EndCareLinkConfirmation
+      id={id}
+      name={name}
+      end={end}
+      onClose={() => {
+        setOpen(false)
+      }}
+    />
   )
 }

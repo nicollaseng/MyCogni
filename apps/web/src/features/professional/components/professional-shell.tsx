@@ -1,4 +1,4 @@
-import type { ProfessionalProfile } from '@mycogni/contracts'
+import type { AlertCount, ProfessionalProfile } from '@mycogni/contracts'
 import { useTranslations } from 'next-intl'
 import type { ReactNode } from 'react'
 import { signOut } from '@/features/auth/actions'
@@ -12,10 +12,16 @@ import { warnTokens } from './workspace'
 interface ProfessionalShellProps {
   professional: ProfessionalProfile
   photoUrl: string | null
+  alerts: AlertCount | null
   children: ReactNode
 }
 
-export function ProfessionalShell({ professional, photoUrl, children }: ProfessionalShellProps) {
+export function ProfessionalShell({
+  professional,
+  photoUrl,
+  alerts,
+  children,
+}: ProfessionalShellProps) {
   const t = useTranslations('professional.shell')
   const kinds = useTranslations('common.professionalKinds')
   const verified = professional.status === 'verified'
@@ -31,7 +37,7 @@ export function ProfessionalShell({ professional, photoUrl, children }: Professi
           </div>
           {verified && (
             <div className="mt-8">
-              <ProfessionalNavigation variant="sidebar" />
+              <ProfessionalNavigation variant="sidebar" alerts={alerts} />
             </div>
           )}
           <div className="mt-auto">
@@ -52,6 +58,7 @@ export function ProfessionalShell({ professional, photoUrl, children }: Professi
             profession={profession}
             photoUrl={photoUrl}
             verified={verified}
+            alerts={alerts}
             signOut={signOut}
           />
           <Wordmark className="text-[20px]" />
@@ -72,7 +79,7 @@ export function ProfessionalShell({ professional, photoUrl, children }: Professi
 
       {verified && (
         <div className="fixed inset-x-0 bottom-0 z-20 border-t border-rule bg-background/95 pb-[env(safe-area-inset-bottom)] backdrop-blur lg:hidden">
-          <ProfessionalNavigation variant="bottom" />
+          <ProfessionalNavigation variant="bottom" alerts={alerts} />
         </div>
       )}
     </div>

@@ -14,6 +14,7 @@ export const professional: ProfessionalMessages = {
     navigation: 'Navegação da área profissional',
     overview: 'Visão geral',
     patients: 'Pacientes',
+    alerts: 'Alertas',
     invites: 'Convites',
     openMenu: 'Abrir menu',
     closeMenu: 'Fechar menu',
@@ -311,21 +312,9 @@ export const professional: ProfessionalMessages = {
       more: '{count} a mais do que nos 7 dias anteriores',
       fewer: '{count} a menos do que nos 7 dias anteriores',
       same: 'Igual aos 7 dias anteriores',
-      attention: 'Precisam de atenção',
-      risk: '{count} com item 9 do PHQ-9 positivo',
-      calm: 'Nenhum sinal de alerta',
-      ofPatients: 'De {count, plural, one {# paciente} other {# pacientes}}',
       invitations: 'Convites pendentes',
       expiring:
         '{count, plural, =0 {Nenhum expira nas próximas 24 h} one {# expira nas próximas 24 h} other {# expiram nas próximas 24 h}}',
-    },
-    attention: {
-      title: 'Precisam de atenção',
-      empty: 'Nenhum paciente precisa de atenção neste momento.',
-      seeAll: 'Ver todos ({count})',
-      patient: 'Paciente',
-      reasons: 'Motivos',
-      lastCheckIn: 'Último registo',
     },
     activity: {
       title: 'Atividade dos pacientes',
@@ -393,6 +382,7 @@ export const professional: ProfessionalMessages = {
     fromLink: 'Registos a partir da ligação',
     withHistory: 'Inclui registos anteriores à ligação',
     mybook: 'Páginas do MyBook partilhadas',
+    termsPending: 'A aguardar confirmação dos termos atualizados',
     kpis: {
       mood: 'Humor médio 7 d',
       noPrevious: 'Sem registos nos 7 dias anteriores',

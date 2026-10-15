@@ -174,6 +174,8 @@ describe('invitations and care links', () => {
     expect(accepted.json()).toEqual(
       expect.objectContaining({
         sharesHistory: false,
+        consentVersion: sharingConsentVersion,
+        termsOutdated: false,
         professional: expect.objectContaining({ name: 'Dra. Helena Prado' }),
       }),
     )

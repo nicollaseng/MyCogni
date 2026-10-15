@@ -4,7 +4,7 @@ import { redirect } from 'next/navigation'
 import { getTranslations } from 'next-intl/server'
 import { resetPassword } from '@/features/auth/actions'
 import { AuthFootnote, authLink } from '@/features/auth/components/auth-footnote'
-import { AuthHeading } from '@/features/auth/components/auth-heading'
+import { AuthIntro } from '@/features/auth/components/auth-intro'
 import { CodeForm } from '@/features/auth/components/code-form'
 import { pendingEmail } from '@/features/auth/pending-email'
 
@@ -22,12 +22,7 @@ export default async function ResetPasswordPage() {
 
   return (
     <>
-      <AuthHeading title={t('title')}>
-        {t.rich('lead', {
-          email,
-          highlight: (chunks) => <span className="text-foreground">{chunks}</span>,
-        })}
-      </AuthHeading>
+      <AuthIntro section="resetPassword" email={email} />
       <CodeForm action={resetPassword} withNewPassword submitLabel={t('submit')} />
       <AuthFootnote>
         {t('notReceived')}{' '}

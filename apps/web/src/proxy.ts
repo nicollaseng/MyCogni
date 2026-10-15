@@ -48,5 +48,6 @@ export const config = {
     '/verify',
     '/forgot-password',
     '/reset-password',
+    '/new-password',
   ],
 }

@@ -1,4 +1,4 @@
-import { attentionReasons, instrumentIds, severities } from '@mycogni/domain'
+import { attentionReasons, instrumentIds, severities, sharingConsentVersion } from '@mycogni/domain'
 import { z } from 'zod'
 import { linkedProfessionalSchema } from './invitations.ts'
 
@@ -9,11 +9,19 @@ export const careLinkSchema = z.object({
   professional: linkedProfessionalSchema,
   sharesHistory: z.boolean(),
   startedAt: timestamp,
+  consentVersion: z.string(),
+  termsOutdated: z.boolean(),
 })
 
 export type CareLink = z.infer<typeof careLinkSchema>
 
 export const careLinkListSchema = z.array(careLinkSchema)
+
+export const confirmSharingTermsSchema = z.object({
+  consentVersion: z.literal(sharingConsentVersion),
+})
+
+export type ConfirmSharingTermsInput = z.infer<typeof confirmSharingTermsSchema>
 
 export const screeningSummarySchema = z.object({
   instrument: z.enum(instrumentIds),
@@ -39,6 +47,7 @@ export const patientSummarySchema = z.object({
   previousMoodAverage: z.number().nullable(),
   screenings: z.array(screeningSummarySchema),
   attention: z.array(z.enum(attentionReasons)),
+  termsOutdated: z.boolean(),
 })
 
 export type PatientSummary = z.infer<typeof patientSummarySchema>

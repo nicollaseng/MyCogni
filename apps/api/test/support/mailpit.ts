@@ -2,6 +2,7 @@ import { z } from 'zod'
 import { testMailpitUrl } from './supabase.ts'
 
 const searchSchema = z.object({
+  messages_count: z.int(),
   messages: z.array(z.object({ ID: z.string(), Subject: z.string() })),
 })
 
@@ -21,4 +22,12 @@ export async function lastMailTo(address: string): Promise<MailpitMessage | null
   return messageSchema.parse(
     await (await fetch(`${testMailpitUrl}/api/v1/message/${first.ID}`)).json(),
   )
+}
+
+export async function mailCountTo(address: string): Promise<number> {
+  const query = encodeURIComponent(`to:"${address}"`)
+  const search = searchSchema.parse(
+    await (await fetch(`${testMailpitUrl}/api/v1/search?query=${query}&limit=1`)).json(),
+  )
+  return search.messages_count
 }

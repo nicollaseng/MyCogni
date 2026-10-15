@@ -19,6 +19,25 @@ export {
   type AssessmentScore,
 } from './assessments/scoring.ts'
 export {
+  alertCooldownDays,
+  alertEmailIntervalHours,
+  alertLevelOf,
+  alertLevels,
+  alertReasons,
+  alertsFor,
+  alertStatuses,
+  alertStatusOf,
+  cooldownStart,
+  emailsRightAway,
+  emailWindowStart,
+  type Alert,
+  type AlertEvent,
+  type AlertLevel,
+  type AlertReason,
+  type AlertStatus,
+  type ScreeningResult,
+} from './care/alerts.ts'
+export {
   attentionReasons,
   attentionReasonsOf,
   inactiveAfterDays,
@@ -37,6 +56,7 @@ export {
   invitationLifetimeHours,
   invitationStatuses,
   isInvitationCode,
+  isSharingConsentCurrent,
   normalizeInvitationCode,
   sharingConsentVersion,
   type InvitationChannel,

@@ -1,5 +1,6 @@
 'use client'
 
+import type { AlertCount } from '@mycogni/contracts'
 import Link from 'next/link'
 import { useTranslations } from 'next-intl'
 import { useId, useRef, useState } from 'react'
@@ -15,13 +16,21 @@ interface MobileMenuProps {
   profession: string
   photoUrl: string | null
   verified: boolean
+  alerts: AlertCount | null
   signOut: () => Promise<void>
 }
 
 const entryStyle =
   'flex w-full items-center gap-3 rounded-[6px] px-3 py-2 text-left text-[15px] text-muted-foreground transition-colors hover:bg-foreground/[0.04] hover:text-foreground'
 
-export function MobileMenu({ name, profession, photoUrl, verified, signOut }: MobileMenuProps) {
+export function MobileMenu({
+  name,
+  profession,
+  photoUrl,
+  verified,
+  alerts,
+  signOut,
+}: MobileMenuProps) {
   const t = useTranslations('professional.shell')
   const closeButton = useRef<HTMLButtonElement>(null)
   const [expanded, setExpanded] = useState(false)
@@ -82,7 +91,7 @@ export function MobileMenu({ name, profession, photoUrl, verified, signOut }: Mo
           </div>
           {verified && (
             <div className="mt-7">
-              <ProfessionalNavigation variant="drawer" onNavigate={close} />
+              <ProfessionalNavigation variant="drawer" alerts={alerts} onNavigate={close} />
             </div>
           )}
           <div className="mt-auto space-y-1 pt-6">

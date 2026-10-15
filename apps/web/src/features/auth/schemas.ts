@@ -34,5 +34,6 @@ export function authSchemas(message: ValidationMessage) {
     verify: z.object({ code }),
     forgotPassword: z.object({ email }),
     resetPassword: z.object({ code, password: newPassword }),
+    newPassword: z.object({ password: newPassword }),
   }
 }

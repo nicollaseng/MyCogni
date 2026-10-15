@@ -30,6 +30,9 @@ export const careLinks = pgTable(
     }),
     sharesHistory: boolean('shares_history').notNull().default(false),
     consentVersion: text('consent_version').notNull(),
+    consentAcceptedAt: timestamp('consent_accepted_at', { withTimezone: true })
+      .notNull()
+      .defaultNow(),
     startedAt: timestamp('started_at', { withTimezone: true }).notNull().defaultNow(),
     endedAt: timestamp('ended_at', { withTimezone: true }),
     endedBy: careLinkEndedBy('ended_by'),

@@ -1,4 +1,5 @@
 import { account } from './account'
+import { alerts } from './alerts'
 import { admin } from './admin'
 import { auth } from './auth'
 import { care } from './care'
@@ -35,6 +36,7 @@ export const messages: Messages = {
   account,
   care,
   professional,
+  alerts,
   admin,
   verification,
 }

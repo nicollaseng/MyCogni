@@ -5,7 +5,9 @@ import {
   invitationCodeAlphabet,
   invitationExpiry,
   isInvitationCode,
+  isSharingConsentCurrent,
   normalizeInvitationCode,
+  sharingConsentVersion,
 } from './invitations.ts'
 import { notificationKinds } from './notifications.ts'
 import { professionalKinds, requiresRegistration } from './professionals.ts'
@@ -57,6 +59,14 @@ describe('invitations', () => {
 
     expect(code).toBe('2345678Z')
     expect(isInvitationCode(code)).toBe(true)
+  })
+})
+
+describe('sharing terms', () => {
+  it('treats only the current version as accepted terms', () => {
+    expect(isSharingConsentCurrent(sharingConsentVersion)).toBe(true)
+    expect(isSharingConsentCurrent('2026-10')).toBe(false)
+    expect(isSharingConsentCurrent('')).toBe(false)
   })
 })
 
