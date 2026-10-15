@@ -26,6 +26,7 @@ export const common: CommonMessages = {
     intro: 'If you are in crisis or thinking about hurting yourself, call now:',
     disclaimer: 'MyCogniAI does not replace care from a professional.',
   },
+  loading: 'Loading',
   notFound: {
     title: 'This page does not exist.',
     body: 'The address may have changed or be incomplete.',

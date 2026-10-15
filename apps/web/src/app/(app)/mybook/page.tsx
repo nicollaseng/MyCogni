@@ -11,6 +11,7 @@ import { groupByMonth } from '@/features/mybook/months'
 import { isLive } from '@/features/mybook/sharing'
 import { fetchJournal, fetchJournalShares } from '@/shared/lib/api/journal'
 import { requireOnboardedProfile } from '@/shared/lib/auth/session'
+import { guarded } from '@/shared/lib/settled'
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations('mybook.meta')
@@ -27,8 +28,7 @@ function sharedWith(shares: readonly JournalShare[], now: Date): string[] {
   ]
 }
 
-export default async function MybookPage({ searchParams }: PageProps<'/mybook'>) {
-  const { timezone } = await requireOnboardedProfile()
+async function bookOf(searchParams: PageProps<'/mybook'>['searchParams']) {
   const { q, before } = await searchParams
   const query = typeof q === 'string' ? q.trim().slice(0, 100) : ''
   const [pages, shares, t, locale] = await Promise.all([
@@ -41,6 +41,14 @@ export default async function MybookPage({ searchParams }: PageProps<'/mybook'>)
     getTranslations('mybook.list'),
     getLocale(),
   ])
+  return { query, before, pages, shares, t, locale }
+}
+
+export default async function MybookPage({ searchParams }: PageProps<'/mybook'>) {
+  const [{ timezone }, { query, before, pages, shares, t, locale }] = await guarded(
+    requireOnboardedProfile(),
+    bookOf(searchParams),
+  )
   const now = new Date()
   const names = sharedWith(shares, now)
   const oldest = pages.at(-1)

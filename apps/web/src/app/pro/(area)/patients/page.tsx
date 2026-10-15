@@ -8,6 +8,7 @@ import { compactButton, WorkspaceHeader } from '@/features/professional/componen
 import { patientFilterOf } from '@/features/professional/patient-table'
 import { fetchPatients } from '@/shared/lib/api/care'
 import { requireProfile } from '@/shared/lib/auth/session'
+import { guarded } from '@/shared/lib/settled'
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations('professional.meta')
@@ -17,13 +18,10 @@ export async function generateMetadata(): Promise<Metadata> {
 export default async function ProfessionalPatientsPage({
   searchParams,
 }: PageProps<'/pro/patients'>) {
-  await requireVerifiedProfessional()
-  const [{ timezone }, patients, t, { filter }] = await Promise.all([
-    requireProfile(),
-    fetchPatients(),
-    getTranslations('professional.patients'),
-    searchParams,
-  ])
+  const [[, { timezone }], [patients, t, { filter }]] = await guarded(
+    Promise.all([requireVerifiedProfessional(), requireProfile()]),
+    Promise.all([fetchPatients(), getTranslations('professional.patients'), searchParams]),
+  )
   const initialFilter = patientFilterOf(filter)
 
   return (

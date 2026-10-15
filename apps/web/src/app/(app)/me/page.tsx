@@ -30,7 +30,8 @@ import { Panel, Section } from '@/shared/components/section'
 import { fetchCareLinks, fetchProfessional } from '@/shared/lib/api/care'
 import { fetchAssessments, fetchConsents } from '@/shared/lib/api/resources'
 import { requireOnboardedProfile } from '@/shared/lib/auth/session'
-import { ownPhotoUrl } from '@/shared/lib/photos'
+import { fetchMyPhotoUrl } from '@/shared/lib/photos'
+import { guarded } from '@/shared/lib/settled'
 import { Button } from '@/shared/ui/button'
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -41,18 +42,19 @@ export async function generateMetadata(): Promise<Metadata> {
 const rowLink = 'block py-3.5 underline decoration-1 underline-offset-4'
 
 export default async function MePage() {
-  const profile = await requireOnboardedProfile()
-  const [assessments, consents, photoUrl, careLinks, professional, t, language] = await Promise.all(
-    [
-      fetchAssessments(),
-      fetchConsents(),
-      ownPhotoUrl(profile.avatarPath),
-      fetchCareLinks(),
-      fetchProfessional(),
-      getTranslations('account'),
-      getTranslations('common.language'),
-    ],
-  )
+  const [profile, [assessments, consents, photoUrl, careLinks, professional, t, language]] =
+    await guarded(
+      requireOnboardedProfile(),
+      Promise.all([
+        fetchAssessments(),
+        fetchConsents(),
+        fetchMyPhotoUrl(),
+        fetchCareLinks(),
+        fetchProfessional(),
+        getTranslations('account'),
+        getTranslations('common.language'),
+      ]),
+    )
   const lastAnswer = assessments[0]?.completedAt
 
   return (

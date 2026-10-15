@@ -4,6 +4,7 @@ import { InvitationList } from '@/features/care/components/invitation-list'
 import { PageTitle } from '@/shared/components/page-title'
 import { fetchReceivedInvitations } from '@/shared/lib/api/care'
 import { requireOnboardedProfile } from '@/shared/lib/auth/session'
+import { guarded } from '@/shared/lib/settled'
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations('care.invites.meta')
@@ -11,11 +12,10 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function InvitesPage() {
-  const { timezone } = await requireOnboardedProfile()
-  const [invitations, t] = await Promise.all([
-    fetchReceivedInvitations(),
-    getTranslations('care.invites'),
-  ])
+  const [{ timezone }, [invitations, t]] = await guarded(
+    requireOnboardedProfile(),
+    Promise.all([fetchReceivedInvitations(), getTranslations('care.invites')]),
+  )
 
   return (
     <>

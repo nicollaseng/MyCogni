@@ -2,7 +2,7 @@ import type { ReactNode } from 'react'
 
 interface PageTitleProps {
   title: string
-  kicker?: string
+  kicker?: ReactNode
   description?: string
   titleId?: string
   action?: ReactNode

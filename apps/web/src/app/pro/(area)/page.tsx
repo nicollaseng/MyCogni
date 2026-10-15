@@ -20,6 +20,7 @@ import { attentionPatients, overviewKpis } from '@/features/professional/overvie
 import { fetchPatients, fetchProfessionalOverview } from '@/shared/lib/api/care'
 import { requireProfile } from '@/shared/lib/auth/session'
 import { fetchMyPhotoUrl } from '@/shared/lib/photos'
+import { settledValue } from '@/shared/lib/settled'
 import { formatDayTitle } from '@/shared/lib/time'
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -30,7 +31,16 @@ export async function generateMetadata(): Promise<Metadata> {
 const inviteHref = { pathname: '/pro/invites', query: { new: '1' } } as const
 
 export default async function ProfessionalHomePage() {
-  const [professional, { timezone }] = await Promise.all([requireProfessional(), requireProfile()])
+  const [access, workspace] = await Promise.allSettled([
+    Promise.all([requireProfessional(), requireProfile()]),
+    Promise.all([
+      fetchPatients(),
+      fetchProfessionalOverview(),
+      getTranslations('professional.overview'),
+      getLocale(),
+    ]),
+  ])
+  const [professional, { timezone }] = settledValue(access)
   if (professional.status !== 'verified') {
     return (
       <VerificationNotice
@@ -40,12 +50,7 @@ export default async function ProfessionalHomePage() {
       />
     )
   }
-  const [patients, overview, t, locale] = await Promise.all([
-    fetchPatients(),
-    fetchProfessionalOverview(),
-    getTranslations('professional.overview'),
-    getLocale(),
-  ])
+  const [patients, overview, t, locale] = settledValue(workspace)
   const now = new Date()
   const flagged = attentionPatients(patients).length
 
