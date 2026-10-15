@@ -91,7 +91,7 @@ describe('PatientReadings', () => {
     )
 
     expect(screen.getByText(/Os resumos estão desligados na sua conta\./)).toBeInTheDocument()
-    expect(screen.getByRole('link', { name: 'Ligar em Você' })).toHaveAttribute('href', '/me')
+    expect(screen.getByRole('link', { name: 'Ligar no seu perfil' })).toHaveAttribute('href', '/me')
     expect(screen.queryByText(/para o primeiro resumo/)).not.toBeInTheDocument()
   })
 

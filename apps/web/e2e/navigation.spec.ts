@@ -20,6 +20,24 @@ test('opens on today with the way into the check-in', async ({ page }) => {
     'href',
     '/check-in',
   )
+  await expect(page.getByText('Prefere escrever?')).toBeVisible()
+  await expect(page.getByRole('link', { name: 'Abrir o MyBook' })).toHaveAttribute(
+    'href',
+    '/mybook',
+  )
+})
+
+test('keeps four sections in the navigation and the account in the header', async ({ page }) => {
+  await page.goto('/today')
+
+  await expect(mainNavigation(page).getByRole('link')).toHaveText([
+    'Hoje',
+    'Registros',
+    'MyBook',
+    'Padrões',
+  ])
+  await expect(page.getByRole('link', { name: 'Você', exact: true })).toHaveCount(0)
+  await expect(page.getByRole('button', { name: 'Sua conta' })).toBeVisible()
 })
 
 test('moves between sections through the main navigation', async ({ page }) => {

@@ -70,7 +70,7 @@ describe('RetakeFlow', () => {
     expect(screen.getByRole('region', { name: 'Sinais de ansiedade' })).toHaveTextContent(
       'Igual a 1 de outubro',
     )
-    expect(screen.getByRole('link', { name: 'Voltar para Você' })).toHaveAttribute('href', '/me')
+    expect(screen.getByRole('link', { name: 'Voltar ao perfil' })).toHaveAttribute('href', '/me')
   })
 
   it('keeps comparing with the answers from before the flow, even after the page refreshes', async () => {
@@ -128,6 +128,6 @@ describe('RetakeFlow', () => {
       '7 pontos a mais do que em 1 de outubro',
     )
     expect(screen.getByRole('link', { name: '112' })).toHaveAttribute('href', 'tel:112')
-    expect(screen.getByRole('link', { name: 'Voltar ao Perfil' })).toHaveAttribute('href', '/me')
+    expect(screen.getByRole('link', { name: 'Voltar ao perfil' })).toHaveAttribute('href', '/me')
   })
 })

@@ -14,7 +14,7 @@ export const insights: InsightsMessages = {
         'A cada {threshold} registos, aparece aqui um resumo curto do que se destacou nos seus dias, com algumas sugestões. É escrito automaticamente a partir dos registos e não é um diagnóstico.',
       progress: '{count} de {threshold} registos para o primeiro resumo',
       disabled: 'Os resumos estão desativados na sua conta.',
-      enable: 'Ativar no Perfil',
+      enable: 'Ativar no seu perfil',
     },
   },
   teaser: {

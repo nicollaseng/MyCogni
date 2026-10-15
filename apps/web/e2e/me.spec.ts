@@ -143,7 +143,7 @@ test('answers the questionnaires again and keeps the history', async ({ page }) 
   await expect(page.getByRole('region', { name: 'Sinais de ansiedade' })).toContainText(
     '7 pontos a mais que em',
   )
-  await page.getByRole('link', { name: 'Voltar para Você' }).click()
+  await page.getByRole('link', { name: 'Voltar ao perfil' }).click()
   await expect(page.getByRole('region', { name: 'Seus questionários' })).toContainText('8de 27')
 })
 

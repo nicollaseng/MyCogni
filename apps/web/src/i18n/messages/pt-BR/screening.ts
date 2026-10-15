@@ -51,7 +51,7 @@ export const screening = {
     start: 'Começar',
     resultsTitle: 'Seus resultados de hoje.',
     disclaimer: 'É uma triagem, não um diagnóstico. Só um profissional pode avaliar o seu caso.',
-    back: 'Voltar para Você',
+    back: 'Voltar ao perfil',
   },
   latest: {
     title: 'Seus questionários',

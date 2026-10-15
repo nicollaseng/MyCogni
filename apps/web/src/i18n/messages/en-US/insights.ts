@@ -14,7 +14,7 @@ export const insights: InsightsMessages = {
         'Every {threshold} entries, a short summary of what stood out in your days appears here, with a few suggestions. It is written automatically from your entries and is not a diagnosis.',
       progress: '{count} of {threshold} entries toward the first summary',
       disabled: 'Summaries are turned off for your account.',
-      enable: 'Turn them on under You',
+      enable: 'Turn them on in your profile',
     },
   },
   teaser: {

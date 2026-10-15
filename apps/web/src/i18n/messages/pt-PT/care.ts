@@ -22,7 +22,7 @@ export const care: CareMessages = {
       },
       accepted: {
         title: 'Este convite já foi aceite.',
-        body: 'Os profissionais que acompanham os seus registos aparecem em Perfil, na secção Profissionais.',
+        body: 'Os profissionais que acompanham os seus registos aparecem em Perfil e definições, na secção Profissionais.',
       },
       declined: {
         title: 'Este convite foi recusado.',
@@ -69,7 +69,7 @@ export const care: CareMessages = {
         'Ao aceitar, autoriza {name} a ver os seus registos de humor, com emoções, contextos e notas, e os seus resultados do PHQ-9 e do GAD-7, para acompanhar a sua evolução.',
       history:
         'Por predefinição, só são incluídos os registos feitos a partir de hoje. Os anteriores só são incluídos se ativar a opção acima.',
-      end: 'Pode terminar a ligação quando quiser, em Perfil. A partir desse momento, {name} deixa de ver os seus registos.',
+      end: 'Pode terminar a ligação quando quiser, em Perfil e definições. A partir desse momento, {name} deixa de ver os seus registos.',
       privacy:
         'A ligação não dá acesso a mais nada da sua conta. Saiba mais na <link>política de privacidade</link>.',
       agreement: 'Aceitar significa concordar com estes termos.',
@@ -124,7 +124,11 @@ export const care: CareMessages = {
       canceled: 'Convite cancelado',
       expired: 'Convite expirado',
     },
-    open: 'Ver convite',
+    open: {
+      invitation: 'Ver convite',
+      professional: 'Ver profissionais',
+      insight: 'Ver resumo',
+    },
     kinds: {
       invitation: 'Convite de um profissional',
       professional: 'Mensagem de um profissional',
@@ -136,6 +140,8 @@ export const care: CareMessages = {
   bell: {
     label:
       '{count, plural, =0 {Notificações} one {Notificações, # não lida} other {Notificações, # não lidas}}',
+    unread: '{count, plural, one {# não lida} other {# não lidas}}',
+    seeAll: 'Ver todas',
   },
   links: {
     title: 'Profissionais',

@@ -12,7 +12,7 @@ export const insights = {
         'A cada {threshold} registros, aparece aqui um resumo curto do que se destacou nos seus dias, com algumas sugestões. Ele é escrito automaticamente a partir dos registros e não é um diagnóstico.',
       progress: '{count} de {threshold} registros para o primeiro resumo',
       disabled: 'Os resumos estão desligados na sua conta.',
-      enable: 'Ligar em Você',
+      enable: 'Ligar no seu perfil',
     },
   },
   teaser: {

@@ -107,6 +107,15 @@ export async function inviteByLink(
   ).invitation
 }
 
+export async function claimInvitation(
+  email: string,
+  password: string,
+  code: string,
+): Promise<void> {
+  const post = await poster(email, password)
+  await post('/v1/invitations/claim', { code })
+}
+
 export async function allowSummaries(email: string, password: string): Promise<void> {
   const post = await poster(email, password)
   await post('/v1/consents', { kinds: ['ai_processing'] })

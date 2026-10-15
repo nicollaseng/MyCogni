@@ -101,7 +101,10 @@ test('explains the first reading and counts the records toward it', async ({ pag
   const readings = page.getByRole('region', { name: 'Resumo dos seus registros' })
   await expect(readings).toContainText('A cada 7 registros, aparece aqui um resumo curto')
   await expect(readings).toContainText('Os resumos estão desligados na sua conta.')
-  await expect(readings.getByRole('link', { name: 'Ligar em Você' })).toHaveAttribute('href', '/me')
+  await expect(readings.getByRole('link', { name: 'Ligar no seu perfil' })).toHaveAttribute(
+    'href',
+    '/me',
+  )
 
   await allowSummaries(person.email, password)
   await recordCheckIns(

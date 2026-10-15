@@ -4,14 +4,28 @@ import { renderWithIntl } from '@/test/render'
 import { NavigationLinks } from './navigation-links'
 
 describe('NavigationLinks', () => {
-  it('links to every section of the app by name', () => {
+  it('links to the four sections of the app by name and leaves the account out', () => {
     renderWithIntl(<NavigationLinks pathname="/today" variant="bar" />)
 
+    expect(screen.getAllByRole('link').map((link) => link.textContent)).toEqual([
+      'Hoje',
+      'Registros',
+      'MyBook',
+      'Padrões',
+    ])
     expect(screen.getByRole('link', { name: 'Hoje' })).toHaveAttribute('href', '/today')
     expect(screen.getByRole('link', { name: 'Registros' })).toHaveAttribute('href', '/entries')
     expect(screen.getByRole('link', { name: 'MyBook' })).toHaveAttribute('href', '/mybook')
     expect(screen.getByRole('link', { name: 'Padrões' })).toHaveAttribute('href', '/patterns')
-    expect(screen.getByRole('link', { name: 'Você' })).toHaveAttribute('href', '/me')
+    expect(screen.queryByRole('link', { name: 'Você' })).not.toBeInTheDocument()
+  })
+
+  it('marks no section while the person is on the account pages', () => {
+    renderWithIntl(<NavigationLinks pathname="/me" variant="top" />)
+
+    for (const link of screen.getAllByRole('link')) {
+      expect(link).not.toHaveAttribute('aria-current')
+    }
   })
 
   it('marks only the current section as the current page', () => {

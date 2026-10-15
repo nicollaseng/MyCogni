@@ -16,9 +16,17 @@ type InsightRow = InsightSeed &
 
 const periodDays = 7
 
-async function insertInsight(row: InsightRow): Promise<string> {
+async function withDatabase<T>(work: (sql: postgres.Sql) => Promise<T>): Promise<T> {
   const sql = postgres(localSupabase().DB_URL, { max: 1, onnotice: () => undefined })
   try {
+    return await work(sql)
+  } finally {
+    await sql.end()
+  }
+}
+
+function insertInsight(row: InsightRow): Promise<string> {
+  return withDatabase(async (sql) => {
     const [inserted] = await sql<{ id: string }[]>`
       insert into public.insights
         (patient_id, audience, professional_id, period_start, period_end, check_in_count, content, model, created_at)
@@ -38,9 +46,7 @@ async function insertInsight(row: InsightRow): Promise<string> {
       throw new Error('The insight was not seeded')
     }
     return inserted.id
-  } finally {
-    await sql.end()
-  }
+  })
 }
 
 export function seedPatientInsight(
@@ -53,4 +59,12 @@ export function seedProfessionalInsight(
   seed: InsightSeed & { professionalId: string; content: ProfessionalInsightContent },
 ): Promise<string> {
   return insertInsight({ ...seed, audience: 'professional' })
+}
+
+export async function notifyInsight(patientId: string, insightId: string): Promise<void> {
+  await withDatabase(
+    (sql) => sql`
+      insert into public.notifications (user_id, kind, insight_id)
+      values (${patientId}, 'insight', ${insightId})`,
+  )
 }

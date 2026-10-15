@@ -9,6 +9,7 @@ export interface NotificationRecord {
   kind: NotificationKind
   createdAt: Date
   readAt: Date | null
+  insightId: string | null
   invitation: {
     id: string
     status: InvitationStatus
@@ -34,6 +35,7 @@ export function createNotificationRepository(db: Database): NotificationReposito
             kind: notifications.kind,
             createdAt: notifications.createdAt,
             readAt: notifications.readAt,
+            insightId: notifications.insightId,
             invitationId: invitations.id,
             invitationStatus: invitations.status,
             invitationExpiresAt: invitations.expiresAt,
@@ -55,6 +57,7 @@ export function createNotificationRepository(db: Database): NotificationReposito
         kind: row.kind,
         createdAt: row.createdAt,
         readAt: row.readAt,
+        insightId: row.insightId,
         invitation:
           row.invitationId === null ||
           row.invitationStatus === null ||

@@ -5,7 +5,7 @@ export const today = {
   title: 'Como você está agora?',
   intro: 'Leva menos de um minuto. Num dia difícil, só o humor já basta.',
   checkIn: 'Registrar como estou',
-  writeMyBook: 'Escrever no MyBook',
+  writeMyBook: 'Prefere escrever? <link>Abrir o MyBook</link>',
   recent: {
     title: 'Últimos {days} dias',
     average: 'Nos últimos 7 dias, seu humor médio foi {average} de 6 ({mood}).',
