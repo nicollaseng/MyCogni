@@ -2,6 +2,7 @@
 
 import Link from 'next/link'
 import { useTranslations } from 'next-intl'
+import { Avatar } from '@/shared/components/avatar'
 import { usePopoverMenu } from '@/shared/hooks/use-popover-menu'
 import { initialsOf } from '@/shared/lib/initials'
 import { cn } from '@/shared/lib/utils'
@@ -11,10 +12,11 @@ import { SettingsIcon, SignOutIcon } from './icons'
 interface ProfileMenuProps {
   name: string
   profession: string
+  photoUrl: string | null
   signOut: () => Promise<void>
 }
 
-export function ProfileMenu({ name, profession, signOut }: ProfileMenuProps) {
+export function ProfileMenu({ name, profession, photoUrl, signOut }: ProfileMenuProps) {
   const t = useTranslations('professional.shell')
   const { open, mounted, closing, close, triggerProps, panelProps } = usePopoverMenu()
 
@@ -27,12 +29,7 @@ export function ProfileMenu({ name, profession, signOut }: ProfileMenuProps) {
           open && 'bg-foreground/[0.06]',
         )}
       >
-        <span
-          aria-hidden
-          className="grid size-8 shrink-0 place-items-center rounded-[6px] bg-primary/10 text-sm font-medium text-foreground"
-        >
-          {initialsOf(name)}
-        </span>
+        <Avatar src={photoUrl} initials={initialsOf(name)} size="sm" />
         <span className="min-w-0 flex-1">
           <span className="block truncate text-[15px] font-medium">{name}</span>
           <span className="block truncate text-[13px] text-muted-foreground">{profession}</span>

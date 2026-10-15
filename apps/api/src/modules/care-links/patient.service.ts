@@ -8,6 +8,7 @@ import type {
 import { attentionReasonsOf, dayKey, previousDays } from '@mycogni/domain'
 import type { AuthenticatedUser } from '../../auth/token-verifier.ts'
 import { ForbiddenError, NotFoundError } from '../../shared/errors.ts'
+import type { BucketStore } from '../../storage/bucket-store.ts'
 import type { AssessmentRepository } from '../assessments/assessment.repository.ts'
 import { toAssessment } from '../assessments/assessment.service.ts'
 import type { CheckInRepository } from '../check-ins/check-in.repository.ts'
@@ -31,6 +32,7 @@ export interface PatientDependencies {
   checkIns: CheckInRepository
   assessments: AssessmentRepository
   professionals: ProfessionalRepository
+  photos: BucketStore
   now: () => Date
 }
 
@@ -46,6 +48,7 @@ export function createPatientService({
   checkIns,
   assessments,
   professionals,
+  photos,
   now,
 }: PatientDependencies): PatientService {
   async function requireVerified(user: AuthenticatedUser): Promise<void> {
@@ -59,11 +62,15 @@ export function createPatientService({
     professionalId: string,
     links: PatientLinkRecord[],
   ): Promise<PatientSummary[]> {
-    const loaded = await loadPatientSignals(metrics, professionalId, links, now())
+    const [loaded, photoUrls] = await Promise.all([
+      loadPatientSignals(metrics, professionalId, links, now()),
+      photos.sign(links.flatMap((link) => (link.avatarPath === null ? [] : [link.avatarPath]))),
+    ])
     return loaded.map(({ link, last, stats, screenings, signals }) => ({
       id: link.patientId,
       linkId: link.linkId,
       name: link.name,
+      photoUrl: link.avatarPath === null ? null : (photoUrls[link.avatarPath] ?? null),
       startedAt: link.startedAt.toISOString(),
       sharesHistory: link.sharesHistory,
       lastCheckIn:

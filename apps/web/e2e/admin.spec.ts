@@ -1,7 +1,7 @@
 import { randomUUID } from 'node:crypto'
 import { expect, test, type Page } from '@playwright/test'
 import { z } from 'zod'
-import { apiUrl } from './support/api'
+import { apiUrl, sendRegistrationDocument } from './support/api'
 import { signedOut } from './support/session'
 import { createUser, localSupabase, makeAdmin, supabaseUrl, uniqueEmail } from './support/supabase'
 
@@ -36,6 +36,7 @@ async function pendingProfessional(fullName: string, registration: string): Prom
   if (!response.ok) {
     throw new Error(`Could not register ${fullName}: ${String(response.status)}`)
   }
+  await sendRegistrationDocument(email, password)
 }
 
 test.describe('as the MyCogniAI team', () => {

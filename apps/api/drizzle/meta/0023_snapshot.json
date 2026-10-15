@@ -1,5 +1,5 @@
 {
-  "id": "24ba28f9-1d99-41b5-af10-78d4d8785b5a",
+  "id": "cf95565f-72db-435b-9a0a-904d6830cb24",
   "prevId": "7884e37e-a0e9-43d3-8772-5dd9c6b0737a",
   "version": "7",
   "dialect": "postgresql",
@@ -1651,8 +1651,8 @@
       "checkConstraints": {},
       "isRLSEnabled": true
     },
-    "public.professional_alerts": {
-      "name": "professional_alerts",
+    "public.professional_documents": {
+      "name": "professional_documents",
       "schema": "",
       "columns": {
         "id": {
@@ -1662,35 +1662,33 @@
           "notNull": true,
           "default": "gen_random_uuid()"
         },
-        "care_link_id": {
-          "name": "care_link_id",
+        "user_id": {
+          "name": "user_id",
           "type": "uuid",
           "primaryKey": false,
           "notNull": true
         },
-        "professional_id": {
-          "name": "professional_id",
-          "type": "uuid",
+        "path": {
+          "name": "path",
+          "type": "text",
           "primaryKey": false,
           "notNull": true
         },
-        "patient_id": {
-          "name": "patient_id",
-          "type": "uuid",
+        "file_name": {
+          "name": "file_name",
+          "type": "text",
           "primaryKey": false,
           "notNull": true
         },
-        "reason": {
-          "name": "reason",
-          "type": "alert_reason",
-          "typeSchema": "public",
+        "content_type": {
+          "name": "content_type",
+          "type": "text",
           "primaryKey": false,
           "notNull": true
         },
-        "level": {
-          "name": "level",
-          "type": "alert_level",
-          "typeSchema": "public",
+        "size_bytes": {
+          "name": "size_bytes",
+          "type": "integer",
           "primaryKey": false,
           "notNull": true
         },
@@ -1700,54 +1698,14 @@
           "primaryKey": false,
           "notNull": true,
           "default": "now()"
-        },
-        "acknowledged_at": {
-          "name": "acknowledged_at",
-          "type": "timestamp with time zone",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "resolved_at": {
-          "name": "resolved_at",
-          "type": "timestamp with time zone",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "emailed_at": {
-          "name": "emailed_at",
-          "type": "timestamp with time zone",
-          "primaryKey": false,
-          "notNull": false
         }
       },
       "indexes": {
-        "professional_alerts_open_key": {
-          "name": "professional_alerts_open_key",
+        "professional_documents_user_created_idx": {
+          "name": "professional_documents_user_created_idx",
           "columns": [
             {
-              "expression": "care_link_id",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            },
-            {
-              "expression": "reason",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": true,
-          "where": "resolved_at is null",
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        },
-        "professional_alerts_professional_created_idx": {
-          "name": "professional_alerts_professional_created_idx",
-          "columns": [
-            {
-              "expression": "professional_id",
+              "expression": "user_id",
               "isExpression": false,
               "asc": true,
               "nulls": "last"
@@ -1763,71 +1721,16 @@
           "concurrently": false,
           "method": "btree",
           "with": {}
-        },
-        "professional_alerts_emailed_idx": {
-          "name": "professional_alerts_emailed_idx",
-          "columns": [
-            {
-              "expression": "professional_id",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            },
-            {
-              "expression": "patient_id",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            },
-            {
-              "expression": "emailed_at",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": false,
-          "where": "emailed_at is not null",
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
         }
       },
       "foreignKeys": {
-        "professional_alerts_care_link_id_care_links_id_fk": {
-          "name": "professional_alerts_care_link_id_care_links_id_fk",
-          "tableFrom": "professional_alerts",
-          "tableTo": "care_links",
-          "columnsFrom": [
-            "care_link_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
-        },
-        "professional_alerts_professional_id_users_id_fk": {
-          "name": "professional_alerts_professional_id_users_id_fk",
-          "tableFrom": "professional_alerts",
+        "professional_documents_user_id_users_id_fk": {
+          "name": "professional_documents_user_id_users_id_fk",
+          "tableFrom": "professional_documents",
           "tableTo": "users",
           "schemaTo": "auth",
           "columnsFrom": [
-            "professional_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
-        },
-        "professional_alerts_patient_id_users_id_fk": {
-          "name": "professional_alerts_patient_id_users_id_fk",
-          "tableFrom": "professional_alerts",
-          "tableTo": "users",
-          "schemaTo": "auth",
-          "columnsFrom": [
-            "patient_id"
+            "user_id"
           ],
           "columnsTo": [
             "id"
@@ -1837,29 +1740,58 @@
         }
       },
       "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
+      "uniqueConstraints": {
+        "professional_documents_path_unique": {
+          "name": "professional_documents_path_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "path"
+          ]
+        }
+      },
       "policies": {
-        "professional_alerts_select_own_link": {
-          "name": "professional_alerts_select_own_link",
+        "professional_documents_select_own": {
+          "name": "professional_documents_select_own",
           "as": "PERMISSIVE",
           "for": "SELECT",
           "to": [
             "authenticated"
           ],
-          "using": "\"professional_alerts\".\"professional_id\" = (select auth.uid()) and exists (\n  select 1 from public.care_links cl\n  where cl.id = \"professional_alerts\".\"care_link_id\"\n    and cl.professional_id = (select auth.uid())\n    and cl.ended_at is null\n)"
+          "using": "\"professional_documents\".\"user_id\" = (select auth.uid())"
         },
-        "professional_alerts_update_open_own_link": {
-          "name": "professional_alerts_update_open_own_link",
+        "professional_documents_select_admin": {
+          "name": "professional_documents_select_admin",
           "as": "PERMISSIVE",
-          "for": "UPDATE",
+          "for": "SELECT",
           "to": [
             "authenticated"
           ],
-          "using": "\"professional_alerts\".\"professional_id\" = (select auth.uid()) and \"professional_alerts\".\"resolved_at\" is null and exists (\n  select 1 from public.care_links cl\n  where cl.id = \"professional_alerts\".\"care_link_id\"\n    and cl.professional_id = (select auth.uid())\n    and cl.ended_at is null\n)",
-          "withCheck": "\"professional_alerts\".\"professional_id\" = (select auth.uid())"
+          "using": "public.is_admin()"
+        },
+        "professional_documents_insert_own": {
+          "name": "professional_documents_insert_own",
+          "as": "PERMISSIVE",
+          "for": "INSERT",
+          "to": [
+            "authenticated"
+          ],
+          "withCheck": "\"professional_documents\".\"user_id\" = (select auth.uid())\n        and split_part(\"professional_documents\".\"path\", '/', 1) = (select auth.uid())::text\n        and exists (\n          select 1 from public.professional_profiles p\n          where p.user_id = (select auth.uid()) and p.status <> 'verified'\n        )\n        and exists (\n          select 1 from storage.objects o\n          where o.bucket_id = 'professional-documents' and o.name = \"professional_documents\".\"path\"\n        )"
         }
       },
-      "checkConstraints": {},
+      "checkConstraints": {
+        "professional_documents_content_type": {
+          "name": "professional_documents_content_type",
+          "value": "\"professional_documents\".\"content_type\" in ('application/pdf', 'image/jpeg', 'image/png')"
+        },
+        "professional_documents_size": {
+          "name": "professional_documents_size",
+          "value": "\"professional_documents\".\"size_bytes\" between 1 and 10485760"
+        },
+        "professional_documents_file_name_length": {
+          "name": "professional_documents_file_name_length",
+          "value": "char_length(\"professional_documents\".\"file_name\") between 1 and 200"
+        }
+      },
       "isRLSEnabled": true
     },
     "public.professional_profiles": {
@@ -1908,6 +1840,18 @@
         },
         "verified_at": {
           "name": "verified_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "review_note": {
+          "name": "review_note",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "reviewed_at": {
+          "name": "reviewed_at",
           "type": "timestamp with time zone",
           "primaryKey": false,
           "notNull": false
@@ -1971,7 +1915,12 @@
           "withCheck": "\"professional_profiles\".\"user_id\" = (select auth.uid())"
         }
       },
-      "checkConstraints": {},
+      "checkConstraints": {
+        "professional_profiles_review_note_length": {
+          "name": "professional_profiles_review_note_length",
+          "value": "char_length(\"professional_profiles\".\"review_note\") <= 500"
+        }
+      },
       "isRLSEnabled": true
     },
     "public.profiles": {
@@ -2096,28 +2045,6 @@
     }
   },
   "enums": {
-    "public.alert_level": {
-      "name": "alert_level",
-      "schema": "public",
-      "values": [
-        "urgent",
-        "watch",
-        "info"
-      ]
-    },
-    "public.alert_reason": {
-      "name": "alert_reason",
-      "schema": "public",
-      "values": [
-        "risk_item",
-        "summary_urgent",
-        "severe_screening",
-        "summary_watch",
-        "low_mood",
-        "mood_drop",
-        "inactive"
-      ]
-    },
     "public.assessment_instrument": {
       "name": "assessment_instrument",
       "schema": "public",

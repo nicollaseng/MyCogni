@@ -1,6 +1,8 @@
 import type { CareLink } from '@mycogni/contracts'
 import Link from 'next/link'
 import { useLocale, useTranslations } from 'next-intl'
+import { initialsOf } from '@/shared/lib/initials'
+import { Avatar } from '@/shared/components/avatar'
 import { Panel, Section } from '@/shared/components/section'
 import type { ActionResult } from '@/shared/lib/actions/result'
 import { formatDay } from '../format-day'
@@ -18,6 +20,7 @@ interface CareLinksProps {
 export function CareLinks({ links, timeZone, end, isProfessional }: CareLinksProps) {
   const t = useTranslations('care.links')
   const kinds = useTranslations('common.professionalKinds')
+  const common = useTranslations('common')
   const locale = useLocale()
 
   return (
@@ -29,20 +32,28 @@ export function CareLinks({ links, timeZone, end, isProfessional }: CareLinksPro
           ) : (
             <ul>
               {links.map((link) => (
-                <li key={link.id} className="space-y-2 py-3.5">
-                  <div className="space-y-0.5">
-                    <p>{link.professional.name}</p>
-                    <p className="text-sm text-muted-foreground">
-                      {kinds(link.professional.kind)} ·{' '}
-                      {t('since', {
-                        date: formatDay(link.startedAt, timeZone, locale),
-                      })}
-                    </p>
-                    <p className="text-sm text-muted-foreground">
-                      {t(link.sharesHistory ? 'history.shared' : 'history.fromStart')}
-                    </p>
+                <li key={link.id} className="flex gap-3.5 py-3.5">
+                  <Avatar
+                    src={link.professional.photoUrl}
+                    initials={initialsOf(link.professional.name)}
+                    alt={common('photoOf', { name: link.professional.name })}
+                    size="md"
+                  />
+                  <div className="min-w-0 flex-1 space-y-2">
+                    <div className="space-y-0.5">
+                      <p>{link.professional.name}</p>
+                      <p className="text-sm text-muted-foreground">
+                        {kinds(link.professional.kind)} ·{' '}
+                        {t('since', {
+                          date: formatDay(link.startedAt, timeZone, locale),
+                        })}
+                      </p>
+                      <p className="text-sm text-muted-foreground">
+                        {t(link.sharesHistory ? 'history.shared' : 'history.fromStart')}
+                      </p>
+                    </div>
+                    <EndCareLink id={link.id} name={link.professional.name} end={end} />
                   </div>
-                  <EndCareLink id={link.id} name={link.professional.name} end={end} />
                 </li>
               ))}
             </ul>

@@ -1,4 +1,5 @@
 import {
+  documentLinkSchema,
   professionalForReviewListSchema,
   professionalReviewQuerySchema,
   reviewProfessionalSchema,
@@ -27,6 +28,11 @@ export function adminRoutes(service: AdminService): FastifyPluginCallbackZod {
         await service.review(currentUser(request), request.params.userId, request.body)
         return reply.status(204).send()
       },
+    )
+    app.get(
+      '/admin/documents/:id/link',
+      { schema: { params: z.object({ id: z.uuid() }), response: { 200: documentLinkSchema } } },
+      (request) => service.documentLink(currentUser(request), request.params.id),
     )
     done()
   }

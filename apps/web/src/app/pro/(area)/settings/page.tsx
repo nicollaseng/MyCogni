@@ -1,6 +1,9 @@
 import type { Metadata } from 'next'
+import { registrationProofOf } from '@mycogni/domain'
 import { getLocale, getTranslations } from 'next-intl/server'
-import { changeEmail, changePassword } from '@/features/account/actions'
+import type { ReactNode } from 'react'
+import { changeEmail, changePassword, refreshAfterUpload } from '@/features/account/actions'
+import { PhotoField } from '@/features/account/components/photo-field'
 import { EmailForm } from '@/features/account/components/email-form'
 import { PasswordForm } from '@/features/account/components/password-form'
 import { SettingsRow } from '@/features/account/components/settings-row'
@@ -9,8 +12,12 @@ import { chooseLocale } from '@/features/locale/actions'
 import { LocaleSelect } from '@/features/locale/components/locale-select'
 import { requireProfessional } from '@/features/professional/access'
 import { renameProfessional } from '@/features/professional/actions'
+import { DocumentReplace } from '@/features/professional/components/document-replace'
+import { DocumentSummary } from '@/features/professional/components/document-summary'
+import { DocumentUpload } from '@/features/professional/components/document-upload'
 import { ProfessionalNameForm } from '@/features/professional/components/professional-name-form'
 import { SignOutIcon } from '@/features/professional/components/icons'
+import { TeamNote } from '@/features/professional/components/team-note'
 import {
   quietButton,
   Surface,
@@ -19,7 +26,9 @@ import {
 } from '@/features/professional/components/workspace'
 import { teamEmail } from '@/features/professional/contact'
 import { formatDate } from '@/features/professional/dates'
+import { initialsOf } from '@/shared/lib/initials'
 import { requireProfile } from '@/shared/lib/auth/session'
+import { fetchMyPhotoUrl } from '@/shared/lib/photos'
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations('professional.meta')
@@ -36,14 +45,25 @@ function ReadOnlyRow({ label, value }: { label: string; value: string }) {
 }
 
 export default async function ProfessionalSettingsPage() {
-  const [professional, profile, t, account, kinds, locale] = await Promise.all([
-    requireProfessional(),
-    requireProfile(),
-    getTranslations('professional.settings'),
-    getTranslations('account'),
-    getTranslations('common.professionalKinds'),
-    getLocale(),
-  ])
+  const [professional, profile, photoUrl, t, account, common, verification, locale] =
+    await Promise.all([
+      requireProfessional(),
+      requireProfile(),
+      fetchMyPhotoUrl(),
+      getTranslations('professional.settings'),
+      getTranslations('account'),
+      getTranslations('common'),
+      getTranslations('verification.document'),
+      getLocale(),
+    ])
+  const mailLink = (chunks: ReactNode) => (
+    <a
+      href={`mailto:${teamEmail}`}
+      className="text-foreground underline decoration-1 underline-offset-4"
+    >
+      {chunks}
+    </a>
+  )
   const statusText =
     professional.status === 'verified' && professional.verifiedAt !== null
       ? t('profile.verified', {
@@ -60,10 +80,25 @@ export default async function ProfessionalSettingsPage() {
       <WorkspaceHeader title={t('title')} description={t('description')} />
       <WorkspaceSection title={t('profile.title')}>
         <Surface className="max-w-3xl px-4 py-1 sm:px-5">
+          <div className="py-4">
+            <PhotoField
+              photoUrl={photoUrl}
+              initials={initialsOf(professional.fullName)}
+              alt={common('photoOf', { name: professional.fullName })}
+              size="lg"
+              onSaved={refreshAfterUpload}
+            >
+              <p className="text-sm text-muted-foreground">{t('profile.photo')}</p>
+              <p className="text-sm text-pretty">{t('profile.photoHint')}</p>
+            </PhotoField>
+          </div>
           <SettingsRow label={t('profile.name')} value={professional.fullName}>
             <ProfessionalNameForm initialName={professional.fullName} rename={renameProfessional} />
           </SettingsRow>
-          <ReadOnlyRow label={t('profile.kind')} value={kinds(professional.kind)} />
+          <ReadOnlyRow
+            label={t('profile.kind')}
+            value={common(`professionalKinds.${professional.kind}`)}
+          />
           <ReadOnlyRow
             label={t('profile.registration')}
             value={professional.registration ?? t('profile.noRegistration')}
@@ -71,18 +106,34 @@ export default async function ProfessionalSettingsPage() {
           <ReadOnlyRow label={t('profile.status')} value={statusText} />
         </Surface>
         <p className="max-w-3xl text-sm leading-relaxed text-muted-foreground">
-          {t.rich('profile.locked', {
-            email: teamEmail,
-            link: (chunks) => (
-              <a
-                href={`mailto:${teamEmail}`}
-                className="text-foreground underline decoration-1 underline-offset-4"
-              >
-                {chunks}
-              </a>
-            ),
-          })}
+          {t.rich('profile.locked', { email: teamEmail, link: mailLink })}
         </p>
+      </WorkspaceSection>
+      <WorkspaceSection title={verification('title')}>
+        <Surface className="max-w-3xl space-y-4 px-4 py-4 sm:px-5">
+          <DocumentSummary professional={professional} timeZone={profile.timezone} />
+          {professional.status === 'pending' && professional.document !== null && (
+            <DocumentReplace
+              proof={registrationProofOf(professional.kind)}
+              onSent={refreshAfterUpload}
+            />
+          )}
+        </Surface>
+        {professional.status === 'rejected' && <TeamNote note={professional.reviewNote} />}
+        {professional.status === 'verified' && (
+          <p className="max-w-3xl text-sm leading-relaxed text-muted-foreground">
+            {verification.rich('locked', { email: teamEmail, link: mailLink })}
+          </p>
+        )}
+        {professional.status !== 'verified' &&
+          (professional.status === 'rejected' || professional.document === null) && (
+            <Surface className="max-w-3xl px-4 py-5 sm:px-5">
+              <DocumentUpload
+                proof={registrationProofOf(professional.kind)}
+                onSent={refreshAfterUpload}
+              />
+            </Surface>
+          )}
       </WorkspaceSection>
       <WorkspaceSection title={t('account.title')}>
         <Surface className="max-w-3xl px-4 py-1 sm:px-5">

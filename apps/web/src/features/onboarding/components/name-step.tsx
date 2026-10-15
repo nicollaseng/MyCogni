@@ -13,14 +13,16 @@ import { StepHeading } from '@/shared/components/step-heading'
 interface NameStepProps {
   initialName: string
   save: OnboardingActions['saveName']
-  onDone: () => void
+  onDone: (displayName: string) => void
 }
 
 export function NameStep({ initialName, save, onDone }: NameStepProps) {
   const t = useTranslations('onboarding.name')
   const [name, setName] = useState(initialName)
-  const { submit, pending, error } = useSubmit(save, onDone)
   const displayName = name.trim()
+  const { submit, pending, error } = useSubmit(save, () => {
+    onDone(displayName)
+  })
 
   function handleSubmit(event: SubmitEvent<HTMLFormElement>) {
     event.preventDefault()

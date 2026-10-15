@@ -26,6 +26,14 @@ export const onboarding = {
     submit: 'Continuar',
     saving: 'Salvando…',
   },
+  photo: {
+    title: 'Quer adicionar uma foto?',
+    lead: 'É opcional. Aparece para você e para os profissionais com quem você escolher compartilhar seus registros.',
+    alt: 'Sua foto',
+    continue: 'Continuar',
+    skip: 'Continuar sem foto',
+    later: 'Dá para trocar ou remover a foto quando quiser, no seu perfil.',
+  },
   intro: {
     title: 'Dois questionários curtos',
     lead: 'O <nowrap>PHQ-9</nowrap> e o <nowrap>GAD-7</nowrap> são usados no mundo todo para acompanhar sinais de depressão e de ansiedade. Eles viram o seu ponto de partida.',

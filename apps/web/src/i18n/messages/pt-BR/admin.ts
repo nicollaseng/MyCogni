@@ -5,7 +5,7 @@ export const admin = {
   professionals: {
     title: 'Profissionais',
     description:
-      'Confira o nome e o registro no conselho antes de aprovar. Só profissionais verificados podem convidar pacientes.',
+      'Abra o comprovante e confira o nome e o registro antes de aprovar. Só profissionais verificados podem convidar pacientes.',
     tabs: {
       label: 'Situação do cadastro',
       pending: 'Aguardando',
@@ -17,6 +17,7 @@ export const admin = {
       kind: 'Profissão',
       registration: 'Registro',
       email: 'Email',
+      document: 'Comprovante',
       createdAt: 'Cadastro',
       actions: 'Ações',
     },
@@ -32,6 +33,19 @@ export const admin = {
     noEmail: 'Sem email',
     createdAt: 'Cadastro em {date}',
     reviewedAt: 'Revisado em {date}',
+    document: {
+      open: 'Abrir',
+      openLabel: 'Abrir comprovante de {name} em nova aba',
+      missing: 'Aguardando envio',
+    },
+    rejectForm: {
+      label: 'Motivo da recusa para {name}',
+      hint: 'O profissional lê esta mensagem. Diga o que precisa ser corrigido.',
+      confirm: 'Confirmar recusa',
+      cancel: 'Cancelar',
+      required: 'Escreva o motivo, com pelo menos 3 caracteres.',
+    },
+    note: 'Motivo: {note}',
     approve: 'Aprovar',
     reject: 'Recusar',
     approved: 'Cadastro de {name} aprovado.',

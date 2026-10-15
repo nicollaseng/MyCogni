@@ -3,7 +3,9 @@
 import Link from 'next/link'
 import { useTranslations } from 'next-intl'
 import { useId, useRef, useState } from 'react'
+import { Avatar } from '@/shared/components/avatar'
 import { Wordmark } from '@/shared/components/wordmark'
+import { initialsOf } from '@/shared/lib/initials'
 import { drawerMotion, useAnimatedDialog } from '@/shared/hooks/use-animated-dialog'
 import { CloseIcon, MenuIcon, SettingsIcon, SignOutIcon } from './icons'
 import { ProfessionalNavigation } from './professional-navigation'
@@ -11,6 +13,7 @@ import { ProfessionalNavigation } from './professional-navigation'
 interface MobileMenuProps {
   name: string
   profession: string
+  photoUrl: string | null
   verified: boolean
   signOut: () => Promise<void>
 }
@@ -18,7 +21,7 @@ interface MobileMenuProps {
 const entryStyle =
   'flex w-full items-center gap-3 rounded-[6px] px-3 py-2 text-left text-[15px] text-muted-foreground transition-colors hover:bg-foreground/[0.04] hover:text-foreground'
 
-export function MobileMenu({ name, profession, verified, signOut }: MobileMenuProps) {
+export function MobileMenu({ name, profession, photoUrl, verified, signOut }: MobileMenuProps) {
   const t = useTranslations('professional.shell')
   const closeButton = useRef<HTMLButtonElement>(null)
   const [expanded, setExpanded] = useState(false)
@@ -83,9 +86,12 @@ export function MobileMenu({ name, profession, verified, signOut }: MobileMenuPr
             </div>
           )}
           <div className="mt-auto space-y-1 pt-6">
-            <div className="px-3 pb-2">
-              <p className="truncate text-[15px] font-medium">{name}</p>
-              <p className="truncate text-[13px] text-muted-foreground">{profession}</p>
+            <div className="flex items-center gap-3 px-3 pb-2">
+              <Avatar src={photoUrl} initials={initialsOf(name)} size="md" />
+              <div className="min-w-0">
+                <p className="truncate text-[15px] font-medium">{name}</p>
+                <p className="truncate text-[13px] text-muted-foreground">{profession}</p>
+              </div>
             </div>
             <Link href="/pro/settings" onClick={close} className={entryStyle}>
               <SettingsIcon />

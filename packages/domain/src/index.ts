@@ -155,3 +155,37 @@ export {
   type WeekSummary,
 } from './patterns/week.ts'
 export { moodByWeekday, type WeekdayMood } from './patterns/weekdays.ts'
+export {
+  isOwnProfessionalDocumentPath,
+  isProfessionalDocumentType,
+  professionalDocumentBucket,
+  professionalDocumentExtension,
+  professionalDocumentLimits,
+  professionalDocumentName,
+  professionalDocumentProblem,
+  professionalDocumentTypes,
+  registrationProofOf,
+  registrationProofs,
+  type ProfessionalDocumentType,
+  type RegistrationProof,
+} from './care/documents.ts'
+export {
+  cleanFileName,
+  uploadProblem,
+  type UploadCandidate,
+  type UploadProblem,
+  type UploadRule,
+} from './files/uploads.ts'
+export {
+  avatarBucket,
+  avatarExtension,
+  avatarMaxBytes,
+  avatarProblem,
+  avatarRenderSize,
+  avatarSourceMaxBytes,
+  avatarSourceProblem,
+  avatarTypes,
+  isAvatarType,
+  isOwnAvatarPath,
+  type AvatarType,
+} from './profile/photos.ts'

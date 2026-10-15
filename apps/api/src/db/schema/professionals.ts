@@ -1,6 +1,10 @@
-import { professionalKinds, professionalStatuses } from '@mycogni/domain'
+import {
+  professionalDocumentLimits,
+  professionalKinds,
+  professionalStatuses,
+} from '@mycogni/domain'
 import { sql } from 'drizzle-orm'
-import { pgEnum, pgPolicy, pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core'
+import { check, pgEnum, pgPolicy, pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core'
 import { authenticatedRole, authUid, authUsers } from 'drizzle-orm/supabase'
 
 export const professionalKind = pgEnum('professional_kind', professionalKinds)
@@ -19,8 +23,14 @@ export const professionalProfiles = pgTable(
     status: professionalStatus('status').notNull().default('pending'),
     createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
     verifiedAt: timestamp('verified_at', { withTimezone: true }),
+    reviewNote: text('review_note'),
+    reviewedAt: timestamp('reviewed_at', { withTimezone: true }),
   },
   (table) => [
+    check(
+      'professional_profiles_review_note_length',
+      sql`char_length(${table.reviewNote}) <= ${sql.raw(String(professionalDocumentLimits.reviewNote))}`,
+    ),
     pgPolicy('professional_profiles_select_own', {
       for: 'select',
       to: authenticatedRole,

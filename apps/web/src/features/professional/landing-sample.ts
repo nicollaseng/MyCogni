@@ -84,6 +84,7 @@ export function samplePatient(now: Date): PatientSummary {
     id: '00000000-0000-4000-8000-000000000001',
     linkId: '00000000-0000-4000-8000-000000000002',
     name: 'Rafael Mendes',
+    photoUrl: null,
     startedAt: new Date(now.getTime() - 46 * dayInMs).toISOString(),
     sharesHistory: true,
     lastCheckIn: { moodLevel: 2, recordedAt: now.toISOString() },

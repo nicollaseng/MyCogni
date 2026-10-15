@@ -38,6 +38,7 @@ export interface ReceivedInvitationRecord {
 export interface InvitationPreviewRecord {
   professionalName: string
   professionalKind: ProfessionalKind
+  professionalAvatarPath: string | null
   status: InvitationStatus
   expiresAt: Date
 }
@@ -201,6 +202,7 @@ export function createInvitationRepository(db: Database): InvitationRepository {
         const rows = await tx.execute<{
           professional_name: string
           professional_kind: ProfessionalKind
+          professional_avatar_path: string | null
           status: InvitationStatus
           expires_at: string
         }>(sql`select * from public.invitation_preview(${code})`)
@@ -210,6 +212,7 @@ export function createInvitationRepository(db: Database): InvitationRepository {
           : {
               professionalName: row.professional_name,
               professionalKind: row.professional_kind,
+              professionalAvatarPath: row.professional_avatar_path,
               status: row.status,
               expiresAt: new Date(row.expires_at),
             }

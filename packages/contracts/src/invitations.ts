@@ -24,6 +24,12 @@ export const professionalSummarySchema = z.object({
 
 export type ProfessionalSummary = z.infer<typeof professionalSummarySchema>
 
+export const linkedProfessionalSchema = professionalSummarySchema.extend({
+  photoUrl: z.url().nullable(),
+})
+
+export type LinkedProfessional = z.infer<typeof linkedProfessionalSchema>
+
 export const createInvitationSchema = z.discriminatedUnion('channel', [
   z.object({
     channel: z.literal('email'),
@@ -63,7 +69,7 @@ export const createdInvitationSchema = z.object({
 export type CreatedInvitation = z.infer<typeof createdInvitationSchema>
 
 export const invitationPreviewSchema = z.object({
-  professional: professionalSummarySchema.pick({ name: true, kind: true }),
+  professional: linkedProfessionalSchema.pick({ name: true, kind: true, photoUrl: true }),
   status: z.enum(invitationStatuses),
   expiresAt: timestamp,
 })

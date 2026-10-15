@@ -11,7 +11,12 @@ type Revoke = (id: string) => Promise<ActionResult<null>>
 
 const link: CareLink = {
   id: '3e2d1c0b-0000-4000-8000-000000000001',
-  professional: { name: 'Helena Prado', kind: 'psychologist', registration: 'CRP 06/123456' },
+  professional: {
+    name: 'Helena Prado',
+    kind: 'psychologist',
+    registration: 'CRP 06/123456',
+    photoUrl: null,
+  },
   sharesHistory: false,
   startedAt: '2026-10-01T15:00:00.000Z',
 }

@@ -16,12 +16,14 @@ import {
   receivedInvitationSchema,
   sentInvitationListSchema,
   attachedInvitationsSchema,
+  documentLinkSchema,
   type AcceptInvitationInput,
   type Assessment,
   type CareLink,
   type CheckIn,
   type CreatedInvitation,
   type CreateInvitationInput,
+  type DocumentLink,
   type InvitationPreview,
   type NotificationList,
   type PatientSummary,
@@ -33,6 +35,7 @@ import {
   type RegisterProfessionalInput,
   type ReviewProfessionalInput,
   type SentInvitation,
+  type SubmitProfessionalDocumentInput,
   type UpdateProfessionalInput,
 } from '@mycogni/contracts'
 import type { Locale, ProfessionalStatus } from '@mycogni/domain'
@@ -264,4 +267,29 @@ export async function reviewProfessional(
     method: 'POST',
     body,
   })
+}
+
+export function submitProfessionalDocument(
+  body: SubmitProfessionalDocumentInput,
+): Promise<ProfessionalProfile> {
+  return apiRequest({
+    path: '/v1/professional/documents',
+    schema: professionalProfileSchema,
+    method: 'POST',
+    body,
+  })
+}
+
+export async function fetchDocumentLink(id: string): Promise<DocumentLink | null> {
+  try {
+    return await apiRequest({
+      path: `/v1/admin/documents/${encodeURIComponent(id)}/link`,
+      schema: documentLinkSchema,
+    })
+  } catch (error) {
+    if (error instanceof ApiError && (error.status === 403 || error.status === 404)) {
+      return null
+    }
+    throw error
+  }
 }

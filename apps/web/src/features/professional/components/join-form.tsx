@@ -39,7 +39,7 @@ function KindOption({
   return (
     <label
       className={cn(
-        'flex cursor-pointer items-center justify-center rounded-full border px-4 py-2.5 text-[15px] transition-colors has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-focus-visible:outline-foreground',
+        'flex cursor-pointer items-center justify-center rounded-[6px] border px-4 py-2.5 text-[15px] transition-colors has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-focus-visible:outline-foreground',
         checked ? 'border-primary bg-primary text-primary-foreground' : 'border-rule hover:bg-sage',
       )}
     >
@@ -177,7 +177,7 @@ export function JoinForm({ join }: { join: Join }) {
 
       <div>
         <ActionError error={error} />
-        <Button type="submit" size="lg" shape="pill" disabled={pending}>
+        <Button type="submit" size="lg" disabled={pending}>
           {pending ? t('sending') : t('submit')}
         </Button>
       </div>

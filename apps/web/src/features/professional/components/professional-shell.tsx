@@ -11,10 +11,11 @@ import { warnTokens } from './workspace'
 
 interface ProfessionalShellProps {
   professional: ProfessionalProfile
+  photoUrl: string | null
   children: ReactNode
 }
 
-export function ProfessionalShell({ professional, children }: ProfessionalShellProps) {
+export function ProfessionalShell({ professional, photoUrl, children }: ProfessionalShellProps) {
   const t = useTranslations('professional.shell')
   const kinds = useTranslations('common.professionalKinds')
   const verified = professional.status === 'verified'
@@ -34,7 +35,12 @@ export function ProfessionalShell({ professional, children }: ProfessionalShellP
             </div>
           )}
           <div className="mt-auto">
-            <ProfileMenu name={professional.fullName} profession={profession} signOut={signOut} />
+            <ProfileMenu
+              name={professional.fullName}
+              profession={profession}
+              photoUrl={photoUrl}
+              signOut={signOut}
+            />
           </div>
         </div>
       </aside>
@@ -44,6 +50,7 @@ export function ProfessionalShell({ professional, children }: ProfessionalShellP
           <MobileMenu
             name={professional.fullName}
             profession={profession}
+            photoUrl={photoUrl}
             verified={verified}
             signOut={signOut}
           />

@@ -5,7 +5,7 @@ import { renderWithIntl } from '@/test/render'
 import { ClosedInvite, PendingInvite, SignedOutChoices, UnknownInvite } from './invite-landing'
 
 const preview: InvitationPreview = {
-  professional: { name: 'Helena Prado', kind: 'psychologist' },
+  professional: { name: 'Helena Prado', kind: 'psychologist', photoUrl: null },
   status: 'pending',
   expiresAt: '2026-10-17T12:00:00.000Z',
 }
@@ -19,6 +19,7 @@ describe('invite landing', () => {
     )
 
     expect(screen.getByText('Convite · Psicologia')).toBeInTheDocument()
+    expect(screen.getByText('HP')).toBeInTheDocument()
     expect(
       screen.getByRole('heading', {
         level: 1,
@@ -36,6 +37,25 @@ describe('invite landing', () => {
     expect(screen.getByRole('link', { name: 'Já tenho conta' })).toHaveAttribute(
       'href',
       '/continue?to=%2Finvite%2FK7M2X9QA&via=sign-in',
+    )
+  })
+
+  it('shows the photo of the professional who invites', () => {
+    renderWithIntl(
+      <PendingInvite
+        preview={{
+          ...preview,
+          professional: { ...preview.professional, photoUrl: 'https://exemplo.com/helena.jpg' },
+        }}
+        now={new Date('2026-10-16T08:00:00.000Z')}
+      >
+        <SignedOutChoices code="K7M2X9QA" />
+      </PendingInvite>,
+    )
+
+    expect(screen.getByRole('img', { name: 'Foto de Helena Prado' })).toHaveAttribute(
+      'src',
+      'https://exemplo.com/helena.jpg',
     )
   })
 
