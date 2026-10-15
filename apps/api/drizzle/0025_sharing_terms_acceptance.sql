@@ -1,0 +1,1 @@
+ALTER TABLE "care_links" ADD COLUMN "consent_accepted_at" timestamp with time zone DEFAULT now() NOT NULL;

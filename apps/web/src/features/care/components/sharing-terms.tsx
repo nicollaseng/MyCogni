@@ -3,7 +3,12 @@ import Link from 'next/link'
 import { useTranslations } from 'next-intl'
 import { Section } from '@/shared/components/section'
 
-export function SharingTerms({ name }: { name: string }) {
+interface SharingTermsProps {
+  name: string
+  action?: 'accept' | 'confirm'
+}
+
+export function SharingTerms({ name, action = 'accept' }: SharingTermsProps) {
   const t = useTranslations('care.accept.terms')
 
   return (
@@ -28,7 +33,9 @@ export function SharingTerms({ name }: { name: string }) {
             ),
           })}
         </p>
-        <p className="text-muted-foreground">{t('agreement')}</p>
+        <p className="text-muted-foreground">
+          {t(action === 'accept' ? 'agreement' : 'confirmAgreement')}
+        </p>
       </div>
     </Section>
   )

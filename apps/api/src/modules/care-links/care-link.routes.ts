@@ -3,6 +3,7 @@ import {
   careLinkListSchema,
   checkInListSchema,
   checkInQuerySchema,
+  confirmSharingTermsSchema,
   patientSummaryListSchema,
   patientSummarySchema,
   professionalOverviewSchema,
@@ -15,6 +16,8 @@ import type { PatientService } from './patient.service.ts'
 
 const byPatient = z.object({ patientId: z.uuid() })
 
+const byLink = z.object({ id: z.uuid() })
+
 export function careLinkRoutes(
   links: CareLinkService,
   patients: PatientService,
@@ -23,11 +26,15 @@ export function careLinkRoutes(
     app.get('/care-links', { schema: { response: { 200: careLinkListSchema } } }, (request) =>
       links.list(currentUser(request)),
     )
+    app.post('/care-links/:id/end', { schema: { params: byLink } }, async (request, reply) => {
+      await links.end(currentUser(request), request.params.id)
+      return reply.status(204).send()
+    })
     app.post(
-      '/care-links/:id/end',
-      { schema: { params: z.object({ id: z.uuid() }) } },
+      '/care-links/:id/terms',
+      { schema: { params: byLink, body: confirmSharingTermsSchema } },
       async (request, reply) => {
-        await links.end(currentUser(request), request.params.id)
+        await links.confirmTerms(currentUser(request), request.params.id, request.body)
         return reply.status(204).send()
       },
     )

@@ -1,12 +1,11 @@
 import type { CareLink } from '@mycogni/contracts'
 import Link from 'next/link'
-import { useLocale, useTranslations } from 'next-intl'
-import { initialsOf } from '@/shared/lib/initials'
-import { Avatar } from '@/shared/components/avatar'
+import { useTranslations } from 'next-intl'
 import { Panel, Section } from '@/shared/components/section'
 import type { ActionResult } from '@/shared/lib/actions/result'
-import { formatDay } from '../format-day'
+import { termsReviewHref } from '../terms'
 import { EndCareLink } from './end-care-link'
+import { LinkedProfessional } from './linked-professional'
 
 const footLink = 'underline decoration-1 underline-offset-4'
 
@@ -18,42 +17,35 @@ interface CareLinksProps {
 }
 
 export function CareLinks({ links, timeZone, end, isProfessional }: CareLinksProps) {
-  const t = useTranslations('care.links')
-  const kinds = useTranslations('common.professionalKinds')
-  const common = useTranslations('common')
-  const locale = useLocale()
+  const t = useTranslations('care')
 
   return (
     <div id="professionals" className="scroll-mt-8">
-      <Section title={t('title')}>
+      <Section title={t('links.title')}>
         <Panel>
           {links.length === 0 ? (
-            <p className="py-3.5 text-muted-foreground">{t('empty')}</p>
+            <p className="py-3.5 text-muted-foreground">{t('links.empty')}</p>
           ) : (
             <ul>
               {links.map((link) => (
-                <li key={link.id} className="flex gap-3.5 py-3.5">
-                  <Avatar
-                    src={link.professional.photoUrl}
-                    initials={initialsOf(link.professional.name)}
-                    alt={common('photoOf', { name: link.professional.name })}
-                    size="md"
-                  />
-                  <div className="min-w-0 flex-1 space-y-2">
-                    <div className="space-y-0.5">
-                      <p>{link.professional.name}</p>
-                      <p className="text-sm text-muted-foreground">
-                        {kinds(link.professional.kind)} ·{' '}
-                        {t('since', {
-                          date: formatDay(link.startedAt, timeZone, locale),
-                        })}
+                <li key={link.id} className="py-3.5">
+                  <LinkedProfessional link={link} timeZone={timeZone}>
+                    {link.termsOutdated && (
+                      <p>
+                        <Link
+                          href={termsReviewHref(link.id)}
+                          className="inline-flex items-center gap-2 text-sm underline decoration-1 underline-offset-4"
+                        >
+                          <span
+                            aria-hidden
+                            className="size-1.5 shrink-0 rounded-full bg-emphasis"
+                          />
+                          {t('terms.status')}
+                        </Link>
                       </p>
-                      <p className="text-sm text-muted-foreground">
-                        {t(link.sharesHistory ? 'history.shared' : 'history.fromStart')}
-                      </p>
-                    </div>
+                    )}
                     <EndCareLink id={link.id} name={link.professional.name} end={end} />
-                  </div>
+                  </LinkedProfessional>
                 </li>
               ))}
             </ul>
@@ -61,11 +53,11 @@ export function CareLinks({ links, timeZone, end, isProfessional }: CareLinksPro
         </Panel>
         <p className="flex flex-wrap gap-x-6 gap-y-2">
           <Link href="/invites" className={footLink}>
-            {t('invites')}
+            {t('links.invites')}
           </Link>
           {isProfessional && (
             <Link href="/pro" className={footLink}>
-              {t('professionalArea')}
+              {t('links.professionalArea')}
             </Link>
           )}
         </p>
