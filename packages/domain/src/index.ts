@@ -88,4 +88,13 @@ export {
   type JournalShareScope,
   type ShareWindow,
 } from './journal/journal.ts'
+export {
+  insightAttentionLevels,
+  insightAudiences,
+  insightCheckInThreshold,
+  insightLookbackDays,
+  isInsightDue,
+  type InsightAttention,
+  type InsightAudience,
+} from './insights/insights.ts'
 export { isOnboardingReady, type OnboardingProgress } from './onboarding/onboarding.ts'

@@ -141,6 +141,13 @@
       "when": 1792071192906,
       "tag": "0019_journal_bucket_and_grants",
       "breakpoints": true
+    },
+    {
+      "idx": 20,
+      "version": "7",
+      "when": 1792073196504,
+      "tag": "0020_create_insights",
+      "breakpoints": true
     }
   ]
 }

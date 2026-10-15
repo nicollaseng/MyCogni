@@ -9,6 +9,7 @@ const profile: Profile = {
   avatarPath: null,
   timezone: 'America/Sao_Paulo',
   locale: null,
+  journalInInsights: false,
   onboardingCompletedAt: null,
 }
 

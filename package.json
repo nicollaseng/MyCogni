@@ -16,7 +16,9 @@
     "format:check": "prettier --check .",
     "typecheck": "tsc --noEmit && turbo run typecheck",
     "test": "turbo run test",
-    "prepare": "husky"
+    "prepare": "husky",
+    "redis:start": "docker compose up -d redis",
+    "redis:stop": "docker compose stop redis"
   },
   "devDependencies": {
     "@commitlint/cli": "21.2.3",

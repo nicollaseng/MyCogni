@@ -17,6 +17,7 @@ export const profileSchema = z.object({
   avatarPath: z.string().nullable(),
   timezone: z.string(),
   locale: z.enum(locales).nullable(),
+  journalInInsights: z.boolean(),
   onboardingCompletedAt: z.iso.datetime({ offset: true }).nullable(),
 })
 
@@ -26,6 +27,7 @@ export const updateProfileSchema = z.object({
   displayName: z.string().trim().min(1).max(80).optional(),
   timezone: z.string().refine(isTimeZone, 'Invalid time zone').optional(),
   locale: z.enum(locales).optional(),
+  journalInInsights: z.boolean().optional(),
   avatarPath: z.string().min(1).max(200).nullable().optional(),
 })
 

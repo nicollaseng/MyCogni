@@ -1,4 +1,4 @@
-import { defineRailway, github, preserve, project, service } from 'railway/iac'
+import { defineRailway, github, preserve, project, redis, service } from 'railway/iac'
 
 export default defineRailway((ctx) => {
   const source = github('nicollaseng/MyCogni', {
@@ -7,14 +7,16 @@ export default defineRailway((ctx) => {
   const workspace = ['packages/**', 'package.json', 'pnpm-lock.yaml']
   const deploy = { restartPolicyType: 'ON_FAILURE' as const, restartPolicyMaxRetries: 5 }
   const replicas = { 'us-west2-aws': 1 }
+  const cache = redis('redis')
+  const apiBuild = {
+    builder: 'DOCKERFILE' as const,
+    dockerfilePath: 'apps/api/Dockerfile',
+    watchPatterns: ['apps/api/**', ...workspace],
+  }
 
   const api = service('api', {
     source,
-    build: {
-      builder: 'DOCKERFILE',
-      dockerfilePath: 'apps/api/Dockerfile',
-      watchPatterns: ['apps/api/**', ...workspace],
-    },
+    build: apiBuild,
     deploy,
     start: 'node apps/api/dist/server.js',
     preDeploy: 'node apps/api/dist/scripts/migrate.js',
@@ -29,6 +31,25 @@ export default defineRailway((ctx) => {
       SUPABASE_SECRET_KEY: preserve(),
       CORS_ORIGINS: preserve(),
       WEB_URL: preserve(),
+      REDIS_URL: cache.env.REDIS_URL,
+    },
+  })
+
+  const worker = service('worker', {
+    source,
+    build: apiBuild,
+    deploy,
+    start: 'node apps/api/dist/worker.js',
+    replicas,
+    env: {
+      NODE_ENV: 'production',
+      LOG_LEVEL: 'info',
+      DATABASE_URL: preserve(),
+      SUPABASE_URL: preserve(),
+      SUPABASE_SECRET_KEY: preserve(),
+      WEB_URL: preserve(),
+      REDIS_URL: cache.env.REDIS_URL,
+      ANTHROPIC_API_KEY: preserve(),
     },
   })
 
@@ -53,5 +74,5 @@ export default defineRailway((ctx) => {
     },
   })
 
-  return project('mycogni', { resources: [api, web] })
+  return project('mycogni', { resources: [api, web, worker, cache] })
 })

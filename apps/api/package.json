@@ -10,16 +10,20 @@
     "typecheck": "tsc --noEmit",
     "test": "NODE_OPTIONS='--experimental-vm-modules --disable-warning=ExperimentalWarning' jest",
     "db:generate": "drizzle-kit generate",
-    "db:migrate": "node --env-file-if-exists=.env src/scripts/migrate.ts"
+    "db:migrate": "node --env-file-if-exists=.env src/scripts/migrate.ts",
+    "worker": "node --env-file-if-exists=.env src/worker.ts"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "0.132.1",
     "@fastify/cors": "11.3.1",
     "@fastify/helmet": "13.1.2",
     "@mycogni/contracts": "workspace:*",
     "@mycogni/domain": "workspace:*",
+    "bullmq": "6.3.11",
     "drizzle-orm": "0.45.4",
     "fastify": "5.12.7",
     "fastify-type-provider-zod": "7.0.0",
+    "ioredis": "5.11.1",
     "jose": "6.2.12",
     "postgres": "3.4.9",
     "zod": "4.6.7"

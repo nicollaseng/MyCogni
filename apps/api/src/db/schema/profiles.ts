@@ -1,5 +1,5 @@
 import { sql } from 'drizzle-orm'
-import { check, pgPolicy, pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core'
+import { boolean, check, pgPolicy, pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core'
 import { authenticatedRole, authUid, authUsers } from 'drizzle-orm/supabase'
 
 export const profiles = pgTable(
@@ -12,6 +12,7 @@ export const profiles = pgTable(
     avatarPath: text('avatar_path'),
     timezone: text('timezone').notNull().default('America/Sao_Paulo'),
     locale: text('locale'),
+    journalInInsights: boolean('journal_in_insights').notNull().default(false),
     onboardingCompletedAt: timestamp('onboarding_completed_at', { withTimezone: true }),
     createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
     updatedAt: timestamp('updated_at', { withTimezone: true })
