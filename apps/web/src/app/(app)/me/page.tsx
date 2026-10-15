@@ -8,6 +8,7 @@ import {
   removeAvatar,
   renameMe,
   setAiConsent,
+  setJournalInInsights,
   uploadAvatar,
 } from '@/features/account/actions'
 import { avatarUrl } from '@/features/account/avatar-url'
@@ -16,6 +17,7 @@ import { CareLinks } from '@/features/care/components/care-links'
 import { ConsentList } from '@/features/account/components/consent-list'
 import { DeleteAccount } from '@/features/account/components/delete-account'
 import { EmailForm } from '@/features/account/components/email-form'
+import { JournalInsightsSwitch } from '@/features/account/components/journal-insights-switch'
 import { NameForm } from '@/features/account/components/name-form'
 import { PasswordForm } from '@/features/account/components/password-form'
 import { ProfileHeader } from '@/features/account/components/profile-header'
@@ -110,6 +112,10 @@ export default async function MePage() {
             consents={consents}
             timeZone={profile.timezone}
             setAiConsent={setAiConsent}
+          />
+          <JournalInsightsSwitch
+            enabled={profile.journalInInsights}
+            setJournalInInsights={setJournalInInsights}
           />
         </Panel>
         <p className="text-sm text-pretty text-muted-foreground">{t('consents.note')}</p>

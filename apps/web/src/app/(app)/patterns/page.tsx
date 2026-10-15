@@ -3,6 +3,7 @@ import {
   contextEffects,
   dayKey,
   frequentTags,
+  insightLookbackDays,
   moodByWeekday,
   moodDays,
   notableEffects,
@@ -11,6 +12,7 @@ import {
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { getTranslations } from 'next-intl/server'
+import { PatientReadings } from '@/features/insights/components/patient-readings'
 import { ConsistencySummary } from '@/features/patterns/components/consistency-summary'
 import { ContextEffects } from '@/features/patterns/components/context-effects'
 import { FrequentTags } from '@/features/patterns/components/frequent-tags'
@@ -18,7 +20,13 @@ import { ScoreHistory } from '@/features/patterns/components/score-history'
 import { WeekdayChart } from '@/features/patterns/components/weekday-chart'
 import { PageTitle } from '@/shared/components/page-title'
 import { Section } from '@/shared/components/section'
-import { fetchAssessments, fetchCheckInsSince } from '@/shared/lib/api/resources'
+import {
+  countCheckIns,
+  fetchAssessments,
+  fetchCheckInsSince,
+  fetchConsents,
+  fetchInsights,
+} from '@/shared/lib/api/resources'
 import { requireOnboardedProfile } from '@/shared/lib/auth/session'
 import { buttonVariants } from '@/shared/ui/button'
 
@@ -32,10 +40,13 @@ const dayInMs = 24 * 60 * 60 * 1000
 export default async function PatternsPage() {
   const { timezone } = await requireOnboardedProfile()
   const now = new Date()
-  const [t, checkIns, assessments] = await Promise.all([
+  const [t, checkIns, assessments, readings, consents, recentCount] = await Promise.all([
     getTranslations('patterns'),
     fetchCheckInsSince(new Date(now.getTime() - patternRules.windowDays * dayInMs)),
     fetchAssessments(),
+    fetchInsights(),
+    fetchConsents(),
+    countCheckIns({ since: new Date(now.getTime() - insightLookbackDays * dayInMs) }),
   ])
   const moods = checkIns.map((checkIn) => ({
     moodLevel: checkIn.moodLevel,
@@ -59,6 +70,15 @@ export default async function PatternsPage() {
   return (
     <>
       <PageTitle title={t('title')} description={t('description')} />
+
+      <PatientReadings
+        readings={readings}
+        progress={{
+          enabled: consents.some((consent) => consent.kind === 'ai_processing'),
+          recorded: recentCount,
+        }}
+        timeZone={timezone}
+      />
 
       {checkIns.length === 0 ? (
         <div className="space-y-5">

@@ -1,14 +1,13 @@
 import { randomUUID } from 'node:crypto'
 import { expect, test, type Page } from '@playwright/test'
 import { z } from 'zod'
-import { finishOnboarding, inviteByLink, verifiedProfessional } from './support/api'
+import { apiUrl, finishOnboarding, inviteByLink, verifiedProfessional } from './support/api'
 import { signedOut } from './support/session'
 import { createUser, localSupabase, supabaseUrl, uniqueEmail } from './support/supabase'
 
 test.use({ storageState: signedOut })
 
 const password = 'profissional-e2e-2026'
-const apiUrl = process.env.API_URL ?? 'http://127.0.0.1:3333'
 
 function uniqueName(name: string): string {
   return `${name} ${randomUUID().slice(0, 6)}`

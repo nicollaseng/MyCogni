@@ -1,11 +1,11 @@
 import { randomUUID } from 'node:crypto'
 import { expect, test, type Page } from '@playwright/test'
 import { z } from 'zod'
+import { apiUrl } from './support/api'
 import { signedOut } from './support/session'
 import { createUser, localSupabase, makeAdmin, supabaseUrl, uniqueEmail } from './support/supabase'
 
 const password = 'equipe-e2e-2026'
-const apiUrl = process.env.API_URL ?? 'http://127.0.0.1:3333'
 
 const sessionSchema = z.object({ access_token: z.string() })
 

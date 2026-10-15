@@ -55,6 +55,10 @@ export const account: AccountMessages = {
     notGranted: 'Não autorizado',
     note: 'Os consentimentos obrigatórios só podem ser retirados eliminando a conta, em Os seus dados.',
   },
+  journal: {
+    label: 'Incluir o MyBook nos meus resumos',
+    hint: 'Se estiver ativo, o texto das páginas do MyBook escritas no período também é lido para escrever o seu resumo; os resumos para o profissional nunca usam o MyBook.',
+  },
   data: {
     export: 'Transferir os meus dados',
     fileName: 'mycogniai-os-meus-dados-{day}.json',
@@ -87,5 +91,7 @@ export const account: AccountMessages = {
       'Não foi possível eliminar a sua conta agora. Tente novamente dentro de instantes.',
     aiOn: 'Resumos por IA ativados.',
     aiOff: 'Resumos por IA desativados.',
+    journalOn: 'MyBook incluído nos seus resumos.',
+    journalOff: 'MyBook excluído dos seus resumos.',
   },
 }

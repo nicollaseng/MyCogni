@@ -165,3 +165,15 @@ export async function setAiConsent(enabled: boolean): Promise<ActionResult<strin
   }
   return result
 }
+
+export async function setJournalInInsights(enabled: boolean): Promise<ActionResult<string>> {
+  const t = await getTranslations('account.feedback')
+  const result = await attempt(async () => {
+    await updateProfile({ journalInInsights: enabled })
+    return enabled ? t('journalOn') : t('journalOff')
+  }, t('saveError'))
+  if (result.ok) {
+    revalidatePath('/me')
+  }
+  return result
+}

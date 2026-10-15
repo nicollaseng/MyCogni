@@ -121,6 +121,41 @@ describe('/v1/me', () => {
     expect(response.json()).toEqual(expect.objectContaining({ code: 'VALIDATION_ERROR' }))
   })
 
+  it('turns MyBook on and off for the summaries', async () => {
+    const on = await app.inject({
+      method: 'PATCH',
+      url: '/v1/me',
+      headers: bearer(carla),
+      payload: { journalInInsights: true },
+    })
+    const saved = await app.inject({ method: 'GET', url: '/v1/me', headers: bearer(carla) })
+    const others = await app.inject({ method: 'GET', url: '/v1/me', headers: bearer(bruno) })
+    const off = await app.inject({
+      method: 'PATCH',
+      url: '/v1/me',
+      headers: bearer(carla),
+      payload: { journalInInsights: false },
+    })
+
+    expect(on.statusCode).toBe(200)
+    expect(on.json()).toEqual(expect.objectContaining({ journalInInsights: true }))
+    expect(saved.json()).toEqual(expect.objectContaining({ journalInInsights: true }))
+    expect(others.json()).toEqual(expect.objectContaining({ journalInInsights: false }))
+    expect(off.json()).toEqual(expect.objectContaining({ journalInInsights: false }))
+  })
+
+  it('rejects a MyBook choice that is not on or off', async () => {
+    const response = await app.inject({
+      method: 'PATCH',
+      url: '/v1/me',
+      headers: bearer(carla),
+      payload: { journalInInsights: 'sim' },
+    })
+
+    expect(response.statusCode).toBe(400)
+    expect(response.json()).toEqual(expect.objectContaining({ code: 'VALIDATION_ERROR' }))
+  })
+
   it('keeps each person to their own profile', async () => {
     const response = await app.inject({ method: 'GET', url: '/v1/me', headers: bearer(bruno) })
 
