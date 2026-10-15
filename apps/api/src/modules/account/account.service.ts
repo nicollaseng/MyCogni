@@ -2,6 +2,7 @@ import type { AccountExport } from '@mycogni/contracts'
 import type { AccountAdmin } from '../../auth/account-admin.ts'
 import type { AuthenticatedUser } from '../../auth/token-verifier.ts'
 import { NotFoundError } from '../../shared/errors.ts'
+import type { BucketStore } from '../../storage/bucket-store.ts'
 import { toAssessment } from '../assessments/assessment.service.ts'
 import { toCheckIn } from '../check-ins/check-in.service.ts'
 import { toConsent } from '../consents/consent.service.ts'
@@ -16,12 +17,14 @@ export interface AccountService {
 interface AccountDependencies {
   repository: AccountRepository
   admin: AccountAdmin
+  buckets: readonly BucketStore[]
   now?: () => Date
 }
 
 export function createAccountService({
   repository,
   admin,
+  buckets,
   now = () => new Date(),
 }: AccountDependencies): AccountService {
   return {
@@ -44,8 +47,9 @@ export function createAccountService({
         checkIns: data.checkIns.map(toCheckIn),
       }
     },
-    delete(user) {
-      return admin.deleteUser(user.id)
+    async delete(user) {
+      await Promise.all(buckets.map((bucket) => bucket.removeFolder(user.id)))
+      await admin.deleteUser(user.id)
     },
   }
 }

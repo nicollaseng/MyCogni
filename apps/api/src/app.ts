@@ -67,7 +67,9 @@ function authenticatedRoutes(
     await api.register(checkInModule(db, jobs))
     await api.register(onboardingModule(db))
     await api.register(professionalModule(db))
-    await api.register(accountModule(db, accountAdmin))
+    await api.register(
+      accountModule(db, accountAdmin, [journalImages, profileFiles.photos, profileFiles.documents]),
+    )
     await api.register(
       invitationModule({ db, photos: profileFiles.photos, mailer, webUrl: config.webUrl }),
     )
