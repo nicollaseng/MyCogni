@@ -97,7 +97,7 @@ export const care = {
     empty: {
       title: 'Você ainda não recebeu convites.',
       description:
-        'Quando um profissional convidar você, o convite aparece aqui e nas notificações.',
+        'Quando um profissional convidar você, o\u00a0convite aparece aqui e nas notificações.',
     },
     groups: {
       pending: 'Aguardando sua resposta',

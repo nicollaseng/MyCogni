@@ -63,7 +63,7 @@ describe('InvitationList', () => {
     expect(screen.getByText('Você ainda não recebeu convites.')).toBeInTheDocument()
     expect(
       screen.getByText(
-        'Quando um profissional convidar você, o convite aparece aqui e nas notificações.',
+        /^Quando um profissional convidar você, o\s+convite aparece aqui e nas notificações\.$/,
       ),
     ).toBeInTheDocument()
   })
