@@ -3,12 +3,14 @@ import { signedInState } from './e2e/support/session'
 
 const port = 3000
 const baseURL = `http://localhost:${String(port)}`
+const apiUrl = 'http://127.0.0.1:3333'
 
 export default defineConfig({
   testDir: './e2e',
   fullyParallel: true,
+  workers: 2,
   reporter: 'list',
-  expect: { timeout: 10_000 },
+  expect: { timeout: 20_000 },
   globalTeardown: './e2e/support/global-teardown.ts',
   use: {
     baseURL,
@@ -31,10 +33,26 @@ export default defineConfig({
       dependencies: ['setup'],
     },
   ],
-  webServer: {
-    command: `next dev --port ${String(port)}`,
-    url: baseURL,
-    reuseExistingServer: true,
-    timeout: 120_000,
-  },
+  webServer: [
+    {
+      command: 'node src/server.ts',
+      cwd: '../api',
+      url: `${apiUrl}/health`,
+      reuseExistingServer: true,
+      env: {
+        PORT: '3333',
+        LOG_LEVEL: 'warn',
+        CORS_ORIGINS: baseURL,
+        DATABASE_URL: 'postgresql://postgres:postgres@127.0.0.1:55322/postgres',
+        SUPABASE_URL: 'http://127.0.0.1:55321',
+      },
+    },
+    {
+      command: `next dev --port ${String(port)}`,
+      url: baseURL,
+      reuseExistingServer: true,
+      timeout: 120_000,
+      env: { API_URL: apiUrl },
+    },
+  ],
 })

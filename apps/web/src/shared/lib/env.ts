@@ -9,8 +9,11 @@ const publicSchema = z.object({
     .transform((value) => value === 'true'),
 })
 
+const withoutTrailingSlash = z.url().transform((value) => value.replace(/\/+$/, ''))
+
 const serverSchema = z.object({
-  siteUrl: z.url().transform((value) => value.replace(/\/+$/, '')),
+  siteUrl: withoutTrailingSlash,
+  apiUrl: withoutTrailingSlash,
 })
 
 export type PublicEnv = z.output<typeof publicSchema>
@@ -26,5 +29,5 @@ export function publicEnv(): PublicEnv {
 }
 
 export function serverEnv(): ServerEnv {
-  return serverSchema.parse({ siteUrl: process.env.SITE_URL })
+  return serverSchema.parse({ siteUrl: process.env.SITE_URL, apiUrl: process.env.API_URL })
 }

@@ -4,6 +4,7 @@ import { fileURLToPath } from 'node:url'
 import { z } from 'zod'
 
 const statusSchema = z.object({
+  PUBLISHABLE_KEY: z.string(),
   SERVICE_ROLE_KEY: z.string(),
   MAILPIT_URL: z.url(),
 })
@@ -14,7 +15,7 @@ const repositoryRoot = fileURLToPath(new URL('../../../../', import.meta.url))
 
 export const testEmailDomain = 'e2e.mycogni.local'
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL ?? 'http://127.0.0.1:55321'
+export const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL ?? 'http://127.0.0.1:55321'
 
 let cached: LocalSupabase | undefined
 
@@ -57,6 +58,13 @@ export async function createUser(
     throw new Error(`Could not create ${email}: ${await response.text()}`)
   }
   return createdSchema.parse(await response.json()).id
+}
+
+export async function deleteUser(id: string): Promise<void> {
+  await fetch(`${supabaseUrl}/auth/v1/admin/users/${id}`, {
+    method: 'DELETE',
+    headers: adminHeaders(),
+  })
 }
 
 export async function deleteTestUsers(): Promise<void> {

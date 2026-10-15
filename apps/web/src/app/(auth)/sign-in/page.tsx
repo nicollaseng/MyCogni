@@ -17,6 +17,11 @@ export default async function SignInPage({ searchParams }: PageProps<'/sign-in'>
   return (
     <>
       <AuthHeading title="Entrar">Que bom ter você de volta.</AuthHeading>
+      {error === 'session' && (
+        <p role="alert" className="mb-6 text-sm text-danger">
+          Sua sessão terminou. Entre de novo para continuar.
+        </p>
+      )}
       {error === 'oauth' && (
         <p role="alert" className="mb-6 text-sm text-danger">
           Não foi possível entrar com o Google. Tente de novo.

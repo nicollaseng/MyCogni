@@ -1,4 +1,7 @@
+import type { Profile } from '@mycogni/contracts'
 import { redirect } from 'next/navigation'
+import { ApiError } from '../api/client'
+import { fetchProfile } from '../api/resources'
 import { createSupabaseServerClient } from '../supabase/server'
 
 export interface SessionUser {
@@ -20,6 +23,26 @@ export async function requireUser(): Promise<SessionUser> {
   const user = await currentUser()
   if (user === null) {
     redirect('/sign-in')
+  }
+  return user
+}
+
+export async function requireProfile(): Promise<Profile> {
+  try {
+    return await fetchProfile()
+  } catch (error) {
+    if (error instanceof ApiError && (error.status === 401 || error.status === 404)) {
+      redirect('/auth/session-ended')
+    }
+    throw error
+  }
+}
+
+export async function requireOnboardedUser(): Promise<SessionUser> {
+  const user = await requireUser()
+  const profile = await requireProfile()
+  if (profile.onboardingCompletedAt === null) {
+    redirect('/onboarding')
   }
   return user
 }

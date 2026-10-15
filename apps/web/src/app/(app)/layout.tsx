@@ -1,8 +1,8 @@
 import type { ReactNode } from 'react'
 import { AppShell } from '@/features/shell/components/app-shell'
-import { requireUser } from '@/shared/lib/auth/session'
+import { requireOnboardedUser } from '@/shared/lib/auth/session'
 
 export default async function AppLayout({ children }: Readonly<{ children: ReactNode }>) {
-  await requireUser()
+  await requireOnboardedUser()
   return <AppShell>{children}</AppShell>
 }

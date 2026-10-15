@@ -2,7 +2,7 @@ import Link from 'next/link'
 import { MoodMap } from '@/features/mood/components/mood-map'
 import { cn } from '@/shared/lib/utils'
 import { buttonVariants } from '@/shared/ui/button'
-import { StepActions } from './step-actions'
+import { StepActions } from '@/shared/components/step-actions'
 
 interface DoneStepProps {
   valence: number

@@ -1,7 +1,8 @@
 import { expect, test, type Page } from '@playwright/test'
+import { finishOnboarding } from './support/api'
 import { latestCode } from './support/mailpit'
 import { signedOut } from './support/session'
-import { createUser, uniqueEmail } from './support/supabase'
+import { createUser, deleteUser, uniqueEmail } from './support/supabase'
 
 test.use({ storageState: signedOut })
 
@@ -27,7 +28,7 @@ test('creates an account with the code sent by email', async ({ page }) => {
   await page.getByLabel('Código').fill(await latestCode(email, /confirmação/))
   await page.getByRole('button', { name: 'Confirmar email' }).click()
 
-  await expect(page).toHaveURL('/today')
+  await expect(page).toHaveURL('/onboarding')
 })
 
 test('asks for a stronger password before creating the account', async ({ page }) => {
@@ -58,6 +59,7 @@ test('refuses a wrong confirmation code', async ({ page }) => {
 test('signs in and out', async ({ page }) => {
   const email = uniqueEmail('signin')
   await createUser(email, password)
+  await finishOnboarding(email, password)
 
   await signIn(page, email, password)
   await expect(page).toHaveURL('/today')
@@ -89,12 +91,13 @@ test('sends an unconfirmed account to the code screen', async ({ page }) => {
   await expect(page).toHaveURL('/verify')
   await page.getByLabel('Código').fill(await latestCode(email, /confirmação/))
   await page.getByRole('button', { name: 'Confirmar email' }).click()
-  await expect(page).toHaveURL('/today')
+  await expect(page).toHaveURL('/onboarding')
 })
 
 test('creates a new password with the code sent by email', async ({ page }) => {
   const email = uniqueEmail('reset')
   await createUser(email, password)
+  await finishOnboarding(email, password)
 
   await page.goto('/forgot-password')
   await page.getByLabel('Email').fill(email)
@@ -114,8 +117,26 @@ test('creates a new password with the code sent by email', async ({ page }) => {
 })
 
 test('keeps the app behind the sign in', async ({ page }) => {
-  for (const path of ['/today', '/check-in', '/me']) {
+  for (const path of ['/today', '/check-in', '/me', '/onboarding']) {
     await page.goto(path)
     await expect(page).toHaveURL('/sign-in')
   }
+})
+
+test('ends the session when the account no longer exists', async ({ page }) => {
+  const email = uniqueEmail('deleted')
+  const id = await createUser(email, password)
+  await finishOnboarding(email, password)
+  await signIn(page, email, password)
+  await expect(page).toHaveURL('/today')
+
+  await deleteUser(id)
+  await page.goto('/today')
+
+  await expect(page).toHaveURL('/sign-in?error=session')
+  await expect(page.getByRole('main').getByRole('alert')).toHaveText(
+    'Sua sessão terminou. Entre de novo para continuar.',
+  )
+  await page.goto('/today')
+  await expect(page).toHaveURL('/sign-in')
 })

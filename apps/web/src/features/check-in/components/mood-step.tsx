@@ -5,7 +5,7 @@ import { MoodMap } from '@/features/mood/components/mood-map'
 import { MoodSlider } from '@/features/mood/components/mood-slider'
 import { labelOf, moodColor, valenceOf, type MoodLevel } from '@/features/mood/mood-levels'
 import { Button } from '@/shared/ui/button'
-import { StepActions } from './step-actions'
+import { StepActions } from '@/shared/components/step-actions'
 
 interface MoodStepProps {
   today: string
