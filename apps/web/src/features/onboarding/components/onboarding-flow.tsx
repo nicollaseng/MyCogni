@@ -13,10 +13,10 @@ import {
 import { ConsentStep } from './consent-step'
 import { NameStep } from './name-step'
 import { OnboardingHeader } from './onboarding-header'
-import { Questionnaire } from './questionnaire'
+import { Questionnaire } from '@/features/screening/components/questionnaire'
 import { ResultsStep } from './results-step'
 import { ScreeningIntroStep } from './screening-intro-step'
-import { SupportStep } from './support-step'
+import { SupportStep } from '@/features/screening/components/support-step'
 
 interface OnboardingFlowProps {
   start: OnboardingStart

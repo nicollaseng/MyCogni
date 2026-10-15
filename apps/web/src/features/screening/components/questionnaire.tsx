@@ -5,7 +5,7 @@ import { frequencyOptions, type Instrument } from '@mycogni/domain'
 import { useState } from 'react'
 import { cn } from '@/shared/lib/utils'
 import { Button } from '@/shared/ui/button'
-import type { OnboardingActions } from '../model'
+import type { SubmitScreening } from '../model'
 import { useSubmit } from '@/shared/hooks/use-submit'
 import { ActionError } from '@/shared/components/action-error'
 
@@ -17,7 +17,7 @@ function isAnswered(value: number | null): value is number {
 
 interface QuestionnaireProps {
   instrument: Instrument
-  send: OnboardingActions['submitScreening']
+  send: SubmitScreening
   onDone: (assessment: Assessment) => void
 }
 

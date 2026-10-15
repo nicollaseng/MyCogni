@@ -1,6 +1,6 @@
 import { StepActions } from '@/shared/components/step-actions'
 import { Button } from '@/shared/ui/button'
-import { StepHeading } from './step-heading'
+import { StepHeading } from '@/shared/components/step-heading'
 
 const facts = [
   { figure: '16', text: 'perguntas, uma por tela' },

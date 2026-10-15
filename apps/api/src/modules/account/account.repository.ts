@@ -9,7 +9,7 @@ import type { ProfileRecord } from '../profile/profile.repository.ts'
 
 export interface AccountData {
   profile: ProfileRecord | undefined
-  consents: ConsentRecord[]
+  consents: (ConsentRecord & { revokedAt: Date | null })[]
   assessments: (AssessmentRecord & { answers: number[] })[]
   checkIns: CheckInRecord[]
 }
@@ -39,6 +39,7 @@ export function createAccountRepository(db: Database): AccountRepository {
               kind: consents.kind,
               version: consents.version,
               grantedAt: consents.grantedAt,
+              revokedAt: consents.revokedAt,
             })
             .from(consents)
             .where(eq(consents.userId, userId))

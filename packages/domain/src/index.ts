@@ -42,6 +42,7 @@ export { dailyMoods, dayKey, previousDays, type DatedMood } from './check-ins/da
 export {
   consentKinds,
   consentVersion,
+  isRevocable,
   missingConsents,
   requiredConsentKinds,
   type ConsentKind,

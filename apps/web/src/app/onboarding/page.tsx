@@ -1,14 +1,10 @@
 import type { Metadata } from 'next'
 import { redirect } from 'next/navigation'
 import { signOut } from '@/features/auth/actions'
-import {
-  acceptConsents,
-  finishOnboarding,
-  saveName,
-  submitScreening,
-} from '@/features/onboarding/actions'
+import { acceptConsents, finishOnboarding, saveName } from '@/features/onboarding/actions'
 import { OnboardingFlow } from '@/features/onboarding/components/onboarding-flow'
 import { resumeFrom } from '@/features/onboarding/model'
+import { submitScreening } from '@/features/screening/actions'
 import { fetchAssessments, fetchConsents } from '@/shared/lib/api/resources'
 import { requireProfile, requireUser } from '@/shared/lib/auth/session'
 

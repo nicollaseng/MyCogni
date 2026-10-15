@@ -8,10 +8,14 @@ export const exportedAssessmentSchema = assessmentSchema.extend({
   answers: z.array(z.int()),
 })
 
+export const exportedConsentSchema = consentSchema.extend({
+  revokedAt: z.iso.datetime({ offset: true }).nullable(),
+})
+
 export const accountExportSchema = z.object({
   exportedAt: z.iso.datetime({ offset: true }),
   profile: profileSchema,
-  consents: z.array(consentSchema),
+  consents: z.array(exportedConsentSchema),
   assessments: z.array(exportedAssessmentSchema),
   checkIns: checkInListSchema,
 })

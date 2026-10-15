@@ -2,7 +2,7 @@ import { describe, expect, it, jest } from '@jest/globals'
 import { gad7, phq9 } from '@mycogni/domain'
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { fakeActions } from '../test/fixtures'
+import { fakeActions } from '@/features/onboarding/test/fixtures'
 import { Questionnaire } from './questionnaire'
 
 async function answer(label: string) {

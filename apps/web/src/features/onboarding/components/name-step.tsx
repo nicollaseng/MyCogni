@@ -7,7 +7,7 @@ import { TextField } from '@/shared/ui/text-field'
 import type { OnboardingActions } from '../model'
 import { useSubmit } from '@/shared/hooks/use-submit'
 import { ActionError } from '@/shared/components/action-error'
-import { StepHeading } from './step-heading'
+import { StepHeading } from '@/shared/components/step-heading'
 
 interface NameStepProps {
   initialName: string

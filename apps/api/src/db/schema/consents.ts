@@ -15,6 +15,7 @@ export const consents = pgTable(
     kind: consentKind('kind').notNull(),
     version: text('version').notNull(),
     grantedAt: timestamp('granted_at', { withTimezone: true }).notNull().defaultNow(),
+    revokedAt: timestamp('revoked_at', { withTimezone: true }),
   },
   (table) => [
     uniqueIndex('consents_user_kind_version_key').on(table.userId, table.kind, table.version),
@@ -26,6 +27,12 @@ export const consents = pgTable(
     pgPolicy('consents_insert_own', {
       for: 'insert',
       to: authenticatedRole,
+      withCheck: sql`${table.userId} = ${authUid}`,
+    }),
+    pgPolicy('consents_update_own', {
+      for: 'update',
+      to: authenticatedRole,
+      using: sql`${table.userId} = ${authUid}`,
       withCheck: sql`${table.userId} = ${authUid}`,
     }),
   ],

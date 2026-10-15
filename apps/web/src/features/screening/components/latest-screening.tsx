@@ -1,4 +1,5 @@
 import type { Assessment } from '@mycogni/contracts'
+import type { ReactNode } from 'react'
 import { instrumentIds, instruments } from '@mycogni/domain'
 import { Panel, Section } from '@/shared/components/section'
 import { formatLongDate } from '@/shared/lib/time'
@@ -8,6 +9,7 @@ import type { LatestResults } from '../latest'
 interface LatestScreeningProps {
   results: LatestResults
   timeZone: string
+  children?: ReactNode
 }
 
 function Row({ assessment }: { assessment: Assessment }) {
@@ -26,7 +28,7 @@ function Row({ assessment }: { assessment: Assessment }) {
   )
 }
 
-export function LatestScreening({ results, timeZone }: LatestScreeningProps) {
+export function LatestScreening({ results, timeZone, children }: LatestScreeningProps) {
   const answered = instrumentIds.flatMap((id) => {
     const result = results[id]
     return result === undefined ? [] : [result]
@@ -60,6 +62,7 @@ export function LatestScreening({ results, timeZone }: LatestScreeningProps) {
           </p>
         </>
       )}
+      {children}
     </Section>
   )
 }

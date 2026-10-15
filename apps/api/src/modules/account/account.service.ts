@@ -33,7 +33,10 @@ export function createAccountService({
       return {
         exportedAt: now().toISOString(),
         profile: toProfile(data.profile, user),
-        consents: data.consents.map(toConsent),
+        consents: data.consents.map((record) => ({
+          ...toConsent(record),
+          revokedAt: record.revokedAt?.toISOString() ?? null,
+        })),
         assessments: data.assessments.map((record) => ({
           ...toAssessment(record),
           answers: record.answers,

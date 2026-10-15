@@ -1,22 +1,12 @@
 'use server'
 
-import {
-  grantConsentsSchema,
-  submitAssessmentSchema,
-  updateProfileSchema,
-  type Assessment,
-} from '@mycogni/contracts'
+import { grantConsentsSchema, updateProfileSchema } from '@mycogni/contracts'
 import type { ConsentKind } from '@mycogni/domain'
 import { redirect } from 'next/navigation'
-import {
-  completeOnboarding,
-  grantConsents,
-  submitAssessment,
-  updateProfile,
-} from '@/shared/lib/api/resources'
+import { completeOnboarding, grantConsents, updateProfile } from '@/shared/lib/api/resources'
 import { attempt, failure, type ActionResult } from '@/shared/lib/actions/result'
 import { saveError } from './copy'
-import type { NameInput, ScreeningInput } from './model'
+import type { NameInput } from './model'
 
 const invalid = failure(saveError)
 
@@ -40,14 +30,6 @@ export async function saveName(input: NameInput): Promise<ActionResult<null>> {
     await updateProfile(parsed.data)
     return null
   }, saveError)
-}
-
-export async function submitScreening(input: ScreeningInput): Promise<ActionResult<Assessment>> {
-  const parsed = submitAssessmentSchema.safeParse(input)
-  if (!parsed.success) {
-    return invalid
-  }
-  return attempt(() => submitAssessment(parsed.data), saveError)
 }
 
 export async function finishOnboarding(): Promise<ActionResult<null>> {
