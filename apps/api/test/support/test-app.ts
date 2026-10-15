@@ -3,6 +3,7 @@ import { createSupabaseAccountAdmin } from '../../src/auth/account-admin.ts'
 import { createSupabaseTokenVerifier, type TokenVerifier } from '../../src/auth/token-verifier.ts'
 import { loadConfig } from '../../src/config/env.ts'
 import type { Database } from '../../src/db/client.ts'
+import type { Fetcher } from '../../src/modules/profile/photo-download.ts'
 import { UnauthorizedError } from '../../src/shared/errors.ts'
 import type { App } from '../../src/shared/http.ts'
 import { createJournalImageStore } from '../../src/storage/journal-images.ts'
@@ -31,12 +32,20 @@ export function supabaseVerifier(): TokenVerifier {
   return createSupabaseTokenVerifier(testConfig.supabaseUrl)
 }
 
+export const offlineFetcher: Fetcher = () =>
+  Promise.reject(new Error('Tests do not reach the network'))
+
 interface TestAppOptions {
   db: Database
   verifier?: TokenVerifier
+  photoFetcher?: Fetcher
 }
 
-export function buildTestApp({ db, verifier = rejectingVerifier }: TestAppOptions): Promise<App> {
+export function buildTestApp({
+  db,
+  verifier = rejectingVerifier,
+  photoFetcher = offlineFetcher,
+}: TestAppOptions): Promise<App> {
   return buildApp({
     config: testConfig,
     db,
@@ -44,5 +53,6 @@ export function buildTestApp({ db, verifier = rejectingVerifier }: TestAppOption
     accountAdmin: createSupabaseAccountAdmin(testConfig.supabaseUrl, testConfig.supabaseSecretKey),
     journalImages: createJournalImageStore(testConfig.supabaseUrl, testConfig.supabaseSecretKey),
     profileFiles: createProfileFileStores(testConfig.supabaseUrl, testConfig.supabaseSecretKey),
+    photoFetcher,
   })
 }

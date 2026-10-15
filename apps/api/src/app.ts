@@ -26,6 +26,7 @@ import { notificationModule } from './modules/notifications/index.ts'
 import { onboardingModule } from './modules/onboarding/index.ts'
 import { professionalModule } from './modules/professionals/index.ts'
 import { profileModule } from './modules/profile/index.ts'
+import type { Fetcher } from './modules/profile/photo-download.ts'
 import { reportModule } from './modules/reports/index.ts'
 import { requireAuthentication } from './plugins/authentication.ts'
 import { registerErrorHandler } from './plugins/error-handler.ts'
@@ -41,6 +42,7 @@ export interface AppDependencies {
   accountAdmin: AccountAdmin
   journalImages: JournalImageStore
   profileFiles: ProfileFileStores
+  photoFetcher: Fetcher
 }
 
 function publicRoutes(
@@ -55,13 +57,29 @@ function publicRoutes(
 }
 
 function authenticatedRoutes(
-  { config, db, verifier, accountAdmin, journalImages, profileFiles }: AppDependencies,
+  {
+    config,
+    db,
+    verifier,
+    accountAdmin,
+    journalImages,
+    profileFiles,
+    photoFetcher,
+  }: AppDependencies,
   mailer: Mailer,
   jobs: JobScheduler,
 ): FastifyPluginAsyncZod {
   return async (api) => {
     requireAuthentication(api, verifier)
-    await api.register(profileModule(db))
+    await api.register(
+      profileModule({
+        db,
+        accounts: accountAdmin,
+        photos: profileFiles.photos,
+        fetcher: photoFetcher,
+        log: api.log,
+      }),
+    )
     await api.register(consentModule(db))
     await api.register(assessmentModule(db, jobs))
     await api.register(checkInModule(db, jobs))

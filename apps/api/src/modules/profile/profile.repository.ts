@@ -1,4 +1,4 @@
-import { eq, sql } from 'drizzle-orm'
+import { and, eq, isNull, sql } from 'drizzle-orm'
 import type { Database } from '../../db/client.ts'
 import { withUser } from '../../db/rls.ts'
 import { profiles } from '../../db/schema/index.ts'
@@ -25,6 +25,7 @@ export interface ProfileRepository {
   findById(userId: string): Promise<ProfileRecord | undefined>
   update(userId: string, changes: ProfileChanges): Promise<ProfileRecord | undefined>
   completeOnboarding(userId: string): Promise<ProfileRecord | undefined>
+  setAvatarIfEmpty(userId: string, avatarPath: string): Promise<boolean>
 }
 
 export const profileColumns = {
@@ -63,6 +64,16 @@ export function createProfileRepository(db: Database): ProfileRepository {
           .where(eq(profiles.id, userId))
           .returning(profileColumns)
         return row
+      })
+    },
+    setAvatarIfEmpty(userId, avatarPath) {
+      return withUser(db, userId, async (tx) => {
+        const rows = await tx
+          .update(profiles)
+          .set({ avatarPath })
+          .where(and(eq(profiles.id, userId), isNull(profiles.avatarPath)))
+          .returning({ id: profiles.id })
+        return rows.length > 0
       })
     },
   }
