@@ -1,10 +1,9 @@
 import type { Consent } from '@mycogni/contracts'
-import { consentKinds, type ConsentKind } from '@mycogni/domain'
+import { consentKinds, isRevocable, type ConsentKind } from '@mycogni/domain'
 import Link from 'next/link'
 import { useLocale, useTranslations } from 'next-intl'
-import type { ActionResult } from '@/shared/lib/actions/result'
 import { formatLongDate } from '@/shared/lib/time'
-import { AiConsentSwitch } from './ai-consent-switch'
+import { ConsentSwitch, type SetConsent } from './consent-switch'
 
 const documents: Partial<Record<ConsentKind, '/terms' | '/privacy'>> = {
   terms: '/terms',
@@ -14,10 +13,10 @@ const documents: Partial<Record<ConsentKind, '/terms' | '/privacy'>> = {
 interface ConsentListProps {
   consents: readonly Consent[]
   timeZone: string
-  setAiConsent: (enabled: boolean) => Promise<ActionResult<string>>
+  setConsent: SetConsent
 }
 
-export function ConsentList({ consents, timeZone, setAiConsent }: ConsentListProps) {
+export function ConsentList({ consents, timeZone, setConsent }: ConsentListProps) {
   const t = useTranslations('account.consents')
   const locale = useLocale()
   return (
@@ -46,8 +45,8 @@ export function ConsentList({ consents, timeZone, setAiConsent }: ConsentListPro
                     })}
               </p>
             </div>
-            {kind === 'ai_processing' && (
-              <AiConsentSwitch enabled={consent !== undefined} setAiConsent={setAiConsent} />
+            {isRevocable(kind) && (
+              <ConsentSwitch kind={kind} enabled={consent !== undefined} setConsent={setConsent} />
             )}
           </li>
         )

@@ -236,15 +236,29 @@
     {
       "idx": 33,
       "version": "7",
-      "when": 1792098259502,
-      "tag": "0033_create_check_in_addenda",
+      "when": 1792097185384,
+      "tag": "0033_create_assistant_conversations",
       "breakpoints": true
     },
     {
       "idx": 34,
       "version": "7",
-      "when": 1792098259924,
-      "tag": "0034_check_in_addenda_grants",
+      "when": 1792097186747,
+      "tag": "0034_assistant_grants",
+      "breakpoints": true
+    },
+    {
+      "idx": 35,
+      "version": "7",
+      "when": 1792100572536,
+      "tag": "0035_create_check_in_addenda",
+      "breakpoints": true
+    },
+    {
+      "idx": 36,
+      "version": "7",
+      "when": 1792100572828,
+      "tag": "0036_check_in_addenda_grants",
       "breakpoints": true
     }
   ]

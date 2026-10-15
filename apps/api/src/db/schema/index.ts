@@ -1,4 +1,11 @@
 export { alertLevel, alertReason, professionalAlerts } from './alerts.ts'
+export {
+  assistantConversations,
+  assistantMessages,
+  assistantMode,
+  assistantRisk,
+  assistantRole,
+} from './assistant.ts'
 export { assessmentInstrument, assessments, assessmentSeverity } from './assessments.ts'
 export { careLinkEndedBy, careLinks } from './care-links.ts'
 export { checkInAddenda } from './check-in-addenda.ts'

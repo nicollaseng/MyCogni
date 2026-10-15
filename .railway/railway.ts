@@ -33,6 +33,7 @@ export default defineRailway((ctx) => {
       CORS_ORIGINS: preserve(),
       WEB_URL: preserve(),
       REDIS_URL: cache.env.REDIS_URL,
+      ANTHROPIC_API_KEY: preserve(),
     },
   })
 

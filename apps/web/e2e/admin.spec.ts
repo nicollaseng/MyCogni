@@ -66,6 +66,17 @@ test.describe('as the MyCogniAI team', () => {
     await expect(verified.getByRole('button', { name: 'Recusar' })).toBeVisible()
     await expect(verified.getByRole('button', { name: 'Aprovar' })).toHaveCount(0)
   })
+
+  test('opens the team area from its address', async ({ page }) => {
+    const adminEmail = uniqueEmail('admin-entry')
+    await makeAdmin(await createUser(adminEmail, password))
+
+    await signIn(page, adminEmail)
+    await page.goto('/admin')
+
+    await expect(page).toHaveURL('/admin/professionals')
+    await expect(page.getByRole('heading', { level: 1, name: 'Profissionais' })).toBeVisible()
+  })
 })
 
 test('keeps the review page away from people outside the team', async ({ page }) => {

@@ -1,6 +1,6 @@
 {
-  "id": "c83b01f2-1b0e-4f74-9562-2f4d7b63ab5d",
-  "prevId": "15f94c80-b46e-4cbb-b931-fbd4a7eb0826",
+  "id": "7d07a49c-ce10-443d-9a50-2116b6e92e77",
+  "prevId": "942c8757-bdac-4597-b62f-e14fde6f6d64",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -132,6 +132,314 @@
         }
       },
       "checkConstraints": {},
+      "isRLSEnabled": true
+    },
+    "public.assistant_conversations": {
+      "name": "assistant_conversations",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "owner_id": {
+          "name": "owner_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "mode": {
+          "name": "mode",
+          "type": "assistant_mode",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "patient_id": {
+          "name": "patient_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "risk": {
+          "name": "risk",
+          "type": "assistant_risk",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'none'"
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "assistant_conversations_owner_idx": {
+          "name": "assistant_conversations_owner_idx",
+          "columns": [
+            {
+              "expression": "owner_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "updated_at",
+              "isExpression": false,
+              "asc": false,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "with": {},
+          "method": "btree",
+          "concurrently": false
+        },
+        "assistant_conversations_patient_idx": {
+          "name": "assistant_conversations_patient_idx",
+          "columns": [
+            {
+              "expression": "patient_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "with": {},
+          "method": "btree",
+          "concurrently": false
+        }
+      },
+      "foreignKeys": {
+        "assistant_conversations_owner_id_users_id_fk": {
+          "name": "assistant_conversations_owner_id_users_id_fk",
+          "tableFrom": "assistant_conversations",
+          "columnsFrom": [
+            "owner_id"
+          ],
+          "tableTo": "users",
+          "schemaTo": "auth",
+          "columnsTo": [
+            "id"
+          ],
+          "onUpdate": "no action",
+          "onDelete": "cascade"
+        },
+        "assistant_conversations_patient_id_users_id_fk": {
+          "name": "assistant_conversations_patient_id_users_id_fk",
+          "tableFrom": "assistant_conversations",
+          "columnsFrom": [
+            "patient_id"
+          ],
+          "tableTo": "users",
+          "schemaTo": "auth",
+          "columnsTo": [
+            "id"
+          ],
+          "onUpdate": "no action",
+          "onDelete": "cascade"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {
+        "assistant_conversations_select_own": {
+          "name": "assistant_conversations_select_own",
+          "as": "PERMISSIVE",
+          "for": "SELECT",
+          "to": [
+            "authenticated"
+          ],
+          "using": "\"assistant_conversations\".\"owner_id\" = (select auth.uid()) and (\"assistant_conversations\".\"mode\" = 'personal' or exists (\n    select 1 from public.care_links cl\n    join public.professional_profiles pp on pp.user_id = cl.professional_id\n    where cl.professional_id = (select auth.uid())\n      and cl.patient_id = \"assistant_conversations\".\"patient_id\"\n      and cl.ended_at is null\n      and pp.status = 'verified'\n  ))"
+        },
+        "assistant_conversations_insert_own": {
+          "name": "assistant_conversations_insert_own",
+          "as": "PERMISSIVE",
+          "for": "INSERT",
+          "to": [
+            "authenticated"
+          ],
+          "withCheck": "\"assistant_conversations\".\"owner_id\" = (select auth.uid()) and (\"assistant_conversations\".\"mode\" = 'personal' or exists (\n    select 1 from public.care_links cl\n    join public.professional_profiles pp on pp.user_id = cl.professional_id\n    where cl.professional_id = (select auth.uid())\n      and cl.patient_id = \"assistant_conversations\".\"patient_id\"\n      and cl.ended_at is null\n      and pp.status = 'verified'\n  ))"
+        },
+        "assistant_conversations_update_own": {
+          "name": "assistant_conversations_update_own",
+          "as": "PERMISSIVE",
+          "for": "UPDATE",
+          "to": [
+            "authenticated"
+          ],
+          "using": "\"assistant_conversations\".\"owner_id\" = (select auth.uid()) and (\"assistant_conversations\".\"mode\" = 'personal' or exists (\n    select 1 from public.care_links cl\n    join public.professional_profiles pp on pp.user_id = cl.professional_id\n    where cl.professional_id = (select auth.uid())\n      and cl.patient_id = \"assistant_conversations\".\"patient_id\"\n      and cl.ended_at is null\n      and pp.status = 'verified'\n  ))",
+          "withCheck": "\"assistant_conversations\".\"owner_id\" = (select auth.uid())"
+        },
+        "assistant_conversations_delete_own": {
+          "name": "assistant_conversations_delete_own",
+          "as": "PERMISSIVE",
+          "for": "DELETE",
+          "to": [
+            "authenticated"
+          ],
+          "using": "\"assistant_conversations\".\"owner_id\" = (select auth.uid())"
+        }
+      },
+      "checkConstraints": {
+        "assistant_conversations_mode_target": {
+          "name": "assistant_conversations_mode_target",
+          "value": "(\"assistant_conversations\".\"mode\" = 'professional') = (\"assistant_conversations\".\"patient_id\" is not null)"
+        },
+        "assistant_conversations_not_self": {
+          "name": "assistant_conversations_not_self",
+          "value": "\"assistant_conversations\".\"patient_id\" <> \"assistant_conversations\".\"owner_id\""
+        }
+      },
+      "isRLSEnabled": true
+    },
+    "public.assistant_messages": {
+      "name": "assistant_messages",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "conversation_id": {
+          "name": "conversation_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "owner_id": {
+          "name": "owner_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "role": {
+          "name": "role",
+          "type": "assistant_role",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "content": {
+          "name": "content",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "risk": {
+          "name": "risk",
+          "type": "assistant_risk",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'none'"
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "assistant_messages_conversation_idx": {
+          "name": "assistant_messages_conversation_idx",
+          "columns": [
+            {
+              "expression": "conversation_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "created_at",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "with": {},
+          "method": "btree",
+          "concurrently": false
+        }
+      },
+      "foreignKeys": {
+        "assistant_messages_conversation_id_assistant_conversations_id_fk": {
+          "name": "assistant_messages_conversation_id_assistant_conversations_id_fk",
+          "tableFrom": "assistant_messages",
+          "columnsFrom": [
+            "conversation_id"
+          ],
+          "tableTo": "assistant_conversations",
+          "columnsTo": [
+            "id"
+          ],
+          "onUpdate": "no action",
+          "onDelete": "cascade"
+        },
+        "assistant_messages_owner_id_users_id_fk": {
+          "name": "assistant_messages_owner_id_users_id_fk",
+          "tableFrom": "assistant_messages",
+          "columnsFrom": [
+            "owner_id"
+          ],
+          "tableTo": "users",
+          "schemaTo": "auth",
+          "columnsTo": [
+            "id"
+          ],
+          "onUpdate": "no action",
+          "onDelete": "cascade"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {
+        "assistant_messages_select_own": {
+          "name": "assistant_messages_select_own",
+          "as": "PERMISSIVE",
+          "for": "SELECT",
+          "to": [
+            "authenticated"
+          ],
+          "using": "\"assistant_messages\".\"owner_id\" = (select auth.uid()) and exists (\n        select 1 from public.assistant_conversations c where c.id = \"assistant_messages\".\"conversation_id\"\n      )"
+        },
+        "assistant_messages_insert_own": {
+          "name": "assistant_messages_insert_own",
+          "as": "PERMISSIVE",
+          "for": "INSERT",
+          "to": [
+            "authenticated"
+          ],
+          "withCheck": "\"assistant_messages\".\"owner_id\" = (select auth.uid()) and exists (\n        select 1 from public.assistant_conversations c\n        where c.id = \"assistant_messages\".\"conversation_id\" and c.owner_id = (select auth.uid())\n      )"
+        }
+      },
+      "checkConstraints": {
+        "assistant_messages_content_length": {
+          "name": "assistant_messages_content_length",
+          "value": "char_length(\"assistant_messages\".\"content\") between 1 and 4000"
+        }
+      },
       "isRLSEnabled": true
     },
     "public.care_links": {
@@ -319,134 +627,6 @@
         }
       },
       "checkConstraints": {},
-      "isRLSEnabled": true
-    },
-    "public.check_in_addenda": {
-      "name": "check_in_addenda",
-      "schema": "",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "uuid",
-          "primaryKey": true,
-          "notNull": true,
-          "default": "gen_random_uuid()"
-        },
-        "check_in_id": {
-          "name": "check_in_id",
-          "type": "uuid",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "user_id": {
-          "name": "user_id",
-          "type": "uuid",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "text": {
-          "name": "text",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "created_at": {
-          "name": "created_at",
-          "type": "timestamp with time zone",
-          "primaryKey": false,
-          "notNull": true,
-          "default": "now()"
-        }
-      },
-      "indexes": {
-        "check_in_addenda_check_in_created_idx": {
-          "name": "check_in_addenda_check_in_created_idx",
-          "columns": [
-            {
-              "expression": "check_in_id",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            },
-            {
-              "expression": "created_at",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": false,
-          "with": {},
-          "method": "btree",
-          "concurrently": false
-        }
-      },
-      "foreignKeys": {
-        "check_in_addenda_check_in_id_check_ins_id_fk": {
-          "name": "check_in_addenda_check_in_id_check_ins_id_fk",
-          "tableFrom": "check_in_addenda",
-          "columnsFrom": [
-            "check_in_id"
-          ],
-          "tableTo": "check_ins",
-          "columnsTo": [
-            "id"
-          ],
-          "onUpdate": "no action",
-          "onDelete": "cascade"
-        },
-        "check_in_addenda_user_id_users_id_fk": {
-          "name": "check_in_addenda_user_id_users_id_fk",
-          "tableFrom": "check_in_addenda",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "tableTo": "users",
-          "schemaTo": "auth",
-          "columnsTo": [
-            "id"
-          ],
-          "onUpdate": "no action",
-          "onDelete": "cascade"
-        }
-      },
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
-      "policies": {
-        "check_in_addenda_select_own": {
-          "name": "check_in_addenda_select_own",
-          "as": "PERMISSIVE",
-          "for": "SELECT",
-          "to": [
-            "authenticated"
-          ],
-          "using": "\"check_in_addenda\".\"user_id\" = (select auth.uid())"
-        },
-        "check_in_addenda_select_shared_check_in": {
-          "name": "check_in_addenda_select_shared_check_in",
-          "as": "PERMISSIVE",
-          "for": "SELECT",
-          "to": [
-            "authenticated"
-          ],
-          "using": "exists (\n        select 1 from public.check_ins ci\n        where ci.id = \"check_in_addenda\".\"check_in_id\"\n          and ci.user_id = \"check_in_addenda\".\"user_id\"\n      )"
-        },
-        "check_in_addenda_insert_own": {
-          "name": "check_in_addenda_insert_own",
-          "as": "PERMISSIVE",
-          "for": "INSERT",
-          "to": [
-            "authenticated"
-          ],
-          "withCheck": "\"check_in_addenda\".\"user_id\" = (select auth.uid())\n        and exists (\n          select 1 from public.check_ins ci\n          where ci.id = \"check_in_addenda\".\"check_in_id\"\n            and ci.user_id = (select auth.uid())\n        )"
-        }
-      },
-      "checkConstraints": {
-        "check_in_addenda_text_length": {
-          "name": "check_in_addenda_text_length",
-          "value": "char_length(\"check_in_addenda\".\"text\") between 1 and 1000"
-        }
-      },
       "isRLSEnabled": true
     },
     "public.check_ins": {
@@ -2867,6 +3047,32 @@
         "severe"
       ]
     },
+    "public.assistant_mode": {
+      "name": "assistant_mode",
+      "schema": "public",
+      "values": [
+        "personal",
+        "professional"
+      ]
+    },
+    "public.assistant_risk": {
+      "name": "assistant_risk",
+      "schema": "public",
+      "values": [
+        "none",
+        "watch",
+        "urgent"
+      ]
+    },
+    "public.assistant_role": {
+      "name": "assistant_role",
+      "schema": "public",
+      "values": [
+        "user",
+        "assistant",
+        "notice"
+      ]
+    },
     "public.care_link_ended_by": {
       "name": "care_link_ended_by",
       "schema": "public",
@@ -2883,7 +3089,9 @@
         "privacy",
         "health_data",
         "ai_processing",
-        "adult"
+        "adult",
+        "assistant_data",
+        "assistant_journal"
       ]
     },
     "public.insight_audience": {
