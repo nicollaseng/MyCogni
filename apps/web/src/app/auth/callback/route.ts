@@ -1,9 +1,10 @@
-import { after, NextResponse, type NextRequest } from 'next/server'
+import { after, type NextRequest } from 'next/server'
 import { afterEmailLink, afterSignIn } from '@/features/auth/after-sign-in'
 import { emailLinkFailedPath, emailLinkTypeOf } from '@/features/auth/email-link'
 import { importProviderPhoto } from '@/features/auth/provider-photo'
 import { adoptLocaleOf } from '@/features/locale/adopt-locale'
 import { createSupabaseServerClient } from '@/shared/lib/supabase/server'
+import { siteRedirect } from '@/shared/lib/site-redirect'
 
 export async function GET(request: NextRequest) {
   const { searchParams } = request.nextUrl
@@ -19,9 +20,9 @@ export async function GET(request: NextRequest) {
       }
       await adoptLocaleOf(data.user.user_metadata)
       const destination = flow === null ? await afterSignIn() : await afterEmailLink(flow)
-      return NextResponse.redirect(new URL(destination, request.url))
+      return siteRedirect(destination)
     }
   }
   const failure = flow === null ? '/sign-in?error=oauth' : emailLinkFailedPath
-  return NextResponse.redirect(new URL(failure, request.url))
+  return siteRedirect(failure)
 }

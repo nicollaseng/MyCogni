@@ -1,8 +1,8 @@
-import { NextResponse, type NextRequest } from 'next/server'
 import { createSupabaseServerClient } from '@/shared/lib/supabase/server'
+import { siteRedirect } from '@/shared/lib/site-redirect'
 
-export async function GET(request: NextRequest) {
+export async function GET() {
   const supabase = await createSupabaseServerClient('read-write')
   await supabase.auth.signOut({ scope: 'local' })
-  return NextResponse.redirect(new URL('/sign-in?error=session', request.url))
+  return siteRedirect('/sign-in?error=session')
 }
