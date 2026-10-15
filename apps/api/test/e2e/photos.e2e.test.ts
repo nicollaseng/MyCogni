@@ -105,6 +105,23 @@ describe('profile photos', () => {
     expect(await opens(file.photoUrl)).toBe(true)
   })
 
+  it('repeats the same photo link within the hour so browsers can cache the image', async () => {
+    const first = patientSchema.parse(
+      (await get(`/v1/professional/patients/${ana.id}`, helena)).json(),
+    )
+    const second = patientSchema.parse(
+      (await get(`/v1/professional/patients/${ana.id}`, helena)).json(),
+    )
+    const token = new URL(first.photoUrl ?? '').searchParams.get('token') ?? ''
+    const { exp } = z
+      .object({ exp: z.number() })
+      .parse(JSON.parse(Buffer.from(token.split('.')[1] ?? '', 'base64url').toString('utf8')))
+
+    expect(second.photoUrl).toBe(first.photoUrl)
+    expect(exp % 3600).toBe(0)
+    expect(exp - Date.now() / 1000).toBeGreaterThan(3600)
+  })
+
   it('shows the photo of the professional to the linked patient', async () => {
     const links = careLinkListSchema.parse((await get('/v1/care-links', ana)).json())
 

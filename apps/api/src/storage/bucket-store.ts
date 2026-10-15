@@ -1,3 +1,4 @@
+import { createSignedLinkCache, signedLinkWindow, type SignedLinkCache } from '@mycogni/domain'
 import { z } from 'zod'
 
 export interface BucketStore {
@@ -6,11 +7,15 @@ export interface BucketStore {
   removeFolder(folder: string): Promise<void>
 }
 
+export type LinkPolicy =
+  | { kind: 'stable'; cache: SignedLinkCache; now: () => Date }
+  | { kind: 'expiring'; lifetimeSeconds: number }
+
 export interface BucketStoreOptions {
   supabaseUrl: string
   secretKey: string
   bucket: string
-  lifetimeSeconds: number
+  links: LinkPolicy
 }
 
 const signedSchema = z.array(
@@ -21,11 +26,17 @@ const listedSchema = z.array(z.object({ name: z.string(), id: z.string().nullabl
 
 const listPageSize = 1000
 
+const stableLinkCapacity = 5000
+
+export function stableLinks(now: () => Date = () => new Date()): LinkPolicy {
+  return { kind: 'stable', cache: createSignedLinkCache(stableLinkCapacity), now }
+}
+
 export function createBucketStore({
   supabaseUrl,
   secretKey,
   bucket,
-  lifetimeSeconds,
+  links,
 }: BucketStoreOptions): BucketStore {
   const headers = {
     apikey: secretKey,
@@ -74,27 +85,53 @@ export function createBucketStore({
     }
   }
 
+  async function signNow(
+    paths: readonly string[],
+    expiresIn: number,
+  ): Promise<Record<string, string>> {
+    if (paths.length === 0) {
+      return {}
+    }
+    const response = await fetch(`${base}/object/sign/${bucket}`, {
+      method: 'POST',
+      headers,
+      body: JSON.stringify({ expiresIn, paths }),
+    })
+    if (!response.ok) {
+      throw new Error(`Storage refused to sign ${bucket} files: ${String(response.status)}`)
+    }
+    const signed = signedSchema.parse(await response.json())
+    return Object.fromEntries(
+      signed.flatMap(({ path, signedURL }) =>
+        path === null || signedURL === null ? [] : [[path, `${base}${signedURL}`]],
+      ),
+    )
+  }
+
+  async function sign(paths: readonly string[]): Promise<Record<string, string>> {
+    const unique = [...new Set(paths)]
+    if (links.kind === 'expiring') {
+      return signNow(unique, links.lifetimeSeconds)
+    }
+    const window = signedLinkWindow(links.now())
+    const known = Object.fromEntries(
+      unique.flatMap((path) => {
+        const url = links.cache.read(path, window)
+        return url === undefined ? [] : [[path, url]]
+      }),
+    )
+    const fresh = await signNow(
+      unique.filter((path) => !Object.hasOwn(known, path)),
+      window.expiresIn,
+    )
+    for (const [path, url] of Object.entries(fresh)) {
+      links.cache.write(path, url, window)
+    }
+    return { ...known, ...fresh }
+  }
+
   return {
-    async sign(paths) {
-      const unique = [...new Set(paths)]
-      if (unique.length === 0) {
-        return {}
-      }
-      const response = await fetch(`${base}/object/sign/${bucket}`, {
-        method: 'POST',
-        headers,
-        body: JSON.stringify({ expiresIn: lifetimeSeconds, paths: unique }),
-      })
-      if (!response.ok) {
-        throw new Error(`Storage refused to sign ${bucket} files: ${String(response.status)}`)
-      }
-      const signed = signedSchema.parse(await response.json())
-      return Object.fromEntries(
-        signed.flatMap(({ path, signedURL }) =>
-          path === null || signedURL === null ? [] : [[path, `${base}${signedURL}`]],
-        ),
-      )
-    },
+    sign,
     remove,
     async removeFolder(folder) {
       await remove(await filesIn(folder))

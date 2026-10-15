@@ -151,6 +151,13 @@ export {
   type RegistrationProof,
 } from './care/documents.ts'
 export {
+  createSignedLinkCache,
+  signedLinkWindow,
+  signedLinkWindowSeconds,
+  type SignedLinkCache,
+  type SignedLinkWindow,
+} from './files/signed-links.ts'
+export {
   cleanFileName,
   uploadProblem,
   type UploadCandidate,
