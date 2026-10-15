@@ -1,5 +1,6 @@
 import type { UpdateJournalEntryInput } from '@mycogni/contracts'
 import { z } from 'zod'
+import { safetyPromptSchema, type SafetyPrompt } from '@/features/safety/model'
 
 export const pageClientHeader = 'x-mybook-client'
 
@@ -7,7 +8,9 @@ export const pageClientVersion = '1'
 
 export const outdatedClientCode = 'OUTDATED_CLIENT'
 
-export type SaveOutcome = { kind: 'saved'; updatedAt: string } | { kind: 'failed' | 'outdated' }
+export type SaveOutcome =
+  | { kind: 'saved'; updatedAt: string; safety: SafetyPrompt | null }
+  | { kind: 'failed' | 'outdated' }
 
 export type CreateOutcome = { kind: 'created'; id: string } | { kind: 'failed' | 'outdated' }
 
@@ -27,7 +30,10 @@ interface Answer {
 
 const refusalSchema = z.object({ code: z.string() })
 
-const savedSchema = z.object({ updatedAt: z.iso.datetime({ offset: true }) })
+const savedSchema = z.object({
+  updatedAt: z.iso.datetime({ offset: true }),
+  safety: safetyPromptSchema.nullable(),
+})
 
 const createdSchema = z.object({ id: z.uuid() })
 
@@ -95,7 +101,7 @@ export const browserPageClient: PageClient = {
     const answer = await send(contentPath(id), 'PUT', input)
     const saved = savedSchema.safeParse(answer?.payload)
     return answer?.ok === true && saved.success
-      ? { kind: 'saved', updatedAt: saved.data.updatedAt }
+      ? { kind: 'saved', ...saved.data }
       : failureOf(answer)
   },
   async remove(id) {

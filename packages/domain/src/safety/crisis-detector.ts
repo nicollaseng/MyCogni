@@ -1,4 +1,4 @@
-import { mergeRisk, type AssistantMode, type RiskLevel } from './assistant.ts'
+import { mergeRisk, type RiskLevel } from './risk.ts'
 import {
   concernCategories,
   crisisCategories,
@@ -146,8 +146,4 @@ export function conversationRisk({
     level: mergeRisk(current.level, context.length > 0 ? 'watch' : 'none'),
     signals: ordered([...current.signals, ...context]),
   }
-}
-
-export function riskForMode(level: RiskLevel, mode: AssistantMode): RiskLevel {
-  return mode === 'professional' && level === 'urgent' ? 'watch' : level
 }

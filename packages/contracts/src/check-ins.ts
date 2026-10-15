@@ -1,5 +1,6 @@
 import { checkInLimits, checkInSearchLength, maxMoodLevel } from '@mycogni/domain'
 import { z } from 'zod'
+import { supportSignalSchema } from './safety.ts'
 
 const tagsSchema = z
   .array(z.string().trim().min(1).max(checkInLimits.tagLength))
@@ -24,6 +25,10 @@ export const checkInSchema = z.object({
 })
 
 export type CheckIn = z.infer<typeof checkInSchema>
+
+export const recordedCheckInSchema = checkInSchema.extend({ support: supportSignalSchema })
+
+export type RecordedCheckIn = z.infer<typeof recordedCheckInSchema>
 
 export const checkInListSchema = z.array(checkInSchema)
 
@@ -88,6 +93,10 @@ export const checkInAddendumSchema = z.object({
 })
 
 export type CheckInAddendum = z.infer<typeof checkInAddendumSchema>
+
+export const recordedAddendumSchema = checkInAddendumSchema.extend({ support: supportSignalSchema })
+
+export type RecordedAddendum = z.infer<typeof recordedAddendumSchema>
 
 export const checkInDetailSchema = checkInSchema.extend({
   addenda: z.array(checkInAddendumSchema),

@@ -2,11 +2,13 @@
 
 import type { ProfessionalAlert } from '@mycogni/contracts'
 import type { AlertLevel, AlertStatus } from '@mycogni/domain'
+import Link from 'next/link'
 import { useTranslations } from 'next-intl'
 import { useState } from 'react'
 import { useSubmit } from '@/shared/hooks/use-submit'
 import type { ActionResult } from '@/shared/lib/actions/result'
 import { cn } from '@/shared/lib/utils'
+import { alertRecordHref } from '../alert-table'
 
 export type AlertAction = (id: string) => Promise<ActionResult<null>>
 
@@ -42,6 +44,24 @@ export function AlertLevelLabel({ level }: { level: AlertLevel }) {
       <span aria-hidden className={cn('size-2 shrink-0 rounded-full', levelDots[level])} />
       {t(level)}
     </span>
+  )
+}
+
+export function AlertReasonLabel({ alert, name }: { alert: ProfessionalAlert; name: string }) {
+  const t = useTranslations('alerts')
+  const reason = t(`reasons.${alert.reason}`)
+  const href = alertRecordHref(alert)
+  if (href === null) {
+    return reason
+  }
+  return (
+    <Link
+      href={href}
+      aria-label={t('recordLabel', { reason, name })}
+      className="underline decoration-1 underline-offset-4 transition-colors hover:text-foreground"
+    >
+      {reason}
+    </Link>
   )
 }
 

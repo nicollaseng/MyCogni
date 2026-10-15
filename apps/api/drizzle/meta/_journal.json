@@ -281,6 +281,13 @@
       "when": 1792101435107,
       "tag": "0039_account_type_insert_policies",
       "breakpoints": true
+    },
+    {
+      "idx": 40,
+      "version": "7",
+      "when": 1792104468355,
+      "tag": "0040_note_risk_alerts",
+      "breakpoints": true
     }
   ]
 }

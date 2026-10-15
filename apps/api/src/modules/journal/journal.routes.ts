@@ -6,6 +6,7 @@ import {
   journalQuerySchema,
   journalShareListSchema,
   journalShareSchema,
+  savedJournalEntrySchema,
   updateJournalEntrySchema,
 } from '@mycogni/contracts'
 import type { FastifyPluginCallbackZod } from 'fastify-type-provider-zod'
@@ -80,7 +81,7 @@ export function journalRoutes(
         schema: {
           params: byId,
           body: updateJournalEntrySchema,
-          response: { 200: journalEntrySchema },
+          response: { 200: savedJournalEntrySchema },
         },
       },
       (request) => journal.update(currentUser(request), request.params.id, request.body),

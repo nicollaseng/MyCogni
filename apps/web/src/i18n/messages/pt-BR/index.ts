@@ -15,6 +15,7 @@ import { onboarding } from './onboarding'
 import { patterns } from './patterns'
 import { professional } from './professional'
 import { report } from './report'
+import { safety } from './safety'
 import { screening } from './screening'
 import { support } from './support'
 import { today } from './today'
@@ -44,6 +45,7 @@ export const messages = {
   zen,
   support,
   assistant,
+  safety,
 }
 
 export type Messages = typeof messages

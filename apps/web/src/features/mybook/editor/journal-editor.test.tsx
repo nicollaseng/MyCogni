@@ -1,6 +1,6 @@
 import { afterEach, beforeAll, describe, expect, it, jest } from '@jest/globals'
 import type { JournalEntry, JournalNode, UpdateJournalEntryInput } from '@mycogni/contracts'
-import { screen, waitFor } from '@testing-library/react'
+import { screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { renderWithIntl } from '@/test/render'
 import { fakeRouter, WithRouter } from '@/test/router'
@@ -60,7 +60,7 @@ afterEach(() => {
 describe('JournalEditor saving', () => {
   it('keeps a copy on this device while saving and clears it once the page is saved', async () => {
     const client = clientSaving(() =>
-      Promise.resolve({ kind: 'saved', updatedAt: '2026-10-15T15:01:00.000Z' }),
+      Promise.resolve({ kind: 'saved', updatedAt: '2026-10-15T15:01:00.000Z', safety: null }),
     )
 
     await userEvent.type(titleField(), ' de sol')
@@ -106,6 +106,66 @@ describe('JournalEditor saving', () => {
   })
 })
 
+describe('JournalEditor support', () => {
+  it('offers support above the page after the save that needs it, without taking the cursor', async () => {
+    const client = clientSaving(() =>
+      Promise.resolve({
+        kind: 'saved',
+        updatedAt: '2026-10-15T15:01:00.000Z',
+        safety: { level: 'urgent', professionals: ['Helena Prado'] },
+      }),
+    )
+    const field = titleField()
+
+    await userEvent.type(field, ' sem saída')
+    const panel = await screen.findByRole('region', { name: 'Apoio agora' }, patience)
+
+    expect(field).toHaveFocus()
+    expect(panel).toHaveTextContent('Helena Prado acompanha você.')
+    expect(within(panel).getByRole('link', { name: '188 CVV' })).toHaveAttribute('href', 'tel:188')
+    await userEvent.keyboard(' hoje')
+    expect(field).toHaveValue('Domingo sem saída hoje')
+    expect(field).toHaveFocus()
+    expect(client.save).toHaveBeenCalled()
+  })
+
+  it('stays folded on this page once dismissed', async () => {
+    const client = clientSaving(() =>
+      Promise.resolve({
+        kind: 'saved',
+        updatedAt: '2026-10-15T15:01:00.000Z',
+        safety: { level: 'watch', professionals: [] },
+      }),
+    )
+
+    await userEvent.type(titleField(), ' triste')
+    const panel = await screen.findByRole('region', { name: 'Apoio agora' }, patience)
+    await userEvent.click(within(panel).getByRole('button', { name: 'Fechar apoio' }))
+    const calls = client.save.mock.calls.length
+    await userEvent.type(titleField(), ' de novo')
+
+    await waitFor(() => {
+      expect(client.save.mock.calls.length).toBeGreaterThan(calls)
+    }, patience)
+    expect(screen.queryByRole('region', { name: 'Apoio agora' })).not.toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Ajuda agora' })).toBeInTheDocument()
+  })
+
+  it('stays out of the way while nothing calls for support', async () => {
+    const client = clientSaving(() =>
+      Promise.resolve({ kind: 'saved', updatedAt: '2026-10-15T15:01:00.000Z', safety: null }),
+    )
+
+    await userEvent.type(titleField(), ' de sol')
+
+    await waitFor(() => {
+      expect(client.save).toHaveBeenCalled()
+    }, patience)
+    expect(screen.queryByRole('region', { name: 'Apoio agora' })).not.toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: 'Ajuda agora' })).not.toBeInTheDocument()
+  })
+})
+
 describe('JournalEditor drafts', () => {
   it('restores a newer copy kept on this device and saves it', async () => {
     writeDraft(entry.id, {
@@ -116,7 +176,7 @@ describe('JournalEditor drafts', () => {
       imageUrls: {},
     })
     const client = clientSaving(() =>
-      Promise.resolve({ kind: 'saved', updatedAt: '2026-10-15T15:03:00.000Z' }),
+      Promise.resolve({ kind: 'saved', updatedAt: '2026-10-15T15:03:00.000Z', safety: null }),
     )
 
     await waitFor(() => {
@@ -147,7 +207,9 @@ describe('JournalEditor drafts', () => {
       body: documentWith('Texto antigo.'),
       imageUrls: {},
     })
-    const client = clientSaving(() => Promise.resolve({ kind: 'saved', updatedAt: savedAt }))
+    const client = clientSaving(() =>
+      Promise.resolve({ kind: 'saved', updatedAt: savedAt, safety: null }),
+    )
 
     await waitFor(() => {
       expect(readDraft(entry.id)).toBeNull()

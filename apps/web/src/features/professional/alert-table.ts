@@ -35,6 +35,20 @@ const firstDirection: Record<AlertSortKey, SortDirection> = {
   status: 'asc',
 }
 
+export type AlertRecordHref =
+  `/pro/patients/${string}/entries/${string}` | `/pro/patients/${string}/mybook/${string}`
+
+export function alertRecordHref({
+  patientId,
+  checkInId,
+  journalEntryId,
+}: ProfessionalAlert): AlertRecordHref | null {
+  if (checkInId !== null) {
+    return `/pro/patients/${patientId}/entries/${checkInId}`
+  }
+  return journalEntryId === null ? null : `/pro/patients/${patientId}/mybook/${journalEntryId}`
+}
+
 export function isPending(alert: ProfessionalAlert): boolean {
   return alert.status !== 'resolved'
 }

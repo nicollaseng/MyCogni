@@ -1,5 +1,5 @@
 import { describe, expect, it } from '@jest/globals'
-import { conversationRisk, messageRisk, normalizeText, riskForMode } from './crisis-detector.ts'
+import { conversationRisk, messageRisk, normalizeText } from './crisis-detector.ts'
 
 describe('normalizeText', () => {
   it('drops accents, case and apostrophes', () => {
@@ -168,13 +168,5 @@ describe('conversationRisk', () => {
     expect(
       conversationRisk({ message: 'como foi a semana?', earlier: [], screeningRisk: true }),
     ).toEqual({ level: 'watch', signals: ['screening'] })
-  })
-})
-
-describe('riskForMode', () => {
-  it('never blocks a professional, who gets care instructions instead', () => {
-    expect(riskForMode('urgent', 'professional')).toBe('watch')
-    expect(riskForMode('urgent', 'personal')).toBe('urgent')
-    expect(riskForMode('watch', 'professional')).toBe('watch')
   })
 })

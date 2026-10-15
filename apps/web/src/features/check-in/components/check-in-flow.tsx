@@ -1,6 +1,6 @@
 'use client'
 
-import type { CheckIn, CreateCheckInInput } from '@mycogni/contracts'
+import type { CreateCheckInInput } from '@mycogni/contracts'
 import Link from 'next/link'
 import { useLocale, useTranslations } from 'next-intl'
 import { useState } from 'react'
@@ -15,6 +15,8 @@ import { useSubmit } from '@/shared/hooks/use-submit'
 import type { ActionResult } from '@/shared/lib/actions/result'
 import { formatTime } from '@/shared/lib/time'
 import { cn } from '@/shared/lib/utils'
+import type { SafetyPrompt } from '@/features/safety/model'
+import type { SavedCheckIn } from '../actions'
 import { contextTabs } from '../catalog'
 import { emotionTabs } from '../suggestions'
 import { useCatalogLabels } from '../use-catalog-labels'
@@ -33,7 +35,7 @@ function toggle(list: readonly string[], item: string): string[] {
 interface CheckInFlowProps {
   today: string
   timeZone: string
-  save: (input: CreateCheckInInput) => Promise<ActionResult<CheckIn>>
+  save: (input: CreateCheckInInput) => Promise<ActionResult<SavedCheckIn>>
 }
 
 export function CheckInFlow({ today, timeZone, save }: CheckInFlowProps) {
@@ -47,10 +49,12 @@ export function CheckInFlow({ today, timeZone, save }: CheckInFlowProps) {
   const [contexts, setContexts] = useState<string[]>([])
   const [note, setNote] = useState('')
   const [recordedAt, setRecordedAt] = useState('')
+  const [safety, setSafety] = useState<SafetyPrompt | null>(null)
   const valence = valenceOf(level)
   const progress = step === 'done' ? progressSteps.length : progressSteps.indexOf(step) + 1
-  const { submit, pending, error } = useSubmit(save, (checkIn) => {
-    setRecordedAt(formatTime(new Date(checkIn.recordedAt), timeZone, locale))
+  const { submit, pending, error } = useSubmit(save, (saved) => {
+    setRecordedAt(formatTime(new Date(saved.checkIn.recordedAt), timeZone, locale))
+    setSafety(saved.safety)
     setStep('done')
   })
 
@@ -168,6 +172,7 @@ export function CheckInFlow({ today, timeZone, save }: CheckInFlowProps) {
           <DoneStep
             valence={valence}
             recordedAt={recordedAt}
+            safety={safety}
             summary={[
               tMood(moodKeyOf(level)).toLocaleLowerCase(locale),
               ...emotions.map(labels.emotion),

@@ -59,12 +59,6 @@ export const assistant: AssistantMessages = {
   noAccess: 'Without permission to read your records, I answer in general terms.',
   professionalNoAccess:
     'This patient has not allowed AI to be used on their records. Answers are general.',
-  support: {
-    title: 'You don’t have to go through this without support',
-    body: 'Reach out to the people who support you, someone you trust or one of these services, at any time.',
-    professionals: 'Who supports you',
-    lines: 'Talk to someone now',
-  },
   professionalSupport: {
     title: 'Signs of risk',
     body: 'Follow your safety protocol. If there is immediate risk, contact emergency services.',

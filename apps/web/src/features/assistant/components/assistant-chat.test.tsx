@@ -1,5 +1,6 @@
 import { describe, expect, it } from '@jest/globals'
 import type { AssistantExchange } from '@mycogni/contracts'
+import { assistantNotice } from '@mycogni/domain'
 import { screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import type { ActionResult } from '@/shared/lib/actions/result'
@@ -71,7 +72,7 @@ describe('AssistantChat', () => {
 
     expect(await screen.findByText('Você dormiu melhor no fim de semana.')).toBeInTheDocument()
     expect(screen.queryByRole('status')).toBeNull()
-    expect(screen.queryByRole('region', { name: /sem apoio/ })).toBeNull()
+    expect(screen.queryByRole('region', { name: 'Apoio agora' })).toBeNull()
   })
 
   it('sends a starter suggestion with one tap', async () => {
@@ -88,20 +89,26 @@ describe('AssistantChat', () => {
     )
   })
 
-  it('shows the crisis card with the lines and the linked professionals', async () => {
+  it('answers a crisis with the short notice and the compact card', async () => {
     const { actions, user } = renderChat({ overview: overview(true), contacts })
+    const notice = assistantNotice('pt-BR', 'personal', 'crisis')
     actions.send.mockResolvedValue({
       ok: true,
-      value: exchange('quero morrer', message('notice', 'Que bom que você me contou.', 'urgent')),
+      value: exchange('quero morrer', message('notice', notice, 'urgent')),
     })
 
     await user.type(input(), 'quero morrer{Enter}')
 
-    const card = await screen.findByRole('region', {
-      name: 'Você não precisa passar por isso sem apoio',
-    })
-    expect(card).toHaveTextContent('Dra. Helena Prado · Psicologia')
-    expect(within(card).getByRole('link', { name: '188' })).toHaveAttribute('href', 'tel:188')
+    const card = await screen.findByRole('region', { name: 'Apoio agora' })
+    expect(within(screen.getByRole('log')).getByText(notice)).toBeInTheDocument()
+    expect(notice).toBe(
+      'Que bom que você me contou. Você merece o apoio de uma pessoa agora: ligue para um dos contatos abaixo.',
+    )
+    expect(card).toHaveTextContent('Dra. Helena Prado acompanha você.')
+    expect(card).not.toHaveTextContent('Você não precisa')
+    expect(within(card).getByRole('link', { name: '188 CVV' })).toHaveAttribute('href', 'tel:188')
+    expect(within(card).getByRole('link', { name: '192 SAMU' })).toHaveAttribute('href', 'tel:192')
+    expect(within(card).queryByRole('button')).not.toBeInTheDocument()
   })
 
   it('keeps “Ajuda agora” one tap away', async () => {
@@ -109,7 +116,9 @@ describe('AssistantChat', () => {
 
     await user.click(await screen.findByRole('button', { name: 'Ajuda agora' }))
 
-    expect(screen.getByRole('link', { name: '188' })).toBeInTheDocument()
+    const card = screen.getByRole('region', { name: 'Apoio agora' })
+    expect(card).toHaveTextContent('Você não precisa passar por isso sem apoio')
+    expect(within(card).getByRole('link', { name: '188 CVV' })).toBeInTheDocument()
   })
 
   it('explains the limit and keeps the text when there were too many messages', async () => {

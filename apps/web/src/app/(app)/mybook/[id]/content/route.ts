@@ -3,6 +3,7 @@ import { revalidatePath } from 'next/cache'
 import { NextResponse } from 'next/server'
 import { z } from 'zod'
 import { pageApiRefusal, pageRequestRefusal } from '@/features/mybook/page-responses'
+import { safetyPromptFor } from '@/features/safety/prompt'
 import { deleteJournalEntry, updateJournalEntry } from '@/shared/lib/api/journal'
 import { refuse } from '@/shared/lib/upload-responses'
 
@@ -28,7 +29,8 @@ export async function PUT(request: Request, context: Context) {
   }
   try {
     const entry = await updateJournalEntry(id, parsed.data)
-    return NextResponse.json({ updatedAt: entry.updatedAt })
+    const safety = await safetyPromptFor(entry.support.level)
+    return NextResponse.json({ updatedAt: entry.updatedAt, safety })
   } catch (cause) {
     return pageApiRefusal(cause)
   }

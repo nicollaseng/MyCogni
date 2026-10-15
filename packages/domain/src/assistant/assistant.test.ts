@@ -1,20 +1,13 @@
 import { describe, expect, it } from '@jest/globals'
 import { locales } from '../i18n/locales.ts'
-import { assistantModes, mergeRisk, needsSupport } from './assistant.ts'
+import { assistantModes, riskForMode } from './assistant.ts'
 import { assistantNotice, noticeKinds } from './notices.ts'
 
-describe('mergeRisk', () => {
-  it('takes the highest level from the detector and the model', () => {
-    expect(mergeRisk()).toBe('none')
-    expect(mergeRisk('none', 'none')).toBe('none')
-    expect(mergeRisk('watch', 'none')).toBe('watch')
-    expect(mergeRisk('none', 'urgent', 'watch')).toBe('urgent')
-  })
-
-  it('asks for support from watch upwards', () => {
-    expect(needsSupport('none')).toBe(false)
-    expect(needsSupport('watch')).toBe(true)
-    expect(needsSupport('urgent')).toBe(true)
+describe('riskForMode', () => {
+  it('never blocks a professional, who gets care instructions instead', () => {
+    expect(riskForMode('urgent', 'professional')).toBe('watch')
+    expect(riskForMode('urgent', 'personal')).toBe('urgent')
+    expect(riskForMode('watch', 'professional')).toBe('watch')
   })
 })
 
@@ -32,6 +25,14 @@ describe('assistantNotice', () => {
   it('writes the crisis message in the variant of the person', () => {
     expect(assistantNotice('pt-BR', 'personal', 'crisis')).toContain('você')
     expect(assistantNotice('pt-PT', 'personal', 'crisis')).toContain('contactos')
-    expect(assistantNotice('en-GB', 'personal', 'crisis')).toContain('emergency')
+    expect(assistantNotice('en-GB', 'personal', 'crisis')).toContain('contacts below')
+  })
+
+  it('keeps the crisis message to two short sentences', () => {
+    for (const locale of locales) {
+      const notice = assistantNotice(locale, 'personal', 'crisis')
+      expect(notice.split(/[.!?](?:\s|$)/u).filter((part) => part.trim() !== '')).toHaveLength(2)
+      expect(notice.length).toBeLessThanOrEqual(110)
+    }
   })
 })

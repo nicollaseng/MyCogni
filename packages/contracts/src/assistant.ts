@@ -1,15 +1,8 @@
-import {
-  assistantLimits,
-  assistantModes,
-  assistantRoles,
-  locales,
-  riskLevels,
-} from '@mycogni/domain'
+import { assistantLimits, assistantModes, assistantRoles, locales } from '@mycogni/domain'
 import { z } from 'zod'
+import { riskLevelSchema } from './safety.ts'
 
 const timestamp = z.iso.datetime({ offset: true })
-
-export const riskLevelSchema = z.enum(riskLevels)
 
 export const sendAssistantMessageSchema = z.object({
   conversationId: z.uuid().nullable(),

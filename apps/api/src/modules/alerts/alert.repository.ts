@@ -14,6 +14,8 @@ export interface AlertRecord {
   createdAt: Date
   acknowledgedAt: Date | null
   resolvedAt: Date | null
+  checkInId: string | null
+  journalEntryId: string | null
 }
 
 export interface AlertCountRecord {
@@ -65,6 +67,8 @@ export function createAlertRepository(db: Database): AlertRepository {
             createdAt: professionalAlerts.createdAt,
             acknowledgedAt: professionalAlerts.acknowledgedAt,
             resolvedAt: professionalAlerts.resolvedAt,
+            checkInId: professionalAlerts.checkInId,
+            journalEntryId: professionalAlerts.journalEntryId,
           })
           .from(professionalAlerts)
           .leftJoin(profiles, eq(profiles.id, professionalAlerts.patientId))

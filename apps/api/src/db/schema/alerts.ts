@@ -12,6 +12,8 @@ import {
 } from 'drizzle-orm/pg-core'
 import { authenticatedRole, authUid, authUsers } from 'drizzle-orm/supabase'
 import { careLinks } from './care-links.ts'
+import { checkIns } from './check-ins.ts'
+import { journalEntries } from './journal.ts'
 
 export const alertReason = pgEnum('alert_reason', alertReasons)
 
@@ -43,6 +45,10 @@ export const professionalAlerts = pgTable(
     acknowledgedAt: timestamp('acknowledged_at', { withTimezone: true }),
     resolvedAt: timestamp('resolved_at', { withTimezone: true }),
     emailedAt: timestamp('emailed_at', { withTimezone: true }),
+    checkInId: uuid('check_in_id').references(() => checkIns.id, { onDelete: 'set null' }),
+    journalEntryId: uuid('journal_entry_id').references(() => journalEntries.id, {
+      onDelete: 'set null',
+    }),
   },
   (table) => [
     uniqueIndex('professional_alerts_open_key')
