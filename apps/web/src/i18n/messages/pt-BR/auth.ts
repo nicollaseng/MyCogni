@@ -19,8 +19,16 @@ export const auth = {
     signUp: 'Criar conta',
   },
   signUp: {
-    title: 'Criar conta',
-    lead: 'Leva um minuto. Depois, duas avaliações curtas para entender como você está.',
+    patient: {
+      title: 'Criar conta',
+      lead: 'Leva um minuto. Depois, duas avaliações curtas para entender como você está.',
+    },
+    professional: {
+      title: 'Criar conta profissional',
+      lead: 'Para quem atende pacientes. Depois de criar a conta, você envia seu registro para verificação.',
+      notProfessional: 'Quer acompanhar seu próprio humor?',
+      patientSignUp: 'Criar conta de paciente',
+    },
     agreement:
       'Ao criar a conta, você concorda com os <terms>Termos de uso</terms> e com a <privacy>Política de privacidade</privacy>.',
     hasAccount: 'Já tem conta?',

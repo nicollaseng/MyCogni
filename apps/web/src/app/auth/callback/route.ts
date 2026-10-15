@@ -1,5 +1,5 @@
 import { after, type NextRequest } from 'next/server'
-import { afterEmailLink, afterSignIn } from '@/features/auth/after-sign-in'
+import { afterEmailLink, afterOAuthSignIn } from '@/features/auth/after-sign-in'
 import { emailLinkFailedPath, emailLinkTypeOf } from '@/features/auth/email-link'
 import { importProviderPhoto } from '@/features/auth/provider-photo'
 import { adoptLocaleOf } from '@/features/locale/adopt-locale'
@@ -19,7 +19,7 @@ export async function GET(request: NextRequest) {
         after(() => importProviderPhoto(accessToken))
       }
       await adoptLocaleOf(data.user.user_metadata)
-      const destination = flow === null ? await afterSignIn() : await afterEmailLink(flow)
+      const destination = flow === null ? await afterOAuthSignIn() : await afterEmailLink(flow)
       return siteRedirect(destination)
     }
   }

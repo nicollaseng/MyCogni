@@ -159,7 +159,7 @@ export const fetchProfessional = cache(async (): Promise<ProfessionalProfile | n
   try {
     return await apiRequest({ path: '/v1/professional', schema: professionalProfileSchema })
   } catch (error) {
-    if (error instanceof ApiError && error.status === 404) {
+    if (error instanceof ApiError && (error.status === 404 || error.status === 403)) {
       return null
     }
     throw error

@@ -54,9 +54,7 @@ function row(name: string): HTMLElement {
 
 describe('CareLinks', () => {
   it('lists who follows the records, since when and whether the history is shared', () => {
-    renderWithIntl(
-      <CareLinks links={links} timeZone="America/Sao_Paulo" end={succeed} isProfessional />,
-    )
+    renderWithIntl(<CareLinks links={links} timeZone="America/Sao_Paulo" end={succeed} />)
 
     expect(row('Helena Prado')).toHaveTextContent(
       'Psicologia · Desde 14 de outubroSó registros a partir do vínculo',
@@ -67,13 +65,11 @@ describe('CareLinks', () => {
     ).toHaveAttribute('src', 'https://exemplo.com/helena.jpg')
     expect(within(row('Lúcia Mendes')).getByText('LM')).toBeInTheDocument()
     expect(screen.getByRole('link', { name: 'Ver convites' })).toHaveAttribute('href', '/invites')
-    expect(screen.getByRole('link', { name: 'Área profissional' })).toHaveAttribute('href', '/pro')
+    expect(screen.queryByRole('link', { name: 'Área profissional' })).not.toBeInTheDocument()
   })
 
   it('tells the person when the professionals receive an alert', () => {
-    renderWithIntl(
-      <CareLinks links={links} timeZone="America/Sao_Paulo" end={succeed} isProfessional={false} />,
-    )
+    renderWithIntl(<CareLinks links={links} timeZone="America/Sao_Paulo" end={succeed} />)
 
     expect(
       screen.getByText(/Quem acompanha você recebe um alerta em situações específicas/),
@@ -81,9 +77,7 @@ describe('CareLinks', () => {
   })
 
   it('points to the new terms only on the links that still wait for them', () => {
-    renderWithIntl(
-      <CareLinks links={links} timeZone="America/Sao_Paulo" end={succeed} isProfessional={false} />,
-    )
+    renderWithIntl(<CareLinks links={links} timeZone="America/Sao_Paulo" end={succeed} />)
 
     expect(
       within(row('Lúcia Mendes')).getByRole('link', { name: 'Confirme os novos termos' }),
@@ -95,9 +89,7 @@ describe('CareLinks', () => {
 
   it('asks for confirmation before ending a link', async () => {
     const end = jest.fn<End>(succeed)
-    renderWithIntl(
-      <CareLinks links={links} timeZone="America/Sao_Paulo" end={end} isProfessional={false} />,
-    )
+    renderWithIntl(<CareLinks links={links} timeZone="America/Sao_Paulo" end={end} />)
     const helena = within(row('Helena Prado'))
 
     await userEvent.click(helena.getByRole('button', { name: 'Encerrar vínculo' }))
@@ -119,7 +111,6 @@ describe('CareLinks', () => {
         links={links}
         timeZone="America/Sao_Paulo"
         end={() => Promise.resolve({ ok: false, error: 'Não conseguimos encerrar o vínculo.' })}
-        isProfessional={false}
       />,
     )
     const helena = within(row('Helena Prado'))
@@ -133,9 +124,7 @@ describe('CareLinks', () => {
   })
 
   it('says when nobody follows the records', () => {
-    renderWithIntl(
-      <CareLinks links={[]} timeZone="America/Sao_Paulo" end={succeed} isProfessional={false} />,
-    )
+    renderWithIntl(<CareLinks links={[]} timeZone="America/Sao_Paulo" end={succeed} />)
 
     expect(screen.getByText('Nenhum profissional acompanha seus registros.')).toBeInTheDocument()
     expect(screen.queryByText(/recebe um alerta/)).not.toBeInTheDocument()

@@ -2,7 +2,13 @@ import { afterAll, beforeAll, describe, expect, it } from '@jest/globals'
 import { connectDatabase, type DatabaseConnection } from '../../src/db/client.ts'
 import type { App } from '../../src/shared/http.ts'
 import { testDatabaseUrl } from '../support/database.ts'
-import { bearer, createTestUser, deleteTestUser, type TestUser } from '../support/supabase.ts'
+import {
+  bearer,
+  createTestUser,
+  deleteTestUser,
+  professionalAccount,
+  type TestUser,
+} from '../support/supabase.ts'
 import { buildTestApp, supabaseVerifier } from '../support/test-app.ts'
 
 describe('/v1/professional', () => {
@@ -33,9 +39,9 @@ describe('/v1/professional', () => {
     connection = connectDatabase(testDatabaseUrl)
     app = await buildTestApp({ db: connection.db, verifier: supabaseVerifier() })
     await app.ready()
-    helena = await createTestUser()
-    rui = await createTestUser()
-    lia = await createTestUser()
+    helena = await createTestUser(professionalAccount)
+    rui = await createTestUser(professionalAccount)
+    lia = await createTestUser(professionalAccount)
   })
 
   afterAll(async () => {

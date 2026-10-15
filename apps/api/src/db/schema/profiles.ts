@@ -1,6 +1,18 @@
+import { accountTypes } from '@mycogni/domain'
 import { sql } from 'drizzle-orm'
-import { boolean, check, pgPolicy, pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core'
+import {
+  boolean,
+  check,
+  pgEnum,
+  pgPolicy,
+  pgTable,
+  text,
+  timestamp,
+  uuid,
+} from 'drizzle-orm/pg-core'
 import { authenticatedRole, authUid, authUsers } from 'drizzle-orm/supabase'
+
+export const accountType = pgEnum('account_type', accountTypes)
 
 export const profiles = pgTable(
   'profiles',
@@ -8,6 +20,7 @@ export const profiles = pgTable(
     id: uuid('id')
       .primaryKey()
       .references(() => authUsers.id, { onDelete: 'cascade' }),
+    accountType: accountType('account_type').notNull().default('patient'),
     displayName: text('display_name'),
     avatarPath: text('avatar_path'),
     timezone: text('timezone').notNull().default('America/Sao_Paulo'),

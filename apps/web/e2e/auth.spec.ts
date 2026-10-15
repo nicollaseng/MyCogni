@@ -84,7 +84,7 @@ test('says when the email or the password is wrong', async ({ page }) => {
 
 test('sends an unconfirmed account to the code screen', async ({ page }) => {
   const email = uniqueEmail('unconfirmed')
-  await createUser(email, password, false)
+  await createUser(email, password, { confirmed: false })
 
   await signIn(page, email, password)
 

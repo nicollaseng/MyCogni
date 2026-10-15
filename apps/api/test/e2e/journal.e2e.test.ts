@@ -104,7 +104,7 @@ describe('/v1/journal', () => {
     expect(image.status).toBe(200)
     expect(again.imageUrls).toEqual(entry.imageUrls)
     expect((await call('GET', `/v1/journal/${entry.id}`, bruno)).statusCode).toBe(404)
-    expect((await call('GET', `/v1/journal/${entry.id}`, helena)).statusCode).toBe(404)
+    expect((await call('GET', `/v1/journal/${entry.id}`, helena)).statusCode).toBe(403)
   })
 
   it('refuses images stored outside the folder of the page', async () => {

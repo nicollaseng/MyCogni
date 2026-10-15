@@ -1,5 +1,11 @@
 import { describe, expect, it } from '@jest/globals'
-import { consentKinds, isRevocable, missingConsents, requiredConsentKinds } from './consents.ts'
+import {
+  consentKinds,
+  isPatientConsent,
+  isRevocable,
+  missingConsents,
+  requiredConsentKinds,
+} from './consents.ts'
 
 describe('consents', () => {
   it('requires everything except the use of AI, which stays optional', () => {
@@ -24,6 +30,14 @@ describe('consents', () => {
       'ai_processing',
       'assistant_data',
       'assistant_journal',
+    ])
+  })
+
+  it('keeps the consents about health data and the assistant for patient accounts', () => {
+    expect(consentKinds.filter((kind) => !isPatientConsent(kind))).toEqual([
+      'terms',
+      'privacy',
+      'adult',
     ])
   })
 })

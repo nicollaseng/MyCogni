@@ -24,7 +24,7 @@ import {
   type SubmitAssessmentInput,
   type UpdateProfileInput,
 } from '@mycogni/contracts'
-import type { ConsentKind } from '@mycogni/domain'
+import type { AccountType, ConsentKind } from '@mycogni/domain'
 import { cache } from 'react'
 import { z } from 'zod'
 import { ApiError, apiRequest } from './client'
@@ -54,6 +54,16 @@ export const fetchProfile = cache((): Promise<Profile> =>
 
 export function updateProfile(body: UpdateProfileInput): Promise<Profile> {
   return apiRequest({ path: '/v1/me', schema: profileSchema, method: 'PATCH', body })
+}
+
+export async function adoptProfessionalAccount(): Promise<AccountType> {
+  const profile = await apiRequest({
+    path: '/v1/me/account-type',
+    schema: profileSchema,
+    method: 'POST',
+    body: { accountType: 'professional' },
+  })
+  return profile.accountType
 }
 
 export function fetchConsents(): Promise<Consent[]> {

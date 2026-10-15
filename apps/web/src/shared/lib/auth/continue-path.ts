@@ -1,14 +1,17 @@
+import type { AccountType } from '@mycogni/domain'
 import { cookies } from 'next/headers'
 
 const continueCookie = 'MYCOGNI_CONTINUE'
 
-const oneDay = 60 * 60 * 24
+const thirtyMinutes = 60 * 30
 
-export type ContinueTarget = `/invite/${string}` | '/pro/join'
+const professionalIntent = '/pro/join'
+
+export type ContinueTarget = `/invite/${string}` | typeof professionalIntent
 
 export function continueTargetOf(value: string): ContinueTarget | null {
-  if (value === '/pro/join') {
-    return '/pro/join'
+  if (value === professionalIntent) {
+    return professionalIntent
   }
   const code = /^\/invite\/([23456789A-Z]{8})$/.exec(value)?.[1]
   return code === undefined ? null : `/invite/${code}`
@@ -20,7 +23,12 @@ export async function rememberContinuePath(path: string): Promise<void> {
     return
   }
   const store = await cookies()
-  store.set(continueCookie, target, { path: '/', maxAge: oneDay, sameSite: 'lax', httpOnly: true })
+  store.set(continueCookie, target, {
+    path: '/',
+    maxAge: thirtyMinutes,
+    sameSite: 'lax',
+    httpOnly: true,
+  })
 }
 
 export async function continuePath(): Promise<ContinueTarget | null> {
@@ -31,5 +39,21 @@ export async function continuePath(): Promise<ContinueTarget | null> {
 
 export async function forgetContinuePath(): Promise<void> {
   const store = await cookies()
-  store.delete(continueCookie)
+  if (store.has(continueCookie)) {
+    store.delete(continueCookie)
+  }
+}
+
+export async function takeContinuePath(): Promise<ContinueTarget | null> {
+  const target = await continuePath()
+  await forgetContinuePath()
+  return target
+}
+
+export async function rememberAccountIntent(type: AccountType): Promise<void> {
+  if (type === 'professional') {
+    await rememberContinuePath(professionalIntent)
+  } else if ((await continuePath()) === professionalIntent) {
+    await forgetContinuePath()
+  }
 }

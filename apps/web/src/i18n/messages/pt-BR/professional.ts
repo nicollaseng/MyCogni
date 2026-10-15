@@ -169,6 +169,14 @@ export const professional = {
       body: 'Depois da verificação, os convites ficam disponíveis na sua área, e cada pessoa decide se aceita.',
     },
   },
+  patientAccount: {
+    kicker: 'Área profissional',
+    title: 'Esta conta é de paciente.',
+    body: 'Para atender como profissional, crie uma conta profissional com outro email.',
+    records: 'Nada muda nesta conta: seus registros continuam aqui, do jeito que estão.',
+    signOut: 'Sair e criar conta profissional',
+    back: 'Voltar para o app',
+  },
   form: {
     title: 'Seu cadastro profissional',
     lead: 'Depois de enviar, nossa equipe confere seu registro antes de liberar os convites.',

@@ -1,18 +1,20 @@
 import type { Profile, UpdateProfileInput } from '@mycogni/contracts'
-import { isLocale, isOwnAvatarPath } from '@mycogni/domain'
+import { isBrandNewAccount, isLocale, isOwnAvatarPath } from '@mycogni/domain'
 import type { AuthenticatedUser } from '../../auth/token-verifier.ts'
-import { NotFoundError, UnprocessableError } from '../../shared/errors.ts'
+import { AccountTypeLockedError, NotFoundError, UnprocessableError } from '../../shared/errors.ts'
 import type { ProfileChanges, ProfileRecord, ProfileRepository } from './profile.repository.ts'
 
 export interface ProfileService {
   get(user: AuthenticatedUser): Promise<Profile>
   update(user: AuthenticatedUser, input: UpdateProfileInput): Promise<Profile>
+  adoptProfessional(user: AuthenticatedUser): Promise<Profile>
 }
 
 export function toProfile(record: ProfileRecord, user: AuthenticatedUser): Profile {
   return {
     id: record.id,
     email: user.email,
+    accountType: record.accountType,
     displayName: record.displayName,
     avatarPath: record.avatarPath,
     timezone: record.timezone,
@@ -38,7 +40,10 @@ function ownsAvatar(user: AuthenticatedUser, avatarPath: string | null | undefin
   return avatarPath === undefined || avatarPath === null || isOwnAvatarPath(avatarPath, user.id)
 }
 
-export function createProfileService(repository: ProfileRepository): ProfileService {
+export function createProfileService(
+  repository: ProfileRepository,
+  now: () => Date,
+): ProfileService {
   async function findOrFail(user: AuthenticatedUser): Promise<ProfileRecord> {
     const record = await repository.findById(user.id)
     if (record === undefined) {
@@ -62,6 +67,20 @@ export function createProfileService(repository: ProfileRepository): ProfileServ
       const record = await repository.update(user.id, changes)
       if (record === undefined) {
         throw new NotFoundError('Profile not found')
+      }
+      return toProfile(record, user)
+    },
+    async adoptProfessional(user) {
+      const account = await repository.footprint(user.id)
+      if (account === undefined) {
+        throw new NotFoundError('Profile not found')
+      }
+      if (account.accountType !== 'patient' || !isBrandNewAccount(account, now())) {
+        throw new AccountTypeLockedError()
+      }
+      const record = await repository.adoptProfessional(user.id)
+      if (record === undefined) {
+        throw new AccountTypeLockedError()
       }
       return toProfile(record, user)
     },
