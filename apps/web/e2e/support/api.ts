@@ -9,7 +9,7 @@ import {
   uniqueEmail,
 } from './supabase'
 
-const apiUrl = process.env.API_URL ?? 'http://127.0.0.1:3333'
+const apiUrl = process.env.API_URL ?? `http://127.0.0.1:${process.env.E2E_API_PORT ?? '3333'}`
 
 const sessionSchema = z.object({ access_token: z.string() })
 
@@ -47,6 +47,24 @@ export async function finishOnboarding(email: string, password: string): Promise
   await post('/v1/assessments', { instrument: 'phq9', answers: Array.from({ length: 9 }, () => 0) })
   await post('/v1/assessments', { instrument: 'gad7', answers: Array.from({ length: 7 }, () => 0) })
   await post('/v1/onboarding/complete')
+}
+
+export interface CheckInSeed {
+  moodLevel: number
+  emotions: string[]
+  contexts: string[]
+  note: string | null
+}
+
+export async function recordCheckIns(
+  email: string,
+  password: string,
+  checkIns: readonly CheckInSeed[],
+): Promise<void> {
+  const post = await poster(email, password)
+  for (const checkIn of checkIns) {
+    await post('/v1/check-ins', checkIn)
+  }
 }
 
 export async function verifiedProfessional(

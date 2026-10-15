@@ -70,12 +70,12 @@ export function ConsentStep({ accept, onDone }: ConsentStepProps) {
   return (
     <section className="flex min-h-0 flex-1 flex-col">
       <StepHeading title={t('title')}>{t('lead')}</StepHeading>
-      <fieldset className="mt-7 border-t border-rule">
+      <fieldset className="mt-7 space-y-1">
         <legend className="sr-only">{t('legend')}</legend>
         {options.map((option) => (
           <label
             key={option.id}
-            className="flex cursor-pointer gap-3.5 border-b border-rule py-4 text-[15px] leading-snug"
+            className="flex cursor-pointer gap-3.5 py-3 text-[15px] leading-snug"
           >
             <span className="relative mt-px grid size-[22px] shrink-0">
               <input
@@ -111,7 +111,7 @@ export function ConsentStep({ accept, onDone }: ConsentStepProps) {
         <ActionError error={error} />
         <Button
           size="lg"
-          shape="pill"
+
           disabled={!ready || pending}
           onClick={() => {
             submit(

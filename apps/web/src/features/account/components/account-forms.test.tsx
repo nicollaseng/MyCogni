@@ -1,5 +1,5 @@
 import { describe, expect, it, jest } from '@jest/globals'
-import { screen } from '@testing-library/react'
+import { screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import type { ActionResult } from '@/shared/lib/actions/result'
 import { renderWithIntl } from '@/test/render'
@@ -49,7 +49,13 @@ describe('NameForm', () => {
     await userEvent.click(screen.getByRole('button', { name: 'Salvar nome' }))
 
     expect(rename).toHaveBeenCalledWith('Mari')
-    expect(screen.queryByLabelText('Novo nome')).not.toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Alterar nome' })).toHaveAttribute(
+      'aria-expanded',
+      'false',
+    )
+    await waitFor(() => {
+      expect(screen.queryByLabelText('Novo nome')).not.toBeInTheDocument()
+    })
   })
 })
 

@@ -1,6 +1,6 @@
 import { useLocale, useTranslations } from 'next-intl'
 import { crisisLinesFor } from '@/i18n/crisis-lines'
-import { cn } from '@/shared/lib/utils'
+import { Disclosure } from './disclosure'
 
 const phoneLink = 'font-medium text-foreground underline decoration-1 underline-offset-4'
 
@@ -9,11 +9,13 @@ export function HelpDisclosure({ className }: { className?: string }) {
   const lines = crisisLinesFor(useLocale())
 
   return (
-    <details className={cn('text-sm', className)}>
-      <summary className="w-fit cursor-pointer list-none text-help underline decoration-1 underline-offset-4 [&::-webkit-details-marker]:hidden">
-        {t('summary')}
-      </summary>
-      <div className="mt-4 max-w-md space-y-2 border-l-2 border-help pl-4 leading-relaxed">
+    <Disclosure
+      className={className}
+      buttonClassName="text-sm text-help"
+      panelClassName="pt-4"
+      summary={<span className="underline decoration-1 underline-offset-4">{t('summary')}</span>}
+    >
+      <div className="max-w-md space-y-2 border-l-2 border-help pl-4 text-sm leading-relaxed">
         <p>{t('intro')}</p>
         {lines.map((line) => (
           <p key={line.phone}>
@@ -25,6 +27,6 @@ export function HelpDisclosure({ className }: { className?: string }) {
         ))}
         <p className="pt-2 text-muted-foreground">{t('disclaimer')}</p>
       </div>
-    </details>
+    </Disclosure>
   )
 }

@@ -22,7 +22,7 @@ export function EmailForm({ action, submitLabel }: { action: FormAction; submitL
         required
       />
       <FormFeedback state={state} />
-      <Button type="submit" size="lg" shape="pill" disabled={pending} className="w-full">
+      <Button type="submit" size="lg" disabled={pending} className="w-full">
         {pending ? t('sending') : submitLabel}
       </Button>
     </form>

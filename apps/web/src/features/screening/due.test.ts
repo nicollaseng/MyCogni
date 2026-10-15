@@ -1,5 +1,5 @@
 import { describe, expect, it } from '@jest/globals'
-import { daysSince, isScreeningDue } from './due'
+import { daysSince, isScreeningDue, nextScreeningDate } from './due'
 
 const now = new Date('2026-10-29T12:00:00Z')
 
@@ -13,5 +13,9 @@ describe('screening cadence', () => {
     expect(isScreeningDue('2026-10-20T12:00:00Z', now)).toBe(false)
     expect(isScreeningDue('2026-10-15T12:00:00Z', now)).toBe(true)
     expect(isScreeningDue(undefined, now)).toBe(true)
+  })
+
+  it('suggests the next answer two weeks after the last one', () => {
+    expect(nextScreeningDate('2026-10-15T12:00:00Z')).toEqual(new Date('2026-10-29T12:00:00Z'))
   })
 })

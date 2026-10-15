@@ -2,7 +2,7 @@ import type { Assessment } from '@mycogni/contracts'
 import type { ReactNode } from 'react'
 import { instrumentIds, instruments } from '@mycogni/domain'
 import { useLocale, useTranslations } from 'next-intl'
-import { Panel, Section } from '@/shared/components/section'
+import { Section } from '@/shared/components/section'
 import { formatLongDate } from '@/shared/lib/time'
 import type { LatestResults } from '../latest'
 
@@ -15,18 +15,21 @@ interface LatestScreeningProps {
 function Row({ assessment }: { assessment: Assessment }) {
   const t = useTranslations('screening')
   return (
-    <li className="py-3.5">
+    <li className="space-y-1.5">
       <p className="text-sm text-muted-foreground">
         {t(`topics.${assessment.instrument}`)}
-        <span className="whitespace-nowrap"> · {instruments[assessment.instrument].name}</span>
+        <span className="block sm:inline">
+          <span className="hidden sm:inline"> · </span>
+          {instruments[assessment.instrument].name}
+        </span>
       </p>
-      <p className="mt-1 flex items-baseline gap-1.5">
-        <span className="font-serif text-[28px] leading-none">{assessment.totalScore}</span>
+      <p className="flex items-baseline gap-1.5">
+        <span className="font-serif text-[32px] leading-none">{assessment.totalScore}</span>
         <span className="text-sm text-muted-foreground">
           {t('score.outOf', { max: assessment.maxScore })}
         </span>
-        <span className="ml-auto text-right">{t(`severity.${assessment.severity}`)}</span>
       </p>
+      <p>{t(`severity.${assessment.severity}`)}</p>
     </li>
   )
 }
@@ -47,19 +50,15 @@ export function LatestScreening({ results, timeZone, children }: LatestScreening
   return (
     <Section title={t('title')}>
       {latest === undefined ? (
-        <Panel>
-          <p className="py-3.5 text-muted-foreground">{t('empty')}</p>
-        </Panel>
+        <p className="text-muted-foreground">{t('empty')}</p>
       ) : (
         <>
-          <Panel>
-            <ul>
-              {answered.map((assessment) => (
-                <Row key={assessment.id} assessment={assessment} />
-              ))}
-            </ul>
-          </Panel>
-          <p className="px-1 text-sm text-muted-foreground">
+          <ul className="grid grid-cols-2 gap-x-6 gap-y-5 pt-1">
+            {answered.map((assessment) => (
+              <Row key={assessment.id} assessment={assessment} />
+            ))}
+          </ul>
+          <p className="text-sm text-muted-foreground">
             {t('answeredOn', {
               date: formatLongDate(new Date(latest.completedAt), timeZone, locale),
             })}

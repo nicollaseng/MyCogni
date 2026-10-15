@@ -41,7 +41,7 @@ export function EndCareLink({ id, name, end }: EndCareLinkProps) {
       <div className="flex gap-3">
         <Button
           size="sm"
-          shape="pill"
+
           disabled={pending}
           className="bg-danger text-background hover:bg-danger/90"
           onClick={() => {
@@ -52,7 +52,7 @@ export function EndCareLink({ id, name, end }: EndCareLinkProps) {
         </Button>
         <Button
           size="sm"
-          shape="pill"
+
           variant="ghost"
           disabled={pending}
           onClick={() => {

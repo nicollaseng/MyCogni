@@ -14,7 +14,7 @@ export type LocalSupabase = z.infer<typeof statusSchema>
 
 const repositoryRoot = fileURLToPath(new URL('../../../../', import.meta.url))
 
-export const testEmailDomain = 'e2e.mycogni.local'
+export const testEmailDomain = process.env.E2E_EMAIL_DOMAIN ?? 'e2e.mycogni.local'
 
 export const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL ?? 'http://127.0.0.1:55321'
 

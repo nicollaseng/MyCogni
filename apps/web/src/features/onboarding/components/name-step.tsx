@@ -44,7 +44,7 @@ export function NameStep({ initialName, save, onDone }: NameStepProps) {
       </div>
       <StepActions>
         <ActionError error={error} />
-        <Button type="submit" size="lg" shape="pill" disabled={displayName === '' || pending}>
+        <Button type="submit" size="lg" disabled={displayName === '' || pending}>
           {pending ? t('saving') : t('submit')}
         </Button>
       </StepActions>

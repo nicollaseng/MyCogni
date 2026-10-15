@@ -50,7 +50,7 @@ export function PickerStep({
       {children}
       <StepActions>
         <ActionError error={error} />
-        <Button size="lg" shape="pill" onClick={onPrimary} disabled={pending}>
+        <Button size="lg" onClick={onPrimary} disabled={pending}>
           {primaryLabel}
         </Button>
         {onSkip !== undefined && (

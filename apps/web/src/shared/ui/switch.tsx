@@ -21,15 +21,15 @@ export function Switch({ checked, label, onChange, disabled = false }: SwitchPro
         onChange(!checked)
       }}
       className={cn(
-        'relative h-7 w-12 shrink-0 rounded-full transition-colors duration-200 disabled:opacity-50 motion-reduce:transition-none',
+        'relative h-6 w-10 shrink-0 rounded-full transition-colors duration-200 disabled:opacity-50 motion-reduce:transition-none',
         checked ? 'bg-primary' : 'bg-rule',
       )}
     >
       <span
         aria-hidden
         className={cn(
-          'absolute top-0.5 left-0.5 size-6 rounded-full bg-background shadow-sm transition-transform duration-200 motion-reduce:transition-none',
-          checked && 'translate-x-5',
+          'absolute top-0.5 left-0.5 size-5 rounded-full bg-background transition-transform duration-200 motion-reduce:transition-none',
+          checked && 'translate-x-4',
         )}
       />
     </button>

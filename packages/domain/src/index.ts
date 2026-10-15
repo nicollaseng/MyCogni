@@ -107,3 +107,22 @@ export {
   type InsightAudience,
 } from './insights/insights.ts'
 export { isOnboardingReady, type OnboardingProgress } from './onboarding/onboarding.ts'
+export { consistencyOf, type Consistency } from './patterns/consistency.ts'
+export { averageOf, moodDays, weekdayOf, type MoodDay } from './patterns/days.ts'
+export { patternRules } from './patterns/rules.ts'
+export {
+  scoreTimeline,
+  severityRanges,
+  type DatedScore,
+  type SeverityRange,
+} from './patterns/scores.ts'
+export {
+  contextEffects,
+  frequentTags,
+  notableEffects,
+  type ContextEffect,
+  type ContextMood,
+  type TagCount,
+} from './patterns/tags.ts'
+export { moodChanges, weekSummary, type MoodChange, type WeekSummary } from './patterns/week.ts'
+export { moodByWeekday, type WeekdayMood } from './patterns/weekdays.ts'

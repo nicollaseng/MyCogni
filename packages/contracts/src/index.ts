@@ -8,12 +8,19 @@ export {
   type SubmitAssessmentInput,
 } from './assessments.ts'
 export {
+  checkInCountSchema,
+  checkInFilterSchema,
   checkInListSchema,
   checkInQuerySchema,
   checkInSchema,
+  checkInSearchLength,
+  checkInSearchSchema,
   createCheckInSchema,
   type CheckIn,
+  type CheckInCount,
+  type CheckInFilter,
   type CheckInQuery,
+  type CheckInSearch,
   type CreateCheckInInput,
 } from './check-ins.ts'
 export {

@@ -72,14 +72,16 @@ describe('LandingPage', () => {
     const user = userEvent.setup()
     renderWithIntl(<LandingPage chooseLocale={chooseLocale()} />)
 
-    const question = screen.getByText('O MyCogniAI substitui terapia?')
-    const details = question.closest('details')
+    const question = screen.getByRole('button', { name: 'O MyCogniAI substitui terapia?' })
+    const answer = document.getElementById(question.getAttribute('aria-controls') ?? '')
 
-    expect(details).not.toHaveAttribute('open')
+    expect(question).toHaveAttribute('aria-expanded', 'false')
+    expect(answer).toHaveAttribute('inert')
 
     await user.click(question)
 
-    expect(details).toHaveAttribute('open')
+    expect(question).toHaveAttribute('aria-expanded', 'true')
+    expect(answer).not.toHaveAttribute('inert')
   })
 
   it('leads to creating an account from the hero and the end of the page', () => {

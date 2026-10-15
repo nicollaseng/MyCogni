@@ -16,7 +16,7 @@ export function NotificationItem({ notification, fresh, timeZone }: Notification
   const { invitation } = notification
 
   return (
-    <li className="space-y-1 py-3.5">
+    <li className="space-y-1">
       <p className="text-sm text-muted-foreground">
         {fresh && <span className="mr-2 font-medium text-emphasis">{t('new')}</span>}
         <time dateTime={notification.createdAt}>

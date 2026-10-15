@@ -17,8 +17,8 @@ export const buttonVariants = cva(
         lg: 'h-14 px-6 text-base',
       },
       shape: {
-        default: 'rounded-[6px]',
-        pill: 'rounded-full',
+        default: 'rounded-md',
+        pill: 'rounded-md',
       },
     },
     defaultVariants: {

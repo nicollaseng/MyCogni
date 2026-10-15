@@ -1,7 +1,8 @@
 'use client'
 
 import { useTranslations } from 'next-intl'
-import { createContext, useContext, useState, type ReactNode } from 'react'
+import { createContext, useContext, useId, useState, type ReactNode } from 'react'
+import { DisclosurePanel } from '@/shared/components/disclosure'
 
 const CloseRow = createContext<() => void>(() => undefined)
 
@@ -18,6 +19,8 @@ interface SettingsRowProps {
 export function SettingsRow({ label, value, children }: SettingsRowProps) {
   const t = useTranslations('account.settings')
   const [open, setOpen] = useState(false)
+  const [opened, setOpened] = useState(0)
+  const panelId = useId()
 
   return (
     <div className="py-3.5">
@@ -29,7 +32,11 @@ export function SettingsRow({ label, value, children }: SettingsRowProps) {
         <button
           type="button"
           aria-expanded={open}
+          aria-controls={panelId}
           onClick={() => {
+            if (!open) {
+              setOpened(opened + 1)
+            }
             setOpen(!open)
           }}
           className="shrink-0 text-sm underline decoration-1 underline-offset-4"
@@ -37,15 +44,16 @@ export function SettingsRow({ label, value, children }: SettingsRowProps) {
           {open ? t('cancel') : t('change', { field: label.toLowerCase() })}
         </button>
       </div>
-      {open && (
+      <DisclosurePanel id={panelId} open={open} className="pt-4">
         <CloseRow.Provider
+          key={opened}
           value={() => {
             setOpen(false)
           }}
         >
-          <div className="mt-4">{children}</div>
+          {children}
         </CloseRow.Provider>
-      )}
+      </DisclosurePanel>
     </div>
   )
 }

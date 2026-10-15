@@ -1,5 +1,4 @@
 import type { Metadata } from 'next'
-import Link from 'next/link'
 import { getTranslations } from 'next-intl/server'
 import { signOut } from '@/features/auth/actions'
 import {
@@ -25,7 +24,7 @@ import { chooseLocale } from '@/features/locale/actions'
 import { LocaleSelect } from '@/features/locale/components/locale-select'
 import { LatestScreening } from '@/features/screening/components/latest-screening'
 import { ScreeningHistory } from '@/features/screening/components/screening-history'
-import { screeningIntervalDays } from '@/features/screening/due'
+import { ScreeningSchedule } from '@/features/screening/components/screening-schedule'
 import { latestByInstrument } from '@/features/screening/latest'
 import { Panel, Section } from '@/shared/components/section'
 import { fetchCareLinks, fetchProfessional } from '@/shared/lib/api/care'
@@ -42,17 +41,18 @@ const rowLink = 'block py-3.5 underline decoration-1 underline-offset-4'
 
 export default async function MePage() {
   const profile = await requireOnboardedProfile()
-  const [assessments, consents, photoUrl, careLinks, professional, t, screening, language] =
-    await Promise.all([
+  const [assessments, consents, photoUrl, careLinks, professional, t, language] = await Promise.all(
+    [
       fetchAssessments(),
       fetchConsents(),
       avatarUrl(profile.avatarPath),
       fetchCareLinks(),
       fetchProfessional(),
       getTranslations('account'),
-      getTranslations('screening.latest'),
       getTranslations('common.language'),
-    ])
+    ],
+  )
+  const lastAnswer = assessments[0]?.completedAt
 
   return (
     <div className="space-y-12">
@@ -66,14 +66,14 @@ export default async function MePage() {
 
       <LatestScreening results={latestByInstrument(assessments)} timeZone={profile.timezone}>
         <ScreeningHistory assessments={assessments} timeZone={profile.timezone} />
-        <div className="space-y-1 px-1">
-          <Link href="/questionnaires" className="underline decoration-1 underline-offset-4">
-            {screening('retake')}
-          </Link>
-          <p className="text-sm text-muted-foreground">
-            {screening('cadence', { days: screeningIntervalDays })}
-          </p>
-        </div>
+        {lastAnswer !== undefined && (
+          <ScreeningSchedule
+            lastAnswer={lastAnswer}
+            now={new Date()}
+            timeZone={profile.timezone}
+            offerRetake="always"
+          />
+        )}
       </LatestScreening>
 
       <CareLinks
@@ -101,7 +101,7 @@ export default async function MePage() {
         <Panel>
           <LocaleSelect choose={chooseLocale} showLabel className="justify-between py-3.5" />
         </Panel>
-        <p className="px-1 text-sm text-pretty text-muted-foreground">{language('hint')}</p>
+        <p className="text-sm text-pretty text-muted-foreground">{language('hint')}</p>
       </Section>
 
       <Section title={t('sections.privacy')}>
@@ -112,7 +112,7 @@ export default async function MePage() {
             setAiConsent={setAiConsent}
           />
         </Panel>
-        <p className="px-1 text-sm text-pretty text-muted-foreground">{t('consents.note')}</p>
+        <p className="text-sm text-pretty text-muted-foreground">{t('consents.note')}</p>
       </Section>
 
       <Section title={t('sections.data')}>
@@ -125,7 +125,7 @@ export default async function MePage() {
       </Section>
 
       <form action={signOut}>
-        <Button type="submit" variant="outline" shape="pill">
+        <Button type="submit" variant="outline">
           {t('signOut')}
         </Button>
       </form>

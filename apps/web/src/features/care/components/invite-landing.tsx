@@ -67,7 +67,7 @@ export function PendingInvite({ preview, now, children }: PendingInviteProps) {
       </InviteHeading>
       <SharingSummary name={name} />
       <div className="space-y-4">
-        <p className="px-1 text-sm text-muted-foreground">
+        <p className="text-sm text-muted-foreground">
           {left.unit === 'days'
             ? t('pending.expiresInDays', { count: left.count })
             : t('pending.expiresInHours', { count: left.count })}
@@ -89,17 +89,17 @@ export function SignedOutChoices({ code }: { code: string }) {
     <div className="space-y-3">
       <a
         href={continueHref(code, 'sign-up')}
-        className={cn(buttonVariants({ size: 'lg', shape: 'pill' }), 'w-full')}
+        className={cn(buttonVariants({ size: 'lg' }), 'w-full')}
       >
         {t('signUp')}
       </a>
       <a
         href={continueHref(code, 'sign-in')}
-        className={cn(buttonVariants({ variant: 'outline', size: 'lg', shape: 'pill' }), 'w-full')}
+        className={cn(buttonVariants({ variant: 'outline', size: 'lg' }), 'w-full')}
       >
         {t('signIn')}
       </a>
-      <p className="px-1 pt-1 text-sm text-pretty text-muted-foreground">{t('signedOutHint')}</p>
+      <p className="pt-1 text-sm text-pretty text-muted-foreground">{t('signedOutHint')}</p>
     </div>
   )
 }
@@ -107,10 +107,7 @@ export function SignedOutChoices({ code }: { code: string }) {
 function AppLink({ signedIn }: { signedIn: boolean }) {
   const t = useTranslations('care.invite')
   return (
-    <Link
-      href={signedIn ? '/today' : '/'}
-      className={buttonVariants({ variant: 'outline', shape: 'pill' })}
-    >
+    <Link href={signedIn ? '/today' : '/'} className={buttonVariants({ variant: 'outline' })}>
       {signedIn ? t('goToApp') : t('goHome')}
     </Link>
   )

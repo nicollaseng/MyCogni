@@ -2,9 +2,10 @@ import { defineConfig, devices } from '@playwright/test'
 import { signedInState } from './e2e/support/session'
 import { localSupabase } from './e2e/support/supabase'
 
-const port = 3000
+const port = Number(process.env.E2E_WEB_PORT ?? '3000')
+const apiPort = process.env.E2E_API_PORT ?? '3333'
 const baseURL = `http://localhost:${String(port)}`
-const apiUrl = 'http://127.0.0.1:3333'
+const apiUrl = `http://127.0.0.1:${apiPort}`
 
 export default defineConfig({
   testDir: './e2e',
@@ -43,7 +44,7 @@ export default defineConfig({
       url: `${apiUrl}/health`,
       reuseExistingServer: true,
       env: {
-        PORT: '3333',
+        PORT: apiPort,
         LOG_LEVEL: 'warn',
         CORS_ORIGINS: baseURL,
         DATABASE_URL: 'postgresql://postgres:postgres@127.0.0.1:55322/postgres',
@@ -58,7 +59,7 @@ export default defineConfig({
       url: baseURL,
       reuseExistingServer: true,
       timeout: 120_000,
-      env: { API_URL: apiUrl },
+      env: { API_URL: apiUrl, SITE_URL: baseURL },
     },
   ],
 })

@@ -102,11 +102,11 @@ export function Questionnaire({ instrument, send, onDone }: QuestionnaireProps) 
         )}
         <ActionError error={error} />
         {error !== null && complete ? (
-          <Button size="lg" shape="pill" className="w-full" onClick={sendAnswers}>
+          <Button size="lg" className="w-full" onClick={sendAnswers}>
             {t('retry')}
           </Button>
         ) : (
-          <div role="group" aria-labelledby="question" className="border-t border-rule">
+          <div role="group" aria-labelledby="question" className="space-y-2">
             {answerValues.map((value) => {
               const selected = answers[index] === value
               return (
@@ -117,16 +117,19 @@ export function Questionnaire({ instrument, send, onDone }: QuestionnaireProps) 
                   onClick={() => {
                     choose(value)
                   }}
-                  className="flex h-14 w-full items-center justify-between border-b border-rule text-left text-[17px] transition-colors active:bg-sage/60"
+                  className={cn(
+                    'flex h-[52px] w-full items-center justify-between rounded-md px-4 text-left text-[17px] transition-colors duration-150 motion-reduce:transition-none',
+                    selected ? 'bg-primary text-primary-foreground' : 'bg-surface active:bg-sage',
+                  )}
                 >
-                  <span className={cn(!selected && 'text-foreground/85')}>
-                    {text.options[value]}
-                  </span>
+                  <span>{text.options[value]}</span>
                   <span
                     aria-hidden
                     className={cn(
                       'size-[18px] rounded-full border-[1.5px] transition-colors duration-150',
-                      selected ? 'border-foreground bg-foreground' : 'border-foreground/30',
+                      selected
+                        ? 'border-primary-foreground bg-primary-foreground'
+                        : 'border-foreground/30',
                     )}
                   />
                 </button>

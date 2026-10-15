@@ -2,6 +2,7 @@ import {
   accountExportSchema,
   assessmentListSchema,
   assessmentSchema,
+  checkInCountSchema,
   checkInListSchema,
   checkInSchema,
   consentListSchema,
@@ -23,9 +24,21 @@ import { apiRequest } from './client'
 
 export interface CheckInFilter {
   since?: Date
+  q?: string
+  qTags?: readonly string[]
+  tags?: readonly string[]
+  minMood?: number
+  maxMood?: number
+  hasNote?: boolean
+}
+
+export interface CheckInPage extends CheckInFilter {
   before?: string
   limit?: number
 }
+
+const pageLimit = 200
+const maxPages = 10
 
 export const fetchProfile = cache((): Promise<Profile> =>
   apiRequest({ path: '/v1/me', schema: profileSchema }),
@@ -59,18 +72,61 @@ export function createCheckIn(body: CreateCheckInInput): Promise<CheckIn> {
   return apiRequest({ path: '/v1/check-ins', schema: checkInSchema, method: 'POST', body })
 }
 
-export function fetchCheckIns({ since, before, limit }: CheckInFilter): Promise<CheckIn[]> {
+function checkInQuery({
+  since,
+  before,
+  limit,
+  q,
+  qTags,
+  tags,
+  minMood,
+  maxMood,
+  hasNote,
+}: CheckInPage): string {
   const query = new URLSearchParams()
-  if (since !== undefined) {
-    query.set('since', since.toISOString())
+  const entries: [string, string | undefined][] = [
+    ['since', since?.toISOString()],
+    ['before', before],
+    ['limit', limit === undefined ? undefined : String(limit)],
+    ['q', q === undefined || q === '' ? undefined : q],
+    ['qTags', qTags === undefined || qTags.length === 0 ? undefined : qTags.join(',')],
+    ['tags', tags === undefined || tags.length === 0 ? undefined : tags.join(',')],
+    ['minMood', minMood === undefined ? undefined : String(minMood)],
+    ['maxMood', maxMood === undefined ? undefined : String(maxMood)],
+    ['hasNote', hasNote === undefined ? undefined : String(hasNote)],
+  ]
+  for (const [key, value] of entries) {
+    if (value !== undefined) {
+      query.set(key, value)
+    }
   }
-  if (before !== undefined) {
-    query.set('before', before)
+  return query.toString()
+}
+
+export function fetchCheckIns(page: CheckInPage): Promise<CheckIn[]> {
+  return apiRequest({ path: `/v1/check-ins?${checkInQuery(page)}`, schema: checkInListSchema })
+}
+
+export async function countCheckIns(filter: CheckInFilter): Promise<number> {
+  const { count } = await apiRequest({
+    path: `/v1/check-ins/count?${checkInQuery(filter)}`,
+    schema: checkInCountSchema,
+  })
+  return count
+}
+
+export async function fetchCheckInsSince(since: Date): Promise<CheckIn[]> {
+  const collected: CheckIn[] = []
+  let before: string | undefined
+  for (let page = 0; page < maxPages; page++) {
+    const batch = await fetchCheckIns({ since, before, limit: pageLimit })
+    collected.push(...batch)
+    before = batch.at(-1)?.recordedAt
+    if (batch.length < pageLimit || before === undefined) {
+      break
+    }
   }
-  if (limit !== undefined) {
-    query.set('limit', String(limit))
-  }
-  return apiRequest({ path: `/v1/check-ins?${query.toString()}`, schema: checkInListSchema })
+  return collected
 }
 
 export function fetchAccountExport(): Promise<AccountExport> {

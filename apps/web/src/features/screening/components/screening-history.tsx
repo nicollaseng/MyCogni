@@ -1,8 +1,7 @@
 import type { Assessment } from '@mycogni/contracts'
 import { dayKey } from '@mycogni/domain'
 import { useLocale, useTranslations } from 'next-intl'
-import { Panel } from '@/shared/components/section'
-import { formatDayTitle } from '@/shared/lib/time'
+import { formatDayMonth } from '@/shared/lib/time'
 
 interface Session {
   key: string
@@ -40,13 +39,13 @@ export function ScreeningHistory({
     return null
   }
   return (
-    <Panel>
-      <h3 className="pt-3.5 text-sm text-muted-foreground">{t('title')}</h3>
-      <ul>
+    <div className="space-y-2 pt-2">
+      <h3 className="text-sm text-muted-foreground">{t('title')}</h3>
+      <ul className="space-y-1">
         {sessions.slice(0, 8).map((session) => (
-          <li key={session.key} className="flex items-baseline justify-between gap-4 py-3">
-            <span>{formatDayTitle(new Date(session.date), timeZone, locale)}</span>
-            <span className="shrink-0 text-sm text-muted-foreground">
+          <li key={session.key} className="flex items-baseline justify-between gap-4 py-1">
+            <span>{formatDayMonth(new Date(session.date), timeZone, locale)}</span>
+            <span className="shrink-0 text-sm text-muted-foreground tabular-nums">
               {session.scores
                 .map((score) => `${names[score.instrument]} ${String(score.totalScore)}`)
                 .join(' · ')}
@@ -54,6 +53,6 @@ export function ScreeningHistory({
           </li>
         ))}
       </ul>
-    </Panel>
+    </div>
   )
 }

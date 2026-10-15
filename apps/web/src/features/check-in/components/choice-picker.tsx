@@ -2,6 +2,7 @@
 
 import { useTranslations } from 'next-intl'
 import { useId, useState } from 'react'
+import { normalizeText } from '@/shared/lib/text'
 import { cn } from '@/shared/lib/utils'
 import type { Choice, ChoiceGroup } from '../catalog'
 
@@ -15,15 +16,7 @@ interface ChoicePickerProps {
 const visibleResults = 9
 
 const chipStyles =
-  'h-[38px] rounded-full border px-[15px] text-[15px] transition-[background-color,color,border-color,transform] duration-150 active:scale-[0.97] motion-reduce:transition-none'
-
-function normalize(text: string): string {
-  return text
-    .normalize('NFD')
-    .replace(/\p{Diacritic}/gu, '')
-    .toLowerCase()
-    .trim()
-}
+  'h-[38px] rounded-md border px-[14px] text-[15px] transition-[background-color,color,border-color,transform] duration-150 active:scale-[0.97] motion-reduce:transition-none'
 
 function uniqueChoices(tabs: readonly ChoiceGroup[]): Choice[] {
   return [...new Map(tabs.flatMap((tab) => tab.items).map((item) => [item.id, item])).values()]
@@ -37,15 +30,15 @@ export function ChoicePicker({ tabs, selected, onToggle, searchLabel }: ChoicePi
 
   const catalog = uniqueChoices(tabs)
   const labelOf = (item: string) => catalog.find((choice) => choice.id === item)?.label ?? item
-  const searchTerm = normalize(query)
+  const searchTerm = normalizeText(query)
   const searching = searchTerm !== ''
   const custom = selected
     .filter((item) => !catalog.some((choice) => choice.id === item))
     .map((item) => ({ id: item, label: item }))
-  const exactMatch = catalog.find((choice) => normalize(choice.label) === searchTerm)
+  const exactMatch = catalog.find((choice) => normalizeText(choice.label) === searchTerm)
   const visible = searching
     ? catalog
-        .filter((choice) => normalize(choice.label).includes(searchTerm))
+        .filter((choice) => normalizeText(choice.label).includes(searchTerm))
         .slice(0, visibleResults)
     : [...(tabs[activeIndex]?.items ?? []), ...(activeIndex === 0 ? custom : [])]
   const newItem = query.trim().toLowerCase()
@@ -117,7 +110,7 @@ export function ChoicePicker({ tabs, selected, onToggle, searchLabel }: ChoicePi
                 chipStyles,
                 pressed
                   ? 'border-foreground bg-foreground text-background'
-                  : 'border-rule bg-white/55 hover:border-foreground/30 dark:bg-white/5',
+                  : 'border-rule bg-background hover:border-foreground/30',
               )}
             >
               {item.label}

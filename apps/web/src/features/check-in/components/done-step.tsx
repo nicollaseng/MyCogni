@@ -24,7 +24,7 @@ export function DoneStep({ valence, recordedAt, summary }: DoneStepProps) {
         {summary.join(' · ')}
       </p>
       <StepActions className="w-full">
-        <Link href="/today" className={cn(buttonVariants({ size: 'lg', shape: 'pill' }), 'w-full')}>
+        <Link href="/today" className={cn(buttonVariants({ size: 'lg' }), 'w-full')}>
           {t('days')}
         </Link>
         <Link
