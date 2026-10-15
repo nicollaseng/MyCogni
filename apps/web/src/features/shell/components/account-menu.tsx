@@ -34,7 +34,7 @@ function Avatar({ initials, photoUrl, className }: AvatarProps) {
     <span
       aria-hidden
       className={cn(
-        'grid shrink-0 place-items-center rounded-full bg-sage font-serif leading-none text-foreground',
+        'grid shrink-0 place-items-center rounded-full bg-sage pt-[0.14em] font-serif leading-none text-foreground',
         className,
       )}
     >
