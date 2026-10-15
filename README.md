@@ -82,6 +82,8 @@ Routes under `/v1` require a Supabase access token (`Authorization: Bearer <toke
 | `GET /v1/assessments`          | PHQ-9 and GAD-7 results, newest first                                                      |
 | `POST /v1/assessments`         | Submit answers; the server computes total, severity and the PHQ-9 item 9 risk flag         |
 | `POST /v1/onboarding/complete` | Marks onboarding as done once the required consents and both screenings exist (422 before) |
+| `POST /v1/check-ins`           | Record mood (0–6), emotions, context and an optional note                                  |
+| `GET /v1/check-ins`            | Records, newest first, with optional `since`, `before` and `limit` (up to 200)             |
 
 Errors always answer with `{ code, message }`, plus `issues` for validation errors. Unexpected errors are logged and answered with a generic 500 that never leaks details.
 
@@ -118,7 +120,7 @@ e2e/           Playwright specs, run on a mobile and a desktop profile
   - In hosted projects, set the same values in Authentication → Providers → Google, and add `https://<domain>/auth/callback` to the allowed redirect URLs
 - The web server calls the API on behalf of the signed-in person, forwarding the Supabase access token (`API_URL` in `.env.local`, `http://127.0.0.1:3333` locally)
 - Onboarding at `/onboarding`, required before any app route: consents (18+, terms and privacy, health data, and AI as optional), name, then PHQ-9 and GAD-7 one question per screen. A crisis support screen appears right after PHQ-9 when item 9 is above zero. The results explain each score as screening, not diagnosis. Leaving midway resumes at the right step
-- Check-in at `/check-in`: a contour map that tightens on difficult days and loosens on good ones, a 7-level scale, then emotions and context picked from suggestions, groups and search, with no scrolling even on small phones
+- Check-in at `/check-in`: a contour map that tightens on difficult days and loosens on good ones, a 7-level scale, then emotions and context picked from suggestions, groups and search, with no scrolling even on small phones The record is saved through the API, then shows up in Registros, grouped by day in the person's time zone, and in the 14-day strip on Hoje
 - Routes are typed (`typedRoutes`), so links to missing pages fail the typecheck
 
 ## Branches

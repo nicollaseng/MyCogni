@@ -20,12 +20,15 @@ export function DoneStep({ valence, recordedAt, summary }: DoneStepProps) {
       <p className="mt-4 max-w-[320px] text-[15px] leading-relaxed text-muted-foreground">
         {summary.join(' · ')}
       </p>
-      <p className="mt-6 text-sm text-muted-foreground">
-        Nesta versão, o registro ainda não fica salvo.
-      </p>
       <StepActions className="w-full">
         <Link href="/today" className={cn(buttonVariants({ size: 'lg', shape: 'pill' }), 'w-full')}>
           Ver meus dias
+        </Link>
+        <Link
+          href="/entries"
+          className={cn(buttonVariants({ variant: 'ghost', size: 'sm' }), 'mt-1 w-full')}
+        >
+          Ver registros
         </Link>
       </StepActions>
     </section>

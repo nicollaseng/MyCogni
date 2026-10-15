@@ -16,6 +16,8 @@ export {
   scoreAssessment,
   type AssessmentScore,
 } from './assessments/scoring.ts'
+export { checkInLimits, maxMoodLevel } from './check-ins/check-ins.ts'
+export { dailyMoods, dayKey, previousDays, type DatedMood } from './check-ins/days.ts'
 export {
   consentKinds,
   consentVersion,

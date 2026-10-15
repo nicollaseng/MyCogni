@@ -1,5 +1,5 @@
 import { useState, useTransition } from 'react'
-import type { ActionResult } from './model'
+import type { ActionResult } from '../lib/actions/result'
 
 export function useSubmit<A extends unknown[], T>(
   action: (...args: A) => Promise<ActionResult<T>>,

@@ -5,8 +5,8 @@ import { StepActions } from '@/shared/components/step-actions'
 import { Button } from '@/shared/ui/button'
 import { TextField } from '@/shared/ui/text-field'
 import type { OnboardingActions } from '../model'
-import { useSubmit } from '../use-submit'
-import { ActionError } from './action-error'
+import { useSubmit } from '@/shared/hooks/use-submit'
+import { ActionError } from '@/shared/components/action-error'
 import { StepHeading } from './step-heading'
 
 interface NameStepProps {

@@ -14,19 +14,11 @@ import {
   submitAssessment,
   updateProfile,
 } from '@/shared/lib/api/resources'
+import { attempt, failure, type ActionResult } from '@/shared/lib/actions/result'
 import { saveError } from './copy'
-import type { ActionResult, NameInput, ScreeningInput } from './model'
+import type { NameInput, ScreeningInput } from './model'
 
-async function attempt<T>(work: () => Promise<T>): Promise<ActionResult<T>> {
-  try {
-    return { ok: true, value: await work() }
-  } catch (error) {
-    console.error(error)
-    return { ok: false, error: saveError }
-  }
-}
-
-const invalid: ActionResult<never> = { ok: false, error: saveError }
+const invalid = failure(saveError)
 
 export async function acceptConsents(kinds: ConsentKind[]): Promise<ActionResult<null>> {
   const parsed = grantConsentsSchema.safeParse({ kinds })
@@ -36,7 +28,7 @@ export async function acceptConsents(kinds: ConsentKind[]): Promise<ActionResult
   return attempt(async () => {
     await grantConsents(parsed.data)
     return null
-  })
+  }, saveError)
 }
 
 export async function saveName(input: NameInput): Promise<ActionResult<null>> {
@@ -47,7 +39,7 @@ export async function saveName(input: NameInput): Promise<ActionResult<null>> {
   return attempt(async () => {
     await updateProfile(parsed.data)
     return null
-  })
+  }, saveError)
 }
 
 export async function submitScreening(input: ScreeningInput): Promise<ActionResult<Assessment>> {
@@ -55,11 +47,11 @@ export async function submitScreening(input: ScreeningInput): Promise<ActionResu
   if (!parsed.success) {
     return invalid
   }
-  return attempt(() => submitAssessment(parsed.data))
+  return attempt(() => submitAssessment(parsed.data), saveError)
 }
 
 export async function finishOnboarding(): Promise<ActionResult<null>> {
-  const result = await attempt(completeOnboarding)
+  const result = await attempt(completeOnboarding, saveError)
   if (result.ok) {
     redirect('/today')
   }

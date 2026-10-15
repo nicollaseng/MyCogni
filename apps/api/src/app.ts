@@ -9,6 +9,7 @@ import type { TokenVerifier } from './auth/token-verifier.ts'
 import type { AppConfig } from './config/env.ts'
 import type { Database } from './db/client.ts'
 import { assessmentModule } from './modules/assessments/index.ts'
+import { checkInModule } from './modules/check-ins/index.ts'
 import { consentModule } from './modules/consents/index.ts'
 import { healthRoutes } from './modules/health/health.routes.ts'
 import { onboardingModule } from './modules/onboarding/index.ts'
@@ -30,6 +31,7 @@ function authenticatedRoutes({ db, verifier }: AppDependencies): FastifyPluginAs
     await api.register(profileModule(db))
     await api.register(consentModule(db))
     await api.register(assessmentModule(db))
+    await api.register(checkInModule(db))
     await api.register(onboardingModule(db))
   }
 }

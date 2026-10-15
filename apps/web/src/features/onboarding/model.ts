@@ -1,5 +1,6 @@
 import type { Assessment, Consent, Profile } from '@mycogni/contracts'
 import { missingConsents, type ConsentKind, type InstrumentId } from '@mycogni/domain'
+import type { ActionResult } from '@/shared/lib/actions/result'
 
 export type Step = 'consents' | 'name' | 'intro' | 'phq9' | 'support' | 'gad7' | 'results'
 
@@ -14,8 +15,6 @@ export interface OnboardingStart {
   displayName: string
   results: Results
 }
-
-export type ActionResult<T> = { ok: true; value: T } | { ok: false; error: string }
 
 export interface NameInput {
   displayName: string

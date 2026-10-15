@@ -1,11 +1,18 @@
 import type { Metadata } from 'next'
+import { saveCheckIn } from '@/features/check-in/actions'
 import { CheckInFlow } from '@/features/check-in/components/check-in-flow'
-import { requireOnboardedUser } from '@/shared/lib/auth/session'
-import { defaultTimeZone, formatLongDate } from '@/shared/lib/time'
+import { requireOnboardedProfile } from '@/shared/lib/auth/session'
+import { formatLongDate } from '@/shared/lib/time'
 
 export const metadata: Metadata = { title: 'Check-in' }
 
 export default async function CheckInPage() {
-  await requireOnboardedUser()
-  return <CheckInFlow today={formatLongDate(new Date(), defaultTimeZone)} />
+  const { timezone } = await requireOnboardedProfile()
+  return (
+    <CheckInFlow
+      today={formatLongDate(new Date(), timezone)}
+      timeZone={timezone}
+      save={saveCheckIn}
+    />
+  )
 }

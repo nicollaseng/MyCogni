@@ -7,6 +7,15 @@ export {
   type SubmitAssessmentInput,
 } from './assessments.ts'
 export {
+  checkInListSchema,
+  checkInQuerySchema,
+  checkInSchema,
+  createCheckInSchema,
+  type CheckIn,
+  type CheckInQuery,
+  type CreateCheckInInput,
+} from './check-ins.ts'
+export {
   consentKindSchema,
   consentListSchema,
   consentSchema,

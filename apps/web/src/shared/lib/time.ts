@@ -1,5 +1,3 @@
-export const defaultTimeZone = 'America/Sao_Paulo'
-
 export function formatLongDate(date: Date, timeZone: string): string {
   const formatted = new Intl.DateTimeFormat('pt-BR', {
     weekday: 'long',
@@ -8,4 +6,10 @@ export function formatLongDate(date: Date, timeZone: string): string {
     timeZone,
   }).format(date)
   return formatted.charAt(0).toUpperCase() + formatted.slice(1)
+}
+
+export function formatTime(date: Date, timeZone: string): string {
+  return new Intl.DateTimeFormat('pt-BR', { hour: '2-digit', minute: '2-digit', timeZone }).format(
+    date,
+  )
 }

@@ -1,5 +1,6 @@
 'use client'
 
+import type { CheckIn, CreateCheckInInput } from '@mycogni/contracts'
 import Link from 'next/link'
 import { useState } from 'react'
 import {
@@ -9,6 +10,9 @@ import {
   valenceOf,
   type MoodLevel,
 } from '@/features/mood/mood-levels'
+import { useSubmit } from '@/shared/hooks/use-submit'
+import type { ActionResult } from '@/shared/lib/actions/result'
+import { formatTime } from '@/shared/lib/time'
 import { cn } from '@/shared/lib/utils'
 import { contextTabs } from '../catalog'
 import { emotionTabs } from '../suggestions'
@@ -24,11 +28,13 @@ function toggle(list: readonly string[], item: string): string[] {
   return list.includes(item) ? list.filter((entry) => entry !== item) : [...list, item]
 }
 
-function formatTime(date: Date): string {
-  return new Intl.DateTimeFormat('pt-BR', { hour: '2-digit', minute: '2-digit' }).format(date)
+interface CheckInFlowProps {
+  today: string
+  timeZone: string
+  save: (input: CreateCheckInInput) => Promise<ActionResult<CheckIn>>
 }
 
-export function CheckInFlow({ today }: { today: string }) {
+export function CheckInFlow({ today, timeZone, save }: CheckInFlowProps) {
   const [step, setStep] = useState<Step>('mood')
   const [level, setLevel] = useState<MoodLevel>(neutralMood)
   const [emotions, setEmotions] = useState<string[]>([])
@@ -37,10 +43,13 @@ export function CheckInFlow({ today }: { today: string }) {
   const [recordedAt, setRecordedAt] = useState('')
   const valence = valenceOf(level)
   const progress = step === 'done' ? progressSteps.length : progressSteps.indexOf(step) + 1
+  const { submit, pending, error } = useSubmit(save, (checkIn) => {
+    setRecordedAt(formatTime(new Date(checkIn.recordedAt), timeZone))
+    setStep('done')
+  })
 
   function finish() {
-    setRecordedAt(formatTime(new Date()))
-    setStep('done')
+    submit({ moodLevel: level, emotions, contexts, note: note.trim() === '' ? null : note })
   }
 
   return (
@@ -90,6 +99,8 @@ export function CheckInFlow({ today }: { today: string }) {
               setStep('emotions')
             }}
             onFinish={finish}
+            pending={pending}
+            error={error}
           />
         )}
 
@@ -125,8 +136,10 @@ export function CheckInFlow({ today }: { today: string }) {
               setContexts((current) => toggle(current, item))
             }}
             searchLabel="Buscar ou escrever outro"
-            primaryLabel="Registrar"
+            primaryLabel={pending ? 'Registrando…' : 'Registrar'}
             onPrimary={finish}
+            pending={pending}
+            error={error}
           >
             <textarea
               value={note}
