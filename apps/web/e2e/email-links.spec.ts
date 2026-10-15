@@ -65,7 +65,7 @@ test('creates a new password with the link sent by email', async ({ page }) => {
   await page.goto('/forgot-password')
   await expect(page.getByText('enviamos um código e um link', { exact: false })).toBeVisible()
   await requestRecovery(page, email)
-  await expect(page.getByText('ou toque no link do email', { exact: false })).toBeVisible()
+  await expect(page.getByText('toque no link do email', { exact: false })).toBeVisible()
 
   await page.goto(confirmPath(await emailLinkTokenHash('recovery', email), 'recovery'))
 

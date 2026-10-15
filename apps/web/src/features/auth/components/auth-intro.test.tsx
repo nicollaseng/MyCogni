@@ -39,7 +39,7 @@ describe('AuthIntro', () => {
         (_content, element) =>
           element?.tagName === 'P' &&
           element.textContent ===
-            'Digite o código que enviamos para ana@exemplo.com e escolha a nova senha, ou toque no link do email.',
+            'Digite o código que enviamos para ana@exemplo.com. Depois você escolhe a nova senha. Se preferir, toque no link do email.',
       ),
     ).toBeInTheDocument()
   })
