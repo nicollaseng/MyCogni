@@ -55,8 +55,11 @@ export {
 } from './professionals.ts'
 export {
   profileSchema,
+  providerPhotoImportSchema,
+  providerPhotoStatuses,
   updateProfileSchema,
   type Profile,
+  type ProviderPhotoImport,
   type UpdateProfileInput,
 } from './profile.ts'
 export {

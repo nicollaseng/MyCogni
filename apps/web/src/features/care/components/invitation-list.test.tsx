@@ -60,6 +60,11 @@ describe('InvitationList', () => {
   it('says when nothing arrived yet', () => {
     renderWithIntl(<InvitationList invitations={[]} timeZone="America/Sao_Paulo" />)
 
-    expect(screen.getByText(/Você ainda não recebeu convites/)).toBeInTheDocument()
+    expect(screen.getByText('Você ainda não recebeu convites.')).toBeInTheDocument()
+    expect(
+      screen.getByText(
+        /^Quando um profissional convidar você, o\s+convite aparece aqui e nas notificações\.$/,
+      ),
+    ).toBeInTheDocument()
   })
 })

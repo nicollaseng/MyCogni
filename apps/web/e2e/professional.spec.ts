@@ -229,7 +229,8 @@ test('a new professional signs in from the professional page and is asked for th
   await expect(
     page.getByRole('heading', { level: 1, name: 'Envie o comprovante do seu registro.' }),
   ).toBeVisible()
-  await expect(page.getByText('Carteira do CRP', { exact: true })).toBeVisible()
+  await expect(page.getByRole('heading', { name: 'Carteira do CRP' })).toBeVisible()
+  await expect(page.getByText('Passo 1 de 3')).toBeVisible()
   await expect(page.getByRole('link', { name: 'Convites' })).toHaveCount(0)
 
   await page.goto('/pro/invites')

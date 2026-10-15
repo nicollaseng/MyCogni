@@ -9,12 +9,19 @@ const dots: Readonly<Record<DocumentState, string>> = {
   rejected: 'bg-danger',
 }
 
-export function DocumentStatus({ state }: { state: DocumentState }) {
+interface DocumentStatusProps {
+  state: DocumentState
+  label?: string
+}
+
+export function DocumentStatus({ state, label }: DocumentStatusProps) {
   const t = useTranslations('verification.document.status')
   return (
-    <span className="inline-flex items-center gap-2 whitespace-nowrap">
+    <span
+      className={cn('inline-flex items-center gap-2', label === undefined && 'whitespace-nowrap')}
+    >
       <span aria-hidden className={cn('size-2 shrink-0 rounded-full', dots[state])} />
-      {t(state)}
+      {label ?? t(state)}
     </span>
   )
 }

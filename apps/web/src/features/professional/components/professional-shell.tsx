@@ -6,6 +6,7 @@ import { FreshOnReturn } from '@/features/shell/components/fresh-on-return'
 import { Wordmark } from '@/shared/components/wordmark'
 import { cn } from '@/shared/lib/utils'
 import { MobileMenu } from './mobile-menu'
+import { OnboardingShell } from './onboarding-shell'
 import { ProfessionalNavigation } from './professional-navigation'
 import { ProfileMenu } from './profile-menu'
 import { warnTokens } from './workspace'
@@ -25,8 +26,20 @@ export function ProfessionalShell({
 }: ProfessionalShellProps) {
   const t = useTranslations('professional.shell')
   const kinds = useTranslations('common.professionalKinds')
-  const verified = professional.status === 'verified'
   const profession = kinds(professional.kind)
+
+  if (professional.status !== 'verified') {
+    return (
+      <OnboardingShell
+        name={professional.fullName}
+        profession={profession}
+        photoUrl={photoUrl}
+        className={warnTokens}
+      >
+        {children}
+      </OnboardingShell>
+    )
+  }
 
   return (
     <div className={cn('min-h-dvh lg:grid lg:grid-cols-[232px_minmax(0,1fr)]', warnTokens)}>
@@ -37,11 +50,9 @@ export function ProfessionalShell({
             <Wordmark />
             <p className="text-sm text-muted-foreground">{t('area')}</p>
           </div>
-          {verified && (
-            <div className="mt-8">
-              <ProfessionalNavigation variant="sidebar" alerts={alerts} />
-            </div>
-          )}
+          <div className="mt-8">
+            <ProfessionalNavigation variant="sidebar" alerts={alerts} />
+          </div>
           <div className="mt-auto">
             <ProfileMenu
               name={professional.fullName}
@@ -58,7 +69,6 @@ export function ProfessionalShell({
           <MobileMenu
             name={professional.fullName}
             profession={profession}
-            verified={verified}
             alerts={alerts}
             signOut={signOut}
           />
@@ -68,21 +78,14 @@ export function ProfessionalShell({
       </header>
 
       <main className="min-w-0">
-        <div
-          className={cn(
-            'mx-auto w-full max-w-[1200px] space-y-7 px-4 pt-5 pb-12 sm:px-6 lg:space-y-9 lg:px-10 lg:pt-9 lg:pb-16',
-            verified && 'max-lg:pb-28',
-          )}
-        >
+        <div className="mx-auto w-full max-w-[1200px] space-y-7 px-4 pt-5 pb-12 max-lg:pb-28 sm:px-6 lg:space-y-9 lg:px-10 lg:pt-9 lg:pb-16">
           {children}
         </div>
       </main>
 
-      {verified && (
-        <div className="fixed inset-x-0 bottom-0 z-20 border-t border-rule bg-background/95 pb-[env(safe-area-inset-bottom)] backdrop-blur lg:hidden">
-          <ProfessionalNavigation variant="bottom" alerts={alerts} />
-        </div>
-      )}
+      <div className="fixed inset-x-0 bottom-0 z-20 border-t border-rule bg-background/95 pb-[env(safe-area-inset-bottom)] backdrop-blur lg:hidden">
+        <ProfessionalNavigation variant="bottom" alerts={alerts} />
+      </div>
     </div>
   )
 }

@@ -16,6 +16,7 @@ const app = await buildApp({
   accountAdmin: createSupabaseAccountAdmin(config.supabaseUrl, config.supabaseSecretKey),
   journalImages: createJournalImageStore(config.supabaseUrl, config.supabaseSecretKey),
   profileFiles: createProfileFileStores(config.supabaseUrl, config.supabaseSecretKey),
+  photoFetcher: fetch,
   supportAttachments: createSupportAttachmentStore(config.supabaseUrl, config.supabaseSecretKey),
 })
 
