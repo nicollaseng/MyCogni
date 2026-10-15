@@ -390,6 +390,7 @@ export const professional = {
     fromLink: 'Registros a partir do vínculo',
     withHistory: 'Inclui registros anteriores ao vínculo',
     mybook: 'Páginas do MyBook compartilhadas',
+    termsPending: 'Aguardando confirmação dos termos atualizados',
     kpis: {
       mood: 'Humor médio 7 d',
       noPrevious: 'Sem registros nos 7 dias anteriores',

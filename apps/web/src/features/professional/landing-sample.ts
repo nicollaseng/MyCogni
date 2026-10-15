@@ -102,6 +102,7 @@ export function samplePatient(now: Date): PatientSummary {
       },
     ],
     attention: ['risk_item', 'low_mood', 'mood_drop'],
+    termsOutdated: false,
   }
 }
 
