@@ -1,6 +1,6 @@
 import { serverEnv } from '@/shared/lib/env'
 
-export const providerPhotoTimeoutMs = 5000
+const providerPhotoTimeoutMs = 5000
 
 type Fetcher = (url: string, init: RequestInit) => Promise<Response>
 
