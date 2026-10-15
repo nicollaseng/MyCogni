@@ -4,6 +4,7 @@ import { grantConsentsSchema, updateProfileSchema } from '@mycogni/contracts'
 import type { ConsentKind } from '@mycogni/domain'
 import { getTranslations } from 'next-intl/server'
 import { redirect } from 'next/navigation'
+import { continuePath } from '@/shared/lib/auth/continue-path'
 import { completeOnboarding, grantConsents, updateProfile } from '@/shared/lib/api/resources'
 import { attempt, failure, type ActionResult } from '@/shared/lib/actions/result'
 import type { NameInput } from './model'
@@ -44,7 +45,7 @@ export async function saveName(input: NameInput): Promise<ActionResult<null>> {
 export async function finishOnboarding(): Promise<ActionResult<null>> {
   const result = await attempt(completeOnboarding, await saveError())
   if (result.ok) {
-    redirect('/today')
+    redirect((await continuePath()) ?? '/today')
   }
   return result
 }

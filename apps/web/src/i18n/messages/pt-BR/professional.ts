@@ -1,0 +1,193 @@
+export const professional = {
+  meta: {
+    join: 'Para profissionais de saúde',
+    patients: 'Pacientes',
+    invites: 'Convites',
+    patient: 'Ficha do paciente',
+  },
+  shell: {
+    area: 'Área profissional',
+    navigation: 'Navegação da área profissional',
+    patients: 'Pacientes',
+    invites: 'Convites',
+    diary: 'Meu diário',
+  },
+  join: {
+    kicker: 'Para profissionais de saúde',
+    title: 'Acompanhe seus pacientes entre as sessões.',
+    lead: 'Quando a pessoa aceita seu convite, você passa a ver num só lugar os registros de humor e os resultados do PHQ-9 e do GAD-7 que ela escolheu compartilhar.',
+    offersTitle: 'O que você encontra',
+    offers: {
+      checkIns: {
+        title: 'Registros do dia a dia',
+        body: 'Humor, emoções, contextos e anotações, com o humor dos últimos 30 dias num gráfico.',
+      },
+      screenings: {
+        title: 'PHQ-9 e GAD-7',
+        body: 'O histórico dos questionários com a intensidade de cada resultado. Eles mostram sinais, não fazem diagnóstico.',
+      },
+      consent: {
+        title: 'Sempre com consentimento',
+        body: 'O paciente aceita cada convite, escolhe se compartilha registros anteriores e pode encerrar o vínculo quando quiser.',
+      },
+    },
+    verification:
+      'Todo cadastro profissional passa por uma verificação manual da equipe MyCogniAI antes de liberar os convites.',
+    signUp: 'Criar minha conta',
+    signIn: 'Já tenho conta',
+  },
+  form: {
+    title: 'Seu cadastro profissional',
+    lead: 'Depois de enviar, nossa equipe confere seu registro antes de liberar os convites.',
+    kind: 'Profissão',
+    fullName: 'Nome completo',
+    fullNameHint: 'É assim que seus pacientes vão ver você.',
+    registration: 'Registro no conselho',
+    registrationOptional: 'Registro profissional (opcional)',
+    registrationHints: {
+      psychologist: 'Ex.: CRP 06/123456',
+      psychiatrist: 'Ex.: CRM-SP 123456',
+      physician: 'Ex.: CRM-SP 123456',
+      psychoanalyst: 'Se tiver, informe o registro da sua formação ou associação.',
+    },
+    consent:
+      'Tenho 18 anos ou mais e aceito os <terms>termos de uso</terms> e a <privacy>política de privacidade</privacy>.',
+    submit: 'Enviar para verificação',
+    sending: 'Enviando…',
+    errors: {
+      kindRequired: 'Escolha sua profissão.',
+      fullNameRequired: 'Digite seu nome completo.',
+      fullNameTooLong: 'Use até 120 caracteres.',
+      registrationRequired: 'Informe seu registro no conselho.',
+      registrationTooShort: 'Confira o registro: use pelo menos 3 caracteres.',
+      registrationTooLong: 'Use até 40 caracteres.',
+      consentRequired: 'Para continuar, aceite os termos de uso e a política de privacidade.',
+      save: 'Não conseguimos enviar seu cadastro agora. Tente de novo em instantes.',
+    },
+  },
+  status: {
+    pending: {
+      title: 'Seu cadastro está em verificação.',
+      body: 'Nossa equipe confere seu registro profissional manualmente antes de liberar os convites.',
+      next: 'O que acontece agora',
+      steps: {
+        review: 'Conferimos seu nome e seu registro no conselho.',
+        approve: 'Com o cadastro aprovado, esta página passa a mostrar seus pacientes.',
+        invite: 'Você convida pacientes por email ou por link, e cada pessoa decide se aceita.',
+      },
+      submitted: 'Cadastro enviado em {date}.',
+    },
+    rejected: {
+      title: 'Não conseguimos verificar seu cadastro.',
+      body: 'Se achar que houve um engano ou quiser enviar outros dados, escreva para <link>{email}</link> com seu nome e seu registro.',
+    },
+  },
+  patients: {
+    title: 'Pacientes',
+    description: 'Quem aceitou compartilhar os registros com você.',
+    invite: 'Convidar paciente',
+    emptyTitle: 'Nenhum paciente por aqui ainda.',
+    emptyBody: 'Quando alguém aceitar seu convite, os registros dessa pessoa aparecem aqui.',
+    unnamed: 'Paciente sem nome',
+    since: 'Desde {date}',
+    lastCheckIn: 'Último registro',
+    noCheckIn: 'Ainda sem registros',
+    lastWeek: 'Últimos 7 dias',
+    weekCount: '{count, plural, =0 {Nenhum registro} one {# registro} other {# registros}}',
+    notAnswered: 'Sem resposta',
+    ago: '{days, plural, =0 {hoje} =1 {ontem} other {há # dias}}',
+  },
+  risk: {
+    label: 'Atenção ao item 9 do PHQ-9',
+    short: 'Item 9 positivo',
+    detail:
+      'No PHQ-9 de {date}, houve resposta positiva ao item 9, sobre pensamentos de morte ou de se ferir.',
+  },
+  patient: {
+    back: 'Pacientes',
+    kicker: 'Ficha do paciente',
+    since: 'Compartilha registros com você desde {date}.',
+    fromLink: 'Você vê os registros feitos a partir do vínculo.',
+    withHistory: 'Inclui registros anteriores ao vínculo, por escolha da pessoa.',
+    mood: {
+      title: 'Humor nos últimos {days} dias',
+      label:
+        '{count, plural, one {# dia com registro} other {# dias com registro}} nos últimos {days} dias',
+      emptyLabel: 'Nenhum registro nos últimos {days} dias',
+      empty: 'Nenhum registro de humor nos últimos {days} dias.',
+    },
+    trend: {
+      recent: 'Humor médio dos últimos 7 dias: {mood} ({average} de {max}).',
+      up: 'Acima dos 7 dias anteriores ({previous}).',
+      down: 'Abaixo dos 7 dias anteriores ({previous}).',
+      steady: 'Parecido com os 7 dias anteriores ({previous}).',
+    },
+    screenings: {
+      title: 'Questionários',
+      empty: 'Nenhum questionário respondido no período compartilhado.',
+      score: '{score} de {max}',
+      note: 'Os questionários mostram a intensidade de sinais. Não fazem diagnóstico.',
+    },
+    entries: {
+      title: 'Registros dos últimos {days} dias',
+      empty: 'Nenhum registro nos últimos {days} dias.',
+    },
+  },
+  invites: {
+    title: 'Convites',
+    description:
+      'Convide pacientes por email ou por link. Cada convite vale por {hours} horas e só cria o vínculo se a pessoa aceitar.',
+    form: {
+      title: 'Novo convite',
+      channel: 'Como enviar',
+      email: 'Por email',
+      link: 'Por link',
+      recipient: 'Email do paciente',
+      recipientHint: 'O email vai no idioma em que você usa o app.',
+      linkHint: 'Você recebe um link para mandar por WhatsApp, SMS ou onde preferir.',
+      sendEmail: 'Enviar convite',
+      createLink: 'Criar link',
+      sending: 'Criando…',
+      invalidEmail: 'Digite um email válido.',
+      error: 'Não conseguimos criar o convite agora. Tente de novo em instantes.',
+    },
+    result: {
+      emailSent: 'Convite enviado para {email}.',
+      emailNotSent:
+        'Não conseguimos enviar o email agora. Copie o link e envie para {email} por onde preferir.',
+      link: 'Link criado. Copie e envie para a pessoa por onde preferir.',
+      validity: 'Vale até {date}.',
+    },
+    link: 'Link do convite',
+    copy: 'Copiar link',
+    copied: 'Link copiado',
+    copyFailed: 'Não deu para copiar. Selecione o link e copie.',
+    sent: {
+      title: 'Convites enviados',
+      empty: 'Nenhum convite enviado ainda.',
+      byLink: 'Convite por link',
+      created: 'Criado em {date}',
+      expires: 'Vale até {date}',
+      expired: 'Expirou em {date}',
+      responded: 'Respondido em {date}',
+      resend: 'Reenviar',
+      renew: 'Gerar novo link',
+      cancel: 'Cancelar convite',
+      resent: 'Convite reenviado para {email}.',
+      resentNotSent:
+        'Criamos um novo convite, mas o email não foi enviado. Copie o novo link e envie para {email}.',
+      renewed: 'Novo link criado. Copie e envie para a pessoa.',
+      canceled: 'Convite cancelado.',
+      error: 'Não conseguimos fazer isso agora. Tente de novo em instantes.',
+    },
+    statuses: {
+      pending: 'Aguardando resposta',
+      accepted: 'Aceito',
+      declined: 'Recusado',
+      canceled: 'Cancelado',
+      expired: 'Expirado',
+    },
+  },
+}
+
+export type ProfessionalMessages = typeof professional

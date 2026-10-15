@@ -146,5 +146,6 @@ export const landing: LandingMessages = {
     legal: 'Legal',
     copyright: '© {year} MyCogniAI. Feito no Brasil.',
     disclaimer: 'Não é terapia nem diagnóstico. Em crise, ligue 808\u00a024\u00a024\u00a024.',
+    professionals: 'Para profissionais de saúde',
   },
 }

@@ -12,6 +12,8 @@ import {
   uploadAvatar,
 } from '@/features/account/actions'
 import { avatarUrl } from '@/features/account/avatar-url'
+import { endLink } from '@/features/care/actions'
+import { CareLinks } from '@/features/care/components/care-links'
 import { ConsentList } from '@/features/account/components/consent-list'
 import { DeleteAccount } from '@/features/account/components/delete-account'
 import { EmailForm } from '@/features/account/components/email-form'
@@ -26,6 +28,7 @@ import { ScreeningHistory } from '@/features/screening/components/screening-hist
 import { screeningIntervalDays } from '@/features/screening/due'
 import { latestByInstrument } from '@/features/screening/latest'
 import { Panel, Section } from '@/shared/components/section'
+import { fetchCareLinks, fetchProfessional } from '@/shared/lib/api/care'
 import { fetchAssessments, fetchConsents } from '@/shared/lib/api/resources'
 import { requireOnboardedProfile } from '@/shared/lib/auth/session'
 import { Button } from '@/shared/ui/button'
@@ -39,14 +42,17 @@ const rowLink = 'block py-3.5 underline decoration-1 underline-offset-4'
 
 export default async function MePage() {
   const profile = await requireOnboardedProfile()
-  const [assessments, consents, photoUrl, t, screening, language] = await Promise.all([
-    fetchAssessments(),
-    fetchConsents(),
-    avatarUrl(profile.avatarPath),
-    getTranslations('account'),
-    getTranslations('screening.latest'),
-    getTranslations('common.language'),
-  ])
+  const [assessments, consents, photoUrl, careLinks, professional, t, screening, language] =
+    await Promise.all([
+      fetchAssessments(),
+      fetchConsents(),
+      avatarUrl(profile.avatarPath),
+      fetchCareLinks(),
+      fetchProfessional(),
+      getTranslations('account'),
+      getTranslations('screening.latest'),
+      getTranslations('common.language'),
+    ])
 
   return (
     <div className="space-y-12">
@@ -69,6 +75,13 @@ export default async function MePage() {
           </p>
         </div>
       </LatestScreening>
+
+      <CareLinks
+        links={careLinks}
+        timeZone={profile.timezone}
+        end={endLink}
+        isProfessional={professional !== null}
+      />
 
       <Section title={t('sections.account')}>
         <Panel>

@@ -61,6 +61,17 @@ export async function createUser(
   return createdSchema.parse(await response.json()).id
 }
 
+export async function makeAdmin(id: string): Promise<void> {
+  const response = await fetch(`${supabaseUrl}/auth/v1/admin/users/${id}`, {
+    method: 'PUT',
+    headers: adminHeaders(),
+    body: JSON.stringify({ app_metadata: { role: 'admin' } }),
+  })
+  if (!response.ok) {
+    throw new Error(`Could not make ${id} an admin: ${await response.text()}`)
+  }
+}
+
 export async function deleteUser(id: string): Promise<void> {
   await fetch(`${supabaseUrl}/auth/v1/admin/users/${id}`, {
     method: 'DELETE',

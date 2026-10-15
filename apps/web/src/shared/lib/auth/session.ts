@@ -3,6 +3,8 @@ import { redirect } from 'next/navigation'
 import { ApiError } from '../api/client'
 import { fetchProfile } from '../api/resources'
 import { createSupabaseServerClient } from '../supabase/server'
+import { continuePath } from './continue-path'
+import { homePath } from './home-path'
 
 export interface SessionUser {
   id: string
@@ -49,6 +51,6 @@ export async function requireOnboardedProfile(): Promise<Profile> {
 
 export async function redirectSignedInUser(): Promise<void> {
   if ((await currentUser()) !== null) {
-    redirect('/today')
+    redirect((await continuePath()) ?? (await homePath()))
   }
 }

@@ -9,6 +9,7 @@ interface ApiRequest<T> {
   schema: z.ZodType<T>
   method?: Method
   body?: unknown
+  anonymous?: boolean
 }
 
 const errorBodySchema = z.object({ code: z.string(), message: z.string() })
@@ -39,8 +40,11 @@ export async function apiRequest<T>({
   schema,
   method = 'GET',
   body,
+  anonymous = false,
 }: ApiRequest<T>): Promise<T> {
-  const headers: Record<string, string> = { authorization: `Bearer ${await accessToken()}` }
+  const headers: Record<string, string> = anonymous
+    ? {}
+    : { authorization: `Bearer ${await accessToken()}` }
   if (body !== undefined) {
     headers['content-type'] = 'application/json'
   }

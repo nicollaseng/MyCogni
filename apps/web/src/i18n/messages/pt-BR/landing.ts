@@ -141,6 +141,7 @@ export const landing = {
     legal: 'Legal',
     copyright: '© {year} MyCogniAI. Feito no Brasil.',
     disclaimer: 'Não é terapia nem diagnóstico. Em crise, ligue 188.',
+    professionals: 'Para profissionais de saúde',
   },
 }
 

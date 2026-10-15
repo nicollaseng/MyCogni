@@ -33,6 +33,12 @@ export const common: CommonMessages = {
     scaleLow: 'muito mal',
     scaleHigh: 'muito bem',
   },
+  professionalKinds: {
+    psychologist: 'Psicologia',
+    psychiatrist: 'Psiquiatria',
+    physician: 'Medicina',
+    psychoanalyst: 'Psicanálise',
+  },
   language: {
     label: 'Idioma',
     hint: 'A aplicação passa a usar este idioma em todos os ecrãs.',

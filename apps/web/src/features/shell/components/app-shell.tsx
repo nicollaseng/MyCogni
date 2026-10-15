@@ -1,5 +1,7 @@
 import { useTranslations } from 'next-intl'
-import type { ReactNode } from 'react'
+import { Suspense, type ReactNode } from 'react'
+import { BellLink } from '@/features/care/components/bell-link'
+import { NotificationBell } from '@/features/care/components/notification-bell'
 import { HelpDisclosure } from '@/shared/components/help-disclosure'
 import { Wordmark } from '@/shared/components/wordmark'
 import { CurrentNavigation } from './current-navigation'
@@ -10,11 +12,16 @@ export function AppShell({ children }: { children: ReactNode }) {
   return (
     <div className="flex min-h-dvh flex-col">
       <header className="border-b border-rule">
-        <div className="mx-auto flex w-full max-w-3xl items-center justify-between px-6 py-5">
+        <div className="mx-auto flex w-full max-w-3xl items-center justify-between gap-6 px-6 py-5">
           <Wordmark />
-          <nav aria-label={navigationLabel} className="hidden sm:block">
-            <CurrentNavigation variant="top" />
-          </nav>
+          <div className="flex items-center gap-6">
+            <nav aria-label={navigationLabel} className="hidden sm:block">
+              <CurrentNavigation variant="top" />
+            </nav>
+            <Suspense fallback={<BellLink unread={0} />}>
+              <NotificationBell />
+            </Suspense>
+          </div>
         </div>
       </header>
 
