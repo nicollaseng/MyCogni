@@ -1,4 +1,4 @@
-import { normalizeText } from './crisis-detector.ts'
+import { normalizeText } from '../safety/crisis-detector.ts'
 
 export interface ReplyFilterOptions {
   ownEmail: string | null

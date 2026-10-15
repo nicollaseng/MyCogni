@@ -82,7 +82,17 @@ describe('alertsFor', () => {
     expect(alertsFor({ kind: 'summary', attention: 'none' })).toEqual([])
   })
 
-  it('gives every reason a level, urgent ones first', () => {
+  it('follows the risk level of a written note', () => {
+    expect(alertsFor({ kind: 'note', level: 'urgent' })).toEqual([
+      { reason: 'note_risk', level: 'urgent' },
+    ])
+    expect(alertsFor({ kind: 'note', level: 'watch' })).toEqual([
+      { reason: 'note_concern', level: 'watch' },
+    ])
+    expect(alertsFor({ kind: 'note', level: 'none' })).toEqual([])
+  })
+
+  it('gives every reason a level', () => {
     expect(alertReasons.map((reason) => alertLevelOf[reason])).toEqual([
       'urgent',
       'urgent',
@@ -91,6 +101,8 @@ describe('alertsFor', () => {
       'watch',
       'watch',
       'info',
+      'urgent',
+      'watch',
     ])
   })
 })
@@ -99,6 +111,8 @@ describe('alert timing', () => {
   it('lets new answers raise again but waits a week for mood and inactivity', () => {
     expect(cooldownStart('risk_item', now)).toBeNull()
     expect(cooldownStart('summary_watch', now)).toBeNull()
+    expect(cooldownStart('note_risk', now)).toBeNull()
+    expect(cooldownStart('note_concern', now)).toBeNull()
     expect(cooldownStart('low_mood', now)).toEqual(new Date('2026-10-08T12:00:00Z'))
     expect(cooldownStart('inactive', now)).toEqual(new Date('2026-10-08T12:00:00Z'))
   })

@@ -1,5 +1,6 @@
 import type { InstrumentId, Severity } from '../assessments/instrument.ts'
 import type { InsightAttention } from '../insights/insights.ts'
+import type { RiskLevel } from '../safety/risk.ts'
 import {
   attentionReasonsOf,
   inactiveAfterDays,
@@ -19,6 +20,8 @@ export const alertReasons = [
   'low_mood',
   'mood_drop',
   'inactive',
+  'note_risk',
+  'note_concern',
 ] as const
 
 export type AlertReason = (typeof alertReasons)[number]
@@ -35,6 +38,8 @@ export const alertLevelOf: Readonly<Record<AlertReason, AlertLevel>> = {
   low_mood: 'watch',
   mood_drop: 'watch',
   inactive: 'info',
+  note_risk: 'urgent',
+  note_concern: 'watch',
 }
 
 const moodWindowDays = 7
@@ -47,6 +52,8 @@ export const alertCooldownDays: Readonly<Record<AlertReason, number>> = {
   low_mood: moodWindowDays,
   mood_drop: moodWindowDays,
   inactive: inactiveAfterDays,
+  note_risk: 0,
+  note_concern: 0,
 }
 
 export const alertEmailIntervalHours = 24
@@ -62,13 +69,14 @@ export type AlertEvent =
   | { kind: 'check_in'; signals: AttentionSignals }
   | { kind: 'daily'; signals: AttentionSignals }
   | { kind: 'summary'; attention: InsightAttention }
+  | { kind: 'note'; level: RiskLevel }
 
 export interface Alert {
   reason: AlertReason
   level: AlertLevel
 }
 
-type SignalEvent = Exclude<AlertEvent['kind'], 'summary'>
+type SignalEvent = Exclude<AlertEvent['kind'], 'summary' | 'note'>
 
 const reasonsRaisedBy: Readonly<Record<SignalEvent, readonly AttentionReason[]>> = {
   screening: ['risk_item', 'severe_screening'],
@@ -80,6 +88,12 @@ const summaryReasons: Readonly<Record<InsightAttention, AlertReason | null>> = {
   none: null,
   watch: 'summary_watch',
   urgent: 'summary_urgent',
+}
+
+const noteReasons: Readonly<Record<RiskLevel, AlertReason | null>> = {
+  none: null,
+  watch: 'note_concern',
+  urgent: 'note_risk',
 }
 
 const hourInMilliseconds = 60 * 60 * 1000
@@ -102,8 +116,9 @@ function screeningSignals({
 }
 
 function reasonsOf(event: AlertEvent): readonly AlertReason[] {
-  if (event.kind === 'summary') {
-    const reason = summaryReasons[event.attention]
+  if (event.kind === 'summary' || event.kind === 'note') {
+    const reason =
+      event.kind === 'summary' ? summaryReasons[event.attention] : noteReasons[event.level]
     return reason === null ? [] : [reason]
   }
   const signals = event.kind === 'screening' ? screeningSignals(event.result) : event.signals
