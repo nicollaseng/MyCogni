@@ -34,6 +34,7 @@ const envSchema = z.object({
     .regex(/^[a-z0-9-]+$/)
     .default('bull'),
   ANTHROPIC_API_KEY: z.string().min(1).optional(),
+  ASSISTANT_MODEL: z.enum(['claude', 'scripted']).default('claude'),
 })
 
 export interface AppConfig {
@@ -51,6 +52,7 @@ export interface AppConfig {
   redisUrl: string | null
   queuePrefix: string
   anthropicApiKey: string | null
+  assistantModel: 'claude' | 'scripted'
 }
 
 export type MailConfig =
@@ -71,6 +73,9 @@ export function loadConfig(source: Record<string, string | undefined>): AppConfi
     throw new InvalidConfigError(z.prettifyError(parsed.error))
   }
   const env = parsed.data
+  if (env.NODE_ENV === 'production' && env.ASSISTANT_MODEL === 'scripted') {
+    throw new InvalidConfigError('ASSISTANT_MODEL=scripted is only allowed outside production')
+  }
   return {
     nodeEnv: env.NODE_ENV,
     host: env.HOST,
@@ -86,6 +91,7 @@ export function loadConfig(source: Record<string, string | undefined>): AppConfi
     redisUrl: env.REDIS_URL ?? null,
     queuePrefix: env.QUEUE_PREFIX,
     anthropicApiKey: env.ANTHROPIC_API_KEY ?? null,
+    assistantModel: env.ASSISTANT_MODEL,
   }
 }
 

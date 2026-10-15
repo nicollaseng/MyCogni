@@ -1,3 +1,4 @@
+import type { AssistantModel } from '../../src/ai/assistant-model.ts'
 import { buildApp } from '../../src/app.ts'
 import { createSupabaseAccountAdmin } from '../../src/auth/account-admin.ts'
 import { createSupabaseTokenVerifier, type TokenVerifier } from '../../src/auth/token-verifier.ts'
@@ -36,12 +37,16 @@ interface TestAppOptions {
   db: Database
   verifier?: TokenVerifier
   config?: AppConfig
+  assistantModel?: AssistantModel | null
+  logStream?: { write(line: string): void }
 }
 
 export function buildTestApp({
   db,
   verifier = rejectingVerifier,
   config = testConfig,
+  assistantModel = null,
+  logStream,
 }: TestAppOptions): Promise<App> {
   return buildApp({
     config,
@@ -54,5 +59,7 @@ export function buildTestApp({
       testConfig.supabaseUrl,
       testConfig.supabaseSecretKey,
     ),
+    assistantModel,
+    logStream,
   })
 }

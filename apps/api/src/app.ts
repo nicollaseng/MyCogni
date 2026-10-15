@@ -5,6 +5,7 @@ import {
   type FastifyPluginAsyncZod,
   type ZodTypeProvider,
 } from 'fastify-type-provider-zod'
+import type { AssistantModel } from './ai/assistant-model.ts'
 import type { AccountAdmin } from './auth/account-admin.ts'
 import type { TokenVerifier } from './auth/token-verifier.ts'
 import type { AppConfig } from './config/env.ts'
@@ -15,6 +16,7 @@ import { accountModule } from './modules/account/index.ts'
 import { adminModule } from './modules/admin/index.ts'
 import { alertModule } from './modules/alerts/index.ts'
 import { assessmentModule } from './modules/assessments/index.ts'
+import { assistantModule } from './modules/assistant/index.ts'
 import { careLinkModule } from './modules/care-links/index.ts'
 import { checkInModule } from './modules/check-ins/index.ts'
 import { consentModule } from './modules/consents/index.ts'
@@ -46,6 +48,8 @@ export interface AppDependencies {
   journalImages: JournalImageStore
   profileFiles: ProfileFileStores
   supportAttachments: BucketStore
+  assistantModel: AssistantModel | null
+  logStream?: { write(line: string): void }
 }
 
 function publicRoutes(
@@ -74,6 +78,7 @@ function authenticatedRoutes(
     journalImages,
     profileFiles,
     supportAttachments,
+    assistantModel,
   }: AppDependencies,
   { mailer, jobs, limiter }: Services,
 ): FastifyPluginAsyncZod {
@@ -104,6 +109,7 @@ function authenticatedRoutes(
     await api.register(reportModule(db))
     await api.register(alertModule(db, profileFiles.photos))
     await api.register(zenModule(db))
+    await api.register(assistantModule({ db, model: assistantModel, limiter, log: api.log }))
     await api.register(
       supportModule({
         db,
@@ -122,6 +128,7 @@ export async function buildApp(dependencies: AppDependencies): Promise<App> {
     logger: {
       level: dependencies.config.logLevel,
       redact: ['req.headers.authorization', 'req.headers.cookie'],
+      ...(dependencies.logStream === undefined ? {} : { stream: dependencies.logStream }),
     },
   }).withTypeProvider<ZodTypeProvider>()
 

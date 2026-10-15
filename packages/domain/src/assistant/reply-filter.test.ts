@@ -23,6 +23,13 @@ describe('filterReply', () => {
     expect(filterReply('Escreva para bruno@example.com', { ...options, ownEmail: null })).toBe(
       'Escreva para',
     )
+    const own = '3f1c2d4e-5b6a-4c7d-8e9f-0a1b2c3d4e5f@test.local'
+    expect(
+      filterReply(`Você é ${own}, não 9e1c2d4e-5b6a-4c7d-8e9f-0a1b2c3d4e5f@test.local.`, {
+        ...options,
+        ownEmail: own,
+      }),
+    ).toBe(`Você é ${own}, não.`)
   })
 
   it('removes links, local hosts and internal paths', () => {

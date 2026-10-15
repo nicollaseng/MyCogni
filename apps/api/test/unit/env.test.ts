@@ -25,7 +25,15 @@ describe('loadConfig', () => {
       redisUrl: null,
       queuePrefix: 'bull',
       anthropicApiKey: null,
+      assistantModel: 'claude',
     })
+  })
+
+  it('allows the scripted assistant only outside production', () => {
+    expect(loadConfig({ ...required, ASSISTANT_MODEL: 'scripted' }).assistantModel).toBe('scripted')
+    expect(() =>
+      loadConfig({ ...required, NODE_ENV: 'production', ASSISTANT_MODEL: 'scripted' }),
+    ).toThrow(InvalidConfigError)
   })
 
   it('namespaces the job queues when a prefix is given', () => {

@@ -67,24 +67,35 @@ function capped(text: string, maxLength: number): string {
   return `${(lastSpace > maxLength / 2 ? cut.slice(0, lastSpace) : cut).trimEnd()}…`
 }
 
+const internalPatterns: readonly RegExp[] = [
+  emailPattern,
+  ...secretPatterns,
+  uuidPattern,
+  urlPattern,
+  hostPattern,
+  windowsPathPattern,
+  pathPattern,
+  projectPathPattern,
+  filePathPattern,
+]
+
+function withoutInternals(text: string, hiddenTerms: readonly string[]): string {
+  return withoutTerms(
+    internalPatterns.reduce((current, pattern) => current.replace(pattern, ''), text),
+    hiddenTerms,
+  )
+}
+
 export function filterReply(
   text: string,
   { ownEmail, hiddenTerms, maxLength }: ReplyFilterOptions,
 ): string {
-  const own = ownEmail?.toLowerCase() ?? null
-  const cleaned = [
-    ...secretPatterns,
-    uuidPattern,
-    urlPattern,
-    hostPattern,
-    windowsPathPattern,
-    pathPattern,
-    projectPathPattern,
-    filePathPattern,
-  ]
-    .reduce((current, pattern) => current.replace(pattern, ''), text)
-    .replace(emailPattern, (email) => (email.toLowerCase() === own ? email : ''))
-  return capped(tidy(withoutTerms(cleaned, hiddenTerms)), maxLength)
+  const parts =
+    ownEmail === null ? [text] : text.split(new RegExp(`(${escapeForPattern(ownEmail)})`, 'i'))
+  const cleaned = parts
+    .map((part, index) => (index % 2 === 1 ? part : withoutInternals(part, hiddenTerms)))
+    .join('')
+  return capped(tidy(cleaned), maxLength)
 }
 
 function wordsOf(text: string): string[] {
