@@ -5,7 +5,7 @@ import { useFormatter, useLocale, useTranslations } from 'next-intl'
 import { useId, useState, type KeyboardEvent, type PointerEvent } from 'react'
 import { dateOfDay, formatLongDate } from '@/shared/lib/time'
 import { cn } from '@/shared/lib/utils'
-import { linePaths, moodTop, slotCenter } from '../chart-geometry'
+import { isDense, labeledSlots, linePaths, moodTop, slotCenter } from '../chart-geometry'
 import { maxMoodLevel, moodColor, nearestMoodKey } from '../mood-levels'
 
 interface DailyMoodChartProps {
@@ -14,6 +14,16 @@ interface DailyMoodChartProps {
 }
 
 const gridLevels = [maxMoodLevel, maxMoodLevel / 2, 0] as const
+
+function dotSize(index: number, lastIndex: number, slots: number): string {
+  if (index === lastIndex) {
+    return isDense(slots) ? 'size-3.5' : 'size-2.5'
+  }
+  if (isDense(slots)) {
+    return 'size-2.5'
+  }
+  return slots > 45 ? 'size-1.5' : 'size-2'
+}
 
 function tooltipAlign(index: number, slots: number): string {
   const share = (index + 0.5) / slots
@@ -42,6 +52,10 @@ export function DailyMoodChart({ days, label }: DailyMoodChartProps) {
       timeZone: 'UTC',
     }).format(dateOfDay(day))
   const activeDay = active === null ? undefined : days[active]
+  const shortDay = (day: string) =>
+    new Intl.DateTimeFormat(locale, { day: 'numeric', month: 'short', timeZone: 'UTC' }).format(
+      dateOfDay(day),
+    )
 
   function pick(event: PointerEvent<HTMLDivElement>) {
     const box = event.currentTarget.getBoundingClientRect()
@@ -150,7 +164,7 @@ export function DailyMoodChart({ days, label }: DailyMoodChartProps) {
                 data-day={day.day}
                 className={cn(
                   'absolute -translate-1/2 rounded-full ring-2 ring-background',
-                  index === lastIndex ? 'size-3.5' : 'size-2.5',
+                  dotSize(index, lastIndex, slots),
                   index === active && 'ring-foreground/40',
                 )}
                 style={{
@@ -191,42 +205,63 @@ export function DailyMoodChart({ days, label }: DailyMoodChartProps) {
           </div>
         </div>
         <div />
-        <div
-          aria-hidden
-          className="grid text-center text-[11px] leading-5 text-muted-foreground"
-          style={{ gridTemplateColumns: `repeat(${String(slots)}, minmax(0, 1fr))` }}
-        >
-          {days.map((day, index) => (
-            <span
-              key={day.day}
-              className={cn(index === lastIndex && 'font-medium text-foreground')}
-            >
-              {Number(day.day.slice(8))}
-            </span>
-          ))}
-        </div>
+        {isDense(slots) ? (
+          <div
+            aria-hidden
+            className="grid text-center text-[11px] leading-5 text-muted-foreground"
+            style={{ gridTemplateColumns: `repeat(${String(slots)}, minmax(0, 1fr))` }}
+          >
+            {days.map((day, index) => (
+              <span
+                key={day.day}
+                className={cn(index === lastIndex && 'font-medium text-foreground')}
+              >
+                {Number(day.day.slice(8))}
+              </span>
+            ))}
+          </div>
+        ) : (
+          <div aria-hidden className="relative h-5 text-[11px] leading-5 text-muted-foreground">
+            {labeledSlots(slots).map((index) => (
+              <span
+                key={index}
+                className={cn(
+                  'absolute top-0 whitespace-nowrap',
+                  index === lastIndex
+                    ? '-translate-x-full font-medium text-foreground'
+                    : '-translate-x-1/2',
+                )}
+                style={{ left: index === lastIndex ? '100%' : slotCenter(index, slots) }}
+              >
+                {shortDay(days[index]?.day ?? '')}
+              </span>
+            ))}
+          </div>
+        )}
       </div>
-      <table className="sr-only">
-        <caption>{label}</caption>
-        <thead>
-          <tr>
-            <th scope="col">{t('day')}</th>
-            <th scope="col">{t('mood')}</th>
-          </tr>
-        </thead>
-        <tbody>
-          {days.map((day) => (
-            <tr key={day.day}>
-              <th scope="row">{formatLongDate(dateOfDay(day.day), 'UTC', locale)}</th>
-              <td>
-                {day.average === null
-                  ? t('noRecord')
-                  : `${averageText(day.average)} · ${mood(nearestMoodKey(day.average))}`}
-              </td>
+      <div className="sr-only">
+        <table>
+          <caption>{label}</caption>
+          <thead>
+            <tr>
+              <th scope="col">{t('day')}</th>
+              <th scope="col">{t('mood')}</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {days.map((day) => (
+              <tr key={day.day}>
+                <th scope="row">{formatLongDate(dateOfDay(day.day), 'UTC', locale)}</th>
+                <td>
+                  {day.average === null
+                    ? t('noRecord')
+                    : `${averageText(day.average)} · ${mood(nearestMoodKey(day.average))}`}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </figure>
   )
 }

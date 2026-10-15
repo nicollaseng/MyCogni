@@ -1,19 +1,13 @@
 export const insights = {
   patient: {
-    title: 'Resumo dos seus registros',
+    digest: 'Resumo automático',
+    open: 'Ler resumo',
+    close: 'Fechar resumo',
     period: '{period} · {count, plural, =0 {# registros} one {# registro} other {# registros}}',
     records: '{count, plural, =0 {# registros} one {# registro} other {# registros}}',
     highlights: 'O que se destacou',
     suggestions: 'Para os próximos dias',
-    disclaimer: 'Escrito automaticamente a partir dos seus registros. Não é um diagnóstico.',
     earlier: 'Resumos anteriores',
-    empty: {
-      explanation:
-        'A cada {threshold} registros, aparece aqui um resumo curto do que se destacou nos seus dias, com algumas sugestões. Ele é escrito automaticamente a partir dos registros e não é um diagnóstico.',
-      progress: '{count} de {threshold} registros para o primeiro resumo',
-      disabled: 'Os resumos estão desligados na sua conta.',
-      enable: 'Ligar no seu perfil',
-    },
   },
   teaser: {
     title: 'Seu último resumo',

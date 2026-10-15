@@ -1,4 +1,4 @@
-import { dayKey, previousDays, type DatedMood } from '../check-ins/days.ts'
+import { dayKey, previousDays } from '../check-ins/days.ts'
 
 export const patternPeriods = [7, 30, 90] as const
 
@@ -16,10 +16,10 @@ export function historySince(period: PatternPeriod, now: Date): Date {
   return new Date(now.getTime() - (2 * period + 1) * dayInMs)
 }
 
-export function withinDays<Mood extends DatedMood>(
-  moods: readonly Mood[],
+export function withinDays<Item extends { recordedAt: Date }>(
+  items: readonly Item[],
   { timeZone, today, days }: { timeZone: string; today: Date; days: number },
-): Mood[] {
+): Item[] {
   const keys = new Set(previousDays(dayKey(today, timeZone), days))
-  return moods.filter((mood) => keys.has(dayKey(mood.recordedAt, timeZone)))
+  return items.filter((item) => keys.has(dayKey(item.recordedAt, timeZone)))
 }

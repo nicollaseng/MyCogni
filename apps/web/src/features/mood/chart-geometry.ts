@@ -30,3 +30,22 @@ export function linePaths(values: readonly (number | null)[]): string[] {
   }
   return paths
 }
+
+const denseSlots = 14
+const sparseLabels = 4
+
+export function labeledSlots(slots: number): number[] {
+  if (slots <= denseSlots) {
+    return Array.from({ length: slots }, (_, index) => index)
+  }
+  const step = Math.ceil(slots / sparseLabels)
+  const indices: number[] = []
+  for (let index = slots - 1; index >= 0; index -= step) {
+    indices.unshift(index)
+  }
+  return indices
+}
+
+export function isDense(slots: number): boolean {
+  return slots <= denseSlots
+}
