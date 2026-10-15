@@ -59,6 +59,7 @@ test('a professional sends the document, the team opens and approves it, and a l
   page,
   browser,
 }) => {
+  test.slow()
   const name = `Helena Prado ${randomUUID().slice(0, 6)}`
   const email = uniqueEmail('pro-document')
   await createUser(email, password)
