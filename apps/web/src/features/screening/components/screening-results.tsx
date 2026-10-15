@@ -1,7 +1,6 @@
 import type { Assessment } from '@mycogni/contracts'
-import { instruments } from '@mycogni/domain'
+import { crisisLinesFor, instruments } from '@mycogni/domain'
 import { useLocale, useTranslations } from 'next-intl'
-import { crisisLinesFor } from '@/i18n/crisis-lines'
 import { comparisonOf } from '../compare'
 import { ScoreScale } from './score-scale'
 

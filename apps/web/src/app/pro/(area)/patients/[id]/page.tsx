@@ -10,6 +10,7 @@ import { QuestionnaireTable } from '@/features/professional/components/questionn
 import { ReadingsSection } from '@/features/professional/components/readings-section'
 import { Surface, WorkspaceSection } from '@/features/professional/components/workspace'
 import { moodDays } from '@/features/professional/mood-days'
+import { ReportExport } from '@/features/reports/components/report-export'
 import {
   fetchPatient,
   fetchPatientAssessments,
@@ -34,16 +35,29 @@ export default async function PatientPage({ params }: PageProps<'/pro/patients/[
     notFound()
   }
   const now = new Date()
-  const [checkIns, assessments, readings, t] = await Promise.all([
+  const [checkIns, assessments, readings, t, patients] = await Promise.all([
     fetchPatientCheckIns(patient.id, new Date(now.getTime() - (windowDays + 1) * dayInMs)),
     fetchPatientAssessments(patient.id),
     fetchPatientInsights(patient.id),
     getTranslations('professional.patient'),
+    getTranslations('professional.patients'),
   ])
 
   return (
     <>
-      <PatientHeader patient={patient} timeZone={timezone} />
+      <PatientHeader
+        patient={patient}
+        timeZone={timezone}
+        actions={
+          <ReportExport
+            href={`/pro/patients/${patient.id}/report`}
+            audience="professional"
+            name={patient.name ?? patients('unnamed')}
+            summaries={readings.length > 0}
+            triggerClassName="h-9 px-3.5 text-sm hover:bg-surface"
+          />
+        }
+      />
       <PatientKpis patient={patient} timeZone={timezone} />
       <ReadingsSection readings={readings} timeZone={timezone} />
       <WorkspaceSection title={t('mood.title', { days: windowDays })}>

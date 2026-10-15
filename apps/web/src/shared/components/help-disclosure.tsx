@@ -1,5 +1,5 @@
+import { crisisLinesFor } from '@mycogni/domain'
 import { useLocale, useTranslations } from 'next-intl'
-import { crisisLinesFor } from '@/i18n/crisis-lines'
 import { Disclosure } from './disclosure'
 
 const phoneLink = 'font-medium text-foreground underline decoration-1 underline-offset-4'

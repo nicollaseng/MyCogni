@@ -6,7 +6,7 @@ export const mybook = {
     shared: 'MyBook compartilhado',
   },
   untitled: 'Sem título',
-  photos: '{count, plural, one {# foto} other {# fotos}}',
+  photos: '{count, plural, =0 {# fotos} one {# foto} other {# fotos}}',
   list: {
     title: 'MyBook',
     description:
@@ -148,7 +148,7 @@ export const mybook = {
       active: 'Compartilhado agora',
       history: 'Histórico',
       all: 'MyBook inteiro',
-      entries: '{count, plural, one {# página} other {# páginas}}',
+      entries: '{count, plural, =0 {# páginas} one {# página} other {# páginas}}',
       until: 'até {date}',
       forever: 'sem prazo',
       since: 'desde {date}',

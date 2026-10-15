@@ -12,6 +12,7 @@ import { mybook } from './mybook'
 import { onboarding } from './onboarding'
 import { patterns } from './patterns'
 import { professional } from './professional'
+import { report } from './report'
 import { screening } from './screening'
 import { today } from './today'
 import type { Messages } from '../pt-BR'
@@ -28,6 +29,7 @@ export const messages: Messages = {
   today,
   patterns,
   insights,
+  report,
   screening,
   account,
   care,

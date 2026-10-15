@@ -13,8 +13,9 @@ import {
 } from '@/features/entries/filters'
 import { groupByDay } from '@/features/entries/group-by-day'
 import { matchingTags } from '@/features/entries/search'
+import { ReportExport } from '@/features/reports/components/report-export'
 import { PageTitle } from '@/shared/components/page-title'
-import { countCheckIns, fetchCheckIns } from '@/shared/lib/api/resources'
+import { countCheckIns, fetchCheckIns, fetchInsights } from '@/shared/lib/api/resources'
 import { requireOnboardedProfile } from '@/shared/lib/auth/session'
 import { cn } from '@/shared/lib/utils'
 import { buttonVariants } from '@/shared/ui/button'
@@ -45,16 +46,29 @@ export default async function EntriesPage({ searchParams }: PageProps<'/entries'
     ...contextIds.map((id) => ({ id, label: catalog(`contexts.${id}`) })),
   ])
   const filter = checkInFilterOf(filters, { now: new Date(), qTags })
-  const [checkIns, total, recent] = await Promise.all([
+  const [checkIns, total, recent, readings] = await Promise.all([
     fetchCheckIns({ ...filter, before, limit: pageSize }),
     countCheckIns(filter),
     fetchCheckIns({ limit: recentForTags }),
+    fetchInsights(),
   ])
   const oldest = checkIns.at(-1)
 
   return (
     <>
-      <PageTitle title={t('title')} description={t('description')} />
+      <PageTitle
+        title={t('title')}
+        description={t('description')}
+        action={
+          recent.length > 0 ? (
+            <ReportExport
+              href="/patterns/report"
+              audience="patient"
+              summaries={readings.length > 0}
+            />
+          ) : undefined
+        }
+      />
       {recent.length === 0 ? (
         <div className="space-y-5">
           <p className="text-muted-foreground">{t('empty')}</p>

@@ -48,7 +48,7 @@ export const entries = {
   },
   results: {
     reset: 'Limpar busca e filtros',
-    all: '{count, plural, one {# registro} other {# registros}}',
+    all: '{count, plural, =0 {# registros} one {# registro} other {# registros}}',
     filtered:
       '{count, plural, =0 {Nenhum registro encontrado} one {# registro encontrado} other {# registros encontrados}}',
     none: 'Nada por aqui com essa busca e esses filtros. Tente outra palavra ou outro período.',

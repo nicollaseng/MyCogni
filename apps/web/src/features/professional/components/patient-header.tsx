@@ -1,6 +1,7 @@
 import type { PatientSummary } from '@mycogni/contracts'
 import Link from 'next/link'
 import { useLocale, useTranslations } from 'next-intl'
+import type { ReactNode } from 'react'
 import { formatDate, formatShortDate } from '../dates'
 import { latestScreenings } from '../screenings'
 import { AlertIcon, BackIcon } from './icons'
@@ -10,9 +11,10 @@ import { WorkspaceHeader } from './workspace'
 interface PatientHeaderProps {
   patient: PatientSummary
   timeZone: string
+  actions?: ReactNode
 }
 
-export function PatientHeader({ patient, timeZone }: PatientHeaderProps) {
+export function PatientHeader({ patient, timeZone, actions }: PatientHeaderProps) {
   const t = useTranslations('professional')
   const locale = useLocale()
   const flagged = latestScreenings(patient.screenings).phq9
@@ -29,6 +31,7 @@ export function PatientHeader({ patient, timeZone }: PatientHeaderProps) {
       <WorkspaceHeader
         kicker={t('patient.kicker')}
         title={patient.name ?? t('patients.unnamed')}
+        actions={actions}
         description={
           <p>
             {t('patient.since', {

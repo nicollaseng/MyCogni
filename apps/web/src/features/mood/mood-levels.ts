@@ -1,16 +1,8 @@
-import { maxMoodLevel } from '@mycogni/domain'
+import { maxMoodLevel, moodNames, type MoodName } from '@mycogni/domain'
 
-export const moodKeys = [
-  'veryBad',
-  'bad',
-  'slightlyBad',
-  'neutral',
-  'slightlyGood',
-  'good',
-  'veryGood',
-] as const
+export const moodKeys = moodNames
 
-export type MoodKey = (typeof moodKeys)[number]
+export type MoodKey = MoodName
 
 export type MoodLevel = 0 | 1 | 2 | 3 | 4 | 5 | 6
 
