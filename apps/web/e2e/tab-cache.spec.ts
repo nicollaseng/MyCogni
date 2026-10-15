@@ -58,6 +58,11 @@ test.describe('switching tabs', () => {
       page.getByText('Seus padrões aparecem aqui depois dos primeiros registros.'),
     )
     await openTab(
+      'Zen',
+      '/zen',
+      page.getByText('Conteúdo educativo, não substitui acompanhamento profissional.'),
+    )
+    await openTab(
       'Hoje',
       '/today',
       page.getByText('Seus dias aparecem aqui conforme você registra.'),
