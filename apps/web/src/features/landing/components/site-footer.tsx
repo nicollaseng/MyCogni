@@ -59,6 +59,11 @@ export function SiteFooter() {
               {legal('privacy.title')}
             </Link>
           </li>
+          <li>
+            <Link href="/pro/join" className={linkStyles}>
+              {t('footer.professionals')}
+            </Link>
+          </li>
         </FooterColumn>
       </div>
       <div className="mt-12 flex flex-col gap-2 border-t border-rule pt-6 text-muted-foreground sm:flex-row sm:justify-between">

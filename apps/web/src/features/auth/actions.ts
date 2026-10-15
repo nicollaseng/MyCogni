@@ -3,14 +3,13 @@
 import { getLocale, getTranslations } from 'next-intl/server'
 import { redirect } from 'next/navigation'
 import { rememberLocaleOf } from '@/features/locale/remember-locale'
+import { afterSignIn } from './after-sign-in'
 import { serverEnv } from '@/shared/lib/env'
 import { createSupabaseServerClient } from '@/shared/lib/supabase/server'
 import { authErrorKey, type AuthErrorKey } from './error-messages'
 import { failed, invalidFields, noticed, type FormState } from './form-state'
 import { forgetPendingEmail, pendingEmail, rememberPendingEmail } from './pending-email'
 import { authSchemas } from './schemas'
-
-const homePath = '/today'
 
 type ExternalUrl = `${string}:${string}`
 
@@ -77,7 +76,7 @@ export async function verifyEmail(_state: FormState, formData: FormData): Promis
   }
   await forgetPendingEmail()
   await rememberLocaleOf(data.user?.user_metadata)
-  redirect(homePath)
+  redirect(await afterSignIn())
 }
 
 export async function resendCode(): Promise<FormState> {
@@ -110,7 +109,7 @@ export async function signIn(_state: FormState, formData: FormData): Promise<For
     return authFailure(authErrorKey(error.code))
   }
   await rememberLocaleOf(data.user.user_metadata)
-  redirect(homePath)
+  redirect(await afterSignIn())
 }
 
 export async function signInWithGoogle(): Promise<FormState> {
@@ -172,7 +171,7 @@ export async function resetPassword(_state: FormState, formData: FormData): Prom
   }
   await forgetPendingEmail()
   await rememberLocaleOf(updated.data.user.user_metadata)
-  redirect(homePath)
+  redirect(await afterSignIn())
 }
 
 export async function signOut(): Promise<void> {

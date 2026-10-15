@@ -31,6 +31,12 @@ export const common = {
     scaleLow: 'muito mal',
     scaleHigh: 'muito bem',
   },
+  professionalKinds: {
+    psychologist: 'Psicologia',
+    psychiatrist: 'Psiquiatria',
+    physician: 'Medicina',
+    psychoanalyst: 'Psicanálise',
+  },
   language: {
     label: 'Idioma',
     hint: 'O app passa a usar este idioma em todas as telas.',
