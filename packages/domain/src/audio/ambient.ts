@@ -17,10 +17,10 @@ export const defaultAmbientVolume = 0.12
 export const duckedAmbientShare = 0.3
 
 export const ambientLoopFiles: Readonly<Record<AmbientLoopId, string>> = {
-  sea: 'sea.m4a',
-  rain: 'rain.m4a',
-  forest: 'forest.m4a',
-  'brown-noise': 'brown-noise.m4a',
+  sea: 'sea.0cbaba80.m4a',
+  rain: 'rain.d794f009.m4a',
+  forest: 'forest.dc554ac7.m4a',
+  'brown-noise': 'brown-noise.27aa3411.m4a',
 }
 
 export function isAmbientSoundId(value: unknown): value is AmbientSoundId {

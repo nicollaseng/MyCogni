@@ -1,0 +1,49 @@
+{
+  "note": "Background loops for the Zen Space. Every file is CC0 or produced for MyCogniAI and dedicated to the public domain. Loops were cut from the public 128 kbps previews, loudness-normalised to about -27 dBFS RMS and encoded as AAC-LC (about 72 kbps, 44.1 kHz stereo) with macOS afconvert.",
+  "files": [
+    {
+      "file": "sea.0cbaba80.m4a",
+      "sound": "sea",
+      "title": "beach_waves.mp3",
+      "author": "3bagbrew",
+      "source": "https://freesound.org/people/3bagbrew/sounds/59564/",
+      "audio": "https://cdn.freesound.org/previews/59/59564_571436-hq.mp3",
+      "licence": "Creative Commons 0 (CC0 1.0 Universal)",
+      "licenceUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "edit": "84 s from 0:11, normalised"
+    },
+    {
+      "file": "rain.d794f009.m4a",
+      "sound": "rain",
+      "title": "Forest cabin summer rain 2",
+      "author": "giddster",
+      "source": "https://freesound.org/people/giddster/sounds/719056/",
+      "audio": "https://cdn.freesound.org/previews/719/719056_1738686-hq.mp3",
+      "licence": "Creative Commons 0 (CC0 1.0 Universal)",
+      "licenceUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "edit": "80 s from 0:10, normalised"
+    },
+    {
+      "file": "forest.dc554ac7.m4a",
+      "sound": "forest",
+      "title": "Quiet Spring Woodland Ambience.wav",
+      "author": "ecfike",
+      "source": "https://freesound.org/people/ecfike/sounds/160893/",
+      "audio": "https://cdn.freesound.org/previews/160/160893_2337290-hq.mp3",
+      "licence": "Creative Commons 0 (CC0 1.0 Universal)",
+      "licenceUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "edit": "full 59 s, normalised"
+    },
+    {
+      "file": "brown-noise.27aa3411.m4a",
+      "sound": "brown-noise",
+      "title": "Brown noise",
+      "author": "MyCogniAI",
+      "source": "Generated procedurally (leaky integration of seeded white noise, 60 s, stereo)",
+      "audio": null,
+      "licence": "Public domain (CC0 1.0 Universal dedication)",
+      "licenceUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "edit": "60 s, normalised"
+    }
+  ]
+}

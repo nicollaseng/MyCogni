@@ -13,6 +13,13 @@ const config: NextConfig = {
   typedRoutes: true,
   agentRules: false,
   devIndicators: false,
+  headers: () =>
+    Promise.resolve([
+      {
+        source: '/audio/ambient/:file*',
+        headers: [{ key: 'Cache-Control', value: 'public, max-age=31536000, immutable' }],
+      },
+    ]),
 }
 
 const withNextIntl = createNextIntlPlugin('./src/i18n/request.ts')

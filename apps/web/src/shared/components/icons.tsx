@@ -34,3 +34,43 @@ export function DownloadIcon({ className }: IconProps) {
     </svg>
   )
 }
+
+export function PlayIcon({ className }: IconProps) {
+  return (
+    <svg aria-hidden viewBox="0 0 20 20" className={className}>
+      <path d="M6.5 4.5v11l9-5.5z" fill="currentColor" />
+    </svg>
+  )
+}
+
+export function PauseIcon({ className }: IconProps) {
+  return (
+    <svg aria-hidden viewBox="0 0 20 20" className={className}>
+      <path d="M6 4.5h2.6v11H6zM11.4 4.5H14v11h-2.6z" fill="currentColor" />
+    </svg>
+  )
+}
+
+export function BackIcon({ className }: IconProps) {
+  return (
+    <svg aria-hidden viewBox="0 0 20 20" className={className}>
+      <path d="M4.5 10a5.5 5.5 0 1 0 1.6-3.9M4.5 3.5v3h3" {...stroke} />
+    </svg>
+  )
+}
+
+export function ForwardIcon({ className }: IconProps) {
+  return (
+    <svg aria-hidden viewBox="0 0 20 20" className={className}>
+      <path d="M15.5 10a5.5 5.5 0 1 1-1.6-3.9M15.5 3.5v3h-3" {...stroke} />
+    </svg>
+  )
+}
+
+export function WaveIcon({ className }: IconProps) {
+  return (
+    <svg aria-hidden viewBox="0 0 20 20" className={className}>
+      <path d="M2.5 11c2.5-3 5-3 7.5 0s5 3 7.5 0M2.5 7c2.5-3 5-3 7.5 0s5 3 7.5 0" {...stroke} />
+    </svg>
+  )
+}

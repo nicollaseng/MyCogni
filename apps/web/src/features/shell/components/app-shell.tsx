@@ -1,5 +1,6 @@
 import { useTranslations } from 'next-intl'
 import { Suspense, type ReactNode } from 'react'
+import { AmbientControl } from '@/features/audio/components/ambient-control'
 import { signOut } from '@/features/auth/actions'
 import { BellLink } from '@/features/care/components/bell-link'
 import { NotificationBell } from '@/features/care/components/notification-bell'
@@ -29,6 +30,7 @@ export function AppShell({ name, email, photoUrl, timeZone, children }: AppShell
               <CurrentNavigation variant="top" />
             </nav>
             <div className="flex items-center gap-2">
+              <AmbientControl />
               <Suspense fallback={<BellLink unread={0} />}>
                 <NotificationBell timeZone={timeZone} />
               </Suspense>

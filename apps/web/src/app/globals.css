@@ -146,6 +146,58 @@
     background: var(--background);
   }
 
+  .audio-range {
+    appearance: none;
+    width: 100%;
+    height: 32px;
+    background: transparent;
+    cursor: pointer;
+  }
+
+  .audio-range::-webkit-slider-runnable-track {
+    height: 2px;
+    border-radius: 2px;
+    background: var(--rule);
+  }
+
+  .audio-range::-moz-range-track {
+    height: 2px;
+    background: var(--rule);
+  }
+
+  .audio-range::-webkit-slider-thumb {
+    appearance: none;
+    width: 16px;
+    height: 16px;
+    margin-top: -7px;
+    border-radius: 9999px;
+    background: var(--foreground);
+  }
+
+  .audio-range::-moz-range-thumb {
+    width: 16px;
+    height: 16px;
+    border: 0;
+    border-radius: 9999px;
+    background: var(--foreground);
+  }
+
+  .audio-range:focus-visible {
+    outline: none;
+  }
+
+  .audio-range:focus-visible::-webkit-slider-thumb {
+    box-shadow:
+      0 0 0 3px var(--background),
+      0 0 0 5px var(--foreground);
+  }
+
+  .audio-range:focus-visible::-moz-range-thumb {
+    box-shadow:
+      0 0 0 3px var(--background),
+      0 0 0 5px var(--foreground);
+  }
+
   .mood-range:focus-visible {
     outline: none;
   }
