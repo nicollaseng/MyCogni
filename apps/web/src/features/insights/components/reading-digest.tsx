@@ -20,11 +20,12 @@ export function ReadingDigest({ latest: labeled, teaser, earlier }: ReadingDiges
   const t = useTranslations('insights.patient')
   const { reading: latest, period } = labeled
   const panelId = useId()
-  const targeted = readingIdOfHash(useLocationHash())
-  const [toggled, setToggled] = useState<boolean | null>(null)
+  const hash = useLocationHash()
+  const targeted = readingIdOfHash(hash)
+  const [toggled, setToggled] = useState<{ open: boolean; hash: string } | null>(null)
   const linked =
     targeted !== null && [labeled, ...earlier].some(({ reading }) => reading.id === targeted)
-  const open = toggled ?? linked
+  const open = toggled !== null && toggled.hash === hash ? toggled.open : linked
 
   return (
     <Section title={t('digest')}>
@@ -45,7 +46,7 @@ export function ReadingDigest({ latest: labeled, teaser, earlier }: ReadingDiges
             aria-expanded={open}
             aria-controls={panelId}
             onClick={() => {
-              setToggled(!open)
+              setToggled({ open: !open, hash })
             }}
             className="inline-flex min-h-10 cursor-pointer items-center gap-1.5 text-sm underline decoration-1 underline-offset-4"
           >

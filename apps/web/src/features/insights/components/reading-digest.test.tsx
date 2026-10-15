@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it } from '@jest/globals'
 import type { PatientInsight } from '@mycogni/contracts'
-import { screen, within } from '@testing-library/react'
+import { act, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { renderWithIntl } from '@/test/render'
 import { patientReading, testTimeZone } from '../test-data'
@@ -80,6 +80,23 @@ describe('ReadingDigest', () => {
       'aria-expanded',
       'true',
     )
+    expect(screen.getByText('Uma semana de altos e baixos.')).toBeVisible()
+  })
+
+  it('opens again when another reading is linked after the person closed it', async () => {
+    const user = userEvent.setup()
+    window.history.replaceState(null, '', `/patterns#reading-${latest.id}`)
+    renderDigest()
+
+    await user.click(screen.getByRole('button', { name: 'Fechar resumo' }))
+    expect(screen.getByRole('button', { name: 'Ler resumo' })).toBeVisible()
+
+    act(() => {
+      window.location.hash = `reading-${earlier.id}`
+      window.dispatchEvent(new HashChangeEvent('hashchange'))
+    })
+
+    expect(screen.getByRole('button', { name: 'Fechar resumo' })).toBeVisible()
     expect(screen.getByText('Uma semana de altos e baixos.')).toBeVisible()
   })
 
