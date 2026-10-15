@@ -50,11 +50,12 @@ export async function createUser(
   email: string,
   password: string,
   confirmed = true,
+  metadata: Record<string, string> = {},
 ): Promise<string> {
   const response = await fetch(`${supabaseUrl}/auth/v1/admin/users`, {
     method: 'POST',
     headers: adminHeaders(),
-    body: JSON.stringify({ email, password, email_confirm: confirmed }),
+    body: JSON.stringify({ email, password, email_confirm: confirmed, user_metadata: metadata }),
   })
   if (!response.ok) {
     throw new Error(`Could not create ${email}: ${await response.text()}`)
