@@ -35,6 +35,7 @@ export function PatientHeader({ patient, timeZone, actions }: PatientHeaderProps
           src={patient.photoUrl}
           initials={initialsOf(patient.name)}
           size="lg"
+          eager
           className="mt-1"
         />
         <div className="min-w-0 flex-1">

@@ -10,3 +10,7 @@ export const patternRules = {
   frequentTags: 5,
   minScoreSessions: 2,
 } as const
+
+export const moodReportPeriods = [7, 30] as const
+
+export type MoodReportPeriod = (typeof moodReportPeriods)[number]

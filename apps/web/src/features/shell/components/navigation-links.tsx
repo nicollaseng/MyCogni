@@ -31,6 +31,7 @@ export function NavigationLinks({ pathname, variant }: NavigationLinksProps) {
           <li key={href}>
             <Link
               href={href}
+              prefetch
               aria-current={active ? 'page' : undefined}
               className={cn(
                 'text-muted-foreground transition-colors hover:text-foreground',

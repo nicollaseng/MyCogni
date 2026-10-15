@@ -32,7 +32,8 @@ import { fetchCareLinks, fetchProfessional } from '@/shared/lib/api/care'
 import { fetchAssessments, fetchConsents } from '@/shared/lib/api/resources'
 import { fetchSupportTickets } from '@/shared/lib/api/support'
 import { requireOnboardedProfile } from '@/shared/lib/auth/session'
-import { ownPhotoUrl } from '@/shared/lib/photos'
+import { fetchMyPhotoUrl } from '@/shared/lib/photos'
+import { guarded } from '@/shared/lib/settled'
 import { Button } from '@/shared/ui/button'
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -43,18 +44,22 @@ export async function generateMetadata(): Promise<Metadata> {
 const rowLink = 'block py-3.5 underline decoration-1 underline-offset-4'
 
 export default async function MePage() {
-  const profile = await requireOnboardedProfile()
-  const [assessments, consents, photoUrl, careLinks, professional, tickets, t, language] =
-    await Promise.all([
+  const [
+    profile,
+    [assessments, consents, photoUrl, careLinks, professional, tickets, t, language],
+  ] = await guarded(
+    requireOnboardedProfile(),
+    Promise.all([
       fetchAssessments(),
       fetchConsents(),
-      ownPhotoUrl(profile.avatarPath),
+      fetchMyPhotoUrl(),
       fetchCareLinks(),
       fetchProfessional(),
       fetchSupportTickets(),
       getTranslations('account'),
       getTranslations('common.language'),
-    ])
+    ]),
+  )
   const lastAnswer = assessments[0]?.completedAt
 
   return (

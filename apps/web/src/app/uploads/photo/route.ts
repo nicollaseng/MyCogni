@@ -6,6 +6,8 @@ import { ownPhotoUrl } from '@/shared/lib/photos'
 import { createSupabaseServerClient } from '@/shared/lib/supabase/server'
 import { refuse, refuseFile } from '@/shared/lib/upload-responses'
 
+const oneYearSeconds = String(60 * 60 * 24 * 365)
+
 async function photoStorage() {
   return (await createSupabaseServerClient('read-write')).storage.from(avatarBucket)
 }
@@ -29,7 +31,10 @@ export async function POST(request: Request) {
   }
   const path = `${user.id}/${crypto.randomUUID()}.${avatarExtension(file.type)}`
   const storage = await photoStorage()
-  const uploaded = await storage.upload(path, file, { contentType: file.type })
+  const uploaded = await storage.upload(path, file, {
+    contentType: file.type,
+    cacheControl: oneYearSeconds,
+  })
   if (uploaded.error !== null) {
     console.error(uploaded.error)
     return refuse(502, 'UPLOAD_FAILED')

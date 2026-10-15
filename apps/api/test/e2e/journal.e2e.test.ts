@@ -98,8 +98,11 @@ describe('/v1/journal', () => {
     const path = entry.imagePaths[0] ?? ''
     const image = await fetch(entry.imageUrls[path] ?? '')
 
+    const again = (await call('GET', `/v1/journal/${entry.id}`, ana)).json<Entry>()
+
     expect(entry.title).toBe('Domingo no parque')
     expect(image.status).toBe(200)
+    expect(again.imageUrls).toEqual(entry.imageUrls)
     expect((await call('GET', `/v1/journal/${entry.id}`, bruno)).statusCode).toBe(404)
     expect((await call('GET', `/v1/journal/${entry.id}`, helena)).statusCode).toBe(404)
   })

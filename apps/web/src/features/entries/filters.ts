@@ -1,6 +1,6 @@
-import { checkInSearchLength } from '@mycogni/contracts'
 import {
   checkInLimits,
+  checkInSearchLength,
   moodRangeOf,
   moodRangeParam,
   tagListOf,

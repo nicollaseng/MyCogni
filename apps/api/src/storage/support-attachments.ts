@@ -7,6 +7,6 @@ export function createSupportAttachmentStore(supabaseUrl: string, secretKey: str
     supabaseUrl,
     secretKey,
     bucket: supportAttachmentBucket,
-    lifetimeSeconds: documentLinkLifetimeSeconds,
+    links: { kind: 'expiring', lifetimeSeconds: documentLinkLifetimeSeconds },
   })
 }

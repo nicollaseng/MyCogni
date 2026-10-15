@@ -142,6 +142,10 @@ export const fetchNotifications = cache((): Promise<NotificationList> =>
   apiRequest({ path: '/v1/notifications', schema: notificationListSchema }),
 )
 
+export function preloadNotifications(): void {
+  fetchNotifications().catch(() => undefined)
+}
+
 export async function markNotificationsRead(ids?: string[]): Promise<void> {
   await apiRequest({
     path: '/v1/notifications/read',

@@ -1,7 +1,6 @@
 'use client'
 
-import { checkInSearchLength } from '@mycogni/contracts'
-import { activeFilterCount } from '@mycogni/domain'
+import { activeFilterCount, checkInSearchLength } from '@mycogni/domain'
 import { useTranslations } from 'next-intl'
 import { useId, useRef, useState, type SubmitEvent } from 'react'
 import { CloseIcon, FilterIcon, SearchIcon } from '@/shared/components/icons'

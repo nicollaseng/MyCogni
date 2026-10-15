@@ -104,6 +104,7 @@ export function ProfessionalNavigation({
             <li key={key}>
               <Link
                 href={href}
+                prefetch
                 aria-current={active ? 'page' : undefined}
                 aria-label={
                   count === null

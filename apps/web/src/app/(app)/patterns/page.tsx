@@ -13,6 +13,7 @@ import {
   fetchInsights,
 } from '@/shared/lib/api/resources'
 import { requireOnboardedProfile } from '@/shared/lib/auth/session'
+import { guarded } from '@/shared/lib/settled'
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations('patterns.meta')
@@ -21,9 +22,7 @@ export async function generateMetadata(): Promise<Metadata> {
 
 const dayInMs = 24 * 60 * 60 * 1000
 
-export default async function PatternsPage({ searchParams }: PageProps<'/patterns'>) {
-  const { timezone } = await requireOnboardedProfile()
-  const now = new Date()
+async function patternsOf(searchParams: PageProps<'/patterns'>['searchParams'], now: Date) {
   const { period: requested } = await searchParams
   const period = patternPeriodOf(Array.isArray(requested) ? requested[0] : requested)
   const [t, checkIns, assessments, readings, consents, totalCheckIns, recentCheckIns] =
@@ -36,17 +35,25 @@ export default async function PatternsPage({ searchParams }: PageProps<'/pattern
       countCheckIns({}),
       countCheckIns({ since: new Date(now.getTime() - insightLookbackDays * dayInMs) }),
     ])
-  const model = buildPatterns({
+  return {
+    t,
     period,
     checkIns,
-    totalCheckIns,
-    recentCheckIns,
     assessments,
     readings,
+    totalCheckIns,
+    recentCheckIns,
     summariesEnabled: consents.some((consent) => consent.kind === 'ai_processing'),
-    timeZone: timezone,
-    now,
-  })
+  }
+}
+
+export default async function PatternsPage({ searchParams }: PageProps<'/patterns'>) {
+  const now = new Date()
+  const [{ timezone }, { t, ...input }] = await guarded(
+    requireOnboardedProfile(),
+    patternsOf(searchParams, now),
+  )
+  const model = buildPatterns({ ...input, timeZone: timezone, now })
 
   return (
     <>
@@ -54,11 +61,11 @@ export default async function PatternsPage({ searchParams }: PageProps<'/pattern
         title={t('title')}
         description={t('description')}
         action={
-          totalCheckIns > 0 ? (
+          input.totalCheckIns > 0 ? (
             <ReportExport
               href="/patterns/report"
               audience="patient"
-              summaries={readings.length > 0}
+              summaries={input.readings.length > 0}
             />
           ) : undefined
         }

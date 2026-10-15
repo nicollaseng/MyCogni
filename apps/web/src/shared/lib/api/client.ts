@@ -1,3 +1,4 @@
+import { cache } from 'react'
 import { z } from 'zod'
 import { serverEnv } from '../env'
 import { createSupabaseServerClient } from '../supabase/server'
@@ -33,14 +34,14 @@ function errorOf(status: number, payload: unknown): ApiError {
     : new ApiError(status, 'UNKNOWN', `API answered ${String(status)}`)
 }
 
-async function accessToken(): Promise<string> {
+const accessToken = cache(async (): Promise<string> => {
   const supabase = await createSupabaseServerClient('read-only')
   const { data } = await supabase.auth.getSession()
   if (data.session === null) {
     throw new ApiError(401, 'UNAUTHORIZED', 'No session to call the API with')
   }
   return data.session.access_token
-}
+})
 
 export async function apiRequest<T>({
   path,

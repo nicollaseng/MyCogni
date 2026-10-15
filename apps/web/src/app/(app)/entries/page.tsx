@@ -17,6 +17,7 @@ import { ReportExport } from '@/features/reports/components/report-export'
 import { PageTitle } from '@/shared/components/page-title'
 import { countCheckIns, fetchCheckIns, fetchInsights } from '@/shared/lib/api/resources'
 import { requireOnboardedProfile } from '@/shared/lib/auth/session'
+import { guarded } from '@/shared/lib/settled'
 import { cn } from '@/shared/lib/utils'
 import { buttonVariants } from '@/shared/ui/button'
 
@@ -31,27 +32,33 @@ const usedTags = 12
 
 const footLink = 'text-sm underline decoration-1 underline-offset-4'
 
-export default async function EntriesPage({ searchParams }: PageProps<'/entries'>) {
-  const { timezone } = await requireOnboardedProfile()
+async function entriesOf(searchParams: PageProps<'/entries'>['searchParams']) {
   const [t, catalog, params] = await Promise.all([
     getTranslations('entries'),
     getTranslations('checkIn'),
     searchParams,
   ])
   const filters = parseEntryFilters(params)
-  const before = firstParam(params.before)
-  const filtered = isFiltered(filters)
   const qTags = matchingTags(filters.q, [
     ...emotionIds.map((id) => ({ id, label: catalog(`emotions.${id}`) })),
     ...contextIds.map((id) => ({ id, label: catalog(`contexts.${id}`) })),
   ])
   const filter = checkInFilterOf(filters, { now: new Date(), qTags })
   const [checkIns, total, recent, readings] = await Promise.all([
-    fetchCheckIns({ ...filter, before, limit: pageSize }),
+    fetchCheckIns({ ...filter, before: firstParam(params.before), limit: pageSize }),
     countCheckIns(filter),
     fetchCheckIns({ limit: recentForTags }),
     fetchInsights(),
   ])
+  return { t, filters, checkIns, total, recent, readings }
+}
+
+export default async function EntriesPage({ searchParams }: PageProps<'/entries'>) {
+  const [{ timezone }, { t, filters, checkIns, total, recent, readings }] = await guarded(
+    requireOnboardedProfile(),
+    entriesOf(searchParams),
+  )
+  const filtered = isFiltered(filters)
   const oldest = checkIns.at(-1)
 
   return (

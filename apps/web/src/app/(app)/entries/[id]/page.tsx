@@ -7,20 +7,27 @@ import { EntryDetail } from '@/features/entries/components/entry-detail'
 import { entriesHref, parseEntryFilters } from '@/features/entries/filters'
 import { fetchCheckIn } from '@/shared/lib/api/resources'
 import { requireOnboardedProfile } from '@/shared/lib/auth/session'
+import { guarded } from '@/shared/lib/settled'
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations('entries.meta')
   return { title: t('detail') }
 }
 
-export default async function EntryPage({ params, searchParams }: PageProps<'/entries/[id]'>) {
-  const { timezone } = await requireOnboardedProfile()
+async function entryOf({ params, searchParams }: PageProps<'/entries/[id]'>) {
   const [{ id }, query, t] = await Promise.all([
     params,
     searchParams,
     getTranslations('entries.detail'),
   ])
-  const checkIn = await fetchCheckIn(id)
+  return { t, query, checkIn: await fetchCheckIn(id) }
+}
+
+export default async function EntryPage(props: PageProps<'/entries/[id]'>) {
+  const [{ timezone }, { t, query, checkIn }] = await guarded(
+    requireOnboardedProfile(),
+    entryOf(props),
+  )
   if (checkIn === null) {
     notFound()
   }

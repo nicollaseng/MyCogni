@@ -6,3 +6,5 @@ export const checkInLimits = {
   note: 2000,
   addendum: 1000,
 } as const
+
+export const checkInSearchLength = 100

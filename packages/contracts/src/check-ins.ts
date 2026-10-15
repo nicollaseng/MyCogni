@@ -1,4 +1,4 @@
-import { checkInLimits, maxMoodLevel } from '@mycogni/domain'
+import { checkInLimits, checkInSearchLength, maxMoodLevel } from '@mycogni/domain'
 import { z } from 'zod'
 
 const tagsSchema = z
@@ -27,7 +27,7 @@ export type CheckIn = z.infer<typeof checkInSchema>
 
 export const checkInListSchema = z.array(checkInSchema)
 
-export const checkInSearchLength = 100
+export { checkInSearchLength }
 
 const tagListSchema = z
   .string()
