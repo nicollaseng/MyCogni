@@ -1,5 +1,5 @@
 import { describe, expect, it, jest } from '@jest/globals'
-import type { Notification } from '@mycogni/contracts'
+import type { Notification, NotificationList } from '@mycogni/contracts'
 import { screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import type { ActionResult } from '@/shared/lib/actions/result'
@@ -8,6 +8,10 @@ import type { NotificationHref } from '../notification-href'
 import { NotificationPopover } from './notification-popover'
 
 type MarkRead = (ids: string[]) => Promise<ActionResult<null>>
+
+type Latest = () => Promise<ActionResult<NotificationList>>
+
+const pending: Latest = () => new Promise(() => undefined)
 
 const invitationId = '7a1c2b3d-0000-4000-8000-000000000010'
 const insightId = '7a1c2b3d-0000-4000-8000-000000000020'
@@ -48,7 +52,11 @@ const notifications: Notification[] = [
   },
 ]
 
-function renderPopover(items: readonly Notification[] = notifications, unread = 2) {
+function renderPopover(
+  items: readonly Notification[] = notifications,
+  unread = 2,
+  latest: Latest = pending,
+) {
   const markRead = jest.fn<MarkRead>(() => Promise.resolve({ ok: true, value: null }))
   const navigate = jest.fn<(href: NotificationHref) => void>()
   const user = userEvent.setup()
@@ -59,6 +67,7 @@ function renderPopover(items: readonly Notification[] = notifications, unread = 
         unread={unread}
         timeZone="America/Sao_Paulo"
         markRead={markRead}
+        latest={latest}
         navigate={navigate}
       />
       <p>Fora do aviso</p>
@@ -105,6 +114,21 @@ describe('NotificationPopover', () => {
     expect(items[3]).toHaveTextContent('Ver todas')
     expect(items[3]).toHaveAttribute('href', '/notifications')
     expect(items[0]).toHaveFocus()
+  })
+
+  it('brings what arrived after the page loaded as soon as the bell opens', async () => {
+    const older = notifications.slice(2)
+    const latest = jest.fn<Latest>(() =>
+      Promise.resolve({ ok: true, value: { items: notifications.slice(1), unread: 1 } }),
+    )
+    const { user } = renderPopover(older, 0, latest)
+
+    expect(bell()).toHaveAccessibleName('Notificações')
+    await user.click(bell())
+
+    expect(await screen.findByRole('menuitem', { name: /resumo da semana/ })).toBeVisible()
+    expect(bell()).toHaveAccessibleName('Notificações, 1 não lida')
+    expect(latest).toHaveBeenCalledTimes(1)
   })
 
   it('marks a notification as read, updates the count and then opens its page', async () => {
@@ -189,6 +213,7 @@ describe('NotificationPopover', () => {
         unread={2}
         timeZone="Europe/London"
         markRead={markRead}
+        latest={pending}
         navigate={jest.fn<(href: NotificationHref) => void>()}
       />,
       { locale: 'en-GB' },

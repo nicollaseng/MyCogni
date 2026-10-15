@@ -72,6 +72,7 @@ export function ProfessionalNavigation({ variant, onNavigate }: ProfessionalNavi
             <li key={key}>
               <Link
                 href={href}
+                prefetch
                 aria-current={active ? 'page' : undefined}
                 onClick={onNavigate}
                 className={linkStyle(variant, active)}

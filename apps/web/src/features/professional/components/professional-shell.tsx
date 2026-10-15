@@ -2,6 +2,7 @@ import type { ProfessionalProfile } from '@mycogni/contracts'
 import { useTranslations } from 'next-intl'
 import type { ReactNode } from 'react'
 import { signOut } from '@/features/auth/actions'
+import { FreshOnReturn } from '@/features/shell/components/fresh-on-return'
 import { Wordmark } from '@/shared/components/wordmark'
 import { cn } from '@/shared/lib/utils'
 import { MobileMenu } from './mobile-menu'
@@ -23,6 +24,7 @@ export function ProfessionalShell({ professional, photoUrl, children }: Professi
 
   return (
     <div className={cn('min-h-dvh lg:grid lg:grid-cols-[232px_minmax(0,1fr)]', warnTokens)}>
+      <FreshOnReturn />
       <aside className="hidden bg-surface lg:block">
         <div className="sticky top-0 flex h-dvh flex-col px-3 pt-6 pb-4">
           <div className="space-y-1 px-3">

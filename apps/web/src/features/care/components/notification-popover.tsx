@@ -1,9 +1,9 @@
 'use client'
 
-import type { Notification } from '@mycogni/contracts'
+import type { Notification, NotificationList } from '@mycogni/contracts'
 import Link from 'next/link'
 import { useLocale, useTranslations } from 'next-intl'
-import { useState, useTransition, type MouseEvent } from 'react'
+import { useEffect, useState, useTransition, type MouseEvent } from 'react'
 import { usePopoverMenu } from '@/shared/hooks/use-popover-menu'
 import type { ActionResult } from '@/shared/lib/actions/result'
 import { formatRelativeTime } from '@/shared/lib/time'
@@ -18,7 +18,13 @@ export interface NotificationPopoverProps {
   unread: number
   timeZone: string
   markRead: (ids: string[]) => Promise<ActionResult<null>>
+  latest: () => Promise<ActionResult<NotificationList>>
   navigate: (href: NotificationHref) => void
+}
+
+interface FreshList {
+  from: readonly Notification[]
+  list: NotificationList
 }
 
 interface NotificationRowsProps {
@@ -105,21 +111,43 @@ function NotificationRows({
 }
 
 export function NotificationPopover({
-  notifications,
-  unread,
+  notifications: rendered,
+  unread: renderedUnread,
   timeZone,
   markRead,
+  latest,
   navigate,
 }: NotificationPopoverProps) {
   const t = useTranslations('care.bell')
   const feed = useTranslations('care.notifications')
   const [readHere, setReadHere] = useState<readonly string[]>([])
+  const [fresh, setFresh] = useState<FreshList | null>(null)
   const [, startTransition] = useTransition()
   const { open, mounted, closing, close, triggerProps, panelProps } = usePopoverMenu()
+  const { items: notifications, unread } =
+    fresh?.from === rendered ? fresh.list : { items: rendered, unread: renderedUnread }
   const readHereStillUnread = notifications.filter(
     (notification) => notification.readAt === null && readHere.includes(notification.id),
   ).length
   const count = Math.max(0, unread - readHereStillUnread)
+
+  useEffect(() => {
+    if (!open) {
+      return
+    }
+    let current = true
+    latest().then(
+      (result) => {
+        if (current && result.ok) {
+          setFresh({ from: rendered, list: result.value })
+        }
+      },
+      () => undefined,
+    )
+    return () => {
+      current = false
+    }
+  }, [open, latest, rendered])
 
   function isUnread(notification: Notification): boolean {
     return notification.readAt === null && !readHere.includes(notification.id)

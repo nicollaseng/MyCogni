@@ -102,6 +102,7 @@ function AccountPanel({ name, email, initials, photoUrl, signOut, onNavigate }: 
       <div role="menu" aria-label={t('menu')} className="border-t border-rule p-1">
         <Link
           href="/me"
+          prefetch
           role="menuitem"
           tabIndex={-1}
           onClick={onNavigate}
@@ -111,6 +112,7 @@ function AccountPanel({ name, email, initials, photoUrl, signOut, onNavigate }: 
         </Link>
         <Link
           href="/me#professionals"
+          prefetch
           role="menuitem"
           tabIndex={-1}
           onClick={onNavigate}

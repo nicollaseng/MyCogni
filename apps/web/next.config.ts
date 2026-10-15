@@ -10,6 +10,9 @@ const config: NextConfig = {
   typedRoutes: true,
   agentRules: false,
   devIndicators: false,
+  experimental: {
+    staleTimes: { dynamic: 0, static: 300 },
+  },
 }
 
 const withNextIntl = createNextIntlPlugin('./src/i18n/request.ts')

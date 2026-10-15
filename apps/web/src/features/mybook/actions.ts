@@ -54,6 +54,7 @@ export async function createPage(): Promise<ActionResult<null>> {
   if (id === null) {
     return failure(t('createError'))
   }
+  revalidatePath('/mybook')
   redirect(`/mybook/${id}`)
 }
 

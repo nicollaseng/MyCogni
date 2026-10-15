@@ -36,7 +36,7 @@ export async function renameMe(displayName: string): Promise<ActionResult<string
   }
   return attempt(async () => {
     await updateProfile({ displayName: parsed.data })
-    revalidatePath('/me')
+    revalidatePath('/', 'layout')
     return t('nameSaved')
   }, t('saveError'))
 }
@@ -125,6 +125,7 @@ export async function setAiConsent(enabled: boolean): Promise<ActionResult<strin
   }, t('saveError'))
   if (result.ok) {
     revalidatePath('/me')
+    revalidatePath('/patterns')
   }
   return result
 }

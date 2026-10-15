@@ -2,6 +2,7 @@
 
 import { grantConsentsSchema, updateProfileSchema } from '@mycogni/contracts'
 import type { ConsentKind } from '@mycogni/domain'
+import { revalidatePath } from 'next/cache'
 import { getTranslations } from 'next-intl/server'
 import { redirect } from 'next/navigation'
 import { continuePath } from '@/shared/lib/auth/continue-path'
@@ -45,6 +46,7 @@ export async function saveName(input: NameInput): Promise<ActionResult<null>> {
 export async function finishOnboarding(): Promise<ActionResult<null>> {
   const result = await attempt(completeOnboarding, await saveError())
   if (result.ok) {
+    revalidatePath('/', 'layout')
     redirect((await continuePath()) ?? '/today')
   }
   return result

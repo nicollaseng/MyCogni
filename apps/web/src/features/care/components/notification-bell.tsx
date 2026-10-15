@@ -1,12 +1,11 @@
 import type { NotificationList } from '@mycogni/contracts'
 import { unstable_rethrow } from 'next/navigation'
 import { fetchNotifications } from '@/shared/lib/api/care'
-import { readNotifications } from '../actions'
+import { latestNotifications, readNotifications } from '../actions'
+import { previewOf } from '../notification-preview'
 import { NotificationMenu } from './notification-menu'
 
-const previewSize = 8
-
-async function latestNotifications(): Promise<NotificationList> {
+async function notificationsOrNone(): Promise<NotificationList> {
   try {
     return await fetchNotifications()
   } catch (cause) {
@@ -17,14 +16,15 @@ async function latestNotifications(): Promise<NotificationList> {
 }
 
 export async function NotificationBell({ timeZone }: { timeZone: string }) {
-  const { items, unread } = await latestNotifications()
+  const { items, unread } = previewOf(await notificationsOrNone())
 
   return (
     <NotificationMenu
-      notifications={items.slice(0, previewSize)}
+      notifications={items}
       unread={unread}
       timeZone={timeZone}
       markRead={readNotifications}
+      latest={latestNotifications}
     />
   )
 }

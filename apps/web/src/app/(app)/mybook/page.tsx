@@ -3,6 +3,7 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import { getLocale, getTranslations } from 'next-intl/server'
 import { createPage } from '@/features/mybook/actions'
+import { RefreshAfterPageVisit } from '@/features/mybook/components/book-freshness'
 import { Icon } from '@/features/mybook/components/icon'
 import { NewPageButton } from '@/features/mybook/components/new-page-button'
 import { PageList } from '@/features/mybook/components/page-list'
@@ -56,6 +57,7 @@ export default async function MybookPage({ searchParams }: PageProps<'/mybook'>)
 
   return (
     <>
+      <RefreshAfterPageVisit />
       <header className="space-y-3">
         <div className="flex items-start justify-between gap-4">
           <h1 className="font-serif text-[40px] leading-[1.04] tracking-[-0.02em] sm:text-5xl">
