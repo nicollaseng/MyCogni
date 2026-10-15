@@ -47,4 +47,8 @@ export const common: CommonMessages = {
     label: 'Idioma',
     hint: 'A aplicação passa a usar este idioma em todos os ecrãs.',
   },
+  outdated: {
+    message: 'A aplicação foi atualizada. Recarregue para continuar.',
+    reload: 'Recarregar',
+  },
 }
