@@ -32,9 +32,11 @@ interface TrackStepsProps {
   write: WriteStep
 }
 
-const linkAction = cn(buttonVariants({ size: 'sm' }))
+function actionVariant(primary: boolean) {
+  return primary ? 'default' : 'outline'
+}
 
-function BreatheAction() {
+function BreatheAction({ primary }: { primary: boolean }) {
   const t = useTranslations('zen')
   const [open, setOpen] = useState(false)
 
@@ -42,6 +44,7 @@ function BreatheAction() {
     <>
       <Button
         size="sm"
+        variant={actionVariant(primary)}
         aria-haspopup="dialog"
         onClick={() => {
           setOpen(true)
@@ -68,7 +71,15 @@ function BreatheAction() {
   )
 }
 
-function WriteAction({ step, write }: { step: ZenStepParams; write: WriteStep }) {
+function WriteAction({
+  step,
+  write,
+  primary,
+}: {
+  step: ZenStepParams
+  write: WriteStep
+  primary: boolean
+}) {
   const t = useTranslations('zen.track')
   const { submit, pending, error } = useSubmit(write, () => undefined)
 
@@ -76,6 +87,7 @@ function WriteAction({ step, write }: { step: ZenStepParams; write: WriteStep })
     <div className="space-y-2">
       <Button
         size="sm"
+        variant={actionVariant(primary)}
         disabled={pending}
         onClick={() => {
           submit(step)
@@ -92,12 +104,15 @@ function StepAction({
   trackId,
   step,
   write,
+  primary,
 }: {
   trackId: TrackId
   step: TrackStep
   write: WriteStep
+  primary: boolean
 }) {
   const t = useTranslations('zen.track')
+  const linkAction = buttonVariants({ size: 'sm', variant: actionVariant(primary) })
 
   switch (step.kind) {
     case 'read':
@@ -107,9 +122,9 @@ function StepAction({
         </Link>
       )
     case 'breathe':
-      return <BreatheAction />
+      return <BreatheAction primary={primary} />
     case 'write':
-      return <WriteAction step={{ trackId, stepId: step.id }} write={write} />
+      return <WriteAction step={{ trackId, stepId: step.id }} write={write} primary={primary} />
     case 'check_in':
       return (
         <Link href="/check-in" className={linkAction}>
@@ -173,7 +188,12 @@ export function TrackSteps({ trackId, steps, nextId, support, save, write }: Tra
             )}
             {step.kind === 'support' && support}
             <div className="pt-1 empty:hidden">
-              <StepAction trackId={trackId} step={step} write={write} />
+              <StepAction
+                trackId={trackId}
+                step={step}
+                write={write}
+                primary={step.id === nextId}
+              />
             </div>
           </li>
         )

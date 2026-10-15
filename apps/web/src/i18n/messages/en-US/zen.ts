@@ -39,7 +39,6 @@ export const zen: ZenMessages = {
   },
   tracks: {
     title: 'Tracks',
-    steps: '{count, plural, one {# step} other {# steps}}',
     status: {
       new: 'Not started',
       started: '{done} of {total} steps',
@@ -64,7 +63,6 @@ export const zen: ZenMessages = {
     step: 'Step {number}',
     done: 'Done',
     markDone: 'Mark as done',
-    undo: 'Undo',
     saving: 'Saving…',
     saveError: 'We could not save this right now. Try again in a moment.',
     writeError: 'We could not open a MyBook page right now. Try again in a moment.',

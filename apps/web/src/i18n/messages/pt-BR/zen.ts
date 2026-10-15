@@ -37,7 +37,6 @@ export const zen = {
   },
   tracks: {
     title: 'Trilhas',
-    steps: '{count, plural, =0 {# passos} one {# passo} other {# passos}}',
     status: {
       new: 'Não iniciada',
       started: '{done} de {total} passos',
@@ -62,7 +61,6 @@ export const zen = {
     step: 'Passo {number}',
     done: 'Feito',
     markDone: 'Marcar como feito',
-    undo: 'Desfazer',
     saving: 'Salvando…',
     saveError: 'Não foi possível salvar agora. Tente de novo em instantes.',
     writeError: 'Não foi possível abrir uma página no MyBook agora. Tente de novo em instantes.',

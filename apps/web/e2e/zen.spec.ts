@@ -125,7 +125,8 @@ test('answers the questionnaires again and sees the suggestion change', async ({
   }
   await expect(page.getByRole('heading', { name: 'Seus resultados de hoje.' })).toBeVisible()
 
-  await page.goto('/zen')
+  await page.getByRole('link', { name: 'Ver sugestões no Zen Space' }).click()
+  await expect(page).toHaveURL('/zen')
 
   await expect(forYou(page).getByRole('heading', { name: 'Ansiedade no dia a dia' })).toBeVisible()
   await expect(

@@ -39,7 +39,6 @@ export const zen: ZenMessages = {
   },
   tracks: {
     title: 'Percursos',
-    steps: '{count, plural, one {# passo} other {# passos}}',
     status: {
       new: 'Por começar',
       started: '{done} de {total} passos',
@@ -64,7 +63,6 @@ export const zen: ZenMessages = {
     step: 'Passo {number}',
     done: 'Feito',
     markDone: 'Marcar como feito',
-    undo: 'Desfazer',
     saving: 'A guardar…',
     saveError: 'Não foi possível guardar agora. Tente de novo dentro de instantes.',
     writeError:

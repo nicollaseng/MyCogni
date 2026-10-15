@@ -47,6 +47,7 @@ export const screening = {
     resultsTitle: 'Seus resultados de hoje.',
     disclaimer: 'É uma triagem, não um diagnóstico. Só um profissional pode avaliar o seu caso.',
     back: 'Voltar ao perfil',
+    zen: 'Ver sugestões no Zen Space',
   },
   latest: {
     title: 'Seus questionários',
