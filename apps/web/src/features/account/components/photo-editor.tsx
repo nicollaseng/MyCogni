@@ -3,7 +3,7 @@
 import { useFormatter, useTranslations } from 'next-intl'
 import { useId, useState } from 'react'
 import Cropper, { type Area, type Point } from 'react-easy-crop'
-import { Sheet } from '@/features/mybook/components/sheet'
+import { Sheet } from '@/shared/components/sheet'
 import { Button } from '@/shared/ui/button'
 import type { RenderPhoto } from '../photo-canvas'
 import { quarterTurn, usableArea } from '../photo-geometry'

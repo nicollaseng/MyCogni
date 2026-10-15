@@ -1,4 +1,4 @@
-import type { Locale } from '@mycogni/domain'
+import type { Locale } from './locales.ts'
 
 export interface CrisisLine {
   phone: string

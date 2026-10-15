@@ -218,7 +218,7 @@ export const professional = {
     now: 'agora',
     minutes: 'há {count} min',
     hours: 'há {count} h',
-    days: '{count, plural, =1 {ontem} other {há # dias}}',
+    days: '{count, plural, =0 {há # dias} =1 {ontem} other {há # dias}}',
   },
   attention: {
     label: 'Motivos de atenção',
@@ -291,7 +291,7 @@ export const professional = {
     patients: 'Pacientes',
     mood: 'Humor médio',
     count: '{count, plural, =0 {Nenhum registro} one {# registro} other {# registros}}',
-    people: '{count, plural, one {# paciente} other {# pacientes}}',
+    people: '{count, plural, =0 {# pacientes} one {# paciente} other {# pacientes}}',
     moodValue: 'Humor médio {value}',
     noMood: 'Sem registros de humor',
     navigate: 'Use as setas para percorrer os dias.',
@@ -311,7 +311,7 @@ export const professional = {
       attention: 'Precisam de atenção',
       risk: '{count} com item 9 do PHQ-9 positivo',
       calm: 'Nenhum sinal de alerta',
-      ofPatients: 'De {count, plural, one {# paciente} other {# pacientes}}',
+      ofPatients: 'De {count, plural, =0 {# pacientes} one {# paciente} other {# pacientes}}',
       invitations: 'Convites pendentes',
       expiring:
         '{count, plural, =0 {Nenhum expira em 24 h} one {# expira em 24 h} other {# expiram em 24 h}}',
@@ -402,7 +402,7 @@ export const professional = {
     mood: {
       title: 'Humor nos últimos {days} dias',
       label:
-        'Humor médio por dia nos últimos {days} dias, numa escala de 0 (muito mal) a 6 (muito bem). {count, plural, one {# dia com registro} other {# dias com registro}}.',
+        'Humor médio por dia nos últimos {days} dias, numa escala de 0 (muito mal) a 6 (muito bem). {count, plural, =0 {# dias com registro} one {# dia com registro} other {# dias com registro}}.',
       empty: 'Nenhum registro de humor nos últimos {days} dias.',
     },
     screenings: {

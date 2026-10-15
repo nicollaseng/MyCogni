@@ -1,5 +1,5 @@
+import { crisisLinesFor } from '@mycogni/domain'
 import { useLocale, useTranslations } from 'next-intl'
-import { crisisLinesFor } from '@/i18n/crisis-lines'
 import { StepActions } from '@/shared/components/step-actions'
 import { cn } from '@/shared/lib/utils'
 import { Button, buttonVariants } from '@/shared/ui/button'

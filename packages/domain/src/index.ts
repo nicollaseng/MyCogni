@@ -83,6 +83,9 @@ export {
   type Locale,
   type LocaleSignals,
 } from './i18n/locales.ts'
+export { crisisLinesFor, type CrisisLine } from './i18n/crisis-lines.ts'
+export { moodNames, type LabelSet, type MoodName } from './i18n/labels/label-set.ts'
+export { labelsFor } from './i18n/labels/labels.ts'
 export {
   excerptOf,
   isJournalImageType,
@@ -124,7 +127,14 @@ export {
   type ContextMood,
   type TagCount,
 } from './patterns/tags.ts'
-export { moodChanges, weekSummary, type MoodChange, type WeekSummary } from './patterns/week.ts'
+export {
+  moodChanges,
+  periodSummary,
+  weekSummary,
+  type MoodChange,
+  type PeriodSummary,
+  type WeekSummary,
+} from './patterns/week.ts'
 export { moodByWeekday, type WeekdayMood } from './patterns/weekdays.ts'
 export {
   isOwnProfessionalDocumentPath,

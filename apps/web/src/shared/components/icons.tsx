@@ -26,3 +26,11 @@ export function CloseIcon({ className }: IconProps) {
     </svg>
   )
 }
+
+export function DownloadIcon({ className }: IconProps) {
+  return (
+    <svg aria-hidden viewBox="0 0 20 20" className={className}>
+      <path d="M10 3.5v9M6.5 9l3.5 3.5L13.5 9M4 16h12" {...stroke} />
+    </svg>
+  )
+}

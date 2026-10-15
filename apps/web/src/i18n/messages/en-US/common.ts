@@ -1,3 +1,4 @@
+import { labelsFor } from '@mycogni/domain'
 import type { CommonMessages } from '../pt-BR/common'
 
 export const common: CommonMessages = {
@@ -31,13 +32,7 @@ export const common: CommonMessages = {
     back: 'Back to the start',
   },
   mood: {
-    veryBad: 'Very bad',
-    bad: 'Bad',
-    slightlyBad: 'Slightly bad',
-    neutral: 'Neutral',
-    slightlyGood: 'Slightly good',
-    good: 'Good',
-    veryGood: 'Very good',
+    ...labelsFor('en-US').moods,
     scaleLow: 'very bad',
     scaleHigh: 'very good',
   },

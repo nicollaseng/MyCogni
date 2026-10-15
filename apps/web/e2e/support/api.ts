@@ -114,6 +114,20 @@ async function poster(email: string, password: string) {
   }
 }
 
+export async function rename(email: string, password: string, displayName: string): Promise<void> {
+  const response = await fetch(`${apiUrl}/v1/me`, {
+    method: 'PATCH',
+    headers: {
+      authorization: `Bearer ${await accessToken(email, password)}`,
+      'content-type': 'application/json',
+    },
+    body: JSON.stringify({ displayName }),
+  })
+  if (!response.ok) {
+    throw new Error(`PATCH /v1/me answered ${String(response.status)}: ${await response.text()}`)
+  }
+}
+
 export async function finishOnboarding(email: string, password: string): Promise<void> {
   const post = await poster(email, password)
 

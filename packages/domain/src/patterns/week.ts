@@ -10,7 +10,7 @@ export const moodChanges = [
 
 export type MoodChange = (typeof moodChanges)[number]
 
-export interface WeekSummary {
+export interface PeriodSummary {
   recent: number | null
   recentDays: number
   previous: number | null
@@ -37,16 +37,23 @@ function recordedAverages(days: readonly MoodDay[]): number[] {
   return days.flatMap((day) => (day.average === null ? [] : [day.average]))
 }
 
-export function weekSummary(days: readonly MoodDay[]): WeekSummary {
-  const recentWeek = recordedAverages(days.slice(-weekLength))
-  const previousWeek = recordedAverages(days.slice(-2 * weekLength, -weekLength))
-  const recent = averageOf(recentWeek)
-  const previous = averageOf(previousWeek)
-  const comparable = recentWeek.length >= minComparedDays && previousWeek.length >= minComparedDays
+export function periodSummary(days: readonly MoodDay[], length: number): PeriodSummary {
+  const recentPeriod = recordedAverages(days.slice(-length))
+  const previousPeriod = recordedAverages(days.slice(-2 * length, -length))
+  const recent = averageOf(recentPeriod)
+  const previous = averageOf(previousPeriod)
+  const comparable =
+    recentPeriod.length >= minComparedDays && previousPeriod.length >= minComparedDays
   return {
     recent,
-    recentDays: recentWeek.length,
+    recentDays: recentPeriod.length,
     previous,
     change: comparable && recent !== null && previous !== null ? changeOf(recent - previous) : null,
   }
+}
+
+export type WeekSummary = PeriodSummary
+
+export function weekSummary(days: readonly MoodDay[]): WeekSummary {
+  return periodSummary(days, weekLength)
 }

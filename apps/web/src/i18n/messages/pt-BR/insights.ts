@@ -1,8 +1,8 @@
 export const insights = {
   patient: {
     title: 'Resumo dos seus registros',
-    period: '{period} · {count, plural, one {# registro} other {# registros}}',
-    records: '{count, plural, one {# registro} other {# registros}}',
+    period: '{period} · {count, plural, =0 {# registros} one {# registro} other {# registros}}',
+    records: '{count, plural, =0 {# registros} one {# registro} other {# registros}}',
     highlights: 'O que se destacou',
     suggestions: 'Para os próximos dias',
     disclaimer: 'Escrito automaticamente a partir dos seus registros. Não é um diagnóstico.',
@@ -24,13 +24,13 @@ export const insights = {
     note: 'Escritos automaticamente a partir dos registros compartilhados com você, sem o MyBook. Não fazem diagnóstico.',
     empty:
       'Ainda não há resumos deste paciente. Um resumo é escrito a cada {threshold} registros, se a pessoa ativou os resumos na conta dela.',
-    period: '{period} · {count, plural, one {# registro} other {# registros}}',
+    period: '{period} · {count, plural, =0 {# registros} one {# registro} other {# registros}}',
     attention: {
       none: 'Sem sinais de atenção',
       watch: 'Observar',
       urgent: 'Urgente',
     },
-    records: '{count, plural, one {# registro} other {# registros}}',
+    records: '{count, plural, =0 {# registros} one {# registro} other {# registros}}',
     trends: 'Tendências',
     themes: 'Temas',
     nothing: 'Nada a destacar.',

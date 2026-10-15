@@ -18,6 +18,7 @@ import { ContextEffects } from '@/features/patterns/components/context-effects'
 import { FrequentTags } from '@/features/patterns/components/frequent-tags'
 import { ScoreHistory } from '@/features/patterns/components/score-history'
 import { WeekdayChart } from '@/features/patterns/components/weekday-chart'
+import { ReportExport } from '@/features/reports/components/report-export'
 import { PageTitle } from '@/shared/components/page-title'
 import { Section } from '@/shared/components/section'
 import {
@@ -69,7 +70,19 @@ export default async function PatternsPage() {
 
   return (
     <>
-      <PageTitle title={t('title')} description={t('description')} />
+      <PageTitle
+        title={t('title')}
+        description={t('description')}
+        action={
+          checkIns.length > 0 ? (
+            <ReportExport
+              href="/patterns/report"
+              audience="patient"
+              summaries={readings.length > 0}
+            />
+          ) : undefined
+        }
+      />
 
       <PatientReadings
         readings={readings}

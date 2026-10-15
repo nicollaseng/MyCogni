@@ -5,8 +5,10 @@ export const care = {
     pending: {
       title: '{name} quer acompanhar seus registros.',
       lead: 'Com o vínculo, {name} vê como você tem se sentido entre as consultas. Você decide se os registros anteriores entram e pode encerrar quando quiser.',
-      expiresInDays: 'O convite vale por mais {count, plural, one {# dia} other {# dias}}.',
-      expiresInHours: 'O convite vale por mais {count, plural, one {# hora} other {# horas}}.',
+      expiresInDays:
+        'O convite vale por mais {count, plural, =0 {# dias} one {# dia} other {# dias}}.',
+      expiresInHours:
+        'O convite vale por mais {count, plural, =0 {# horas} one {# hora} other {# horas}}.',
       signUp: 'Criar conta para responder',
       signIn: 'Já tenho conta',
       signedOutHint: 'Primeiro você cria sua conta ou entra. Depois decide se aceita.',
@@ -138,7 +140,7 @@ export const care = {
   bell: {
     label:
       '{count, plural, =0 {Notificações} one {Notificações, # não lida} other {Notificações, # não lidas}}',
-    unread: '{count, plural, one {# não lida} other {# não lidas}}',
+    unread: '{count, plural, =0 {# não lidas} one {# não lida} other {# não lidas}}',
     seeAll: 'Ver todas',
   },
   links: {

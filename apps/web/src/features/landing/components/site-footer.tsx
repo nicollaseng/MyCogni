@@ -1,7 +1,7 @@
+import { crisisLinesFor } from '@mycogni/domain'
 import Link from 'next/link'
 import { useLocale, useTranslations } from 'next-intl'
 import type { ReactNode } from 'react'
-import { crisisLinesFor } from '@/i18n/crisis-lines'
 import { Wordmark } from '@/shared/components/wordmark'
 import { sectionKeys, sections } from '../content'
 
