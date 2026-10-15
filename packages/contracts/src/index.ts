@@ -195,3 +195,20 @@ export {
   type SupportAttachment,
   type SupportTicket,
 } from './support.ts'
+export {
+  assistantAccessSchema,
+  assistantConversationSchema,
+  assistantConversationSummarySchema,
+  assistantExchangeSchema,
+  assistantMessageSchema,
+  assistantOverviewSchema,
+  riskLevelSchema,
+  sendAssistantMessageSchema,
+  type AssistantAccess,
+  type AssistantConversation,
+  type AssistantConversationSummary,
+  type AssistantExchange,
+  type AssistantMessage,
+  type AssistantOverview,
+  type SendAssistantMessageInput,
+} from './assistant.ts'

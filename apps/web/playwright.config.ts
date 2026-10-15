@@ -54,7 +54,7 @@ export default defineConfig({
       cwd: '../api',
       url: `${apiUrl}/health`,
       reuseExistingServer: true,
-      env: { ...services, PORT: apiPort, CORS_ORIGINS: baseURL },
+      env: { ...services, PORT: apiPort, CORS_ORIGINS: baseURL, ASSISTANT_MODEL: 'scripted' },
     },
     {
       command: 'node src/worker.ts',

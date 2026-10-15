@@ -1,4 +1,12 @@
-export const consentKinds = ['terms', 'privacy', 'health_data', 'ai_processing', 'adult'] as const
+export const consentKinds = [
+  'terms',
+  'privacy',
+  'health_data',
+  'ai_processing',
+  'adult',
+  'assistant_data',
+  'assistant_journal',
+] as const
 
 export type ConsentKind = (typeof consentKinds)[number]
 

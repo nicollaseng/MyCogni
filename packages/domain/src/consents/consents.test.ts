@@ -5,6 +5,8 @@ describe('consents', () => {
   it('requires everything except the use of AI, which stays optional', () => {
     expect(consentKinds.filter((kind) => !requiredConsentKinds.includes(kind))).toEqual([
       'ai_processing',
+      'assistant_data',
+      'assistant_journal',
     ])
   })
 
@@ -18,6 +20,10 @@ describe('consents', () => {
   })
 
   it('lets only the optional consents be withdrawn while keeping the account', () => {
-    expect(consentKinds.filter(isRevocable)).toEqual(['ai_processing'])
+    expect(consentKinds.filter(isRevocable)).toEqual([
+      'ai_processing',
+      'assistant_data',
+      'assistant_journal',
+    ])
   })
 })

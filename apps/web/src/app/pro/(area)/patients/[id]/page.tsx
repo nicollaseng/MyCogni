@@ -1,6 +1,8 @@
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { getTranslations } from 'next-intl/server'
+import { assistantActions } from '@/features/assistant/bound-actions'
+import { PatientAssistant } from '@/features/assistant/components/patient-assistant'
 import { requireVerifiedProfessional } from '@/features/professional/access'
 import { acknowledgeAlert, resolveAlert } from '@/features/professional/alert-actions'
 import { pendingAlerts } from '@/features/professional/alert-table'
@@ -11,7 +13,11 @@ import { PatientHeader } from '@/features/professional/components/patient-header
 import { PatientKpis } from '@/features/professional/components/patient-kpis'
 import { QuestionnaireTable } from '@/features/professional/components/questionnaire-table'
 import { ReadingsSection } from '@/features/professional/components/readings-section'
-import { Surface, WorkspaceSection } from '@/features/professional/components/workspace'
+import {
+  quietButton,
+  Surface,
+  WorkspaceSection,
+} from '@/features/professional/components/workspace'
 import { moodDays } from '@/features/professional/mood-days'
 import { ReportExport } from '@/features/reports/components/report-export'
 import {
@@ -71,13 +77,22 @@ export default async function PatientPage({ params }: PageProps<'/pro/patients/[
         patient={patient}
         timeZone={timezone}
         actions={
-          <ReportExport
-            href={`/pro/patients/${patient.id}/report`}
-            audience="professional"
-            name={patient.name ?? patients('unnamed')}
-            summaries={readings.length > 0}
-            triggerClassName="h-9 px-3.5 text-sm hover:bg-surface"
-          />
+          <>
+            <PatientAssistant
+              patientId={patient.id}
+              name={patient.name ?? patients('unnamed')}
+              actions={assistantActions}
+              timeZone={timezone}
+              triggerClassName={quietButton}
+            />
+            <ReportExport
+              href={`/pro/patients/${patient.id}/report`}
+              audience="professional"
+              name={patient.name ?? patients('unnamed')}
+              summaries={readings.length > 0}
+              triggerClassName="h-9 px-3.5 text-sm hover:bg-surface"
+            />
+          </>
         }
       />
       <PatientAlerts
