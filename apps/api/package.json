@@ -11,7 +11,8 @@
     "test": "NODE_OPTIONS='--experimental-vm-modules --disable-warning=ExperimentalWarning' jest",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "node --env-file-if-exists=.env src/scripts/migrate.ts",
-    "worker": "node --env-file-if-exists=.env src/worker.ts"
+    "worker": "node --env-file-if-exists=.env src/worker.ts",
+    "narration": "node --env-file-if-exists=.env src/scripts/generate-narration.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "0.132.1",
