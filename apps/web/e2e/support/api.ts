@@ -137,6 +137,17 @@ export async function finishOnboarding(email: string, password: string): Promise
   await post('/v1/onboarding/complete')
 }
 
+export async function answerQuestionnaires(
+  email: string,
+  password: string,
+  phq9: readonly number[],
+  gad7: readonly number[],
+): Promise<void> {
+  const post = await poster(email, password)
+  await post('/v1/assessments', { instrument: 'phq9', answers: phq9 })
+  await post('/v1/assessments', { instrument: 'gad7', answers: gad7 })
+}
+
 export interface CheckInSeed {
   moodLevel: number
   emotions: string[]

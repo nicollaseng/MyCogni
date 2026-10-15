@@ -1,5 +1,5 @@
 import { expect, test, type Locator, type Page } from '@playwright/test'
-import { finishOnboarding } from './support/api'
+import { answerQuestionnaires, finishOnboarding } from './support/api'
 import { signedOut } from './support/session'
 import { createUser, uniqueEmail } from './support/supabase'
 
@@ -7,10 +7,13 @@ test.use({ storageState: signedOut })
 
 const password = 'zen-space-2026'
 
-async function signInAsReadyPerson(page: Page): Promise<void> {
+async function signInAsReadyPerson(page: Page, atRisk = false): Promise<void> {
   const email = uniqueEmail('zen')
   await createUser(email, password)
   await finishOnboarding(email, password)
+  if (atRisk) {
+    await answerQuestionnaires(email, password, [1, 1, 1, 1, 0, 0, 1, 0, 1], [1, 1, 1, 1, 1, 1, 1])
+  }
   await page.goto('/sign-in')
   await page.getByLabel('Email').fill(email)
   await page.getByLabel('Senha').fill(password)
@@ -22,15 +25,21 @@ function mainNavigation(page: Page): Locator {
   return page.getByRole('navigation', { name: 'Navegação principal' })
 }
 
-function forYou(page: Page): Locator {
-  return page.getByRole('region', { name: 'Para você agora' })
+function today(page: Page): Locator {
+  return page.getByRole('region', { name: 'Para hoje' })
 }
 
 function step(page: Page, name: string): Locator {
   return page.getByRole('listitem', { name })
 }
 
-test('opens Zen from the tab, follows the suggested track, reads an article and completes a step', async ({
+async function openStep(page: Page, name: string): Promise<Locator> {
+  const row = step(page, name)
+  await row.getByRole('button', { name: new RegExp(name) }).click()
+  return row
+}
+
+test('opens Zen from the tab, starts the step for today, listens to it and completes it', async ({
   page,
 }) => {
   await signInAsReadyPerson(page)
@@ -39,32 +48,33 @@ test('opens Zen from the tab, follows the suggested track, reads an article and 
 
   await expect(page).toHaveURL('/zen')
   await expect(page.getByRole('heading', { level: 1, name: 'Zen Space' })).toBeVisible()
-  await expect(mainNavigation(page).getByRole('link', { name: 'Zen' })).toHaveAttribute(
-    'aria-current',
-    'page',
-  )
-  await expect(forYou(page).getByRole('heading', { name: 'Sono e descanso' })).toBeVisible()
+  await expect(today(page).getByRole('heading', { name: 'Sono e humor' })).toBeVisible()
+  await expect(today(page)).toContainText('Sono e descanso · passo 1 de 5')
 
-  await forYou(page).getByRole('link', { name: 'Começar a trilha' }).click()
-  await expect(page).toHaveURL('/zen/tracks/sleep-and-rest')
-  await expect(page.getByText('0 de 5 passos feitos')).toBeVisible()
-
-  await step(page, 'Ler: sono e humor').getByRole('link', { name: 'Ler' }).click()
+  await today(page).getByRole('link', { name: 'Começar' }).click()
   await expect(page).toHaveURL('/zen/articles/sleep-and-mood')
   await expect(page.getByRole('heading', { level: 1, name: 'Sono e humor' })).toBeVisible()
-  await expect(
-    page.getByText('Conteúdo educativo, não substitui acompanhamento profissional.'),
-  ).toBeVisible()
-  const references = page.getByRole('region', { name: 'Referências' })
-  await expect(references.getByRole('listitem')).toHaveCount(6)
-  await expect(references.getByRole('link', { name: 'nhs.uk' })).toHaveAttribute(
-    'href',
-    'https://www.nhs.uk/conditions/insomnia/',
-  )
+
+  const listen = page.getByRole('button', { name: 'Ouvir: Sono e humor' })
+  await expect(async () => {
+    await page.reload()
+    await expect(listen).toBeVisible({ timeout: 2000 })
+  }).toPass({ timeout: 90_000 })
+  await listen.click()
+  const player = page.getByRole('group', { name: 'Leitura em voz alta' })
+  await expect(player.getByRole('button', { name: 'Avançar 15 segundos' })).toBeVisible()
+  await expect(player.getByRole('button', { name: 'Velocidade: 1×' })).toBeVisible()
+  await player.getByRole('button', { name: 'Velocidade: 1×' }).click()
+  await expect(player.getByRole('button', { name: 'Velocidade: 1,1×' })).toBeVisible()
+
+  await expect(page.getByRole('list', { name: 'Fontes' })).toBeHidden()
+  await page.getByRole('button', { name: 'Fontes' }).click()
+  await expect(page.getByRole('list', { name: 'Fontes' }).getByRole('listitem')).toHaveCount(6)
 
   await page.getByRole('link', { name: 'Sono e descanso' }).click()
   await expect(page).toHaveURL('/zen/tracks/sleep-and-rest')
-  const reading = step(page, 'Ler: sono e humor')
+  await expect(page.getByText('0 de 5 passos feitos')).toBeVisible()
+  const reading = await openStep(page, 'Ler: sono e humor')
   await reading.getByRole('button', { name: 'Marcar como feito' }).click()
   await expect(reading.getByRole('button', { name: 'Feito' })).toHaveAttribute(
     'aria-pressed',
@@ -73,23 +83,21 @@ test('opens Zen from the tab, follows the suggested track, reads an article and 
   await expect(page.getByText('1 de 5 passos feitos')).toBeVisible()
 
   await page.reload()
-  await expect(step(page, 'Ler: sono e humor').getByRole('button', { name: 'Feito' })).toBeVisible()
+  await expect(step(page, 'Ler: sono e humor')).toContainText('Feito')
 
   await page.getByRole('link', { name: 'Zen Space' }).click()
-  await expect(forYou(page)).toContainText('1 de 5 passos')
-  await expect(forYou(page).getByRole('link', { name: 'Continuar a trilha' })).toBeVisible()
+  await expect(today(page).getByRole('heading', { name: 'Escrever no MyBook' })).toBeVisible()
+  await expect(today(page).getByRole('button', { name: 'Continuar' })).toBeVisible()
   await expect(
     page.getByRole('region', { name: 'Trilhas' }).getByRole('link', { name: /Sono e descanso/ }),
-  ).toContainText('1 de 5 passos')
+  ).toContainText('1 de 5')
 })
 
-test('guides the breathing exercise and opens a MyBook page from a prompt', async ({ page }) => {
+test('breathes for a minute and opens a MyBook page from a prompt', async ({ page }) => {
   await signInAsReadyPerson(page)
-  await page.goto('/zen/tracks/sleep-and-rest')
+  await page.goto('/zen')
 
-  await step(page, 'Respirar antes de deitar')
-    .getByRole('button', { name: 'Começar o exercício' })
-    .click()
+  await page.getByRole('button', { name: 'Respirar 1 min' }).click()
   const sheet = page.getByRole('dialog', { name: 'Respirar em quadrado' })
   await sheet.getByRole('button', { name: 'Começar' }).click()
   await expect(sheet.getByRole('status')).toHaveText('Inspire')
@@ -98,7 +106,11 @@ test('guides the breathing exercise and opens a MyBook page from a prompt', asyn
   await page.keyboard.press('Escape')
   await expect(sheet).toHaveCount(0)
 
-  await step(page, 'Escrever no MyBook').getByRole('button', { name: 'Escrever no MyBook' }).click()
+  await page.getByRole('link', { name: 'Sono', exact: true }).click()
+  await expect(page).toHaveURL('/zen/topics/sleep')
+  await page.getByRole('link', { name: /Sono e descanso/ }).click()
+  const writing = await openStep(page, 'Escrever no MyBook')
+  await writing.getByRole('button', { name: 'Escrever no MyBook', exact: true }).click()
 
   await expect(page).toHaveURL(/\/mybook\/[0-9a-f-]{36}$/)
   await expect(page.getByRole('textbox', { name: 'Texto da página' })).toContainText(
@@ -109,9 +121,10 @@ test('guides the breathing exercise and opens a MyBook page from a prompt', asyn
 test('answers the questionnaires again and sees the suggestion change', async ({ page }) => {
   await signInAsReadyPerson(page)
   await page.goto('/zen')
-  await expect(forYou(page).getByRole('heading', { name: 'Sono e descanso' })).toBeVisible()
+  await expect(today(page).getByRole('heading', { name: 'Sono e humor' })).toBeVisible()
 
-  await page.getByRole('link', { name: 'Refazer os questionários' }).click()
+  await today(page).getByRole('button', { name: 'Por que esta sugestão?' }).click()
+  await today(page).getByRole('link', { name: 'Refazer os questionários' }).click()
   await expect(page).toHaveURL('/questionnaires')
   await page.getByRole('button', { name: 'Começar' }).click()
   for (const [form, total, choice] of [
@@ -128,12 +141,62 @@ test('answers the questionnaires again and sees the suggestion change', async ({
   await page.getByRole('link', { name: 'Ver sugestões no Zen Space' }).click()
   await expect(page).toHaveURL('/zen')
 
-  await expect(forYou(page).getByRole('heading', { name: 'Ansiedade no dia a dia' })).toBeVisible()
   await expect(
-    forYou(page).getByRole('link', { name: 'O que é ansiedade, e o que não é' }),
+    today(page).getByRole('heading', { name: 'O que é ansiedade, e o que não é' }),
   ).toBeVisible()
-  await forYou(page).getByRole('button', { name: 'Por que estas sugestões?' }).click()
+  await today(page).getByRole('button', { name: 'Por que esta sugestão?' }).click()
   await expect(
-    forYou(page).getByText('O seu GAD-7 mais recente ficou na faixa moderada ou acima.'),
+    today(page).getByText('Seu GAD-7 mais recente ficou na faixa moderada ou acima.'),
   ).toBeVisible()
+})
+
+test('keeps help compact and one tap away when the results call for it', async ({ page }) => {
+  await signInAsReadyPerson(page, true)
+  await page.goto('/zen')
+
+  const panel = page.getByRole('region', { name: 'Ajuda agora' })
+  await expect(panel).toContainText('Seus resultados pedem atenção.')
+  await expect(panel.getByRole('link', { name: '188 CVV' })).toHaveAttribute('href', 'tel:188')
+  await expect(today(page).getByRole('heading', { name: 'Quando buscar ajuda' })).toBeVisible()
+
+  await page.getByRole('button', { name: 'Ajuda agora', exact: true }).click()
+  const sheet = page.getByRole('dialog', { name: 'Ajuda agora' })
+  await expect(sheet.getByRole('link', { name: /192/ })).toHaveAttribute('href', 'tel:192')
+  await sheet.getByRole('link', { name: 'Quando buscar ajuda' }).click()
+  await expect(page).toHaveURL('/zen/topics/help')
+})
+
+test('plays the background sound only after a tap and follows the sound chosen in settings', async ({
+  page,
+}) => {
+  await signInAsReadyPerson(page)
+  await expect(page.getByRole('button', { name: /Som de fundo/ })).toHaveCount(0)
+
+  await mainNavigation(page).getByRole('link', { name: 'Zen' }).click()
+  const sea = page.getByRole('button', { name: 'Som de fundo: Mar' })
+  await expect(sea).toHaveAttribute('aria-pressed', 'false')
+  await sea.click()
+  await expect(sea).toHaveAttribute('aria-pressed', 'true')
+  await page.getByRole('link', { name: 'Ansiedade', exact: true }).click()
+  await expect(page).toHaveURL('/zen/topics/anxiety')
+  await expect(sea).toHaveAttribute('aria-pressed', 'true')
+  await sea.click()
+  await expect(sea).toHaveAttribute('aria-pressed', 'false')
+
+  await page.goto('/me')
+  const settings = page.getByRole('region', { name: 'Som e voz' })
+  await settings.getByLabel('Qual som').selectOption('rain')
+  await settings.getByText('Em todo o app').click()
+  await expect(settings.getByText('Essas escolhas ficam salvas só neste aparelho.')).toBeVisible()
+
+  await page.goto('/today')
+  await expect(page.getByRole('button', { name: 'Som de fundo: Chuva' })).toBeVisible()
+  await page.goto('/zen')
+  await expect(page.getByRole('button', { name: 'Som de fundo: Chuva' })).toBeVisible()
+
+  await page.goto('/me')
+  await page.getByRole('region', { name: 'Som e voz' }).getByText('Desligado').click()
+  await page.goto('/zen')
+  await expect(page.getByRole('heading', { level: 1, name: 'Zen Space' })).toBeVisible()
+  await expect(page.getByRole('button', { name: /Som de fundo/ })).toHaveCount(0)
 })

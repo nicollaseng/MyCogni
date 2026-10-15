@@ -60,7 +60,7 @@ test.describe('switching tabs', () => {
     await openTab(
       'Zen',
       '/zen',
-      page.getByText('Conteúdo educativo, não substitui acompanhamento profissional.'),
+      page.getByText('Conteúdo educativo. Não substitui acompanhamento profissional.'),
     )
     await openTab(
       'Hoje',
