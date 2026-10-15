@@ -7,6 +7,6 @@ describe('check-in limits', () => {
   })
 
   it('keeps tags and notes within a size a person actually writes', () => {
-    expect(checkInLimits).toEqual({ tags: 12, tagLength: 40, note: 2000 })
+    expect(checkInLimits).toEqual({ tags: 12, tagLength: 40, note: 2000, addendum: 1000 })
   })
 })
