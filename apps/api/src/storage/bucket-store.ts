@@ -1,6 +1,7 @@
 import { z } from 'zod'
 
 export interface BucketStore {
+  upload(path: string, content: Uint8Array, contentType: string): Promise<void>
   sign(paths: readonly string[]): Promise<Record<string, string>>
   remove(paths: readonly string[]): Promise<void>
   removeFolder(folder: string): Promise<void>
@@ -75,6 +76,16 @@ export function createBucketStore({
   }
 
   return {
+    async upload(path, content, contentType) {
+      const response = await fetch(`${base}/object/${bucket}/${path}`, {
+        method: 'POST',
+        headers: { ...headers, 'content-type': contentType, 'x-upsert': 'false' },
+        body: new Blob([content], { type: contentType }),
+      })
+      if (!response.ok) {
+        throw new Error(`Storage refused to store the ${bucket} file: ${String(response.status)}`)
+      }
+    },
     async sign(paths) {
       const unique = [...new Set(paths)]
       if (unique.length === 0) {

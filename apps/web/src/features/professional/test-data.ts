@@ -2,7 +2,9 @@ import type {
   ActivityDay,
   PatientSummary,
   ProfessionalAlert,
+  ProfessionalDocument,
   ProfessionalOverview,
+  ProfessionalProfile,
   ScreeningSummary,
   SentInvitation,
 } from '@mycogni/contracts'
@@ -99,6 +101,36 @@ export function alert(overrides: Partial<ProfessionalAlert> = {}): ProfessionalA
     createdAt: '2026-10-15T12:00:00Z',
     acknowledgedAt: null,
     resolvedAt: null,
+    ...overrides,
+  }
+}
+
+export function registrationDocument(
+  overrides: Partial<ProfessionalDocument> = {},
+): ProfessionalDocument {
+  return {
+    id: nextId(),
+    fileName: 'Carteira CRP.pdf',
+    contentType: 'application/pdf',
+    sizeBytes: 120 * 1024,
+    createdAt: '2026-10-15T12:00:00Z',
+    ...overrides,
+  }
+}
+
+export function professionalProfile(
+  overrides: Partial<ProfessionalProfile> = {},
+): ProfessionalProfile {
+  return {
+    kind: 'psychologist',
+    fullName: 'Helena Prado',
+    registration: 'CRP 06/123456',
+    status: 'pending',
+    reviewNote: null,
+    createdAt: '2026-10-14T12:00:00Z',
+    verifiedAt: null,
+    reviewedAt: null,
+    document: null,
     ...overrides,
   }
 }

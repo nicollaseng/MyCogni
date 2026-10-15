@@ -32,3 +32,9 @@ export const updateProfileSchema = z.object({
 })
 
 export type UpdateProfileInput = z.infer<typeof updateProfileSchema>
+
+export const providerPhotoStatuses = ['imported', 'skipped', 'unavailable'] as const
+
+export const providerPhotoImportSchema = z.object({ status: z.enum(providerPhotoStatuses) })
+
+export type ProviderPhotoImport = z.infer<typeof providerPhotoImportSchema>

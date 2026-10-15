@@ -21,8 +21,10 @@ import {
 } from '@/shared/lib/api/care'
 import { grantConsents } from '@/shared/lib/api/resources'
 import { forgetContinuePath } from '@/shared/lib/auth/continue-path'
+import { createSupabaseServerClient } from '@/shared/lib/supabase/server'
 import { joinIssues, professionalConsentKinds, registrationInput, type JoinValues } from './join'
 import type { InviteInput } from './invites'
+import { photoStepFlag } from './onboarding'
 
 const invitationId = z.uuid()
 
@@ -104,4 +106,16 @@ export async function renameProfessional(fullName: string): Promise<ActionResult
     revalidatePath('/pro', 'layout')
     return updated.fullName
   }, t('error'))
+}
+
+export async function finishPhotoStep(): Promise<ActionResult<null>> {
+  const t = await getTranslations('verification.photo')
+  const supabase = await createSupabaseServerClient('read-write')
+  const { error } = await supabase.auth.updateUser({ data: { [photoStepFlag]: true } })
+  if (error !== null) {
+    console.error(error)
+    return failure(t('failed'))
+  }
+  revalidatePath('/pro', 'layout')
+  return { ok: true, value: null }
 }

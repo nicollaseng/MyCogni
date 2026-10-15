@@ -4,6 +4,7 @@ import { createSupabaseAccountAdmin } from '../../src/auth/account-admin.ts'
 import { createSupabaseTokenVerifier, type TokenVerifier } from '../../src/auth/token-verifier.ts'
 import { loadConfig, type AppConfig } from '../../src/config/env.ts'
 import type { Database } from '../../src/db/client.ts'
+import type { Fetcher } from '../../src/modules/profile/photo-download.ts'
 import { UnauthorizedError } from '../../src/shared/errors.ts'
 import type { App } from '../../src/shared/http.ts'
 import { createJournalImageStore } from '../../src/storage/journal-images.ts'
@@ -33,9 +34,13 @@ export function supabaseVerifier(): TokenVerifier {
   return createSupabaseTokenVerifier(testConfig.supabaseUrl)
 }
 
+export const offlineFetcher: Fetcher = () =>
+  Promise.reject(new Error('Tests do not reach the network'))
+
 interface TestAppOptions {
   db: Database
   verifier?: TokenVerifier
+  photoFetcher?: Fetcher
   config?: AppConfig
   assistantModel?: AssistantModel | null
   logStream?: { write(line: string): void }
@@ -44,6 +49,7 @@ interface TestAppOptions {
 export function buildTestApp({
   db,
   verifier = rejectingVerifier,
+  photoFetcher = offlineFetcher,
   config = testConfig,
   assistantModel = null,
   logStream,
@@ -55,6 +61,7 @@ export function buildTestApp({
     accountAdmin: createSupabaseAccountAdmin(testConfig.supabaseUrl, testConfig.supabaseSecretKey),
     journalImages: createJournalImageStore(testConfig.supabaseUrl, testConfig.supabaseSecretKey),
     profileFiles: createProfileFileStores(testConfig.supabaseUrl, testConfig.supabaseSecretKey),
+    photoFetcher,
     supportAttachments: createSupportAttachmentStore(
       testConfig.supabaseUrl,
       testConfig.supabaseSecretKey,

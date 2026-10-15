@@ -1,12 +1,38 @@
 import type { VerificationMessages } from '../pt-BR/verification'
 
 export const verification: VerificationMessages = {
+  steps: {
+    title: 'Registo profissional',
+    progress: 'Passo {current} de {total}',
+    back: 'Voltar ao registo',
+    done: 'concluído',
+    names: {
+      document: 'Comprovativo',
+      photo: 'Fotografia de perfil',
+      review: 'Em análise',
+    },
+    hints: {
+      photo: 'Opcional. Aparece aos seus pacientes.',
+      review: 'A equipa MyCogniAI confirma tudo antes de disponibilizar os convites.',
+    },
+  },
   start: {
-    kicker: 'Último passo do registo',
     title: 'Envie o comprovativo da sua inscrição.',
     lead: 'Confirmamos cada profissional antes de disponibilizar os convites. O registo entra em análise assim que recebermos o comprovativo.',
-    photo: 'Fotografia de perfil',
-    photoHint: 'Opcional. Aparece aos seus pacientes e na página dos seus convites.',
+  },
+  photo: {
+    title: 'Adicione uma fotografia ao seu perfil.',
+    lead: 'É opcional. A fotografia aparece junto ao seu nome na página dos seus convites e aos pacientes que acompanha.',
+    received: 'Comprovativo recebido. A análise já começou.',
+    add: 'Adicionar fotografia',
+    skip: 'Saltar por agora',
+    continue: 'Continuar',
+    saving: 'A guardar…',
+    later: 'Pode alterar ou remover a fotografia quando quiser, nas Definições.',
+    failed: 'Não foi possível continuar agora. Tente novamente dentro de instantes.',
+  },
+  review: {
+    settings: 'Para alterar a fotografia ou o comprovativo, abra as <link>Definições</link>.',
   },
   proofs: {
     crp: {
@@ -24,8 +50,10 @@ export const verification: VerificationMessages = {
   },
   upload: {
     choose: 'Escolher ficheiro',
-    another: 'Escolher outro ficheiro',
+    drop: 'ou arraste o ficheiro para aqui',
     formats: 'PDF, JPG ou PNG, até 10 MB.',
+    replace: 'Substituir',
+    remove: 'Remover',
     send: 'Enviar comprovativo',
     sending: 'A enviar…',
     sent: 'Comprovativo enviado. Vamos analisá-lo em breve.',

@@ -21,3 +21,15 @@ export async function createAuthUser(
 export async function deleteAuthUsers(db: Database, ids: string[]): Promise<void> {
   await db.delete(authUsers).where(inArray(authUsers.id, ids))
 }
+
+export async function addGoogleIdentity(
+  db: Database,
+  userId: string,
+  picture: string,
+): Promise<void> {
+  const subject = randomUUID()
+  const data = JSON.stringify({ sub: subject, avatar_url: picture, picture, email_verified: true })
+  await db.execute(
+    sql`insert into auth.identities (provider_id, user_id, identity_data, provider, created_at, updated_at) values (${subject}, ${userId}, ${data}::jsonb, 'google', now(), now())`,
+  )
+}

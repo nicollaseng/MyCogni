@@ -96,8 +96,11 @@ export const care: CareMessages = {
     meta: { title: 'Invitations' },
     title: 'Invitations',
     description: 'Invitations from professionals to follow your entries.',
-    empty:
-      'You haven’t received any invitations yet. When a professional invites you, the invitation shows up here and in your notifications.',
+    empty: {
+      title: 'You haven’t received any invitations yet.',
+      description:
+        'When a professional invites you, the invitation shows up here and in your notifications.',
+    },
     groups: {
       pending: 'Waiting for your answer',
       accepted: 'Accepted',
