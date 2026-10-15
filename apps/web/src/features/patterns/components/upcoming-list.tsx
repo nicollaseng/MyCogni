@@ -8,7 +8,7 @@ function Progress({ status }: { status: SectionStatus }) {
 
   if (status.state === 'progress') {
     return (
-      <span className="flex shrink-0 items-center gap-2.5 text-sm text-muted-foreground">
+      <span className="flex items-center gap-2.5 text-sm text-muted-foreground">
         <span aria-hidden className="block h-1.5 w-12 rounded-xs bg-foreground/[0.08]">
           <span
             className="block h-full rounded-xs bg-emphasis"
@@ -21,7 +21,7 @@ function Progress({ status }: { status: SectionStatus }) {
   }
   if (status.state === 'blocked' && status.reason === 'disabled') {
     return (
-      <span className="shrink-0 text-sm text-muted-foreground">
+      <span className="text-sm text-muted-foreground">
         {t('disabled')} ·{' '}
         <Link href="/me" className="text-foreground underline decoration-1 underline-offset-4">
           {t('enable')}
@@ -29,7 +29,7 @@ function Progress({ status }: { status: SectionStatus }) {
       </span>
     )
   }
-  return <span className="shrink-0 text-sm text-muted-foreground">{t('contexts')}</span>
+  return <span className="text-sm text-muted-foreground">{t('contexts')}</span>
 }
 
 export function UpcomingList({ statuses }: { statuses: readonly SectionStatus[] }) {
@@ -38,12 +38,12 @@ export function UpcomingList({ statuses }: { statuses: readonly SectionStatus[] 
   return (
     <Section title={t('title')}>
       <Panel className="py-4">
-        <ul className="space-y-3.5">
+        <ul className="grid gap-y-4 sm:grid-cols-[minmax(0,1fr)_auto] sm:gap-x-8 sm:gap-y-3.5">
           {statuses.map((status) => (
             <li
               key={status.section}
               data-section={status.section}
-              className="flex flex-wrap items-center justify-between gap-x-4 gap-y-1"
+              className="grid gap-y-1.5 sm:col-span-2 sm:grid-cols-subgrid sm:items-center"
             >
               <span className="text-[15px]">{t(`sections.${status.section}`)}</span>
               <Progress status={status} />

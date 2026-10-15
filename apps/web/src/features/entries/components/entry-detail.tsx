@@ -5,7 +5,7 @@ import { useId, type ReactNode } from 'react'
 import { useCatalogLabels } from '@/features/check-in/use-catalog-labels'
 import { MoodMap } from '@/features/mood/components/mood-map'
 import { isMoodLevel, moodKeyOf, valenceOf } from '@/features/mood/mood-levels'
-import { Panel } from '@/shared/components/section'
+import { bindShortWords } from '@/shared/lib/text'
 import { formatDayTitle, formatTime } from '@/shared/lib/time'
 import type { EntriesHref } from '../filters'
 
@@ -73,32 +73,32 @@ export function EntryDetail({ checkIn, timeZone, back, children }: EntryDetailPr
 
       <header className="flex items-center gap-5 sm:gap-8">
         <MoodMap valence={valenceOf(level)} rings={9} className="size-28 shrink-0 sm:size-36" />
-        <div className="min-w-0 space-y-2">
+        <div className="min-w-0 space-y-1.5">
           <h1 className="font-serif text-[34px] leading-[1.08] tracking-[-0.02em] sm:text-[42px]">
             {mood(moodKeyOf(level))}
           </h1>
           <p className="text-muted-foreground">
             <time dateTime={checkIn.recordedAt}>
-              {formatDayTitle(recordedAt, timeZone, locale)} ·{' '}
-              {formatTime(recordedAt, timeZone, locale)}
+              <span className="block">{formatDayTitle(recordedAt, timeZone, locale)}</span>
+              <span className="block">{formatTime(recordedAt, timeZone, locale)}</span>
             </time>
           </p>
         </div>
       </header>
 
       {hasDetails && (
-        <Panel className="space-y-6 py-5">
+        <div className="space-y-6">
           <TagList title={t('emotions')} tags={checkIn.emotions.map(labels.emotion)} />
           <TagList title={t('contexts')} tags={checkIn.contexts.map(labels.context)} />
           {checkIn.note !== null && (
             <div className="space-y-1">
               <h2 className="text-sm text-muted-foreground">{t('note')}</h2>
               <p className="font-serif text-[19px] leading-relaxed text-pretty whitespace-pre-line">
-                {checkIn.note}
+                {bindShortWords(checkIn.note)}
               </p>
             </div>
           )}
-        </Panel>
+        </div>
       )}
 
       {children}

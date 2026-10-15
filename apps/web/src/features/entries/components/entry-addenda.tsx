@@ -8,6 +8,7 @@ import { SafetyNotice } from '@/features/safety/components/safety-notice'
 import type { SafetyPrompt } from '@/features/safety/model'
 import { unlessOutdated } from '@/shared/lib/actions/outdated'
 import type { ActionResult } from '@/shared/lib/actions/result'
+import { bindShortWords } from '@/shared/lib/text'
 import { formatDayMonth, formatTime } from '@/shared/lib/time'
 import { Button } from '@/shared/ui/button'
 import type { SavedAddendum } from '../actions'
@@ -78,7 +79,7 @@ export function EntryAddenda({ addenda, timeZone, append }: EntryAddendaProps) {
                     </time>
                   </p>
                   <p className="font-serif text-[17px] leading-relaxed text-pretty whitespace-pre-line">
-                    {addendum.text}
+                    {bindShortWords(addendum.text)}
                   </p>
                 </li>
               )
