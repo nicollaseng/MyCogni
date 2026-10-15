@@ -71,6 +71,10 @@ describe('RetakeFlow', () => {
       'Igual a 1 de outubro',
     )
     expect(screen.getByRole('link', { name: 'Voltar ao perfil' })).toHaveAttribute('href', '/me')
+    expect(screen.getByRole('link', { name: 'Ver sugestões no Zen Space' })).toHaveAttribute(
+      'href',
+      '/zen',
+    )
   })
 
   it('keeps comparing with the answers from before the flow, even after the page refreshes', async () => {
