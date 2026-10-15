@@ -17,6 +17,7 @@ export function toProfile(record: ProfileRecord, user: AuthenticatedUser): Profi
     avatarPath: record.avatarPath,
     timezone: record.timezone,
     locale: isLocale(record.locale) ? record.locale : null,
+    journalInInsights: record.journalInInsights,
     onboardingCompletedAt: record.onboardingCompletedAt?.toISOString() ?? null,
   }
 }
@@ -26,6 +27,9 @@ function toChanges(input: UpdateProfileInput): ProfileChanges {
     ...(input.displayName === undefined ? {} : { displayName: input.displayName }),
     ...(input.timezone === undefined ? {} : { timezone: input.timezone }),
     ...(input.locale === undefined ? {} : { locale: input.locale }),
+    ...(input.journalInInsights === undefined
+      ? {}
+      : { journalInInsights: input.journalInInsights }),
     ...(input.avatarPath === undefined ? {} : { avatarPath: input.avatarPath }),
   }
 }

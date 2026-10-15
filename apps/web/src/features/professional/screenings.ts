@@ -13,7 +13,3 @@ export function latestScreenings(screenings: readonly ScreeningSummary[]): Lates
   }
   return latest
 }
-
-export function needsAttention(screenings: readonly ScreeningSummary[]): boolean {
-  return latestScreenings(screenings).phq9?.hasRiskFlag === true
-}

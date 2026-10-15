@@ -6,6 +6,7 @@ import type {
   CreateCheckInInput,
 } from '@mycogni/contracts'
 import type { AuthenticatedUser } from '../../auth/token-verifier.ts'
+import type { JobScheduler } from '../../jobs/scheduler.ts'
 import type {
   CheckInFilter as RecordFilter,
   CheckInRecord,
@@ -30,7 +31,10 @@ function recordFilterOf({ since, ...filter }: CheckInFilter): RecordFilter {
   return { ...filter, since: optionalDate(since) }
 }
 
-export function createCheckInService(repository: CheckInRepository): CheckInService {
+export function createCheckInService(
+  repository: CheckInRepository,
+  jobs: JobScheduler,
+): CheckInService {
   return {
     async record(user, input) {
       const record = await repository.create(user.id, {
@@ -39,6 +43,7 @@ export function createCheckInService(repository: CheckInRepository): CheckInServ
         contexts: [...new Set(input.contexts)],
         note: input.note === null || input.note === '' ? null : input.note,
       })
+      await jobs.checkInRecorded(user.id)
       return toCheckIn(record)
     },
     async list(user, { before, limit, ...filter }) {

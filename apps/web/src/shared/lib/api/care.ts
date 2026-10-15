@@ -9,6 +9,7 @@ import {
   patientSummaryListSchema,
   patientSummarySchema,
   professionalForReviewListSchema,
+  professionalOverviewSchema,
   professionalProfileSchema,
   receivedInvitationListSchema,
   receivedInvitationSchema,
@@ -24,11 +25,13 @@ import {
   type NotificationList,
   type PatientSummary,
   type ProfessionalForReview,
+  type ProfessionalOverview,
   type ProfessionalProfile,
   type ReceivedInvitation,
   type RegisterProfessionalInput,
   type ReviewProfessionalInput,
   type SentInvitation,
+  type UpdateProfessionalInput,
 } from '@mycogni/contracts'
 import type { Locale, ProfessionalStatus } from '@mycogni/domain'
 import { cache } from 'react'
@@ -150,6 +153,15 @@ export function registerProfessional(
   })
 }
 
+export function updateProfessional(body: UpdateProfessionalInput): Promise<ProfessionalProfile> {
+  return apiRequest({
+    path: '/v1/professional',
+    schema: professionalProfileSchema,
+    method: 'PATCH',
+    body,
+  })
+}
+
 export function createInvitation(body: CreateInvitationInput): Promise<CreatedInvitation> {
   return apiRequest({
     path: '/v1/invitations',
@@ -178,6 +190,10 @@ export async function cancelInvitation(id: string): Promise<void> {
 
 export function fetchSentInvitations(): Promise<SentInvitation[]> {
   return apiRequest({ path: '/v1/invitations/sent', schema: sentInvitationListSchema })
+}
+
+export function fetchProfessionalOverview(): Promise<ProfessionalOverview> {
+  return apiRequest({ path: '/v1/professional/overview', schema: professionalOverviewSchema })
 }
 
 export function fetchPatients(): Promise<PatientSummary[]> {

@@ -130,6 +130,7 @@ export const care: CareMessages = {
       professional: 'Mensagem de um profissional',
       marketing: 'Novidades do MyCogniAI',
       system: 'Aviso do MyCogniAI',
+      insight: 'O seu resumo da semana está pronto.',
     },
   },
   bell: {

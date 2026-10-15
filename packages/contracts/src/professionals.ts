@@ -26,3 +26,9 @@ export const professionalProfileSchema = z.object({
 })
 
 export type ProfessionalProfile = z.infer<typeof professionalProfileSchema>
+
+export const updateProfessionalSchema = z
+  .object({ fullName: z.string().trim().min(3).max(120) })
+  .strict()
+
+export type UpdateProfessionalInput = z.infer<typeof updateProfessionalSchema>

@@ -1,10 +1,11 @@
 import type { PatientSummary } from '@mycogni/contracts'
 import Link from 'next/link'
 import { useLocale, useTranslations } from 'next-intl'
-import { PageTitle } from '@/shared/components/page-title'
-import { formatDate } from '../dates'
+import { formatDate, formatShortDate } from '../dates'
 import { latestScreenings } from '../screenings'
-import { RiskMarker } from './risk-marker'
+import { AlertIcon, BackIcon } from './icons'
+import { AttentionReasons } from './patient-cells'
+import { WorkspaceHeader } from './workspace'
 
 interface PatientHeaderProps {
   patient: PatientSummary
@@ -15,27 +16,43 @@ export function PatientHeader({ patient, timeZone }: PatientHeaderProps) {
   const t = useTranslations('professional')
   const locale = useLocale()
   const flagged = latestScreenings(patient.screenings).phq9
-  const format = (value: string) => formatDate(new Date(value), timeZone, locale)
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       <Link
-        href="/pro"
-        className="inline-flex items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground"
+        href="/pro/patients"
+        className="-ml-1 inline-flex items-center gap-1 rounded-[4px] py-1 pr-2 text-sm text-muted-foreground transition-colors hover:text-foreground"
       >
-        <span aria-hidden>←</span>
+        <BackIcon className="size-4" />
         {t('patient.back')}
       </Link>
-      <PageTitle kicker={t('patient.kicker')} title={patient.name ?? t('patients.unnamed')} />
-      <div className="max-w-[40rem] space-y-1 leading-relaxed text-muted-foreground">
-        <p>{t('patient.since', { date: format(patient.startedAt) })}</p>
-        <p>{patient.sharesHistory ? t('patient.withHistory') : t('patient.fromLink')}</p>
-      </div>
+      <WorkspaceHeader
+        kicker={t('patient.kicker')}
+        title={patient.name ?? t('patients.unnamed')}
+        description={
+          <p>
+            {t('patient.since', {
+              date: formatShortDate(new Date(patient.startedAt), timeZone, locale),
+            })}
+            <span aria-hidden> · </span>
+            <span className="sr-only">. </span>
+            {patient.sharesHistory ? t('patient.withHistory') : t('patient.fromLink')}
+          </p>
+        }
+      >
+        {patient.attention.length > 0 && (
+          <div className="pt-2">
+            <AttentionReasons reasons={patient.attention} />
+          </div>
+        )}
+      </WorkspaceHeader>
       {flagged?.hasRiskFlag === true && (
-        <div className="max-w-[40rem] space-y-2 rounded-[18px] bg-danger/[0.07] px-5 py-4">
-          <RiskMarker className="bg-transparent px-0 py-0" />
+        <div className="flex max-w-3xl gap-3 rounded-[8px] bg-(--warn-soft) px-4 py-3.5">
+          <AlertIcon className="mt-0.5 text-(--warn)" />
           <p className="leading-relaxed">
-            {t('risk.detail', { date: format(flagged.completedAt) })}
+            {t('risk.detail', {
+              date: formatDate(new Date(flagged.completedAt), timeZone, locale),
+            })}
           </p>
         </div>
       )}

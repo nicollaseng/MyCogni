@@ -1,0 +1,1 @@
+CREATE POLICY "professional_profiles_update_own_name" ON "professional_profiles" AS PERMISSIVE FOR UPDATE TO "authenticated" USING ("professional_profiles"."user_id" = (select auth.uid())) WITH CHECK ("professional_profiles"."user_id" = (select auth.uid()));

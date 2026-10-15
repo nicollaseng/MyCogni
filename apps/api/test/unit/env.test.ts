@@ -21,6 +21,8 @@ describe('loadConfig', () => {
       supabaseSecretKey: required.SUPABASE_SECRET_KEY,
       webUrl: 'http://localhost:3000',
       mail: { provider: 'none' },
+      redisUrl: null,
+      anthropicApiKey: null,
     })
   })
 

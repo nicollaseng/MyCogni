@@ -19,6 +19,15 @@ export {
   type AssessmentScore,
 } from './assessments/scoring.ts'
 export {
+  attentionReasons,
+  attentionReasonsOf,
+  inactiveAfterDays,
+  lowMoodAverage,
+  moodDropPoints,
+  type AttentionReason,
+  type AttentionSignals,
+} from './care/attention.ts'
+export {
   effectiveStatus,
   generateInvitationCode,
   invitationChannels,
@@ -88,6 +97,15 @@ export {
   type JournalShareScope,
   type ShareWindow,
 } from './journal/journal.ts'
+export {
+  insightAttentionLevels,
+  insightAudiences,
+  insightCheckInThreshold,
+  insightLookbackDays,
+  isInsightDue,
+  type InsightAttention,
+  type InsightAudience,
+} from './insights/insights.ts'
 export { isOnboardingReady, type OnboardingProgress } from './onboarding/onboarding.ts'
 export { consistencyOf, type Consistency } from './patterns/consistency.ts'
 export { averageOf, moodDays, weekdayOf, type MoodDay } from './patterns/days.ts'

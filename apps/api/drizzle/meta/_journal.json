@@ -141,6 +141,27 @@
       "when": 1792071192906,
       "tag": "0019_journal_bucket_and_grants",
       "breakpoints": true
+    },
+    {
+      "idx": 20,
+      "version": "7",
+      "when": 1792073196504,
+      "tag": "0020_create_insights",
+      "breakpoints": true
+    },
+    {
+      "idx": 21,
+      "version": "7",
+      "when": 1792075093785,
+      "tag": "0021_allow_professional_name_update",
+      "breakpoints": true
+    },
+    {
+      "idx": 22,
+      "version": "7",
+      "when": 1792075094194,
+      "tag": "0022_grant_professional_name_update",
+      "breakpoints": true
     }
   ]
 }

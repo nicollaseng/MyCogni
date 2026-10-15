@@ -37,5 +37,11 @@ export const professionalProfiles = pgTable(
       to: authenticatedRole,
       withCheck: sql`${table.userId} = ${authUid} and ${table.status} = 'pending' and ${table.verifiedAt} is null`,
     }),
+    pgPolicy('professional_profiles_update_own_name', {
+      for: 'update',
+      to: authenticatedRole,
+      using: sql`${table.userId} = ${authUid}`,
+      withCheck: sql`${table.userId} = ${authUid}`,
+    }),
   ],
 ).enableRLS()

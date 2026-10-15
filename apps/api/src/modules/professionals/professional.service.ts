@@ -1,4 +1,8 @@
-import type { ProfessionalProfile, RegisterProfessionalInput } from '@mycogni/contracts'
+import type {
+  ProfessionalProfile,
+  RegisterProfessionalInput,
+  UpdateProfessionalInput,
+} from '@mycogni/contracts'
 import type { AuthenticatedUser } from '../../auth/token-verifier.ts'
 import { ConflictError, NotFoundError } from '../../shared/errors.ts'
 import type { ProfessionalRecord, ProfessionalRepository } from './professional.repository.ts'
@@ -6,6 +10,7 @@ import type { ProfessionalRecord, ProfessionalRepository } from './professional.
 export interface ProfessionalService {
   get(user: AuthenticatedUser): Promise<ProfessionalProfile>
   register(user: AuthenticatedUser, input: RegisterProfessionalInput): Promise<ProfessionalProfile>
+  rename(user: AuthenticatedUser, input: UpdateProfessionalInput): Promise<ProfessionalProfile>
 }
 
 function toProfessional(record: ProfessionalRecord): ProfessionalProfile {
@@ -29,6 +34,13 @@ export function createProfessionalService(repository: ProfessionalRepository): P
       const record = await repository.create(user.id, input)
       if (record === undefined) {
         throw new ConflictError('Professional profile already exists')
+      }
+      return toProfessional(record)
+    },
+    async rename(user, input) {
+      const record = await repository.rename(user.id, input.fullName)
+      if (record === undefined) {
+        throw new NotFoundError('Professional profile not found')
       }
       return toProfessional(record)
     },
