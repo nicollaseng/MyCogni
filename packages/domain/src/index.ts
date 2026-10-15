@@ -188,5 +188,7 @@ export {
   avatarTypes,
   isAvatarType,
   isOwnAvatarPath,
+  sniffAvatarType,
   type AvatarType,
 } from './profile/photos.ts'
+export { googlePhotoUrl, isGooglePhotoHost } from './profile/provider-photos.ts'
