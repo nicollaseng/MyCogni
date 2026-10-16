@@ -12,10 +12,11 @@ import { signOut } from '@/features/auth/actions'
 import { chooseLocale } from '@/features/locale/actions'
 import { LocaleSelect } from '@/features/locale/components/locale-select'
 import { requireProfessional } from '@/features/professional/access'
-import { renameProfessional } from '@/features/professional/actions'
+import { renameProfessional, saveEmergencyWhatsapp } from '@/features/professional/actions'
 import { DocumentReplace } from '@/features/professional/components/document-replace'
 import { DocumentSummary } from '@/features/professional/components/document-summary'
 import { DocumentUpload } from '@/features/professional/components/document-upload'
+import { EmergencyWhatsappForm } from '@/features/professional/components/emergency-whatsapp-form'
 import { ProfessionalNameForm } from '@/features/professional/components/professional-name-form'
 import { BackIcon, SignOutIcon } from '@/features/professional/components/icons'
 import { TeamNote } from '@/features/professional/components/team-note'
@@ -126,6 +127,15 @@ export default async function ProfessionalSettingsPage() {
           </div>
           <SettingsRow label={t('profile.name')} value={professional.fullName}>
             <ProfessionalNameForm initialName={professional.fullName} rename={renameProfessional} />
+          </SettingsRow>
+          <SettingsRow
+            label={t('whatsapp.label')}
+            value={professional.emergencyWhatsapp ?? t('whatsapp.empty')}
+          >
+            <EmergencyWhatsappForm
+              initial={professional.emergencyWhatsapp}
+              save={saveEmergencyWhatsapp}
+            />
           </SettingsRow>
           <ReadOnlyRow
             label={t('profile.kind')}

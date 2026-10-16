@@ -1,4 +1,5 @@
 import {
+  emergencyWhatsappSchema,
   professionalProfileSchema,
   registerProfessionalSchema,
   submitProfessionalDocumentSchema,
@@ -32,6 +33,14 @@ export function professionalRoutes(service: ProfessionalService): FastifyPluginC
         schema: { body: updateProfessionalSchema, response: { 200: professionalProfileSchema } },
       },
       (request) => service.rename(currentUser(request), request.body),
+    )
+    app.put(
+      '/professional/emergency-whatsapp',
+      {
+        config: forProfessionals,
+        schema: { body: emergencyWhatsappSchema, response: { 200: professionalProfileSchema } },
+      },
+      (request) => service.setEmergencyWhatsapp(currentUser(request), request.body),
     )
     app.post(
       '/professional/documents',

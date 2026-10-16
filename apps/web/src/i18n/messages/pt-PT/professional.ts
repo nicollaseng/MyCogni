@@ -280,6 +280,19 @@ export const professional: ProfessionalMessages = {
       locked:
         'A profissão e a inscrição são confirmadas pela equipa MyCogniAI. Para as alterar, escreva para <link>{email}</link>.',
     },
+    whatsapp: {
+      label: 'WhatsApp para emergências',
+      empty: 'Não indicado',
+      countryCode: 'Indicativo do país',
+      number: 'Número',
+      placeholder: '912 345 678',
+      hint: 'Aparece aos seus pacientes apenas quando a app identifica risco. Use um número que acompanha.',
+      save: 'Guardar número',
+      saving: 'A guardar…',
+      clear: 'Remover número',
+      invalid: 'Confirme o número e o indicativo do país.',
+      error: 'Não foi possível guardar agora. Tente novamente dentro de instantes.',
+    },
     account: {
       title: 'Conta',
     },

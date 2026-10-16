@@ -25,6 +25,7 @@ export interface ProfessionalRecord {
   createdAt: Date
   verifiedAt: Date | null
   reviewedAt: Date | null
+  emergencyWhatsapp: string | null
   document: ProfessionalDocumentRecord | null
 }
 
@@ -52,6 +53,10 @@ export interface ProfessionalRepository {
   find(userId: string): Promise<ProfessionalRecord | undefined>
   create(userId: string, professional: NewProfessional): Promise<ProfessionalRecord | undefined>
   rename(userId: string, fullName: string): Promise<ProfessionalRecord | undefined>
+  setEmergencyWhatsapp(
+    userId: string,
+    emergencyWhatsapp: string | null,
+  ): Promise<ProfessionalRecord | undefined>
   submitDocument(
     userId: string,
     document: NewProfessionalDocument,
@@ -67,6 +72,7 @@ const columns = {
   createdAt: professionalProfiles.createdAt,
   verifiedAt: professionalProfiles.verifiedAt,
   reviewedAt: professionalProfiles.reviewedAt,
+  emergencyWhatsapp: sql<string | null>`public.own_emergency_whatsapp()`,
 }
 
 export const documentColumns = {
@@ -131,6 +137,16 @@ export function createProfessionalRepository(db: Database): ProfessionalReposito
           .set({ fullName })
           .where(eq(professionalProfiles.userId, userId))
           .returning(columns)
+        return withLatestDocument(tx, userId, row)
+      })
+    },
+    setEmergencyWhatsapp(userId, emergencyWhatsapp) {
+      return withUser(db, userId, async (tx) => {
+        await tx
+          .update(professionalProfiles)
+          .set({ emergencyWhatsapp })
+          .where(eq(professionalProfiles.userId, userId))
+        const [row] = await current(tx, userId)
         return withLatestDocument(tx, userId, row)
       })
     },

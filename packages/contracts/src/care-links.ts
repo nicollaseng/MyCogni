@@ -6,7 +6,7 @@ const timestamp = z.iso.datetime({ offset: true })
 
 export const careLinkSchema = z.object({
   id: z.uuid(),
-  professional: linkedProfessionalSchema,
+  professional: linkedProfessionalSchema.extend({ emergencyWhatsapp: z.string().nullable() }),
   sharesHistory: z.boolean(),
   startedAt: timestamp,
   consentVersion: z.string(),

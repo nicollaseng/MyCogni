@@ -2,14 +2,15 @@ import type { AssistantMessage } from '@mycogni/contracts'
 import type { AssistantMode } from '@mycogni/domain'
 import { useTranslations } from 'next-intl'
 import { cn } from '@/shared/lib/utils'
-import { paragraphsOf, showsCrisisCard, type SupportContact } from '../model'
+import type { LinkedProfessional } from '@/shared/lib/emergency-contacts'
+import { paragraphsOf, showsCrisisCard } from '../model'
 import { SupportCard } from './support-card'
 
 interface MessageListProps {
   messages: readonly AssistantMessage[]
   pending: boolean
   mode: AssistantMode
-  contacts: readonly SupportContact[]
+  contacts: readonly LinkedProfessional[]
 }
 
 const bubbles = {

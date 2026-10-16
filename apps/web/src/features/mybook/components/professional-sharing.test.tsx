@@ -17,6 +17,7 @@ const link: CareLink = {
     kind: 'psychologist',
     registration: 'CRP 06/123456',
     photoUrl: null,
+    emergencyWhatsapp: null,
   },
   sharesHistory: false,
   startedAt: '2026-10-01T15:00:00.000Z',

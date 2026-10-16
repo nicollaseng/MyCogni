@@ -6,6 +6,7 @@ import type { ProfessionalSummaryRecord } from '../invitations/invitation.reposi
 
 export interface LinkedProfessionalRecord extends ProfessionalSummaryRecord {
   avatarPath: string | null
+  emergencyWhatsapp: string | null
 }
 
 export interface CareLinkRecord {
@@ -65,12 +66,22 @@ export function createCareLinkRepository(db: Database): CareLinkRepository {
       const avatars = await tx.execute<{ professional_id: string; avatar_path: string }>(
         sql`select * from public.linked_professional_avatars()`,
       )
+      const whatsapps = await tx.execute<{ professional_id: string; emergency_whatsapp: string }>(
+        sql`select * from public.linked_professional_whatsapp()`,
+      )
       const avatarOf = new Map(
         Array.from(avatars).map((row) => [row.professional_id, row.avatar_path]),
       )
+      const whatsappOf = new Map(
+        Array.from(whatsapps).map((row) => [row.professional_id, row.emergency_whatsapp]),
+      )
       return links.map(({ professionalId, professional, ...link }) => ({
         ...link,
-        professional: { ...professional, avatarPath: avatarOf.get(professionalId) ?? null },
+        professional: {
+          ...professional,
+          avatarPath: avatarOf.get(professionalId) ?? null,
+          emergencyWhatsapp: whatsappOf.get(professionalId) ?? null,
+        },
       }))
     })
   }

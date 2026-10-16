@@ -24,13 +24,16 @@ describe('safetyPromptFor', () => {
           kind: 'psychologist',
           registration: 'CRP 06/123456',
           photoUrl: null,
+          emergencyWhatsapp: null,
         },
       },
     ])
   })
 
   it('offers crisis help only for a note with a sign of risk', async () => {
-    expect(await prompt.safetyPromptFor('urgent')).toEqual({ professionals: ['Helena Prado'] })
+    expect(await prompt.safetyPromptFor('urgent')).toEqual({
+      professionals: [{ name: 'Helena Prado', emergencyWhatsapp: null }],
+    })
     expect(await prompt.safetyPromptFor('watch')).toBeNull()
     expect(await prompt.safetyPromptFor('none')).toBeNull()
     expect(fetchCareLinks).toHaveBeenCalledTimes(1)

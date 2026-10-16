@@ -2,6 +2,7 @@
 
 import {
   createInvitationSchema,
+  emergencyWhatsappSchema,
   updateProfessionalSchema,
   type CreatedInvitation,
   type RegisterProfessionalInput,
@@ -17,6 +18,7 @@ import {
   createInvitation,
   registerProfessional,
   resendInvitation,
+  setEmergencyWhatsapp,
   updateProfessional,
 } from '@/shared/lib/api/care'
 import { grantConsents } from '@/shared/lib/api/resources'
@@ -105,6 +107,21 @@ export async function renameProfessional(fullName: string): Promise<ActionResult
     const updated = await updateProfessional(parsed.data)
     revalidatePath('/pro', 'layout')
     return updated.fullName
+  }, t('error'))
+}
+
+export async function saveEmergencyWhatsapp(
+  emergencyWhatsapp: string | null,
+): Promise<ActionResult<string | null>> {
+  const t = await getTranslations('professional.settings.whatsapp')
+  const parsed = emergencyWhatsappSchema.safeParse({ emergencyWhatsapp })
+  if (!parsed.success) {
+    return failure(t('invalid'))
+  }
+  return attempt(async () => {
+    const updated = await setEmergencyWhatsapp(parsed.data)
+    revalidatePath('/pro/settings')
+    return updated.emergencyWhatsapp
   }, t('error'))
 }
 

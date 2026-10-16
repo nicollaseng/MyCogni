@@ -1,11 +1,13 @@
 import { crisisLinesFor, type SupportLevel } from '@mycogni/domain'
 import { useFormatter, useLocale, useTranslations } from 'next-intl'
 import { CloseIcon } from '@/shared/components/icons'
+import { WhatsappRows } from '@/shared/components/whatsapp-rows'
+import { emergencyContactsOf, type LinkedProfessional } from '@/shared/lib/emergency-contacts'
 import { cn } from '@/shared/lib/utils'
 
 interface SafetyPanelProps {
   level: SupportLevel
-  professionals: readonly string[]
+  professionals: readonly LinkedProfessional[]
   intro?: boolean
   onDismiss?: () => void
   className?: string
@@ -21,6 +23,10 @@ export function SafetyPanel({
   const t = useTranslations('safety')
   const format = useFormatter()
   const lines = crisisLinesFor(useLocale())
+  const contacts = level === 'urgent' ? emergencyContactsOf(professionals) : []
+  const names = professionals
+    .filter((professional) => !contacts.some((contact) => contact.name === professional.name))
+    .map((professional) => professional.name)
 
   return (
     <section
@@ -55,9 +61,10 @@ export function SafetyPanel({
           </li>
         ))}
       </ul>
-      {professionals.length > 0 && (
+      <WhatsappRows contacts={contacts} />
+      {names.length > 0 && (
         <p className="text-muted-foreground">
-          {t('professionals', { count: professionals.length, names: format.list(professionals) })}
+          {t('professionals', { count: names.length, names: format.list(names) })}
         </p>
       )}
     </section>

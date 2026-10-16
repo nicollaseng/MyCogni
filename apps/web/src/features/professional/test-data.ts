@@ -132,6 +132,7 @@ export function professionalProfile(
     createdAt: '2026-10-14T12:00:00Z',
     verifiedAt: null,
     reviewedAt: null,
+    emergencyWhatsapp: null,
     document: null,
     ...overrides,
   }

@@ -280,6 +280,19 @@ export const professional: ProfessionalMessages = {
       locked:
         'Your profession and license are checked by the MyCogniAI team. To change them, write to <link>{email}</link>.',
     },
+    whatsapp: {
+      label: 'Emergency WhatsApp',
+      empty: 'Not set',
+      countryCode: 'Country code',
+      number: 'Number',
+      placeholder: '202 555 0123',
+      hint: 'Your patients see it only when the app detects risk. Use a number you keep an eye on.',
+      save: 'Save number',
+      saving: 'Saving…',
+      clear: 'Remove number',
+      invalid: 'Check the number and the country code.',
+      error: 'We couldn’t save it just now. Please try again in a moment.',
+    },
     account: {
       title: 'Account',
     },

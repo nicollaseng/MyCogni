@@ -123,7 +123,7 @@ describe('EntryDetail', () => {
             text: 'Vontade de morrer',
             createdAt: '2026-10-16T01:00:00Z',
           },
-          safety: { professionals: ['Helena Prado'] },
+          safety: { professionals: [{ name: 'Helena Prado', emergencyWhatsapp: null }] },
         },
       }),
     )
