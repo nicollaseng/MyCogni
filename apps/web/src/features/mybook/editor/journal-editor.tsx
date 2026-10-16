@@ -213,9 +213,7 @@ export function JournalEditor({
       </div>
 
       <div aria-live="polite" className="empty:hidden">
-        {saving.safety !== null && (
-          <SafetyNotice key={saving.safety.level} prompt={saving.safety} />
-        )}
+        {saving.safety !== null && <SafetyNotice prompt={saving.safety} />}
       </div>
 
       {autosave.status === 'outdated' && <ReloadNotice message={t('status.outdated')} />}

@@ -99,7 +99,7 @@ describe('CheckInFlow', () => {
 
   it('offers compact support after a note that needs it', async () => {
     const user = userEvent.setup()
-    renderFlow(jest.fn<Save>(savedWith({ level: 'urgent', professionals: ['Helena Prado'] })))
+    renderFlow(jest.fn<Save>(savedWith({ professionals: ['Helena Prado'] })))
 
     fireEvent.change(slider(), { target: { value: '0' } })
     await user.click(screen.getByRole('button', { name: 'Continuar' }))

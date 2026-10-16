@@ -61,14 +61,6 @@ export const zen = {
     started: '{done} de {total}',
     complete: 'Concluída',
   },
-  help: {
-    open: 'Ajuda agora',
-    title: 'Ajuda agora',
-    call: 'Em perigo agora? Ligue:',
-    breathe: 'Respirar 1 min',
-    more: 'Quando buscar ajuda',
-    close: 'Fechar',
-  },
   article: {
     kicker: 'Leitura · {minutes} min',
     sources: 'Fontes',

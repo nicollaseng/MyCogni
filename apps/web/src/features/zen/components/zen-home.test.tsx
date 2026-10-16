@@ -4,7 +4,6 @@ import { screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { renderWithIntl } from '@/test/render'
 import { fakeRouter, WithRouter } from '@/test/router'
-import { HelpNow } from './help-now'
 import { ReadingRows, TrackRows } from './library'
 import { TodayCard } from './today-card'
 import { TopicTiles } from './topic-tiles'
@@ -93,38 +92,6 @@ describe('TopicTiles', () => {
       'Buscar ajuda',
     ])
     expect(tiles[4]).toHaveAttribute('href', '/zen/topics/help')
-  })
-})
-
-describe('compact help', () => {
-  it('keeps help one tap away with the lines, the professional and a breathing minute', async () => {
-    const user = userEvent.setup()
-    renderWithIntl(<HelpNow professionals={['Dra. Helena Prado']} />)
-
-    await user.click(screen.getByRole('button', { name: 'Ajuda agora' }))
-
-    const sheet = within(screen.getByRole('dialog', { name: 'Ajuda agora' }))
-    expect(sheet.getByRole('link', { name: /188/ })).toHaveAttribute('href', 'tel:188')
-    expect(sheet.getByText('Dra. Helena Prado acompanha você.')).toBeVisible()
-    expect(sheet.getByRole('link', { name: 'Quando buscar ajuda' })).toHaveAttribute(
-      'href',
-      '/zen/topics/help',
-    )
-
-    await user.click(sheet.getByRole('button', { name: 'Respirar 1 min' }))
-
-    expect(sheet.getByRole('button', { name: 'Começar' })).toBeVisible()
-  })
-
-  it('shows no professional when nobody follows the person', async () => {
-    const user = userEvent.setup()
-    renderWithIntl(<HelpNow professionals={[]} />, { locale: 'en-GB' })
-
-    await user.click(screen.getByRole('button', { name: 'Help now' }))
-
-    const sheet = within(screen.getByRole('dialog', { name: 'Help now' }))
-    expect(sheet.getByRole('link', { name: /116 123/ })).toHaveAttribute('href', 'tel:116123')
-    expect(sheet.queryByText(/is following|are following/)).not.toBeInTheDocument()
   })
 })
 

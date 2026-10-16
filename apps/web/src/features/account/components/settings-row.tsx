@@ -27,10 +27,11 @@ export function SettingsRow({ label, value, children }: SettingsRowProps) {
       <div className="flex items-baseline justify-between gap-4">
         <div className="min-w-0">
           <p className="text-sm text-muted-foreground">{label}</p>
-          <p className="truncate">{value}</p>
+          <p className="break-words">{value}</p>
         </div>
         <button
           type="button"
+          aria-label={open ? undefined : t('change', { field: label.toLowerCase() })}
           aria-expanded={open}
           aria-controls={panelId}
           onClick={() => {
@@ -41,7 +42,7 @@ export function SettingsRow({ label, value, children }: SettingsRowProps) {
           }}
           className="shrink-0 text-sm underline decoration-1 underline-offset-4"
         >
-          {open ? t('cancel') : t('change', { field: label.toLowerCase() })}
+          {open ? t('cancel') : t('edit')}
         </button>
       </div>
       <DisclosurePanel id={panelId} open={open} className="pt-4">

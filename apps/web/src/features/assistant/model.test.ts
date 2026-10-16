@@ -1,5 +1,5 @@
 import { describe, expect, it } from '@jest/globals'
-import { needsSupport, paragraphsOf, showsAssistant } from './model'
+import { paragraphsOf, showsAssistant, showsCrisisCard } from './model'
 import { message } from './test-data'
 
 describe('showsAssistant', () => {
@@ -11,13 +11,14 @@ describe('showsAssistant', () => {
   })
 })
 
-describe('needsSupport', () => {
-  it('offers support after risky answers and, for the person, after every notice', () => {
-    expect(needsSupport(message('assistant', 'ok'), 'personal')).toBe(false)
-    expect(needsSupport(message('assistant', 'ok', 'watch'), 'personal')).toBe(true)
-    expect(needsSupport(message('notice', 'sem resposta'), 'personal')).toBe(true)
-    expect(needsSupport(message('notice', 'sem resposta'), 'professional')).toBe(false)
-    expect(needsSupport(message('user', 'quero morrer', 'urgent'), 'personal')).toBe(false)
+describe('showsCrisisCard', () => {
+  it('shows the crisis card only next to an urgent answer', () => {
+    expect(showsCrisisCard(message('notice', 'Que bom que você me contou.', 'urgent'))).toBe(true)
+    expect(showsCrisisCard(message('assistant', 'Fale com alguém agora.', 'urgent'))).toBe(true)
+    expect(showsCrisisCard(message('assistant', 'ok', 'watch'))).toBe(false)
+    expect(showsCrisisCard(message('assistant', 'ok'))).toBe(false)
+    expect(showsCrisisCard(message('notice', 'sem resposta'))).toBe(false)
+    expect(showsCrisisCard(message('user', 'quero morrer', 'urgent'))).toBe(false)
   })
 })
 

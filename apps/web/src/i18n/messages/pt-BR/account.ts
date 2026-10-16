@@ -33,6 +33,7 @@ export const account = {
     failed: 'Não conseguimos preparar esta imagem. Tente outra foto.',
   },
   settings: {
+    edit: 'Alterar',
     change: 'Alterar {field}',
     cancel: 'Cancelar',
   },

@@ -1,7 +1,7 @@
 'use client'
 
 import { useTranslations } from 'next-intl'
-import { useEffect, useId, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { ActionError } from '@/shared/components/action-error'
 import type { AssistantActions, AssistantTarget } from '../model'
 import { useAssistantChat } from '../use-assistant-chat'
@@ -9,7 +9,6 @@ import { ChatComposer } from './chat-composer'
 import { ChatToolbar } from './chat-toolbar'
 import { ConsentPrompt } from './consent-prompt'
 import { MessageList } from './message-list'
-import { SupportCard } from './support-card'
 
 export interface AssistantChatProps {
   target: AssistantTarget
@@ -25,8 +24,6 @@ export function AssistantChat({ target, actions, timeZone }: AssistantChatProps)
   const t = useTranslations('assistant')
   const chat = useAssistantChat(target, actions)
   const [dismissed, setDismissed] = useState(false)
-  const [helpOpen, setHelpOpen] = useState(false)
-  const helpId = useId()
   const scroller = useRef<HTMLDivElement>(null)
   const mode = target.mode
   const access = chat.state?.overview.access
@@ -46,7 +43,7 @@ export function AssistantChat({ target, actions, timeZone }: AssistantChatProps)
 
   return (
     <div className="flex h-[min(80dvh,46rem)] min-h-0 flex-col sm:h-auto sm:flex-1">
-      <div className="space-y-2 px-5 pb-3 sm:px-6">
+      <div className="px-5 pb-3 sm:px-6">
         <ChatToolbar
           conversations={chat.state?.overview.conversations ?? []}
           current={chat.conversationId}
@@ -55,29 +52,6 @@ export function AssistantChat({ target, actions, timeZone }: AssistantChatProps)
           onSelect={(id) => void chat.select(id)}
           onDelete={chat.remove}
         />
-        <div className="flex items-baseline justify-between gap-4 text-sm">
-          <p className="text-pretty text-muted-foreground">
-            {mode === 'personal' ? t('disclaimer') : t('professionalDisclaimer')}
-          </p>
-          {mode === 'personal' && (
-            <button
-              type="button"
-              aria-expanded={helpOpen}
-              aria-controls={helpId}
-              onClick={() => {
-                setHelpOpen(!helpOpen)
-              }}
-              className="shrink-0 font-medium text-help underline decoration-1 underline-offset-4"
-            >
-              {t('help')}
-            </button>
-          )}
-        </div>
-        {helpOpen && (
-          <div id={helpId}>
-            <SupportCard mode={mode} contacts={contacts} intro />
-          </div>
-        )}
       </div>
       <div
         ref={scroller}
@@ -130,7 +104,11 @@ export function AssistantChat({ target, actions, timeZone }: AssistantChatProps)
       </div>
       <div className="border-t border-rule px-5 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] sm:px-6 sm:pb-5">
         <ActionError error={chat.error} />
-        <ChatComposer pending={chat.pending} onSend={chat.send} />
+        <ChatComposer
+          pending={chat.pending}
+          onSend={chat.send}
+          note={mode === 'personal' ? t('disclaimer') : t('professionalDisclaimer')}
+        />
       </div>
     </div>
   )

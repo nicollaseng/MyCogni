@@ -178,9 +178,9 @@ test('a verified professional renames the profile from the account menu and sign
   await expect(settings.getByText('CRP 06/123456')).toBeVisible()
 
   await page.getByRole('button', { name: 'Alterar nome exibido aos pacientes' }).click()
-  await page.getByLabel('Nome exibido aos pacientes').fill(renamed)
+  await page.getByLabel('Nome exibido aos pacientes', { exact: true }).fill(renamed)
   await page.getByRole('button', { name: 'Salvar nome' }).click()
-  await expect(page.getByLabel('Nome exibido aos pacientes')).toHaveCount(0)
+  await expect(page.getByLabel('Nome exibido aos pacientes', { exact: true })).toHaveCount(0)
   await expect(settings.getByText(renamed)).toBeVisible()
 
   await page.getByRole('button', { name: 'Sair da conta' }).click()

@@ -1,9 +1,9 @@
 import { describe, expect, it } from '@jest/globals'
 import type { InstrumentId, Severity } from '../assessments/instrument.ts'
 import {
+  needsCrisisHelp,
   readArticles,
   suggestedArticles,
-  supportLevelOf,
   zenSuggestion,
   type ScreeningSignal,
   type ZenSignals,
@@ -21,7 +21,7 @@ function signals(latest: ScreeningSignal[], moodAverage: number | null = null): 
   return { latest, moodAverage }
 }
 
-const starting = { reasons: ['starting'], tracks: ['sleep-and-rest'], seekHelpFirst: false }
+const starting = { reasons: ['starting'], tracks: ['sleep-and-rest'] }
 
 describe('zenSuggestion', () => {
   it('starts with sleep when nothing asks for attention', () => {
@@ -35,7 +35,6 @@ describe('zenSuggestion', () => {
     expect(zenSuggestion(signals([result('gad7', 'moderate')]))).toEqual({
       reasons: ['anxiety'],
       tracks: ['everyday-anxiety'],
-      seekHelpFirst: false,
     })
   })
 
@@ -43,7 +42,6 @@ describe('zenSuggestion', () => {
     expect(zenSuggestion(signals([result('phq9', 'moderate')]))).toEqual({
       reasons: ['depression'],
       tracks: ['low-mood'],
-      seekHelpFirst: false,
     })
   })
 
@@ -51,7 +49,6 @@ describe('zenSuggestion', () => {
     expect(zenSuggestion(signals([], 2))).toEqual({
       reasons: ['low_mood'],
       tracks: ['low-mood'],
-      seekHelpFirst: false,
     })
     expect(zenSuggestion(signals([], 2.1))).toEqual(starting)
   })
@@ -65,7 +62,6 @@ describe('zenSuggestion', () => {
 
     expect(suggestion.reasons[0]).toBe('severe_result')
     expect(suggestion.tracks).toEqual(tracks)
-    expect(suggestion.seekHelpFirst).toBe(true)
   })
 
   it('puts seeking help first whenever PHQ-9 item 9 was answered above zero', () => {
@@ -74,7 +70,6 @@ describe('zenSuggestion', () => {
     ).toEqual({
       reasons: ['risk_item', 'anxiety'],
       tracks: ['seeking-help', 'everyday-anxiety'],
-      seekHelpFirst: true,
     })
   })
 
@@ -84,7 +79,6 @@ describe('zenSuggestion', () => {
     ).toEqual({
       reasons: ['anxiety', 'depression', 'low_mood'],
       tracks: ['everyday-anxiety', 'low-mood'],
-      seekHelpFirst: false,
     })
   })
 })
@@ -112,24 +106,24 @@ describe('suggestedArticles', () => {
   })
 })
 
-describe('supportLevelOf', () => {
-  it('asks for help right away after a risk answer and calmly after a severe result', () => {
+describe('needsCrisisHelp', () => {
+  it('offers crisis help only after a risk answer, not for a severe result alone', () => {
     expect(
-      supportLevelOf(
+      needsCrisisHelp(
         zenSuggestion({
           latest: [{ instrument: 'phq9', severity: 'mild', hasRiskFlag: true }],
           moodAverage: null,
         }),
       ),
-    ).toBe('urgent')
+    ).toBe(true)
     expect(
-      supportLevelOf(
+      needsCrisisHelp(
         zenSuggestion({
           latest: [{ instrument: 'gad7', severity: 'severe', hasRiskFlag: false }],
           moodAverage: null,
         }),
       ),
-    ).toBe('watch')
-    expect(supportLevelOf(zenSuggestion({ latest: [], moodAverage: null }))).toBeNull()
+    ).toBe(false)
+    expect(needsCrisisHelp(zenSuggestion({ latest: [], moodAverage: null }))).toBe(false)
   })
 })

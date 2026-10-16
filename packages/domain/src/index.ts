@@ -315,10 +315,10 @@ export {
 } from './zen/catalog.ts'
 export { progressOf, type DoneStep, type TrackProgress } from './zen/progress.ts'
 export {
+  needsCrisisHelp,
   readArticles,
   suggestedArticles,
   suggestionReasons,
-  supportLevelOf,
   zenSuggestion,
   type ScreeningSignal,
   type SuggestionReason,

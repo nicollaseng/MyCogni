@@ -49,7 +49,10 @@ test('asks about the records after allowing it and gets an answer', async ({ pag
   await expect(page.getByRole('button', { name: 'Perguntar', exact: true })).toHaveCount(0)
   await page.goto('/patterns')
   const chat = await openChat(page)
-  await expect(chat).toContainText('Não substitui um profissional.')
+  await expect(chat).toContainText(
+    'IA pode cometer erros. Essa conversa não substitui um aconselhamento de saúde profissional.',
+  )
+  await expect(chat.getByRole('button', { name: 'Ajuda agora' })).toHaveCount(0)
   const consent = chat.getByRole('region', { name: 'Posso ler os seus registros?' })
   await consent.getByRole('button', { name: 'Permitir' }).click()
   await expect(consent).toHaveCount(0)
@@ -60,25 +63,31 @@ test('asks about the records after allowing it and gets an answer', async ({ pag
   const log = chat.getByRole('log')
   await expect(log).toContainText('Como foi minha semana?')
   await expect(log).toContainText('aparecem 3 check-ins')
+  await expect(chat.getByRole('region', { name: 'Apoio agora' })).toHaveCount(0)
   await chat.getByRole('button', { name: 'Conversas' }).click()
   await expect(chat.getByRole('menuitem', { name: /Como foi minha semana\?/ })).toBeVisible()
 })
 
-test('answers a crisis message with the crisis card', async ({ page }) => {
+test('answers a crisis message with the crisis card once, next to that answer', async ({
+  page,
+}) => {
   const person = await readyPerson('crise')
   await signIn(page, person.email)
   await page.goto('/entries')
   const chat = await openChat(page)
   await chat.getByRole('button', { name: 'Agora não' }).click()
 
-  await chat.getByRole('textbox', { name: 'Mensagem' }).fill('Não aguento mais, quero me matar')
+  await chat.getByRole('textbox', { name: 'Mensagem' }).fill('Vontade de morrer')
   await chat.getByRole('textbox', { name: 'Mensagem' }).press('Enter')
 
-  await expect(chat.getByRole('log')).toContainText(
+  const notice = chat.locator('[data-role="notice"]')
+  await expect(notice).toContainText(
     'Que bom que você me contou. Você merece o apoio de uma pessoa agora: ligue para um dos contatos abaixo.',
   )
-  const card = chat.getByRole('region', { name: 'Apoio agora' })
+  const card = notice.getByRole('region', { name: 'Apoio agora' })
+  await expect(card).not.toContainText('Você não precisa passar por isso sem apoio')
   await expect(card.getByRole('link', { name: '188 CVV' })).toHaveAttribute('href', 'tel:188')
+  await expect(chat.getByRole('region', { name: 'Apoio agora' })).toHaveCount(1)
 })
 
 test('lets a professional ask about a linked patient', async ({ page }) => {
@@ -93,7 +102,7 @@ test('lets a professional ask about a linked patient', async ({ page }) => {
 
   await page.getByRole('button', { name: 'Perguntar sobre este paciente' }).click()
   const chat = page.getByRole('dialog', { name: /^Perguntar sobre / })
-  await expect(chat).toContainText('Usa só o que este paciente compartilha com você.')
+  await expect(chat).toContainText('IA pode cometer erros. Não substitui o seu julgamento clínico.')
   await chat.getByRole('button', { name: 'Como o humor mudou nas últimas semanas?' }).click()
 
   await expect(chat.getByRole('log')).toContainText('aparecem 3 check-ins')

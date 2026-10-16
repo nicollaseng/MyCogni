@@ -32,7 +32,7 @@ export default async function ZenTopicPage({ params }: PageProps<'/zen/topics/[i
 
   return (
     <>
-      <ZenTopBar professionals={professionals} />
+      <ZenTopBar />
       <h1 className="font-serif text-[40px] leading-[1.04] tracking-[-0.02em] text-balance sm:text-5xl">
         {t(`topics.names.${id}`)}
       </h1>

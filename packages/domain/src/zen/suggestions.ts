@@ -1,6 +1,5 @@
 import type { InstrumentId, Severity } from '../assessments/instrument.ts'
 import { lowMoodAverage } from '../care/attention.ts'
-import type { SupportLevel } from '../safety/risk.ts'
 import { stepOf, tracks, type ArticleId, type TrackId } from './catalog.ts'
 import type { DoneStep } from './progress.ts'
 
@@ -29,7 +28,6 @@ export type SuggestionReason = (typeof suggestionReasons)[number]
 export interface ZenSuggestion {
   reasons: SuggestionReason[]
   tracks: TrackId[]
-  seekHelpFirst: boolean
 }
 
 interface Rule {
@@ -82,21 +80,16 @@ const startingTrack: TrackId = 'sleep-and-rest'
 export function zenSuggestion(signals: ZenSignals): ZenSuggestion {
   const applied = rules.filter((rule) => rule.applies(signals))
   if (applied.length === 0) {
-    return { reasons: ['starting'], tracks: [startingTrack], seekHelpFirst: false }
+    return { reasons: ['starting'], tracks: [startingTrack] }
   }
-  const suggested = [...new Set(applied.map((rule) => rule.track))]
   return {
     reasons: applied.map((rule) => rule.reason),
-    tracks: suggested,
-    seekHelpFirst: suggested[0] === 'seeking-help',
+    tracks: [...new Set(applied.map((rule) => rule.track))],
   }
 }
 
-export function supportLevelOf(suggestion: ZenSuggestion): SupportLevel | null {
-  if (suggestion.reasons.includes('risk_item')) {
-    return 'urgent'
-  }
-  return suggestion.seekHelpFirst ? 'watch' : null
+export function needsCrisisHelp(suggestion: ZenSuggestion): boolean {
+  return suggestion.reasons.includes('risk_item')
 }
 
 export function readArticles(doneSteps: readonly DoneStep[]): ArticleId[] {
