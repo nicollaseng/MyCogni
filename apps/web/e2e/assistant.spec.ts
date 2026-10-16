@@ -85,7 +85,7 @@ test('answers a crisis message with the crisis card once, next to that answer', 
     'Que bom que você me contou. Você merece o apoio de uma pessoa agora: ligue para um dos contatos abaixo.',
   )
   const card = notice.getByRole('region', { name: 'Apoio agora' })
-  await expect(card).toContainText('Você não precisa passar por isso sem apoio')
+  await expect(card).not.toContainText('Você não precisa passar por isso sem apoio')
   await expect(card.getByRole('link', { name: '188 CVV' })).toHaveAttribute('href', 'tel:188')
   await expect(chat.getByRole('region', { name: 'Apoio agora' })).toHaveCount(1)
 })

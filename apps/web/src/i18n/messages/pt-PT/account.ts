@@ -35,6 +35,7 @@ export const account: AccountMessages = {
     failed: 'Não foi possível preparar esta imagem. Experimente outra fotografia.',
   },
   settings: {
+    edit: 'Alterar',
     change: 'Alterar {field}',
     cancel: 'Cancelar',
   },

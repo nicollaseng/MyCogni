@@ -36,7 +36,6 @@ test('opens the account menu from the header and goes to the settings', async ({
     'Perfil e configurações',
     'Profissionais',
     'Suporte',
-    'Ajuda agora',
     'Sair',
   ])
   await menu.getByRole('menuitem', { name: 'Perfil e configurações' }).click()
@@ -46,17 +45,21 @@ test('opens the account menu from the header and goes to the settings', async ({
   await expect(menu).toHaveCount(0)
 })
 
-test('shows the crisis lines from the account menu and closes with Escape', async ({ page }) => {
+test('closes the account menu with Escape and keeps help only in the footer', async ({ page }) => {
   await page.goto('/entries')
 
   const account = page.getByRole('button', { name: 'Sua conta' })
   await account.click()
-  await page.getByRole('menuitem', { name: 'Ajuda agora' }).click()
-
-  await expect(page.getByRole('menuitem', { name: /^188/ })).toHaveAttribute('href', 'tel:188')
+  await expect(page.getByRole('menuitem', { name: 'Ajuda agora' })).toHaveCount(0)
   await page.keyboard.press('Escape')
   await expect(page.getByRole('menu', { name: 'Conta' })).toHaveCount(0)
   await expect(account).toBeFocused()
+
+  await page.getByRole('button', { name: 'Precisa de ajuda agora?' }).click()
+  await expect(page.getByRole('link', { name: '188', exact: true })).toHaveAttribute(
+    'href',
+    'tel:188',
+  )
 })
 
 test.describe('a person with their own session', () => {

@@ -64,7 +64,6 @@ describe('AccountMenu', () => {
       'Perfil e configurações',
       'Profissionais',
       'Suporte',
-      'Ajuda agora',
       'Sair',
     ])
     expect(screen.getByRole('menuitem', { name: 'Perfil e configurações' })).toHaveAttribute(
@@ -144,27 +143,6 @@ describe('AccountMenu', () => {
     expect(trigger()).toHaveAttribute('aria-expanded', 'false')
   })
 
-  it('opens the crisis lines of the country inside the menu', async () => {
-    const { user } = renderMenu()
-
-    await user.click(trigger())
-    const help = screen.getByRole('menuitem', { name: 'Ajuda agora' })
-    expect(help).toHaveAttribute('aria-expanded', 'false')
-    expect(screen.queryByRole('menuitem', { name: /^188/ })).not.toBeInTheDocument()
-
-    await user.click(help)
-
-    expect(help).toHaveAttribute('aria-expanded', 'true')
-    expect(screen.getByRole('group', { name: 'Precisa de ajuda agora?' })).toHaveTextContent(
-      'Se você está em crise ou pensando em se machucar, ligue agora:',
-    )
-    expect(screen.getByRole('menuitem', { name: /^188/ })).toHaveAttribute('href', 'tel:188')
-    expect(screen.getByRole('menuitem', { name: /^192/ })).toHaveAttribute('href', 'tel:192')
-
-    await user.keyboard('{ArrowDown}')
-    expect(screen.getByRole('menuitem', { name: /^188/ })).toHaveFocus()
-  })
-
   it('signs out from the menu', async () => {
     const { user, signOut } = renderMenu()
 
@@ -176,17 +154,13 @@ describe('AccountMenu', () => {
     })
   })
 
-  it('speaks European Portuguese with the lines of Portugal', async () => {
+  it('speaks European Portuguese', async () => {
     const { user } = renderMenu({ locale: 'pt-PT' })
 
     await user.click(screen.getByRole('button', { name: 'A sua conta' }))
-    await user.click(screen.getByRole('menuitem', { name: 'Ajuda agora' }))
 
     expect(screen.getByRole('menuitem', { name: 'Perfil e definições' })).toBeInTheDocument()
     expect(screen.getByRole('menuitem', { name: 'Terminar sessão' })).toBeInTheDocument()
-    expect(screen.getByRole('menuitem', { name: /^808 24 24 24/ })).toHaveAttribute(
-      'href',
-      'tel:808242424',
-    )
+    expect(screen.queryByRole('menuitem', { name: 'Ajuda agora' })).not.toBeInTheDocument()
   })
 })

@@ -24,5 +24,5 @@ export function SupportCard({ mode, contacts }: SupportCardProps) {
     )
   }
 
-  return <SafetyPanel level="urgent" professionals={contacts} />
+  return <SafetyPanel level="urgent" intro={false} professionals={contacts} />
 }
