@@ -154,9 +154,12 @@ describe('invitations', () => {
   })
 
   it('lets the invited person see who invited them, and nobody else', async () => {
-    const asAna = await withUser(connection.db, ana, (tx) => tx.select().from(professionalProfiles))
+    const names = { fullName: professionalProfiles.fullName }
+    const asAna = await withUser(connection.db, ana, (tx) =>
+      tx.select(names).from(professionalProfiles),
+    )
     const asBruno = await withUser(connection.db, bruno, (tx) =>
-      tx.select().from(professionalProfiles),
+      tx.select(names).from(professionalProfiles),
     )
 
     expect(asAna.map((row) => row.fullName)).toEqual(['Dra. Helena Prado'])
