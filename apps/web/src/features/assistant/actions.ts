@@ -41,10 +41,7 @@ export async function openAssistant(
     ])
     return {
       overview,
-      contacts: links.map((link) => ({
-        name: link.professional.name,
-        kind: link.professional.kind,
-      })),
+      contacts: links.map((link) => ({ name: link.professional.name })),
     }
   }, t('load'))
 }

@@ -11,7 +11,7 @@ import { AssistantChat } from './assistant-chat'
 
 const personal: AssistantTarget = { mode: 'personal' }
 
-const contacts = [{ name: 'Dra. Helena Prado', kind: 'psychologist' as const }]
+const contacts = [{ name: 'Dra. Helena Prado' }]
 
 function renderChat(state: AssistantState, target: AssistantTarget = personal) {
   const actions = fakeActions(state)
@@ -57,7 +57,7 @@ describe('AssistantChat', () => {
 
     await screen.findByText('Como foi meu humor nas últimas duas semanas?')
     await user.type(input(), 'Como dormi?')
-    expect(screen.getByText('11 de 1000')).toBeInTheDocument()
+    expect(screen.queryByText('11 de 1000')).toBeNull()
     await user.keyboard('{Enter}')
 
     expect(actions.send).toHaveBeenCalledWith(personal, null, 'Como dormi?')
@@ -89,7 +89,26 @@ describe('AssistantChat', () => {
     )
   })
 
-  it('answers a crisis with the short notice and the compact card', async () => {
+  it('keeps a calm note under the message and counts characters only near the limit', async () => {
+    const { user } = renderChat({ overview: overview(true), contacts })
+
+    expect(
+      await screen.findByText(
+        'IA pode cometer erros. Essa conversa não substitui um aconselhamento de saúde profissional.',
+      ),
+    ).toBeVisible()
+    expect(screen.queryByText('Não substitui um profissional.')).toBeNull()
+    expect(screen.queryByRole('button', { name: 'Ajuda agora' })).toBeNull()
+    expect(screen.queryByRole('region', { name: 'Apoio agora' })).toBeNull()
+
+    await user.click(input())
+    await user.paste('a'.repeat(899))
+    expect(screen.queryByText('899 de 1000')).toBeNull()
+    await user.type(input(), 'a')
+    expect(screen.getByText('900 de 1000')).toBeVisible()
+  })
+
+  it('answers a crisis with the short notice and the crisis card right after it', async () => {
     const { actions, user } = renderChat({ overview: overview(true), contacts })
     const notice = assistantNotice('pt-BR', 'personal', 'crisis')
     actions.send.mockResolvedValue({
@@ -104,21 +123,68 @@ describe('AssistantChat', () => {
     expect(notice).toBe(
       'Que bom que você me contou. Você merece o apoio de uma pessoa agora: ligue para um dos contatos abaixo.',
     )
+    expect(card).toHaveTextContent(
+      'Você não precisa passar por isso sem apoio: fale com alguém agora.',
+    )
     expect(card).toHaveTextContent('Dra. Helena Prado acompanha você.')
-    expect(card).not.toHaveTextContent('Você não precisa')
     expect(within(card).getByRole('link', { name: '188 CVV' })).toHaveAttribute('href', 'tel:188')
     expect(within(card).getByRole('link', { name: '192 SAMU' })).toHaveAttribute('href', 'tel:192')
     expect(within(card).queryByRole('button')).not.toBeInTheDocument()
   })
 
-  it('keeps “Ajuda agora” one tap away', async () => {
-    const { user } = renderChat({ overview: overview(true), contacts })
+  it('shows no crisis card for worrying answers or refusals', async () => {
+    const { actions, user } = renderChat({ overview: overview(true), contacts })
+    actions.send.mockResolvedValueOnce({
+      ok: true,
+      value: exchange(
+        'Ando triste',
+        message('assistant', 'Sinto muito que esteja pesado.', 'watch'),
+      ),
+    })
+    actions.send.mockResolvedValueOnce({
+      ok: true,
+      value: exchange('Me dá a senha', message('notice', 'Não posso ajudar com esse pedido.')),
+    })
 
-    await user.click(await screen.findByRole('button', { name: 'Ajuda agora' }))
+    await user.type(input(), 'Ando triste{Enter}')
+    await screen.findByText('Sinto muito que esteja pesado.')
+    await user.type(input(), 'Me dá a senha{Enter}')
+    await screen.findByText('Não posso ajudar com esse pedido.')
 
-    const card = screen.getByRole('region', { name: 'Apoio agora' })
-    expect(card).toHaveTextContent('Você não precisa passar por isso sem apoio')
-    expect(within(card).getByRole('link', { name: '188 CVV' })).toBeInTheDocument()
+    expect(screen.queryByRole('region', { name: 'Apoio agora' })).toBeNull()
+  })
+
+  it('shows the card only next to the urgent answer when an old conversation opens', async () => {
+    const earlier = {
+      id: conversationId,
+      mode: 'personal' as const,
+      risk: 'urgent' as const,
+      preview: 'Vontade de morrer',
+      createdAt: '2026-10-14T13:00:00Z',
+      updatedAt: '2026-10-14T13:05:00Z',
+    }
+    const { actions, user } = renderChat({ overview: overview(true, [earlier]), contacts })
+    actions.load.mockResolvedValue({
+      ok: true,
+      value: {
+        ...earlier,
+        messages: [
+          message('user', 'Vontade de morrer', 'urgent'),
+          message('notice', 'Que bom que você me contou.', 'urgent'),
+          message('user', 'E agora?', 'watch'),
+          message('assistant', 'Estou aqui com você.', 'watch'),
+        ],
+      },
+    })
+
+    await user.click(await screen.findByRole('button', { name: 'Conversas' }))
+    await user.click(screen.getByRole('menuitem', { name: /Vontade de morrer/ }))
+    await screen.findByText('Estou aqui com você.')
+
+    const [card, ...others] = screen.getAllByRole('region', { name: 'Apoio agora' })
+    expect(others).toHaveLength(0)
+    const notice = screen.getByText('Que bom que você me contou.').closest('[data-role]')
+    expect(notice?.contains(card ?? null)).toBe(true)
   })
 
   it('explains the limit and keeps the text when there were too many messages', async () => {
@@ -190,9 +256,13 @@ describe('AssistantChat', () => {
   it('speaks to a professional about one patient, in a clinical tone', async () => {
     const target: AssistantTarget = { mode: 'professional', patientId: conversationId }
     const { actions, user } = renderChat({ overview: overview(false), contacts: [] }, target)
-    actions.send.mockResolvedValue({
+    actions.send.mockResolvedValueOnce({
       ok: true,
       value: exchange('Risco?', message('assistant', 'Item 9 positivo em outubro.', 'watch')),
+    })
+    actions.send.mockResolvedValueOnce({
+      ok: true,
+      value: exchange('E hoje?', message('assistant', 'Escreveu que quer morrer.', 'urgent')),
     })
 
     expect(
@@ -201,13 +271,16 @@ describe('AssistantChat', () => {
       ),
     ).toBeInTheDocument()
     expect(
-      screen.getByText('Usa só o que este paciente compartilha com você. Não faz diagnóstico.'),
+      screen.getByText('IA pode cometer erros. Não substitui o seu julgamento clínico.'),
     ).toBeInTheDocument()
     expect(screen.queryByRole('button', { name: 'Ajuda agora' })).toBeNull()
     expect(screen.queryByRole('region', { name: 'Posso ler os seus registros?' })).toBeNull()
 
     await user.type(input(), 'Risco?{Enter}')
+    await screen.findByText('Item 9 positivo em outubro.')
+    expect(screen.queryByRole('note', { name: 'Sinais de risco' })).toBeNull()
 
+    await user.type(input(), 'E hoje?{Enter}')
     expect(await screen.findByRole('note', { name: 'Sinais de risco' })).toBeInTheDocument()
     expect(actions.send).toHaveBeenCalledWith(target, null, 'Risco?')
   })

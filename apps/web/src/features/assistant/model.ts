@@ -4,7 +4,6 @@ import type {
   AssistantMessage,
   AssistantOverview,
 } from '@mycogni/contracts'
-import type { AssistantMode, ProfessionalKind } from '@mycogni/domain'
 import type { ActionResult } from '@/shared/lib/actions/result'
 import type { AssistantTarget } from '@/shared/lib/api/assistant'
 
@@ -18,7 +17,6 @@ export function showsAssistant(pathname: string): boolean {
 
 export interface SupportContact {
   name: string
-  kind: ProfessionalKind
 }
 
 export interface AssistantState {
@@ -38,11 +36,8 @@ export interface AssistantActions {
   allow: (journal: boolean) => Promise<ActionResult<null>>
 }
 
-export function needsSupport(message: AssistantMessage, mode: AssistantMode): boolean {
-  if (message.role === 'user') {
-    return false
-  }
-  return message.risk !== 'none' || (mode === 'personal' && message.role === 'notice')
+export function showsCrisisCard(message: AssistantMessage): boolean {
+  return message.role !== 'user' && message.risk === 'urgent'
 }
 
 export function paragraphsOf(text: string): string[] {

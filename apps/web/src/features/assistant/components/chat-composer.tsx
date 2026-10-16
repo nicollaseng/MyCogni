@@ -6,14 +6,18 @@ import { Button } from '@/shared/ui/button'
 interface ChatComposerProps {
   pending: boolean
   onSend: (text: string) => Promise<boolean>
+  note: string
 }
 
-export function ChatComposer({ pending, onSend }: ChatComposerProps) {
+const nearLimit = 100
+
+export function ChatComposer({ pending, onSend, note }: ChatComposerProps) {
   const t = useTranslations('assistant.composer')
   const id = useId()
   const form = useRef<HTMLFormElement>(null)
   const [text, setText] = useState('')
   const max = assistantLimits.messageLength
+  const showCount = max - text.length <= nearLimit
 
   async function submit(event: SubmitEvent<HTMLFormElement>) {
     event.preventDefault()
@@ -46,7 +50,7 @@ export function ChatComposer({ pending, onSend }: ChatComposerProps) {
           value={text}
           maxLength={max}
           placeholder={t('placeholder')}
-          aria-describedby={`${id}-count`}
+          aria-describedby={`${id}-note`}
           onChange={(event) => {
             setText(event.target.value)
           }}
@@ -57,9 +61,16 @@ export function ChatComposer({ pending, onSend }: ChatComposerProps) {
           {t('send')}
         </Button>
       </div>
-      <p id={`${id}-count`} className="text-right text-xs text-muted-foreground tabular-nums">
-        {t('count', { count: text.length, max })}
-      </p>
+      <div className="flex items-baseline justify-between gap-4 text-xs text-muted-foreground">
+        <p id={`${id}-note`} className="text-pretty">
+          {note}
+        </p>
+        {showCount && (
+          <p aria-live="polite" className="shrink-0 tabular-nums">
+            {t('count', { count: text.length, max })}
+          </p>
+        )}
+      </div>
     </form>
   )
 }

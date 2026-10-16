@@ -12,9 +12,8 @@ const brazilian: Readonly<Record<AssistantMode, Notices>> = {
     crisis:
       'Que bom que você me contou. Você merece o apoio de uma pessoa agora: ligue para um dos contatos abaixo.',
     refusal:
-      'Não posso ajudar com esse pedido. Posso conversar sobre como você está e sobre os seus registros. Se precisar de apoio agora, os contatos abaixo atendem a qualquer hora.',
-    unavailable:
-      'Não consegui responder agora. Tente de novo em alguns instantes. Se precisar de apoio agora, os contatos abaixo atendem a qualquer hora.',
+      'Não posso ajudar com esse pedido. Posso conversar sobre como você está e sobre os seus registros.',
+    unavailable: 'Não consegui responder agora. Tente de novo em alguns instantes.',
   },
   professional: {
     crisis:
@@ -30,9 +29,8 @@ const european: Readonly<Record<AssistantMode, Notices>> = {
     crisis:
       'Ainda bem que me contou. Merece o apoio de uma pessoa agora: ligue para um dos contactos abaixo.',
     refusal:
-      'Não posso ajudar com esse pedido. Posso conversar sobre como está e sobre os seus registos. Se precisar de apoio agora, os contactos abaixo atendem a qualquer hora.',
-    unavailable:
-      'Não consegui responder agora. Tente novamente dentro de instantes. Se precisar de apoio agora, os contactos abaixo atendem a qualquer hora.',
+      'Não posso ajudar com esse pedido. Posso conversar sobre como está e sobre os seus registos.',
+    unavailable: 'Não consegui responder agora. Tente novamente dentro de instantes.',
   },
   professional: {
     crisis:
@@ -48,9 +46,8 @@ const english: Readonly<Record<AssistantMode, Notices>> = {
     crisis:
       'I’m glad you told me. You deserve support from a person right now: call one of the contacts below.',
     refusal:
-      'I can’t help with that request. I can talk about how you are doing and about your records. If you need support now, the contacts below answer at any time.',
-    unavailable:
-      'I couldn’t answer just now. Please try again in a moment. If you need support now, the contacts below answer at any time.',
+      'I can’t help with that request. I can talk about how you are doing and about your records.',
+    unavailable: 'I couldn’t answer just now. Please try again in a moment.',
   },
   professional: {
     crisis:

@@ -6,10 +6,9 @@ import type { SupportContact } from '../model'
 interface SupportCardProps {
   mode: AssistantMode
   contacts: readonly SupportContact[]
-  intro: boolean
 }
 
-export function SupportCard({ mode, contacts, intro }: SupportCardProps) {
+export function SupportCard({ mode, contacts }: SupportCardProps) {
   const t = useTranslations('assistant')
 
   if (mode === 'professional') {
@@ -25,11 +24,5 @@ export function SupportCard({ mode, contacts, intro }: SupportCardProps) {
     )
   }
 
-  return (
-    <SafetyPanel
-      level="urgent"
-      intro={intro}
-      professionals={contacts.map((contact) => contact.name)}
-    />
-  )
+  return <SafetyPanel level="urgent" professionals={contacts.map((contact) => contact.name)} />
 }

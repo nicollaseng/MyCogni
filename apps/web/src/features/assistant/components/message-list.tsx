@@ -2,7 +2,7 @@ import type { AssistantMessage } from '@mycogni/contracts'
 import type { AssistantMode } from '@mycogni/domain'
 import { useTranslations } from 'next-intl'
 import { cn } from '@/shared/lib/utils'
-import { needsSupport, paragraphsOf, type SupportContact } from '../model'
+import { paragraphsOf, showsCrisisCard, type SupportContact } from '../model'
 import { SupportCard } from './support-card'
 
 interface MessageListProps {
@@ -35,9 +35,9 @@ export function MessageList({ messages, pending, mode, contacts }: MessageListPr
               </p>
             ))}
           </div>
-          {needsSupport(message, mode) && (
+          {showsCrisisCard(message) && (
             <div className="pt-3">
-              <SupportCard mode={mode} contacts={contacts} intro={false} />
+              <SupportCard mode={mode} contacts={contacts} />
             </div>
           )}
         </div>

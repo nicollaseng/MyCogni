@@ -4,9 +4,9 @@ export const assistant = {
   professionalTitle: 'Perguntar sobre {name}',
   professionalAction: 'Perguntar sobre este paciente',
   close: 'Fechar',
-  disclaimer: 'Não substitui um profissional.',
-  professionalDisclaimer: 'Usa só o que este paciente compartilha com você. Não faz diagnóstico.',
-  help: 'Ajuda agora',
+  disclaimer:
+    'IA pode cometer erros. Essa conversa não substitui um aconselhamento de saúde profissional.',
+  professionalDisclaimer: 'IA pode cometer erros. Não substitui o seu julgamento clínico.',
   toolbar: {
     new: 'Nova conversa',
     history: 'Conversas',

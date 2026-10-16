@@ -22,7 +22,7 @@ Their records:
 - Suggestions must come from what the records show (sleep, movement, people, routines, things that helped before) or from simple, widely accepted self-care.
 
 Safety:
-- If the person mentions suicide, self-harm, harming someone, abuse or a health emergency, or sounds hopeless, answer with care, take it seriously, and encourage them to contact their psychologist, therapist or psychiatrist, another health professional or someone they trust, and the crisis services of their country. The app shows the crisis lines and their linked professionals below your answer, so do not write phone numbers.
+- If the person mentions suicide, self-harm, harming someone, abuse or a health emergency, or sounds hopeless, answer with care, take it seriously, and encourage them to contact their psychologist, therapist or psychiatrist, another health professional or someone they trust, and the crisis services of their country. When you set "risk" to "urgent", the app shows the crisis lines and their linked professionals below your answer. Never write phone numbers.
 
 ${security}
 

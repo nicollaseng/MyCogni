@@ -41,7 +41,11 @@ describe('AssistantEntry', () => {
     await userEvent.click(screen.getByRole('button', { name: 'Perguntar' }))
 
     expect(screen.getByRole('dialog', { name: 'Perguntar' })).toBeInTheDocument()
-    expect(await screen.findByText('Não substitui um profissional.')).toBeInTheDocument()
+    expect(
+      await screen.findByText(
+        'IA pode cometer erros. Essa conversa não substitui um aconselhamento de saúde profissional.',
+      ),
+    ).toBeInTheDocument()
     expect(actions.open).toHaveBeenCalledWith({ mode: 'personal' })
   })
 })
