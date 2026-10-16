@@ -83,6 +83,26 @@ describe('SoundAndVoiceSettings', () => {
     expect(section.getByRole('button', { name: 'Parar' })).toBeVisible()
   })
 
+  it.each([
+    ['night-forest', 'Floresta à noite'],
+    ['birdsong', 'Pássaros'],
+    ['meadow', 'Campo'],
+    ['campfire', 'Fogueira'],
+    ['mountain-wind', 'Montanha'],
+    ['snow', 'Neve'],
+    ['owl', 'Coruja'],
+  ] as const)('lets the person choose, preview and keep %s', async (sound, name) => {
+    const user = userEvent.setup()
+    const { section, engine } = renderSettings()
+
+    await user.selectOptions(section.getByLabelText('Qual som'), sound)
+    await user.click(section.getByRole('button', { name: 'Ouvir' }))
+
+    expect(section.getByLabelText('Qual som')).toHaveDisplayValue(name)
+    expect(engine.play).toHaveBeenCalledWith(sound)
+    expect(stored()).toMatchObject({ sound })
+  })
+
   it('plays a voice sample when one exists', async () => {
     const user = userEvent.setup()
     const play = jest.spyOn(HTMLMediaElement.prototype, 'play').mockResolvedValue(undefined)

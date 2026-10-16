@@ -22,12 +22,16 @@ export function AmbientControl() {
       aria-label={t('control', { sound: name })}
       onClick={toggle}
       className={cn(
-        'inline-flex h-10 items-center gap-2 rounded-md px-2.5 text-sm transition-colors duration-150 hover:bg-sage motion-reduce:transition-none',
+        'inline-flex h-10 min-w-0 items-center gap-2 rounded-md px-2.5 text-sm transition-colors duration-150 hover:bg-sage motion-reduce:transition-none',
         playing ? 'text-foreground' : 'text-muted-foreground hover:text-foreground',
       )}
     >
-      {playing ? <PauseIcon className="size-4" /> : <WaveIcon className="size-4" />}
-      <span>{name}</span>
+      {playing ? (
+        <PauseIcon className="size-4 shrink-0" />
+      ) : (
+        <WaveIcon className="size-4 shrink-0" />
+      )}
+      <span className="max-w-[4.25rem] truncate whitespace-nowrap sm:max-w-none">{name}</span>
     </button>
   )
 }

@@ -201,3 +201,35 @@ test('plays the background sound only after a tap and follows the sound chosen i
   await expect(page.getByRole('heading', { level: 1, name: 'Zen Space' })).toBeVisible()
   await expect(page.getByRole('button', { name: /Som de fundo/ })).toHaveCount(0)
 })
+
+test('chooses, previews and keeps each of the new background sounds', async ({ page }) => {
+  await signInAsReadyPerson(page)
+  await page.goto('/me')
+  const settings = page.getByRole('region', { name: 'Som e voz' })
+  const sound = settings.getByLabel('Qual som')
+
+  for (const [id, name] of [
+    ['night-forest', 'Floresta à noite'],
+    ['birdsong', 'Pássaros'],
+    ['meadow', 'Campo'],
+    ['campfire', 'Fogueira'],
+    ['mountain-wind', 'Montanha'],
+    ['snow', 'Neve'],
+    ['owl', 'Coruja'],
+  ] as const) {
+    await sound.selectOption(id)
+    const preview = page.waitForResponse((response) =>
+      response.url().includes(`/audio/ambient/${id}.`),
+    )
+    await settings.getByRole('button', { name: 'Ouvir', exact: true }).click()
+    expect((await preview).status()).toBe(200)
+    await expect(settings.getByRole('button', { name: 'Parar' })).toBeVisible()
+    await settings.getByRole('button', { name: 'Parar' }).click()
+
+    await page.reload()
+    await expect(sound).toHaveValue(id)
+    await page.goto('/zen')
+    await expect(page.getByRole('button', { name: `Som de fundo: ${name}` })).toBeVisible()
+    await page.goto('/me')
+  }
+})
