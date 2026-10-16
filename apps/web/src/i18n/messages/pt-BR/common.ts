@@ -19,7 +19,6 @@ export const common = {
     profile: 'Perfil e configurações',
     professionals: 'Profissionais',
     support: 'Suporte',
-    help: 'Ajuda agora',
     signOut: 'Sair',
   },
   help: {
