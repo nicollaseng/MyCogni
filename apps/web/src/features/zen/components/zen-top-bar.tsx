@@ -1,8 +1,7 @@
 import Link from 'next/link'
 import { useTranslations } from 'next-intl'
-import { HelpNow } from './help-now'
 
-export function ZenTopBar({ professionals }: { professionals: readonly string[] }) {
+export function ZenTopBar() {
   const t = useTranslations('zen')
 
   return (
@@ -13,7 +12,6 @@ export function ZenTopBar({ professionals }: { professionals: readonly string[] 
       >
         ← {t('back')}
       </Link>
-      <HelpNow professionals={professionals} />
     </div>
   )
 }

@@ -7,12 +7,21 @@ test.use({ storageState: signedOut })
 
 const password = 'zen-space-2026'
 
-async function signInAsReadyPerson(page: Page, atRisk = false): Promise<void> {
+interface Answers {
+  phq9: number[]
+  gad7: number[]
+}
+
+const riskAnswer: Answers = { phq9: [1, 1, 1, 1, 0, 0, 1, 0, 1], gad7: [1, 1, 1, 1, 1, 1, 1] }
+
+const severeAnswers: Answers = { phq9: [3, 3, 3, 3, 3, 3, 3, 3, 0], gad7: [3, 3, 3, 3, 3, 3, 3] }
+
+async function signInAsReadyPerson(page: Page, answers: Answers | null = null): Promise<void> {
   const email = uniqueEmail('zen')
   await createUser(email, password)
   await finishOnboarding(email, password)
-  if (atRisk) {
-    await answerQuestionnaires(email, password, [1, 1, 1, 1, 0, 0, 1, 0, 1], [1, 1, 1, 1, 1, 1, 1])
+  if (answers !== null) {
+    await answerQuestionnaires(email, password, answers.phq9, answers.gad7)
   }
   await page.goto('/sign-in')
   await page.getByLabel('Email').fill(email)
@@ -150,21 +159,35 @@ test('answers the questionnaires again and sees the suggestion change', async ({
   ).toBeVisible()
 })
 
-test('keeps help compact and one tap away when the results call for it', async ({ page }) => {
-  await signInAsReadyPerson(page, true)
+test('offers crisis help after a risk answer and keeps the footer help on Zen', async ({
+  page,
+}) => {
+  await signInAsReadyPerson(page, riskAnswer)
   await page.goto('/zen')
 
   const panel = page.getByRole('region', { name: 'Apoio agora' })
   await expect(panel).toContainText('Você não precisa passar por isso sem apoio')
   await expect(panel.getByRole('link', { name: '188 CVV' })).toHaveAttribute('href', 'tel:188')
   await expect(today(page).getByRole('heading', { name: 'Quando buscar ajuda' })).toBeVisible()
+  await expect(page.getByRole('button', { name: 'Ajuda agora', exact: true })).toHaveCount(0)
 
-  await expect(page.getByRole('button', { name: 'Precisa de ajuda agora?' })).toHaveCount(0)
-  await page.getByRole('button', { name: 'Ajuda agora', exact: true }).click()
-  const sheet = page.getByRole('dialog', { name: 'Ajuda agora' })
-  await expect(sheet.getByRole('link', { name: /192/ })).toHaveAttribute('href', 'tel:192')
-  await sheet.getByRole('link', { name: 'Quando buscar ajuda' }).click()
-  await expect(page).toHaveURL('/zen/topics/help')
+  await page.getByRole('button', { name: 'Precisa de ajuda agora?' }).click()
+  await expect(page.getByRole('link', { name: '192', exact: true })).toHaveAttribute(
+    'href',
+    'tel:192',
+  )
+})
+
+test('keeps Zen calm after severe results without a risk answer', async ({ page }) => {
+  await signInAsReadyPerson(page, severeAnswers)
+  await page.goto('/zen')
+
+  await expect(today(page).getByRole('heading', { name: 'Quando buscar ajuda' })).toBeVisible()
+  await expect(page.getByRole('region', { name: 'Apoio agora' })).toHaveCount(0)
+  await page.getByRole('link', { name: 'Ansiedade', exact: true }).click()
+  await expect(page).toHaveURL('/zen/topics/anxiety')
+  await expect(page.getByRole('button', { name: 'Ajuda agora', exact: true })).toHaveCount(0)
+  await expect(page.getByRole('button', { name: 'Precisa de ajuda agora?' })).toBeVisible()
 })
 
 test('plays the background sound only after a tap and follows the sound chosen in settings', async ({

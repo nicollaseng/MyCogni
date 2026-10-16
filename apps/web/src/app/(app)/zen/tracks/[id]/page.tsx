@@ -51,7 +51,7 @@ export default async function ZenTrackPage({ params }: PageProps<'/zen/tracks/[i
 
   return (
     <>
-      <ZenTopBar professionals={professionals} />
+      <ZenTopBar />
       <header className="space-y-4">
         <p className="text-sm text-muted-foreground">
           {t('track.kicker', { count: progress.total, minutes: trackMinutes(id, language) })}

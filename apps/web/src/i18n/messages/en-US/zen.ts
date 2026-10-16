@@ -63,14 +63,6 @@ export const zen: ZenMessages = {
     started: '{done} of {total}',
     complete: 'Completed',
   },
-  help: {
-    open: 'Help now',
-    title: 'Help now',
-    call: 'In danger right now? Call:',
-    breathe: 'Breathe for 1 min',
-    more: 'When to get help',
-    close: 'Close',
-  },
   article: {
     kicker: 'Read · {minutes} min',
     sources: 'Sources',
