@@ -24,5 +24,11 @@ export function SupportCard({ mode, contacts }: SupportCardProps) {
     )
   }
 
-  return <SafetyPanel level="urgent" professionals={contacts.map((contact) => contact.name)} />
+  return (
+    <SafetyPanel
+      level="urgent"
+      intro={false}
+      professionals={contacts.map((contact) => contact.name)}
+    />
+  )
 }

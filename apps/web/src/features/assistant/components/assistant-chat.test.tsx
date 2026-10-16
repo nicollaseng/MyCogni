@@ -123,9 +123,7 @@ describe('AssistantChat', () => {
     expect(notice).toBe(
       'Que bom que você me contou. Você merece o apoio de uma pessoa agora: ligue para um dos contatos abaixo.',
     )
-    expect(card).toHaveTextContent(
-      'Você não precisa passar por isso sem apoio: fale com alguém agora.',
-    )
+    expect(card).not.toHaveTextContent('Você não precisa passar por isso sem apoio')
     expect(card).toHaveTextContent('Dra. Helena Prado acompanha você.')
     expect(within(card).getByRole('link', { name: '188 CVV' })).toHaveAttribute('href', 'tel:188')
     expect(within(card).getByRole('link', { name: '192 SAMU' })).toHaveAttribute('href', 'tel:192')
