@@ -19,10 +19,30 @@ describe('ambient catalog', () => {
     expect(defaultAmbientVolume).toBeLessThanOrEqual(0.15)
   })
 
-  it('has one loop file for every sound except silence', () => {
+  it('has one hashed loop file for every sound except silence', () => {
     expect(Object.keys(ambientLoopFiles).sort()).toEqual(
       ambientSoundIds.filter((id) => id !== 'none').sort(),
     )
+    for (const file of Object.values(ambientLoopFiles)) {
+      expect(file).toMatch(/^[a-z-]+\.[0-9a-f]{8}\.m4a$/)
+    }
+  })
+
+  it('offers the calm nature sounds first, brown noise next and silence last', () => {
+    expect(ambientSoundIds).toEqual([
+      'sea',
+      'rain',
+      'forest',
+      'night-forest',
+      'birdsong',
+      'meadow',
+      'campfire',
+      'mountain-wind',
+      'snow',
+      'owl',
+      'brown-noise',
+      'none',
+    ])
   })
 
   it('recognises sounds and scopes only', () => {

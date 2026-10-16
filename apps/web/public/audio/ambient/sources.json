@@ -1,5 +1,5 @@
 {
-  "note": "Background loops for the Zen Space. Every file is CC0 or produced for MyCogniAI and dedicated to the public domain. Loops were cut from the public 128 kbps previews, loudness-normalised to about -27 dBFS RMS and encoded as AAC-LC (about 72 kbps, 44.1 kHz stereo) with macOS afconvert.",
+  "note": "Background loops for the Zen Space. Every file is CC0 or produced for MyCogniAI and dedicated to the public domain. Loops were cut from the public 128 kbps previews of each Freesound page (licence checked on the page), loudness-normalised to about -27 dBFS RMS and encoded as AAC-LC (about 72 kbps, 44.1 kHz stereo) with macOS afconvert.",
   "files": [
     {
       "file": "sea.0cbaba80.m4a",
@@ -33,6 +33,83 @@
       "licence": "Creative Commons 0 (CC0 1.0 Universal)",
       "licenceUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
       "edit": "full 59 s, normalised"
+    },
+    {
+      "file": "night-forest.d095e9de.m4a",
+      "sound": "night-forest",
+      "title": "Crickets at night in a forest",
+      "author": "LukaCafuka",
+      "source": "https://freesound.org/people/LukaCafuka/sounds/750874/",
+      "audio": "https://cdn.freesound.org/previews/750/750874_16236894-hq.mp3",
+      "licence": "Creative Commons 0 (CC0 1.0 Universal)",
+      "licenceUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "edit": "75 s from 1:20, seam crossfaded 3 s, normalised"
+    },
+    {
+      "file": "birdsong.a8421468.m4a",
+      "sound": "birdsong",
+      "title": "Blackbird singing in garden with rustling trees in background",
+      "author": "Cinetony",
+      "source": "https://freesound.org/people/Cinetony/sounds/565058/",
+      "audio": "https://cdn.freesound.org/previews/565/565058_5985747-hq.mp3",
+      "licence": "Creative Commons 0 (CC0 1.0 Universal)",
+      "licenceUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "edit": "75 s from 0:01, seam crossfaded 3 s, normalised"
+    },
+    {
+      "file": "meadow.9bee5e72.m4a",
+      "sound": "meadow",
+      "title": "Summer afternoon Meadow ATM birds and crickets.wav",
+      "author": "DanGasior",
+      "source": "https://freesound.org/people/DanGasior/sounds/414907/",
+      "audio": "https://cdn.freesound.org/previews/414/414907_428137-hq.mp3",
+      "licence": "Creative Commons 0 (CC0 1.0 Universal)",
+      "licenceUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "edit": "75 s from 0:34, seam crossfaded 3 s, normalised, light peak limiting"
+    },
+    {
+      "file": "campfire.5c54ae99.m4a",
+      "sound": "campfire",
+      "title": "campfire.wav",
+      "author": "Spandau",
+      "source": "https://freesound.org/people/Spandau/sounds/40699/",
+      "audio": "https://cdn.freesound.org/previews/40/40699_25133-hq.mp3",
+      "licence": "Creative Commons 0 (CC0 1.0 Universal)",
+      "licenceUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "edit": "75 s from 0:33, seam crossfaded 3 s, normalised to -30 dBFS RMS because the crackles are peaky, light peak limiting"
+    },
+    {
+      "file": "mountain-wind.eca431ce.m4a",
+      "sound": "mountain-wind",
+      "title": "a gentle breeze, wind 1",
+      "author": "mario1298",
+      "source": "https://freesound.org/people/mario1298/sounds/181250/",
+      "audio": "https://cdn.freesound.org/previews/181/181250_499617-hq.mp3",
+      "licence": "Creative Commons 0 (CC0 1.0 Universal)",
+      "licenceUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "edit": "75 s from 0:06, seam crossfaded 3 s, normalised"
+    },
+    {
+      "file": "snow.2edbbd57.m4a",
+      "sound": "snow",
+      "title": "Snow Silence - 10min Ambient Winter Soundscape",
+      "author": "shouya_trumpet",
+      "source": "https://freesound.org/people/shouya_trumpet/sounds/842985/",
+      "audio": "https://cdn.freesound.org/previews/842/842985_16906169-hq.mp3",
+      "licence": "Creative Commons 0 (CC0 1.0 Universal)",
+      "licenceUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "edit": "70 s from 4:26, between the distant crow calls, seam crossfaded 3 s, normalised"
+    },
+    {
+      "file": "owl.dcd211a9.m4a",
+      "sound": "owl",
+      "title": "CricketsandTawnyOwl.wav",
+      "author": "raoul_slayer",
+      "source": "https://freesound.org/people/raoul_slayer/sounds/203598/",
+      "audio": "https://cdn.freesound.org/previews/203/203598_548893-hq.mp3",
+      "licence": "Creative Commons 0 (CC0 1.0 Universal)",
+      "licenceUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "edit": "62 s from 1:06 with one owl call sequence per loop, seam crossfaded 3 s, normalised after encoding"
     },
     {
       "file": "brown-noise.27aa3411.m4a",
