@@ -1,4 +1,5 @@
 import type {
+  EmergencyWhatsappInput,
   ProfessionalDocument,
   ProfessionalProfile,
   RegisterProfessionalInput,
@@ -19,6 +20,10 @@ export interface ProfessionalService {
   get(user: AuthenticatedUser): Promise<ProfessionalProfile>
   register(user: AuthenticatedUser, input: RegisterProfessionalInput): Promise<ProfessionalProfile>
   rename(user: AuthenticatedUser, input: UpdateProfessionalInput): Promise<ProfessionalProfile>
+  setEmergencyWhatsapp(
+    user: AuthenticatedUser,
+    input: EmergencyWhatsappInput,
+  ): Promise<ProfessionalProfile>
   submitDocument(
     user: AuthenticatedUser,
     input: SubmitProfessionalDocumentInput,
@@ -61,6 +66,13 @@ export function createProfessionalService(repository: ProfessionalRepository): P
     },
     async rename(user, input) {
       const record = await repository.rename(user.id, input.fullName)
+      if (record === undefined) {
+        throw new NotFoundError('Professional profile not found')
+      }
+      return toProfessional(record)
+    },
+    async setEmergencyWhatsapp(user, input) {
+      const record = await repository.setEmergencyWhatsapp(user.id, input.emergencyWhatsapp)
       if (record === undefined) {
         throw new NotFoundError('Professional profile not found')
       }

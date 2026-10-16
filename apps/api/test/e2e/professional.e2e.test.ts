@@ -94,6 +94,7 @@ describe('/v1/professional', () => {
       createdAt: expect.any(String),
       verifiedAt: null,
       reviewedAt: null,
+      emergencyWhatsapp: null,
       document: null,
     })
   })
@@ -159,6 +160,7 @@ describe('/v1/professional', () => {
       createdAt: expect.any(String),
       verifiedAt: null,
       reviewedAt: null,
+      emergencyWhatsapp: null,
       document: null,
     })
     expect(await profileOf(helena)).toEqual(

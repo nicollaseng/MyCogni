@@ -25,11 +25,16 @@ export const professionalProfiles = pgTable(
     verifiedAt: timestamp('verified_at', { withTimezone: true }),
     reviewNote: text('review_note'),
     reviewedAt: timestamp('reviewed_at', { withTimezone: true }),
+    emergencyWhatsapp: text('emergency_whatsapp'),
   },
   (table) => [
     check(
       'professional_profiles_review_note_length',
       sql`char_length(${table.reviewNote}) <= ${sql.raw(String(professionalDocumentLimits.reviewNote))}`,
+    ),
+    check(
+      'professional_profiles_emergency_whatsapp_format',
+      sql`${table.emergencyWhatsapp} ~ '^\\+[1-9][0-9]{7,14}$'`,
     ),
     pgPolicy('professional_profiles_select_own', {
       for: 'select',

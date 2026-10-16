@@ -20,7 +20,7 @@ describe('professional profiles', () => {
         .update(professionalProfiles)
         .set(changes)
         .where(eq(professionalProfiles.userId, professionalId))
-        .returning(),
+        .returning({ userId: professionalProfiles.userId }),
     )
   }
 
