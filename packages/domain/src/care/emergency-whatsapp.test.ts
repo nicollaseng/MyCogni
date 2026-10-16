@@ -1,5 +1,10 @@
 import { describe, expect, it } from '@jest/globals'
-import { emergencyWhatsappOf, isEmergencyWhatsapp, whatsappHref } from './emergency-whatsapp.ts'
+import {
+  emergencyWhatsappOf,
+  emergencyWhatsappParts,
+  isEmergencyWhatsapp,
+  whatsappHref,
+} from './emergency-whatsapp.ts'
 
 describe('isEmergencyWhatsapp', () => {
   it('accepts international numbers in E.164', () => {
@@ -23,9 +28,31 @@ describe('emergencyWhatsappOf', () => {
     expect(emergencyWhatsappOf('+351', '912 345 678')).toBe('+351912345678')
   })
 
+  it('keeps a full international number typed in the number field', () => {
+    expect(emergencyWhatsappOf('', '+351 912 345 678')).toBe('+351912345678')
+    expect(emergencyWhatsappOf('+55', '+351 912 345 678')).toBe('+351912345678')
+  })
+
   it('has nothing for a number that cannot be dialled', () => {
     expect(emergencyWhatsappOf('+55', '1234')).toBeNull()
     expect(emergencyWhatsappOf('+55', '')).toBeNull()
+  })
+})
+
+describe('emergencyWhatsappParts', () => {
+  it('starts with the Brazilian code and splits a saved Brazilian number', () => {
+    expect(emergencyWhatsappParts(null)).toEqual({ countryCode: '+55', number: '' })
+    expect(emergencyWhatsappParts('+5511987654321')).toEqual({
+      countryCode: '+55',
+      number: '11987654321',
+    })
+  })
+
+  it('keeps other countries whole in the number field', () => {
+    expect(emergencyWhatsappParts('+351912345678')).toEqual({
+      countryCode: '',
+      number: '+351912345678',
+    })
   })
 })
 

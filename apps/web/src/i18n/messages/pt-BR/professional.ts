@@ -277,6 +277,19 @@ export const professional = {
       locked:
         'Profissão e registro são conferidos pela equipe MyCogniAI. Para alterar, escreva para <link>{email}</link>.',
     },
+    whatsapp: {
+      label: 'WhatsApp para emergências',
+      empty: 'Não informado',
+      countryCode: 'Código do país',
+      number: 'Número',
+      placeholder: '11 98765-4321',
+      hint: 'Aparece para seus pacientes só quando o app identifica risco. Use um número que você acompanha.',
+      save: 'Salvar número',
+      saving: 'Salvando…',
+      clear: 'Remover número',
+      invalid: 'Confira o número e o código do país.',
+      error: 'Não conseguimos salvar agora. Tente de novo em instantes.',
+    },
     account: {
       title: 'Conta',
     },

@@ -49,10 +49,12 @@ export {
 export {
   defaultCountryCode,
   emergencyWhatsappOf,
+  emergencyWhatsappParts,
   emergencyWhatsappPattern,
   isEmergencyWhatsapp,
   maxEmergencyContacts,
   whatsappHref,
+  type EmergencyWhatsappParts,
 } from './care/emergency-whatsapp.ts'
 export {
   attentionReasons,

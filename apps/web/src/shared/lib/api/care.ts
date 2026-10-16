@@ -27,6 +27,7 @@ import {
   type CreatedInvitation,
   type CreateInvitationInput,
   type DocumentLink,
+  type EmergencyWhatsappInput,
   type InvitationPreview,
   type NotificationList,
   type PatientSummary,
@@ -114,9 +115,9 @@ export async function declineInvitation(id: string): Promise<void> {
   })
 }
 
-export function fetchCareLinks(): Promise<CareLink[]> {
-  return apiRequest({ path: '/v1/care-links', schema: careLinkListSchema })
-}
+export const fetchCareLinks = cache((): Promise<CareLink[]> =>
+  apiRequest({ path: '/v1/care-links', schema: careLinkListSchema }),
+)
 
 export async function endCareLink(id: string): Promise<void> {
   await apiRequest({
@@ -173,6 +174,15 @@ export function registerProfessional(
     path: '/v1/professional',
     schema: professionalProfileSchema,
     method: 'POST',
+    body,
+  })
+}
+
+export function setEmergencyWhatsapp(body: EmergencyWhatsappInput): Promise<ProfessionalProfile> {
+  return apiRequest({
+    path: '/v1/professional/emergency-whatsapp',
+    schema: professionalProfileSchema,
+    method: 'PUT',
     body,
   })
 }
