@@ -7,10 +7,10 @@ import { signOut } from '@/features/auth/actions'
 import { BellLink } from '@/features/care/components/bell-link'
 import { NotificationBell } from '@/features/care/components/notification-bell'
 import { HelpDisclosure } from '@/shared/components/help-disclosure'
+import type { LinkedProfessional } from '@/shared/lib/emergency-contacts'
 import { Wordmark } from '@/shared/components/wordmark'
 import { AccountMenu } from './account-menu'
 import { CurrentNavigation } from './current-navigation'
-import { FooterHelp } from './footer-help'
 import { FreshOnReturn } from './fresh-on-return'
 
 interface AppShellProps {
@@ -18,10 +18,18 @@ interface AppShellProps {
   email: string | null
   photoUrl: string | null
   timeZone: string
+  professionals: readonly LinkedProfessional[]
   children: ReactNode
 }
 
-export function AppShell({ name, email, photoUrl, timeZone, children }: AppShellProps) {
+export function AppShell({
+  name,
+  email,
+  photoUrl,
+  timeZone,
+  professionals,
+  children,
+}: AppShellProps) {
   const navigationLabel = useTranslations('common.navigation')('label')
 
   return (
@@ -50,9 +58,7 @@ export function AppShell({ name, email, photoUrl, timeZone, children }: AppShell
       </main>
 
       <footer className="mx-auto w-full max-w-3xl px-6 pb-28 sm:pb-12">
-        <Suspense fallback={<HelpDisclosure />}>
-          <FooterHelp />
-        </Suspense>
+        <HelpDisclosure professionals={professionals} />
       </footer>
 
       <AssistantLauncher actions={assistantActions} timeZone={timeZone} />
