@@ -28,6 +28,13 @@ export const common: CommonMessages = {
     intro: 'If you are in crisis or thinking about hurting yourself, call now:',
     disclaimer: 'MyCogniAI does not replace care from a professional.',
   },
+  whatsapp: {
+    list: 'WhatsApp of the people who support you',
+    talk: 'Message {name} now',
+    label: 'WhatsApp',
+    message:
+      'Hi {name}, this is urgent. I need help right now.\n\nMessage sent through the MyCogniAI app',
+  },
   loading: 'Loading',
   notFound: {
     title: 'This page does not exist.',

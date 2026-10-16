@@ -9,6 +9,7 @@ import { ZenTopBar } from '@/features/zen/components/zen-top-bar'
 import { fetchCareLinks } from '@/shared/lib/api/care'
 import { fetchStepProgress } from '@/shared/lib/api/zen'
 import { requireOnboardedProfile } from '@/shared/lib/auth/session'
+import { linkedProfessionalsOf } from '@/shared/lib/emergency-contacts'
 import { guarded } from '@/shared/lib/settled'
 
 export async function generateMetadata({
@@ -28,7 +29,7 @@ export default async function ZenTopicPage({ params }: PageProps<'/zen/topics/[i
   }
   const language = contentLanguageOf(locale)
   const topic = topics[id]
-  const professionals = careLinks.map((link) => link.professional.name)
+  const professionals = linkedProfessionalsOf(careLinks)
 
   return (
     <>

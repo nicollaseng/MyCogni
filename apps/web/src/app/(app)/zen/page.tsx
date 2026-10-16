@@ -19,6 +19,7 @@ import { fetchCareLinks } from '@/shared/lib/api/care'
 import { fetchAssessments, fetchCheckInsSince } from '@/shared/lib/api/resources'
 import { fetchStepProgress } from '@/shared/lib/api/zen'
 import { requireOnboardedProfile } from '@/shared/lib/auth/session'
+import { linkedProfessionalsOf } from '@/shared/lib/emergency-contacts'
 import { guarded } from '@/shared/lib/settled'
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -46,7 +47,7 @@ export default async function ZenPage() {
     latest: Object.values(latestByInstrument(assessments)),
     moodAverage: averageOf(checkIns.map((checkIn) => checkIn.moodLevel)),
   })
-  const professionals = careLinks.map((link) => link.professional.name)
+  const professionals = linkedProfessionalsOf(careLinks)
 
   return (
     <>

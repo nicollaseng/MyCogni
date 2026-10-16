@@ -10,6 +10,7 @@ function link(id: string, termsOutdated: boolean): CareLink {
       kind: 'psychologist',
       registration: null,
       photoUrl: null,
+      emergencyWhatsapp: null,
     },
     sharesHistory: false,
     startedAt: '2026-10-01T15:00:00.000Z',

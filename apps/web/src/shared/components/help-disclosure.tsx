@@ -1,10 +1,17 @@
 import { crisisLinesFor } from '@mycogni/domain'
 import { useLocale, useTranslations } from 'next-intl'
+import { emergencyContactsOf, type LinkedProfessional } from '@/shared/lib/emergency-contacts'
 import { Disclosure } from './disclosure'
+import { WhatsappRows } from './whatsapp-rows'
 
 const phoneLink = 'font-medium text-foreground underline decoration-1 underline-offset-4'
 
-export function HelpDisclosure({ className }: { className?: string }) {
+interface HelpDisclosureProps {
+  professionals?: readonly LinkedProfessional[]
+  className?: string
+}
+
+export function HelpDisclosure({ professionals = [], className }: HelpDisclosureProps) {
   const t = useTranslations('common.help')
   const lines = crisisLinesFor(useLocale())
 
@@ -25,6 +32,7 @@ export function HelpDisclosure({ className }: { className?: string }) {
             <span className="text-muted-foreground">{line.description}</span>
           </p>
         ))}
+        <WhatsappRows contacts={emergencyContactsOf(professionals)} />
         <p className="pt-2 text-muted-foreground">{t('disclaimer')}</p>
       </div>
     </Disclosure>

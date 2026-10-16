@@ -5,6 +5,7 @@ import type {
   AssistantOverview,
 } from '@mycogni/contracts'
 import type { ActionResult } from '@/shared/lib/actions/result'
+import type { LinkedProfessional } from '@/shared/lib/emergency-contacts'
 import type { AssistantTarget } from '@/shared/lib/api/assistant'
 
 export type { AssistantTarget }
@@ -15,13 +16,9 @@ export function showsAssistant(pathname: string): boolean {
   return assistantPaths.includes(pathname)
 }
 
-export interface SupportContact {
-  name: string
-}
-
 export interface AssistantState {
   overview: AssistantOverview
-  contacts: SupportContact[]
+  contacts: LinkedProfessional[]
 }
 
 export interface AssistantActions {

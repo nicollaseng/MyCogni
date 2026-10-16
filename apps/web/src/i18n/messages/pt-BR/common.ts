@@ -27,6 +27,13 @@ export const common = {
     intro: 'Se você está em crise ou pensando em se machucar, ligue agora:',
     disclaimer: 'O MyCogniAI não substitui acompanhamento profissional.',
   },
+  whatsapp: {
+    list: 'WhatsApp de quem acompanha você',
+    talk: 'Fale com {name} agora',
+    label: 'WhatsApp',
+    message:
+      'Oi {name}, isso é urgente. Estou precisando de ajuda agora.\n\nMensagem enviada através do app MyCogniAI',
+  },
   loading: 'Carregando',
   notFound: {
     title: 'Esta página não existe.',

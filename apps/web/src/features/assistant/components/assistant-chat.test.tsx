@@ -11,7 +11,7 @@ import { AssistantChat } from './assistant-chat'
 
 const personal: AssistantTarget = { mode: 'personal' }
 
-const contacts = [{ name: 'Dra. Helena Prado' }]
+const contacts = [{ name: 'Dra. Helena Prado', emergencyWhatsapp: null }]
 
 function renderChat(state: AssistantState, target: AssistantTarget = personal) {
   const actions = fakeActions(state)

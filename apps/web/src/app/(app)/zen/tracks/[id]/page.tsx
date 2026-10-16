@@ -21,6 +21,7 @@ import { stepTitle } from '@/features/zen/titles'
 import { fetchCareLinks } from '@/shared/lib/api/care'
 import { fetchStepProgress } from '@/shared/lib/api/zen'
 import { requireOnboardedProfile } from '@/shared/lib/auth/session'
+import { linkedProfessionalsOf } from '@/shared/lib/emergency-contacts'
 import { guarded } from '@/shared/lib/settled'
 
 export async function generateMetadata({
@@ -47,7 +48,7 @@ export default async function ZenTrackPage({ params }: PageProps<'/zen/tracks/[i
   const language = contentLanguageOf(locale)
   const text = trackText(language, id)
   const progress = progressOf(id, doneSteps)
-  const professionals = careLinks.map((link) => link.professional.name)
+  const professionals = linkedProfessionalsOf(careLinks)
 
   return (
     <>

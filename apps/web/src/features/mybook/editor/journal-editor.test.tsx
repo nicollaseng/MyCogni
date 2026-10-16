@@ -112,7 +112,7 @@ describe('JournalEditor support', () => {
       Promise.resolve({
         kind: 'saved',
         updatedAt: '2026-10-15T15:01:00.000Z',
-        safety: { professionals: ['Helena Prado'] },
+        safety: { professionals: [{ name: 'Helena Prado', emergencyWhatsapp: null }] },
       }),
     )
     const field = titleField()

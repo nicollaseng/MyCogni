@@ -1,11 +1,11 @@
 import type { AssistantMode } from '@mycogni/domain'
 import { useTranslations } from 'next-intl'
 import { SafetyPanel } from '@/features/safety/components/safety-panel'
-import type { SupportContact } from '../model'
+import type { LinkedProfessional } from '@/shared/lib/emergency-contacts'
 
 interface SupportCardProps {
   mode: AssistantMode
-  contacts: readonly SupportContact[]
+  contacts: readonly LinkedProfessional[]
 }
 
 export function SupportCard({ mode, contacts }: SupportCardProps) {
@@ -24,5 +24,5 @@ export function SupportCard({ mode, contacts }: SupportCardProps) {
     )
   }
 
-  return <SafetyPanel level="urgent" professionals={contacts.map((contact) => contact.name)} />
+  return <SafetyPanel level="urgent" professionals={contacts} />
 }

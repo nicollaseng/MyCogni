@@ -1,10 +1,11 @@
 import type { RiskLevel } from '@mycogni/domain'
 import { fetchCareLinks } from '@/shared/lib/api/care'
+import { linkedProfessionalsOf, type LinkedProfessional } from '@/shared/lib/emergency-contacts'
 import type { SafetyPrompt } from './model'
 
-async function linkedProfessionals(): Promise<string[]> {
+export async function linkedProfessionals(): Promise<LinkedProfessional[]> {
   try {
-    return (await fetchCareLinks()).map((link) => link.professional.name)
+    return linkedProfessionalsOf(await fetchCareLinks())
   } catch (cause) {
     console.error(cause)
     return []

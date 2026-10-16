@@ -5,6 +5,28 @@ import { renderWithIntl } from '@/test/render'
 import { HelpDisclosure } from './help-disclosure'
 
 describe('HelpDisclosure', () => {
+  it('adds the WhatsApp of the professionals who set one when the person opens it', async () => {
+    const user = userEvent.setup()
+    renderWithIntl(
+      <HelpDisclosure
+        professionals={[
+          { name: 'Helena Prado', emergencyWhatsapp: '+5511987654321' },
+          { name: 'Rui Lima', emergencyWhatsapp: null },
+        ]}
+      />,
+    )
+
+    await user.click(screen.getByRole('button', { name: 'Precisa de ajuda agora?' }))
+
+    expect(
+      screen.getByRole('link', { name: 'Fale com Helena Prado agora WhatsApp' }),
+    ).toHaveAttribute(
+      'href',
+      expect.stringMatching(/^https:\/\/wa\.me\/5511987654321\?text=Oi%20Helena%20Prado/),
+    )
+    expect(screen.queryByRole('link', { name: /Rui Lima/ })).not.toBeInTheDocument()
+  })
+
   it('stays discreet until the person asks for help', () => {
     renderWithIntl(<HelpDisclosure />)
 

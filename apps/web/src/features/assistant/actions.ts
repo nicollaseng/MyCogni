@@ -13,6 +13,7 @@ import {
   type AssistantTarget,
 } from '@/shared/lib/api/assistant'
 import { fetchCareLinks } from '@/shared/lib/api/care'
+import { linkedProfessionalsOf } from '@/shared/lib/emergency-contacts'
 import { ApiError } from '@/shared/lib/api/client'
 import { grantConsents } from '@/shared/lib/api/resources'
 import type { AssistantState } from './model'
@@ -41,7 +42,7 @@ export async function openAssistant(
     ])
     return {
       overview,
-      contacts: links.map((link) => ({ name: link.professional.name })),
+      contacts: linkedProfessionalsOf(links),
     }
   }, t('load'))
 }

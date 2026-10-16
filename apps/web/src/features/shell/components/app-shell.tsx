@@ -10,6 +10,7 @@ import { HelpDisclosure } from '@/shared/components/help-disclosure'
 import { Wordmark } from '@/shared/components/wordmark'
 import { AccountMenu } from './account-menu'
 import { CurrentNavigation } from './current-navigation'
+import { FooterHelp } from './footer-help'
 import { FreshOnReturn } from './fresh-on-return'
 
 interface AppShellProps {
@@ -49,7 +50,9 @@ export function AppShell({ name, email, photoUrl, timeZone, children }: AppShell
       </main>
 
       <footer className="mx-auto w-full max-w-3xl px-6 pb-28 sm:pb-12">
-        <HelpDisclosure />
+        <Suspense fallback={<HelpDisclosure />}>
+          <FooterHelp />
+        </Suspense>
       </footer>
 
       <AssistantLauncher actions={assistantActions} timeZone={timeZone} />

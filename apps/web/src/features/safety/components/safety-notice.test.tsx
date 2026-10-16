@@ -11,7 +11,11 @@ function panel(): HTMLElement {
 
 describe('SafetyNotice', () => {
   it('says one warm sentence, lists the lines to call and names who follows the person', () => {
-    renderWithIntl(<SafetyNotice prompt={{ professionals: ['Helena Prado'] }} />)
+    renderWithIntl(
+      <SafetyNotice
+        prompt={{ professionals: [{ name: 'Helena Prado', emergencyWhatsapp: null }] }}
+      />,
+    )
 
     expect(panel()).toHaveTextContent(
       'Você não precisa passar por isso sem apoio: fale com alguém agora.',
@@ -32,7 +36,16 @@ describe('SafetyNotice', () => {
   })
 
   it('names every linked professional', () => {
-    renderWithIntl(<SafetyNotice prompt={{ professionals: ['Helena Prado', 'Rui Lima'] }} />)
+    renderWithIntl(
+      <SafetyNotice
+        prompt={{
+          professionals: [
+            { name: 'Helena Prado', emergencyWhatsapp: null },
+            { name: 'Rui Lima', emergencyWhatsapp: null },
+          ],
+        }}
+      />,
+    )
 
     expect(panel()).toHaveTextContent('Helena Prado e Rui Lima acompanham você.')
   })
@@ -52,7 +65,9 @@ describe('SafetyNotice', () => {
 
   it('uses the lines of the person’s country', () => {
     const { unmount } = renderWithIntl(
-      <SafetyNotice prompt={{ professionals: ['Rita Sousa'] }} />,
+      <SafetyNotice
+        prompt={{ professionals: [{ name: 'Rita Sousa', emergencyWhatsapp: null }] }}
+      />,
       { locale: 'pt-PT' },
     )
     expect(
@@ -73,7 +88,65 @@ describe('SafetyNotice', () => {
   })
 })
 
+const helena = { name: 'Helena Prado', emergencyWhatsapp: '+5511987654321' }
+
 describe('SafetyPanel', () => {
+  it('lets the person write to their professional on WhatsApp with the message ready', () => {
+    renderWithIntl(
+      <SafetyPanel
+        level="urgent"
+        professionals={[helena, { name: 'Rui Lima', emergencyWhatsapp: null }]}
+      />,
+    )
+
+    const link = within(panel()).getByRole('link', { name: 'Fale com Helena Prado agora WhatsApp' })
+    expect(link).toHaveAttribute(
+      'href',
+      `https://wa.me/5511987654321?text=${encodeURIComponent(
+        'Oi Helena Prado, isso é urgente. Estou precisando de ajuda agora.\n\nMensagem enviada através do app MyCogniAI',
+      )}`,
+    )
+    expect(link).toHaveAttribute('target', '_blank')
+    expect(link).toHaveAttribute('rel', 'noopener noreferrer')
+    expect(within(panel()).queryByRole('link', { name: /Rui Lima/ })).not.toBeInTheDocument()
+    expect(panel()).toHaveTextContent('Rui Lima acompanha você.')
+    expect(panel()).not.toHaveTextContent('Helena Prado acompanha você.')
+  })
+
+  it('shows at most three professionals on WhatsApp', () => {
+    const many = ['Ana', 'Bia', 'Caio', 'Davi'].map((name, index) => ({
+      name,
+      emergencyWhatsapp: `+55119876543${String(index).padStart(2, '0')}`,
+    }))
+    renderWithIntl(<SafetyPanel level="urgent" professionals={many} />)
+
+    const rows = within(panel()).getByRole('list', { name: 'WhatsApp de quem acompanha você' })
+    expect(within(rows).getAllByRole('link')).toHaveLength(3)
+    expect(within(rows).queryByRole('link', { name: /Davi/ })).not.toBeInTheDocument()
+  })
+
+  it('keeps WhatsApp out of help the person looked for', () => {
+    renderWithIntl(<SafetyPanel level="watch" professionals={[helena]} />)
+
+    expect(within(panel()).queryByRole('link', { name: /WhatsApp/ })).not.toBeInTheDocument()
+    expect(panel()).toHaveTextContent('Helena Prado acompanha você.')
+  })
+
+  it('writes the message in the language of the person', () => {
+    renderWithIntl(<SafetyPanel level="urgent" professionals={[helena]} />, { locale: 'en-US' })
+
+    expect(
+      within(screen.getByRole('region', { name: 'Support now' })).getByRole('link', {
+        name: 'Message Helena Prado now WhatsApp',
+      }),
+    ).toHaveAttribute(
+      'href',
+      `https://wa.me/5511987654321?text=${encodeURIComponent(
+        'Hi Helena Prado, this is urgent. I need help right now.\n\nMessage sent through the MyCogniAI app',
+      )}`,
+    )
+  })
+
   it('stays gentle where the person looked for help', () => {
     renderWithIntl(<SafetyPanel level="watch" professionals={[]} />)
 
