@@ -1,4 +1,5 @@
 import {
+  emergencyWhatsappPattern,
   professionalDocumentLimits,
   professionalDocumentTypes,
   professionalKinds,
@@ -52,6 +53,7 @@ export const professionalProfileSchema = z.object({
   createdAt: timestamp,
   verifiedAt: timestamp.nullable(),
   reviewedAt: timestamp.nullable(),
+  emergencyWhatsapp: z.string().nullable(),
   document: professionalDocumentSchema.nullable(),
 })
 
@@ -62,3 +64,9 @@ export const updateProfessionalSchema = z
   .strict()
 
 export type UpdateProfessionalInput = z.infer<typeof updateProfessionalSchema>
+
+export const emergencyWhatsappSchema = z.object({
+  emergencyWhatsapp: z.string().regex(emergencyWhatsappPattern).nullable(),
+})
+
+export type EmergencyWhatsappInput = z.infer<typeof emergencyWhatsappSchema>

@@ -51,12 +51,14 @@ export {
   type GrantConsentsInput,
 } from './consents.ts'
 export {
+  emergencyWhatsappSchema,
   professionalDocumentSchema,
   professionalKindSchema,
   professionalProfileSchema,
   registerProfessionalSchema,
   submitProfessionalDocumentSchema,
   updateProfessionalSchema,
+  type EmergencyWhatsappInput,
   type ProfessionalDocument,
   type ProfessionalProfile,
   type RegisterProfessionalInput,

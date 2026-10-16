@@ -47,6 +47,14 @@ export {
   type ScreeningResult,
 } from './care/alerts.ts'
 export {
+  defaultCountryCode,
+  emergencyWhatsappOf,
+  emergencyWhatsappPattern,
+  isEmergencyWhatsapp,
+  maxEmergencyContacts,
+  whatsappHref,
+} from './care/emergency-whatsapp.ts'
+export {
   attentionReasons,
   attentionReasonsOf,
   inactiveAfterDays,
