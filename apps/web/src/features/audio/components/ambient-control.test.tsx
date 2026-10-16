@@ -68,6 +68,13 @@ describe('AmbientControl', () => {
     expect(screen.getByRole('button', { name: 'Som de fundo: Chuva' })).toBeVisible()
   })
 
+  it('names the chosen sound in the control', () => {
+    saveAudioPreferences({ sound: 'owl' })
+    renderAt('/zen')
+
+    expect(screen.getByRole('button', { name: 'Som de fundo: Coruja' })).toHaveTextContent('Coruja')
+  })
+
   it('respects a background sound turned off or set to none', () => {
     saveAudioPreferences({ scope: 'off' })
     const { unmount } = renderAt('/zen')
