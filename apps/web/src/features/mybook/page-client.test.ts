@@ -65,7 +65,7 @@ describe('browserPageClient.save', () => {
   })
 
   it('passes on the support the server offers after a save', async () => {
-    const safety = { level: 'urgent', professionals: ['Helena Prado'] }
+    const safety = { professionals: ['Helena Prado'] }
     respond(answer(200, { updatedAt: '2026-10-15T15:00:00.000Z', safety }))
 
     expect(await browserPageClient.save(entryId, input)).toEqual({

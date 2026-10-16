@@ -11,7 +11,7 @@ function panel(): HTMLElement {
 
 describe('SafetyNotice', () => {
   it('says one warm sentence, lists the lines to call and names who follows the person', () => {
-    renderWithIntl(<SafetyNotice prompt={{ level: 'urgent', professionals: ['Helena Prado'] }} />)
+    renderWithIntl(<SafetyNotice prompt={{ professionals: ['Helena Prado'] }} />)
 
     expect(panel()).toHaveTextContent(
       'Você não precisa passar por isso sem apoio: fale com alguém agora.',
@@ -25,26 +25,21 @@ describe('SafetyNotice', () => {
     expect(panel()).toHaveTextContent('Helena Prado acompanha você.')
   })
 
-  it('stays gentle on a worrying note and leaves out the professionals when there are none', () => {
-    renderWithIntl(<SafetyNotice prompt={{ level: 'watch', professionals: [] }} />)
+  it('leaves out the professionals when there are none', () => {
+    renderWithIntl(<SafetyNotice prompt={{ professionals: [] }} />)
 
-    expect(panel()).toHaveTextContent(
-      'Se ficar pesado, tem gente pronta para ouvir você, a qualquer hora.',
-    )
     expect(panel()).not.toHaveTextContent('acompanha')
   })
 
   it('names every linked professional', () => {
-    renderWithIntl(
-      <SafetyNotice prompt={{ level: 'urgent', professionals: ['Helena Prado', 'Rui Lima'] }} />,
-    )
+    renderWithIntl(<SafetyNotice prompt={{ professionals: ['Helena Prado', 'Rui Lima'] }} />)
 
     expect(panel()).toHaveTextContent('Helena Prado e Rui Lima acompanham você.')
   })
 
   it('folds into “Ajuda agora” when dismissed and opens again on a tap', async () => {
     const user = userEvent.setup()
-    renderWithIntl(<SafetyNotice prompt={{ level: 'urgent', professionals: [] }} />)
+    renderWithIntl(<SafetyNotice prompt={{ professionals: [] }} />)
 
     await user.click(within(panel()).getByRole('button', { name: 'Fechar apoio' }))
 
@@ -57,7 +52,7 @@ describe('SafetyNotice', () => {
 
   it('uses the lines of the person’s country', () => {
     const { unmount } = renderWithIntl(
-      <SafetyNotice prompt={{ level: 'urgent', professionals: ['Rita Sousa'] }} />,
+      <SafetyNotice prompt={{ professionals: ['Rita Sousa'] }} />,
       { locale: 'pt-PT' },
     )
     expect(
@@ -66,7 +61,7 @@ describe('SafetyNotice', () => {
     expect(panel()).toHaveTextContent('Rita Sousa segue o seu caso.')
     unmount()
 
-    renderWithIntl(<SafetyNotice prompt={{ level: 'urgent', professionals: [] }} />, {
+    renderWithIntl(<SafetyNotice prompt={{ professionals: [] }} />, {
       locale: 'en-GB',
     })
     const support = screen.getByRole('region', { name: 'Support now' })
@@ -79,6 +74,14 @@ describe('SafetyNotice', () => {
 })
 
 describe('SafetyPanel', () => {
+  it('stays gentle where the person looked for help', () => {
+    renderWithIntl(<SafetyPanel level="watch" professionals={[]} />)
+
+    expect(panel()).toHaveTextContent(
+      'Se ficar pesado, tem gente pronta para ouvir você, a qualquer hora.',
+    )
+  })
+
   it('can leave the sentence to the message above it', () => {
     renderWithIntl(<SafetyPanel level="urgent" intro={false} professionals={[]} />)
 

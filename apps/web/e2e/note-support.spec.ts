@@ -94,7 +94,7 @@ test('a note asking for help offers support and alerts the professional who can 
   await expect(page.getByText('Vontade de morrer')).toBeVisible()
 })
 
-test('a private page or a worrying note offers support without alerting the professional', async ({
+test('a private page offers support, a worrying note shows nothing, and neither alerts', async ({
   page,
 }) => {
   const pair = await linkedPair()
@@ -115,10 +115,9 @@ test('a private page or a worrying note offers support without alerting the prof
   await expect(saveStatus(page)).toHaveText('Salvo')
 
   await checkIn(page, 'Ando muito triste')
-  await expect(page.getByRole('region', { name: 'Apoio agora' })).toContainText(
-    'Se ficar pesado, tem gente pronta para ouvir você, a qualquer hora.',
-  )
+  await expect(page.getByRole('region', { name: 'Apoio agora' })).toHaveCount(0)
   await checkIn(page, 'Vontade de morrer')
+  await expect(page.getByRole('region', { name: 'Apoio agora' })).toBeVisible()
   await page.context().clearCookies()
 
   await signIn(page, pair.professionalEmail)

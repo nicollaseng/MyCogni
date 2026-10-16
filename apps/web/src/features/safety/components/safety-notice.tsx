@@ -25,7 +25,7 @@ export function SafetyNotice({ prompt, className }: SafetyNoticeProps) {
     <div className={className}>
       {open ? (
         <SafetyPanel
-          level={prompt.level}
+          level="urgent"
           professionals={prompt.professionals}
           onDismiss={() => {
             setOpen(false)
