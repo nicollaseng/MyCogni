@@ -93,7 +93,7 @@ test('answers a crisis message with the crisis card once, next to that answer', 
 
   const notice = chat.locator('[data-role="notice"]')
   await expect(notice).toContainText(
-    'Que bom que você me contou. Você merece o apoio de uma pessoa agora: ligue para um dos contatos abaixo.',
+    'Que bom que você me contou. Ligue agora para um dos contatos abaixo: você merece o apoio de uma pessoa. Você está em segurança neste momento?',
   )
   const card = notice.getByRole('region', { name: 'Apoio agora' })
   await expect(card).not.toContainText('Você não precisa passar por isso sem apoio')
