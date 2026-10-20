@@ -2,7 +2,7 @@ import type { AmbientSoundId } from '@mycogni/domain'
 
 export interface AmbientSnapshot {
   pathname: string
-  wanted: boolean
+  running: boolean
   previewing: AmbientSoundId | null
   ducks: number
 }
@@ -14,7 +14,7 @@ export interface AmbientSession {
 }
 
 export function createAmbientSession(pathname: string): AmbientSession {
-  let state: AmbientSnapshot = { pathname, wanted: false, previewing: null, ducks: 0 }
+  let state: AmbientSnapshot = { pathname, running: false, previewing: null, ducks: 0 }
   const listeners = new Set<() => void>()
 
   return {

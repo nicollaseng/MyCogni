@@ -72,6 +72,32 @@ async function openSheet() {
 }
 
 describe('ShareFlow', () => {
+  beforeEach(() => {
+    jest.useFakeTimers({
+      now,
+      doNotFake: [
+        'hrtime',
+        'nextTick',
+        'performance',
+        'queueMicrotask',
+        'requestAnimationFrame',
+        'cancelAnimationFrame',
+        'requestIdleCallback',
+        'cancelIdleCallback',
+        'setImmediate',
+        'clearImmediate',
+        'setInterval',
+        'clearInterval',
+        'setTimeout',
+        'clearTimeout',
+      ],
+    })
+  })
+
+  afterEach(() => {
+    jest.useRealTimers()
+  })
+
   it('asks for pages, then states who reads what until when', async () => {
     const share = jest.fn<Share>(succeed)
     renderFlow(share)
