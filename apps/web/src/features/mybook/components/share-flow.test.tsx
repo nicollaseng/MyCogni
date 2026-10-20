@@ -127,10 +127,10 @@ describe('ShareFlow', () => {
     await userEvent.click(sheet.getByRole('radio', { name: 'Até uma data' }))
     expect(sheet.getByText('Escolha uma data a partir de amanhã.')).toBeInTheDocument()
 
-    fireEvent.change(sheet.getByLabelText('Data final'), { target: { value: '2099-10-20' } })
+    fireEvent.change(sheet.getByLabelText('Data final'), { target: { value: '2026-10-20' } })
     expect(
       sheet.getByText(
-        'Helena Prado poderá ler todo o seu MyBook até 20 de outubro de 2099. Você pode encerrar quando quiser.',
+        'Helena Prado poderá ler todo o seu MyBook até 20 de outubro. Você pode encerrar quando quiser.',
       ),
     ).toBeInTheDocument()
 
@@ -138,7 +138,7 @@ describe('ShareFlow', () => {
     expect(share).toHaveBeenLastCalledWith({
       careLinkId,
       scope: 'all',
-      expiresAt: '2099-10-21T02:59:59.999Z',
+      expiresAt: '2026-10-21T02:59:59.999Z',
     })
     await waitFor(() => {
       expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
