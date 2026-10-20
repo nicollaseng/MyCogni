@@ -38,6 +38,10 @@ function today(page: Page): Locator {
   return page.getByRole('region', { name: 'Para hoje' })
 }
 
+function headerSound(page: Page, name: string): Locator {
+  return page.getByRole('button', { name: `Som de fundo: ${name}`, exact: true })
+}
+
 function step(page: Page, name: string): Locator {
   return page.getByRole('listitem', { name })
 }
@@ -194,14 +198,14 @@ test('plays the background sound on arrival in Zen and follows the sound chosen 
   page,
 }) => {
   await signInAsReadyPerson(page)
-  await expect(page.getByRole('button', { name: /Som de fundo/ })).toHaveCount(0)
+  await expect(page.getByRole('button', { name: /som de fundo/i })).toHaveCount(0)
 
   await mainNavigation(page).getByRole('link', { name: 'Zen' }).click()
-  const sea = page.getByRole('button', { name: 'Som de fundo: Mar', exact: true })
-  await expect(sea).toHaveAttribute('aria-pressed', 'true')
+  await expect(page.getByRole('button', { name: 'Pausar o som de fundo: Mar' })).toBeVisible()
+  await expect(headerSound(page, 'Mar')).toHaveCount(0)
   await page.getByRole('link', { name: 'Ansiedade', exact: true }).click()
   await expect(page).toHaveURL('/zen/topics/anxiety')
-  await expect(sea).toHaveAttribute('aria-pressed', 'true')
+  await expect(headerSound(page, 'Mar')).toHaveAttribute('aria-pressed', 'true')
 
   await page.goto('/me')
   const settings = page.getByRole('region', { name: 'Som e voz' })
@@ -210,38 +214,38 @@ test('plays the background sound on arrival in Zen and follows the sound chosen 
   await expect(settings.getByText('Essas escolhas ficam salvas só neste aparelho.')).toBeVisible()
 
   await mainNavigation(page).getByRole('link', { name: 'Hoje' }).click()
-  await expect(
-    page.getByRole('button', { name: 'Som de fundo: Chuva', exact: true }),
-  ).toHaveAttribute('aria-pressed', 'true')
+  await expect(headerSound(page, 'Chuva')).toHaveAttribute('aria-pressed', 'true')
   await mainNavigation(page).getByRole('link', { name: 'Zen' }).click()
-  await expect(page.getByRole('button', { name: 'Som de fundo: Chuva', exact: true })).toBeVisible()
+  await expect(page.getByRole('button', { name: 'Pausar o som de fundo: Chuva' })).toBeVisible()
+  await expect(headerSound(page, 'Chuva')).toHaveCount(0)
 
   await page.goto('/me')
   await page.getByRole('region', { name: 'Som e voz' }).getByText('Desligado').click()
   await mainNavigation(page).getByRole('link', { name: 'Zen' }).click()
   await expect(page.getByRole('heading', { level: 1, name: 'Zen Space' })).toBeVisible()
-  await expect(page.getByRole('button', { name: /Som de fundo/ })).toHaveCount(0)
+  await expect(page.getByRole('button', { name: /som de fundo/i })).toHaveCount(0)
 })
 
 test('remembers a pause across reloads until the person plays again', async ({ page }) => {
   await signInAsReadyPerson(page)
   await mainNavigation(page).getByRole('link', { name: 'Zen' }).click()
-  const sea = page.getByRole('button', { name: 'Som de fundo: Mar', exact: true })
-  await expect(sea).toHaveAttribute('aria-pressed', 'true')
 
-  await sea.click()
-  await expect(sea).toHaveAttribute('aria-pressed', 'false')
+  await page.getByRole('button', { name: 'Pausar o som de fundo: Mar' }).click()
+  await expect(page.getByRole('button', { name: 'Tocar o som de fundo: Mar' })).toBeVisible()
 
   await page.reload()
   await page.getByRole('heading', { level: 1, name: 'Zen Space' }).click()
   await page.keyboard.press('Tab')
-  await expect(sea).toHaveAttribute('aria-pressed', 'false')
+  await expect(page.getByRole('button', { name: 'Tocar o som de fundo: Mar' })).toBeVisible()
+  await page.goto('/zen/topics/sleep')
+  await expect(headerSound(page, 'Mar')).toHaveAttribute('aria-pressed', 'false')
 
-  await sea.click()
-  await expect(sea).toHaveAttribute('aria-pressed', 'true')
+  await page.goto('/zen')
+  await page.getByRole('button', { name: 'Tocar o som de fundo: Mar' }).click()
+  await expect(page.getByRole('button', { name: 'Pausar o som de fundo: Mar' })).toBeVisible()
   await page.reload()
   await page.getByRole('heading', { level: 1, name: 'Zen Space' }).click()
-  await expect(sea).toHaveAttribute('aria-pressed', 'true')
+  await expect(page.getByRole('button', { name: 'Pausar o som de fundo: Mar' })).toBeVisible()
 })
 
 test('chooses, previews and keeps each of the new background sounds', async ({ page }) => {
@@ -272,7 +276,7 @@ test('chooses, previews and keeps each of the new background sounds', async ({ p
     await expect(sound).toHaveValue(id)
     await page.goto('/zen')
     await expect(
-      page.getByRole('button', { name: `Som de fundo: ${name}`, exact: true }),
+      page.getByRole('button', { name: new RegExp(`o som de fundo: ${name}$`) }),
     ).toBeVisible()
     await page.goto('/me')
   }
