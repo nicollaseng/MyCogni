@@ -6,7 +6,7 @@ import {
   type PatientInsightContent,
   type ProfessionalInsightContent,
 } from '@mycogni/contracts'
-import type { Locale, PlainLevel, PlainTopic } from '@mycogni/domain'
+import type { Locale } from '@mycogni/domain'
 import { patientInsightSystemPrompt, professionalInsightSystemPrompt } from './insight-prompts.ts'
 
 export interface ClinicalScreening {
@@ -17,8 +17,8 @@ export interface ClinicalScreening {
 }
 
 export interface PlainScreening {
-  topic: PlainTopic
-  level: PlainLevel
+  topic: string
+  level: string
   day: string
 }
 

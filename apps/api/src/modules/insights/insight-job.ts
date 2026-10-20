@@ -3,8 +3,7 @@ import {
   insightLookbackDays,
   isInsightDue,
   isLocale,
-  plainLevelOf,
-  plainTopics,
+  plainWordsOf,
   type Locale,
 } from '@mycogni/domain'
 import type {
@@ -56,12 +55,11 @@ function clinicalScreening(screening: ScreeningRecord, timeZone: string): Clinic
   }
 }
 
-function plainScreening(screening: ScreeningRecord, timeZone: string): PlainScreening {
-  return {
-    topic: plainTopics[screening.instrument],
-    level: plainLevelOf(screening.severity),
+function plainScreening(locale: Locale) {
+  return (screening: ScreeningRecord, timeZone: string): PlainScreening => ({
+    ...plainWordsOf(locale, screening.instrument, screening.severity),
     day: dayKey(screening.completedAt, timeZone),
-  }
+  })
 }
 
 export function createInsightJob({
@@ -140,7 +138,7 @@ export function createInsightJob({
           subject.timezone,
           period,
           own,
-          { list: screenings, as: plainScreening },
+          { list: screenings, as: plainScreening(locale) },
           journal,
         ),
       )

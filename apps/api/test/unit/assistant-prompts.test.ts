@@ -52,9 +52,16 @@ describe('personal assistant prompt', () => {
       'Never name the questionnaires or quote their scores to the person: no "PHQ-9", no "GAD-7", no scores like "13 de 27".',
     )
     expect(personalAssistantPrompt).toContain(
-      'Call the depression questionnaire "ânimo" and the anxiety questionnaire "ansiedade"',
+      'as in "desânimo: alto", "ansiedade: ligeiro", "feeling down: high"',
     )
-    expect(personalAssistantPrompt).toContain('baixo, leve, moderado or alto')
+    expect(personalAssistantPrompt).toContain(
+      'In Brazilian Portuguese, the depression topic is "desânimo" and the anxiety topic is "ansiedade", with the levels baixo, leve, moderado, alto.',
+    )
+    expect(personalAssistantPrompt).toContain('with the levels baixo, ligeiro, moderado, alto.')
+    expect(personalAssistantPrompt).toContain(
+      'the depression topic is "feeling down" and the anxiety topic is "anxiety", with the levels low, mild, moderate, high.',
+    )
+    expect(personalAssistantPrompt).toContain('Never call the depression topic "ânimo" or "mood".')
     expect(personalAssistantPrompt).not.toMatch(/PHQ-9 and GAD-7 are screenings/)
     expect(professionalAssistantPrompt).toContain('PHQ-9 and GAD-7 are screenings, not diagnoses.')
     expect(professionalAssistantPrompt).not.toContain('ânimo')

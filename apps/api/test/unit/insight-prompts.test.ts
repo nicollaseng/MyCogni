@@ -8,7 +8,8 @@ describe('insight prompts', () => {
   it('keeps questionnaire names and scores out of what the person reads', () => {
     expect(patientInsightSystemPrompt).not.toMatch(/PHQ|GAD/)
     expect(patientInsightSystemPrompt).toContain('never give scores, points or score ranges')
-    expect(patientInsightSystemPrompt).toContain('"low", "mild", "moderate" or "high"')
+    expect(patientInsightSystemPrompt).toContain('as in "desânimo: alto" or "feeling down: high"')
+    expect(patientInsightSystemPrompt).toContain('never another name such as "ânimo"')
   })
 
   it('keeps the clinical detail for professionals', () => {

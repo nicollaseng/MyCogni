@@ -149,8 +149,8 @@ describe('insights', () => {
     expect(writer.professional.at(-1)?.checkIns).toHaveLength(1)
     expect(writer.professional.at(-1)?.journal).toEqual([])
     expect(writer.patient.at(-1)?.screenings).toContainEqual({
-      topic: 'mood',
-      level: 'moderate',
+      topic: 'desânimo',
+      level: 'moderado',
       day: expect.any(String),
     })
     expect(JSON.stringify(writer.patient.at(-1)?.screenings)).not.toMatch(/phq9|totalScore/)
