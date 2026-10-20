@@ -1,5 +1,18 @@
-import { dayKey, insightLookbackDays, isInsightDue, isLocale, type Locale } from '@mycogni/domain'
-import type { InsightRecords, InsightWriter } from '../../ai/insight-writer.ts'
+import {
+  dayKey,
+  insightLookbackDays,
+  isInsightDue,
+  isLocale,
+  plainLevelOf,
+  plainTopics,
+  type Locale,
+} from '@mycogni/domain'
+import type {
+  ClinicalScreening,
+  InsightRecords,
+  InsightWriter,
+  PlainScreening,
+} from '../../ai/insight-writer.ts'
 import type { JobScheduler } from '../../jobs/scheduler.ts'
 import type { AssessmentRepository } from '../assessments/assessment.repository.ts'
 import type { CheckInRecord, CheckInRepository } from '../check-ins/check-in.repository.ts'
@@ -32,6 +45,25 @@ const checkInLimit = 200
 
 const fallbackLocale: Locale = 'pt-BR'
 
+type ScreeningRecord = Awaited<ReturnType<AssessmentRepository['list']>>[number]
+
+function clinicalScreening(screening: ScreeningRecord, timeZone: string): ClinicalScreening {
+  return {
+    instrument: screening.instrument,
+    totalScore: screening.totalScore,
+    severity: screening.severity,
+    day: dayKey(screening.completedAt, timeZone),
+  }
+}
+
+function plainScreening(screening: ScreeningRecord, timeZone: string): PlainScreening {
+  return {
+    topic: plainTopics[screening.instrument],
+    level: plainLevelOf(screening.severity),
+    day: dayKey(screening.completedAt, timeZone),
+  }
+}
+
 export function createInsightJob({
   insights,
   checkIns,
@@ -40,14 +72,17 @@ export function createInsightJob({
   alerts,
   now,
 }: InsightJobDependencies): InsightJob {
-  function toRecords(
+  function toRecords<Screening>(
     locale: Locale,
     timeZone: string,
     period: { start: Date; end: Date },
     records: CheckInRecord[],
-    screenings: Awaited<ReturnType<AssessmentRepository['list']>>,
+    screenings: {
+      list: ScreeningRecord[]
+      as: (screening: ScreeningRecord, timeZone: string) => Screening
+    },
     journal: JournalExcerpt[],
-  ): InsightRecords {
+  ): InsightRecords<Screening> {
     return {
       locale,
       period: { start: dayKey(period.start, timeZone), end: dayKey(period.end, timeZone) },
@@ -58,17 +93,12 @@ export function createInsightJob({
         contexts: record.contexts,
         note: record.note,
       })),
-      screenings: screenings
+      screenings: screenings.list
         .filter(
           (screening) =>
             screening.completedAt.getTime() >= period.start.getTime() - 14 * dayInMilliseconds,
         )
-        .map((screening) => ({
-          instrument: screening.instrument,
-          totalScore: screening.totalScore,
-          severity: screening.severity,
-          day: dayKey(screening.completedAt, timeZone),
-        })),
+        .map((screening) => screenings.as(screening, timeZone)),
       journal: journal.map((entry) => ({
         day: dayKey(entry.updatedAt, timeZone),
         title: entry.title,
@@ -105,7 +135,14 @@ export function createInsightJob({
           : Promise.resolve([]),
       ])
       const content = await writer.forPatient(
-        toRecords(locale, subject.timezone, period, own, screenings, journal),
+        toRecords(
+          locale,
+          subject.timezone,
+          period,
+          own,
+          { list: screenings, as: plainScreening },
+          journal,
+        ),
       )
       if (content === null) {
         return { kind: 'skipped', reason: 'declined' }
@@ -129,7 +166,14 @@ export function createInsightJob({
         const theirScreenings = await assessments.list(link.professionalId, patientId)
         const professionalLocale = isLocale(link.locale) ? link.locale : locale
         const written = await writer.forProfessional(
-          toRecords(professionalLocale, subject.timezone, period, visible, theirScreenings, []),
+          toRecords(
+            professionalLocale,
+            subject.timezone,
+            period,
+            visible,
+            { list: theirScreenings, as: clinicalScreening },
+            [],
+          ),
         )
         if (written !== null) {
           const insightId = await insights.save({
