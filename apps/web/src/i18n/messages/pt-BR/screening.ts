@@ -13,13 +13,16 @@ export const screening = {
     moderately_severe: 'Recomendamos conversar com um profissional de saúde em breve.',
     severe: 'Recomendamos procurar um profissional de saúde o quanto antes.',
   },
-  score: {
-    outOf: 'de {max}',
-  },
-  comparison: {
-    same: 'Igual a {day}',
-    up: '{points, plural, =0 {# pontos} one {# ponto} other {# pontos}} a mais que em {day}',
-    down: '{points, plural, =0 {# pontos} one {# ponto} other {# pontos}} a menos que em {day}',
+  plain: {
+    title: 'Ânimo e ansiedade',
+    names: labels.plainNames,
+    levels: labels.plainLevels,
+    trend: {
+      same: 'Igual à última vez',
+      better: 'Melhor que da última vez',
+      higher: 'Mais alto que da última vez',
+    },
+    level: '{name}: {level}',
   },
   questionnaire: {
     back: 'Voltar',
@@ -40,7 +43,7 @@ export const screening = {
   retake: {
     close: 'Fechar',
     title: 'Como foram as últimas duas semanas?',
-    firstTime: 'São 16 perguntas do PHQ-9 e do GAD-7, uma por tela.',
+    firstTime: 'São 16 perguntas sobre ânimo e ansiedade, uma por tela.',
     since: 'Da última vez você respondeu em {date}. No fim, você vê o que mudou desde então.',
     honest: 'Não existe resposta certa. Responda pensando em como as coisas foram de verdade.',
     start: 'Começar',
@@ -50,8 +53,8 @@ export const screening = {
     zen: 'Ver sugestões no Zen Space',
   },
   latest: {
-    title: 'Seus questionários',
-    empty: 'Você ainda não respondeu o PHQ-9 e o GAD-7.',
+    title: 'Ânimo e ansiedade',
+    empty: 'Você ainda não respondeu os questionários.',
     answeredOn: 'Respondidos em {date}. É uma triagem, não um diagnóstico.',
     retake: 'Refazer os questionários',
     next: 'Sugerimos responder de novo a partir de {date}, para ver como você muda.',
@@ -59,6 +62,7 @@ export const screening = {
   },
   history: {
     title: 'Histórico',
+    day: 'Dia',
   },
   errors: {
     save: 'Não conseguimos salvar suas respostas agora. Tente de novo em instantes.',

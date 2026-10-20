@@ -27,7 +27,7 @@ describe('PatternsOverview', () => {
       'Dias da semana0 de 14 dias',
       'Emoções e contextos0 de 5 registros',
       'O que acompanha seus dias0 de 8 dias',
-      'Questionários1 de 2 respostas',
+      'Ânimo e ansiedade1 de 2 respostas',
     ])
     expect(within(upcoming).queryByText('Resumo automático')).not.toBeInTheDocument()
     expect(screen.queryByText(/Não é um diagnóstico/)).not.toBeInTheDocument()
@@ -43,7 +43,7 @@ describe('PatternsOverview', () => {
       'O que acompanha seus dias melhores',
       'Dias da semana',
       'Emoções e contextos',
-      'Questionários',
+      'Ânimo e ansiedade',
     ])
     const summary = screen.getByRole('region', { name: 'Em resumo' })
     expect(summary).toHaveTextContent('Dias com registro26 de 30')
@@ -79,13 +79,13 @@ describe('PatternsOverview', () => {
       screen.queryByRole('region', { name: 'O que acompanha seus dias melhores' }),
     ).not.toBeInTheDocument()
     expect(screen.getByRole('region', { name: 'Em breve' })).toHaveTextContent(
-      'Questionários1 de 2 respostas',
+      'Ânimo e ansiedade1 de 2 respostas',
     )
     unmount()
 
     renderWithIntl(<PatternsOverview model={patternsOf(90)} timeZone={patternsZone} />)
     expect(screen.getByRole('region', { name: 'Em resumo' })).toHaveTextContent('51 de 90')
-    expect(screen.getByRole('region', { name: 'Questionários' })).toBeVisible()
+    expect(screen.getByRole('region', { name: 'Ânimo e ansiedade' })).toBeVisible()
   })
 
   it('collapses what is still locked into one list with progress', () => {

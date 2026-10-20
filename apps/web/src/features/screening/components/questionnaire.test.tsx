@@ -16,7 +16,7 @@ describe('Questionnaire', () => {
       <Questionnaire instrument={phq9} send={fakeActions().submitScreening} onDone={jest.fn()} />,
     )
 
-    expect(screen.getByText('PHQ-9 · 1 de 9')).toBeInTheDocument()
+    expect(screen.getByText('Desânimo · 1 de 9')).toBeInTheDocument()
     expect(screen.getByText(instrumentText('pt-BR', 'phq9').prompt)).toBeInTheDocument()
     expect(
       screen.getByRole('heading', { name: 'Pouco interesse ou pouco prazer em fazer as coisas' }),
@@ -31,7 +31,7 @@ describe('Questionnaire', () => {
 
     await answer('Vários dias')
 
-    expect(await screen.findByText('GAD-7 · 2 de 7')).toBeInTheDocument()
+    expect(await screen.findByText('Ansiedade · 2 de 7')).toBeInTheDocument()
     expect(
       screen.getByRole('heading', { name: instrumentText('pt-BR', 'gad7').items[1] }),
     ).toBeInTheDocument()
@@ -53,7 +53,7 @@ describe('Questionnaire', () => {
 
     const choices = ['Nenhuma vez', 'Vários dias', 'Mais da metade dos dias', 'Quase todos os dias']
     for (const [index, value] of [0, 1, 2, 3, 0, 1, 2].entries()) {
-      await screen.findByText(`GAD-7 · ${String(index + 1)} de 7`)
+      await screen.findByText(`Ansiedade · ${String(index + 1)} de 7`)
       await answer(choices[value] ?? '')
     }
 
@@ -74,7 +74,7 @@ describe('Questionnaire', () => {
     renderWithIntl(<Questionnaire instrument={gad7} send={send} onDone={onDone} />)
 
     for (let index = 1; index <= 7; index++) {
-      await screen.findByText(`GAD-7 · ${String(index)} de 7`)
+      await screen.findByText(`Ansiedade · ${String(index)} de 7`)
       await answer('Nenhuma vez')
     }
 
@@ -116,13 +116,13 @@ describe('Questionnaire', () => {
       { locale: 'en-US' },
     )
 
-    expect(screen.getByText('GAD-7 · 1 of 7')).toBeInTheDocument()
+    expect(screen.getByText('Anxiety · 1 of 7')).toBeInTheDocument()
     expect(
       screen.getByRole('heading', { name: 'Feeling nervous, anxious or on edge' }),
     ).toBeInTheDocument()
 
     await answer('Several days')
-    expect(await screen.findByText('GAD-7 · 2 of 7')).toBeInTheDocument()
+    expect(await screen.findByText('Anxiety · 2 of 7')).toBeInTheDocument()
     await userEvent.click(screen.getByRole('button', { name: 'Back' }))
 
     expect(screen.getByRole('button', { name: 'Several days' })).toHaveAttribute(

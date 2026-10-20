@@ -4,7 +4,7 @@ import type { CommonMessages } from '../pt-BR/common'
 export const common: CommonMessages = {
   meta: {
     description:
-      'Diário de humor: um registo por dia e PHQ-9 e GAD-7 a cada duas semanas para ver como a ansiedade e o humor mudam.',
+      'Diário de humor: um registo por dia e perguntas sobre ânimo e ansiedade a cada duas semanas para ver como vai mudando.',
   },
   navigation: {
     label: 'Navegação principal',

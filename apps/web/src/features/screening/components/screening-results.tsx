@@ -1,59 +1,23 @@
 import type { Assessment } from '@mycogni/contracts'
-import { crisisLinesFor, instruments } from '@mycogni/domain'
+import { crisisLinesFor } from '@mycogni/domain'
 import { useLocale, useTranslations } from 'next-intl'
-import { comparisonOf } from '../compare'
-import { ScoreScale } from './score-scale'
+import { plainResultOf, type LatestResults, type PlainResult } from '../latest'
+import { PlainScale } from './plain-scale'
 
-export interface PreviousResults {
-  depression?: Assessment
-  anxiety?: Assessment
-  timeZone: string
-}
-
-interface ResultProps {
-  assessment: Assessment
-  previous: Assessment | undefined
-  timeZone: string | undefined
-}
-
-function Result({ assessment, previous, timeZone }: ResultProps) {
+function Result({ result }: { result: PlainResult }) {
   const t = useTranslations('screening')
-  const locale = useLocale()
-  const instrument = instruments[assessment.instrument]
-  const topic = t(`topics.${assessment.instrument}`)
-  const comparison =
-    previous === undefined || timeZone === undefined
-      ? undefined
-      : comparisonOf(assessment, previous, timeZone, locale)
+  const name = t(`plain.names.${result.assessment.instrument}`)
   return (
-    <section aria-label={topic}>
-      <h2 className="text-sm text-muted-foreground">
-        {topic}
-        <span className="whitespace-nowrap"> · {instrument.name}</span>
-      </h2>
-      <p className="mt-2 flex items-baseline gap-1.5">
-        <span className="font-serif text-[34px] leading-none tracking-[-0.02em]">
-          {assessment.totalScore}
-        </span>
-        <span className="text-sm text-muted-foreground">
-          {t('score.outOf', { max: assessment.maxScore })}
-        </span>
-        <span className="ml-auto text-right text-sm font-medium">
-          {t(`severity.${assessment.severity}`)}
-        </span>
+    <section aria-label={name}>
+      <h2 className="text-sm text-muted-foreground">{name}</h2>
+      <p className="mt-2 font-serif text-[34px] leading-none tracking-[-0.02em]">
+        {t(`plain.levels.${result.level}`)}
       </p>
-      <ScoreScale instrument={instrument} score={assessment.totalScore} />
-      <p className="mt-2 text-sm leading-relaxed text-pretty text-muted-foreground">
-        {t(`guidance.${assessment.severity}`)}
+      <PlainScale level={result.level} className="mt-4 max-w-60" />
+      <p className="mt-3 text-sm leading-relaxed text-pretty text-muted-foreground">
+        {t(`guidance.${result.assessment.severity}`)}
       </p>
-      {comparison !== undefined && (
-        <p className="mt-2 text-sm">
-          {t(`comparison.${comparison.change}`, {
-            points: comparison.points,
-            day: comparison.day,
-          })}
-        </p>
-      )}
+      {result.trend !== null && <p className="mt-2 text-sm">{t(`plain.trend.${result.trend}`)}</p>}
     </section>
   )
 }
@@ -82,18 +46,14 @@ function RiskNote() {
 interface ScreeningResultsProps {
   depression: Assessment
   anxiety: Assessment
-  previous?: PreviousResults
+  previous?: LatestResults
 }
 
-export function ScreeningResults({ depression, anxiety, previous }: ScreeningResultsProps) {
+export function ScreeningResults({ depression, anxiety, previous = {} }: ScreeningResultsProps) {
   return (
     <div className="space-y-8">
-      <Result
-        assessment={depression}
-        previous={previous?.depression}
-        timeZone={previous?.timeZone}
-      />
-      <Result assessment={anxiety} previous={previous?.anxiety} timeZone={previous?.timeZone} />
+      <Result result={plainResultOf(depression, previous.phq9)} />
+      <Result result={plainResultOf(anxiety, previous.gad7)} />
       {depression.hasRiskFlag && <RiskNote />}
     </div>
   )

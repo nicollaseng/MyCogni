@@ -46,7 +46,7 @@ test('takes a new person from consent to results, with support when item 9 is fl
 }) => {
   await reachQuestions(page)
 
-  await answer(page, 'PHQ-9', 9, [
+  await answer(page, 'Desânimo', 9, [
     ...Array.from({ length: 8 }, () => 'Mais da metade dos dias'),
     'Vários dias',
   ])
@@ -60,16 +60,16 @@ test('takes a new person from consent to results, with support when item 9 is fl
 
   await answer(
     page,
-    'GAD-7',
+    'Ansiedade',
     7,
     Array.from({ length: 7 }, () => 'Vários dias'),
   )
 
   await expect(page.getByRole('heading', { name: 'Seu ponto de partida.' })).toBeVisible()
-  const depression = page.getByRole('region', { name: 'Sinais de depressão' })
-  await expect(depression).toContainText('17de 27')
-  await expect(depression).toContainText('Moderadamente grave')
-  await expect(page.getByRole('region', { name: 'Sinais de ansiedade' })).toContainText('7de 21')
+  const depression = page.getByRole('region', { name: 'Desânimo' })
+  await expect(depression).toContainText('DesânimoAlto')
+  await expect(depression).not.toContainText(/de 27|PHQ/)
+  await expect(page.getByRole('region', { name: 'Ansiedade' })).toContainText('AnsiedadeLeve')
   await expect(page.getByRole('link', { name: '188' })).toBeVisible()
 
   await page.getByRole('button', { name: 'Começar a usar' }).click()
@@ -83,15 +83,15 @@ test('picks up where the person stopped', async ({ page }) => {
   await reachQuestions(page)
   await answer(
     page,
-    'PHQ-9',
+    'Desânimo',
     9,
     Array.from({ length: 9 }, () => 'Nenhuma vez'),
   )
-  await expect(page.getByText('GAD-7 · 1 de 7')).toBeVisible()
+  await expect(page.getByText('Ansiedade · 1 de 7')).toBeVisible()
 
   await page.reload()
 
-  await expect(page.getByText('GAD-7 · 1 de 7')).toBeVisible()
+  await expect(page.getByText('Ansiedade · 1 de 7')).toBeVisible()
 })
 
 test('keeps the app closed until onboarding is done', async ({ page }) => {
@@ -115,12 +115,12 @@ test('fits each question on the screen without scrolling', async ({ page }) => {
   await reachQuestions(page)
   await answer(
     page,
-    'PHQ-9',
+    'Desânimo',
     9,
     Array.from({ length: 7 }, () => 'Nenhuma vez'),
   )
 
-  await expect(page.getByText('PHQ-9 · 8 de 9')).toBeVisible()
+  await expect(page.getByText('Desânimo · 8 de 9')).toBeVisible()
   const fits = await page.evaluate(() => {
     const root = document.scrollingElement
     return root !== null && root.scrollHeight <= window.innerHeight + 1

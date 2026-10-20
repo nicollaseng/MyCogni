@@ -2,7 +2,12 @@ import { afterAll, beforeAll, describe, expect, it } from '@jest/globals'
 import type { PatientInsightContent, ProfessionalInsightContent } from '@mycogni/contracts'
 import { sharingConsentVersion } from '@mycogni/domain'
 import { eq, sql } from 'drizzle-orm'
-import type { InsightRecords, InsightWriter } from '../../src/ai/insight-writer.ts'
+import type {
+  ClinicalScreening,
+  InsightRecords,
+  InsightWriter,
+  PlainScreening,
+} from '../../src/ai/insight-writer.ts'
 import { connectDatabase, type DatabaseConnection } from '../../src/db/client.ts'
 import { checkIns, invitations, journalEntries, notifications } from '../../src/db/schema/index.ts'
 import { expireInvitations } from '../../src/jobs/expire-invitations.ts'
@@ -18,10 +23,10 @@ import { buildTestApp, supabaseVerifier } from '../support/test-app.ts'
 
 class RecordingWriter implements InsightWriter {
   readonly model = 'test-model'
-  readonly patient: InsightRecords[] = []
-  readonly professional: InsightRecords[] = []
+  readonly patient: InsightRecords<PlainScreening>[] = []
+  readonly professional: InsightRecords<ClinicalScreening>[] = []
 
-  forPatient(records: InsightRecords): Promise<PatientInsightContent> {
+  forPatient(records: InsightRecords<PlainScreening>): Promise<PatientInsightContent> {
     this.patient.push(records)
     return Promise.resolve({
       summary: `Semana com ${String(records.checkIns.length)} registros.`,
@@ -30,7 +35,7 @@ class RecordingWriter implements InsightWriter {
     })
   }
 
-  forProfessional(records: InsightRecords): Promise<ProfessionalInsightContent> {
+  forProfessional(records: InsightRecords<ClinicalScreening>): Promise<ProfessionalInsightContent> {
     this.professional.push(records)
     return Promise.resolve({
       summary: 'Humor estável.',
@@ -130,6 +135,10 @@ describe('insights', () => {
     await connection.db
       .insert(journalEntries)
       .values({ userId: ana.id, title: 'Privado', plainText: 'texto do diário' })
+    await post(ana, '/v1/assessments', {
+      instrument: 'phq9',
+      answers: [2, 2, 2, 2, 2, 1, 1, 1, 0],
+    })
 
     const outcome = await job.run(ana.id)
 
@@ -139,6 +148,15 @@ describe('insights', () => {
     expect(writer.patient.at(-1)?.locale).toBe('pt-BR')
     expect(writer.professional.at(-1)?.checkIns).toHaveLength(1)
     expect(writer.professional.at(-1)?.journal).toEqual([])
+    expect(writer.patient.at(-1)?.screenings).toContainEqual({
+      topic: 'desânimo',
+      level: 'moderado',
+      day: expect.any(String),
+    })
+    expect(JSON.stringify(writer.patient.at(-1)?.screenings)).not.toMatch(/phq9|totalScore/)
+    expect(writer.professional.at(-1)?.screenings).toContainEqual(
+      expect.objectContaining({ instrument: 'phq9', totalScore: 13, severity: 'moderate' }),
+    )
     expect(summaries).toHaveLength(1)
     const bell = await connection.db
       .select()

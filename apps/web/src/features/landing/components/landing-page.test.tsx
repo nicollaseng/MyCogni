@@ -61,10 +61,10 @@ describe('LandingPage', () => {
     expect(within(ai).getByText('Não diagnostica e não fala de remédio.')).toBeInTheDocument()
   })
 
-  it('previews the PHQ-9 with its validated answer options', () => {
+  it('previews a question with its validated answer options, in plain words', () => {
     renderWithIntl(<LandingPage chooseLocale={chooseLocale()} />)
 
-    expect(screen.getByText('PHQ-9 · pergunta 2 de 9')).toBeInTheDocument()
+    expect(screen.getByText('Desânimo · pergunta 2 de 9')).toBeInTheDocument()
     expect(screen.getByText('Mais da metade dos dias')).toBeInTheDocument()
   })
 

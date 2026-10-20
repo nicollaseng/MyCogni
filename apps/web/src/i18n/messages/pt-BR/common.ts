@@ -3,7 +3,7 @@ import { labelsFor } from '@mycogni/domain'
 export const common = {
   meta: {
     description:
-      'Diário de humor: um registro por dia e PHQ-9 e GAD-7 a cada duas semanas para ver como ansiedade e humor mudam.',
+      'Diário de humor: um registro por dia e perguntas sobre ânimo e ansiedade a cada duas semanas para ver como você muda.',
   },
   navigation: {
     label: 'Navegação principal',

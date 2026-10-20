@@ -32,11 +32,10 @@ export const zen: ZenMessages = {
     retake: 'Responder de novo aos questionários',
     reasons: {
       risk_item:
-        'No seu PHQ-9 mais recente, referiu ter pensado que seria melhor estar morto/a ou em magoar-se.',
-      severe_result:
-        'Um dos seus questionários mais recentes ficou no nível grave ou moderadamente grave.',
-      anxiety: 'O seu GAD-7 mais recente ficou no nível moderado ou acima.',
-      depression: 'O seu PHQ-9 mais recente ficou no nível moderado ou acima.',
+        'Na sua última resposta, referiu ter pensado que seria melhor estar morto/a ou em magoar-se.',
+      severe_result: 'Uma das suas últimas respostas ficou em alto.',
+      anxiety: 'A sua última resposta sobre ansiedade ficou em moderado ou acima.',
+      depression: 'A sua última resposta sobre desânimo ficou em moderado ou acima.',
       low_mood: 'O humor médio dos seus registos dos últimos 7 dias ficou baixo.',
       starting: 'Nada nos seus resultados pede atenção agora. O sono é um bom começo.',
     },

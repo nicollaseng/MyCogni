@@ -18,7 +18,7 @@ export const landing: LandingMessages = {
     kicker: 'Diário de humor',
     question: 'Como se sente agora?',
     intro:
-      'Arraste e veja o mapa responder. Um registo demora menos de um minuto e, a cada duas semanas, o <nowrap>PHQ-9</nowrap> e o <nowrap>GAD-7</nowrap> mostram como a ansiedade e o humor mudam ao longo do tempo.',
+      'Arraste e veja o mapa responder. Um registo demora menos de um minuto e, a cada duas semanas, algumas perguntas sobre ânimo e ansiedade mostram como vai mudando ao longo do tempo.',
   },
   howItWorks: {
     title: 'Um minuto por dia, um retrato a cada duas semanas.',
@@ -31,7 +31,7 @@ export const landing: LandingMessages = {
       answer: {
         title: 'Responda',
         description:
-          'A cada duas semanas, o PHQ-9 e o GAD-7, questionários usados em todo o mundo para acompanhar a depressão e a ansiedade.',
+          'A cada duas semanas, perguntas curtas sobre ânimo e ansiedade, usadas em todo o mundo.',
       },
       understand: {
         title: 'Compreenda',
@@ -44,7 +44,7 @@ export const landing: LandingMessages = {
       caption: 'exemplo · 14 dias',
     },
     questionnaire: {
-      caption: 'PHQ-9 · pergunta 2 de 9',
+      caption: 'Desânimo · pergunta 2 de 9',
       question:
         'Durante os últimos 14 dias, em quantos sentiu desânimo, desalento ou falta de esperança?',
     },
@@ -105,9 +105,9 @@ export const landing: LandingMessages = {
           'Não. Ajuda a acompanhar como está e a chegar à consulta com dados. O diagnóstico e o tratamento cabem aos profissionais de saúde.',
       },
       instruments: {
-        question: 'O que são o PHQ-9 e o GAD-7?',
+        question: 'Que perguntas são estas?',
         answer:
-          'São questionários curtos e validados, usados em Portugal e em todo o mundo para rastrear sinais de depressão (PHQ-9) e de ansiedade (GAD-7). Indicam a intensidade, não fazem diagnóstico.',
+          'São questionários curtos e validados, usados em Portugal e em todo o mundo para acompanhar sinais de desânimo e de ansiedade. Indicam a intensidade, não fazem diagnóstico. Para quem quiser confirmar, chamam-se PHQ-9 e GAD-7.',
       },
       ai: {
         question: 'Como é que a IA usa os meus dados?',
@@ -140,7 +140,8 @@ export const landing: LandingMessages = {
     lead: 'Demora menos de um minuto.',
   },
   footer: {
-    tagline: 'Diário de humor com PHQ-9, GAD-7 e resumos semanais escritos por IA.',
+    tagline:
+      'Diário de humor com perguntas sobre ânimo e ansiedade e resumos semanais escritos por IA.',
     product: 'Produto',
     help: 'Ajuda agora',
     legal: 'Legal',

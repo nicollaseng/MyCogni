@@ -30,7 +30,9 @@ test('shows the account, the questionnaires and the privacy choices', async ({ p
   const email = await signInAsReadyPerson(page)
 
   await expect(page.getByText(email).first()).toBeVisible()
-  await expect(page.getByRole('region', { name: 'Seus questionários' })).toContainText('PHQ-9')
+  const questionnaires = page.getByRole('region', { name: 'Ânimo e ansiedade' })
+  await expect(questionnaires).toContainText('DesânimoBaixo')
+  await expect(questionnaires).not.toContainText('PHQ')
   const privacy = page.getByRole('region', { name: 'Privacidade' })
   await expect(privacy).toContainText('Uso dos seus dados de saúde')
   await expect(privacy).toContainText('Resumos escritos por IA')
@@ -141,22 +143,24 @@ test('answers the questionnaires again and keeps the history', async ({ page }) 
   await expect(page).toHaveURL('/questionnaires')
   await page.getByRole('button', { name: 'Começar' }).click()
   for (const [form, total] of [
-    ['PHQ-9', 9],
-    ['GAD-7', 7],
+    ['Desânimo', 9],
+    ['Ansiedade', 7],
   ] as const) {
     for (let index = 1; index <= total; index++) {
       await expect(page.getByText(`${form} · ${String(index)} de ${String(total)}`)).toBeVisible()
-      const choice = form === 'PHQ-9' && index === total ? 'Nenhuma vez' : 'Vários dias'
+      const choice = form === 'Desânimo' && index === total ? 'Nenhuma vez' : 'Vários dias'
       await page.getByRole('button', { name: choice, exact: true }).click()
     }
   }
 
   await expect(page.getByRole('heading', { name: 'Seus resultados de hoje.' })).toBeVisible()
-  await expect(page.getByRole('region', { name: 'Sinais de ansiedade' })).toContainText(
-    '7 pontos a mais que em',
+  await expect(page.getByRole('region', { name: 'Ansiedade' })).toContainText(
+    'Mais alto que da última vez',
   )
   await page.getByRole('link', { name: 'Voltar ao perfil' }).click()
-  await expect(page.getByRole('region', { name: 'Seus questionários' })).toContainText('8de 27')
+  const questionnaires = page.getByRole('region', { name: 'Ânimo e ansiedade' })
+  await expect(questionnaires).toContainText('DesânimoLeveMais alto que da última vez')
+  await expect(questionnaires).not.toContainText(/de 27|PHQ/)
 })
 
 test('switches the language from the account page', async ({ page }) => {
@@ -164,7 +168,7 @@ test('switches the language from the account page', async ({ page }) => {
 
   await page.getByRole('combobox', { name: 'Idioma' }).selectOption('en-US')
 
-  await expect(page.getByRole('region', { name: 'Your questionnaires' })).toBeVisible()
+  await expect(page.getByRole('region', { name: 'Mood and anxiety' })).toBeVisible()
   await expect(page.getByRole('combobox', { name: 'Language' })).toHaveValue('en-US')
   await page.reload()
   await expect(page.getByRole('region', { name: 'Preferences' })).toBeVisible()

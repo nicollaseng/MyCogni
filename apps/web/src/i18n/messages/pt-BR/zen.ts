@@ -30,11 +30,10 @@ export const zen = {
     retake: 'Refazer os questionários',
     reasons: {
       risk_item:
-        'No seu PHQ-9 mais recente, você contou ter pensado em se ferir ou que seria melhor estar morto/a.',
-      severe_result:
-        'Um dos seus questionários mais recentes ficou na faixa grave ou moderadamente grave.',
-      anxiety: 'Seu GAD-7 mais recente ficou na faixa moderada ou acima.',
-      depression: 'Seu PHQ-9 mais recente ficou na faixa moderada ou acima.',
+        'Na sua última resposta, você contou ter pensado em se ferir ou que seria melhor estar morto/a.',
+      severe_result: 'Uma das suas últimas respostas ficou em alto.',
+      anxiety: 'Sua última resposta sobre ansiedade ficou em moderado ou acima.',
+      depression: 'Sua última resposta sobre desânimo ficou em moderado ou acima.',
       low_mood: 'O humor médio dos seus registros dos últimos 7 dias ficou baixo.',
       starting: 'Nada nos seus resultados pede atenção agora. O sono é um bom começo.',
     },

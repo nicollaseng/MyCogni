@@ -9,7 +9,20 @@ import {
 import type { Locale } from '@mycogni/domain'
 import { patientInsightSystemPrompt, professionalInsightSystemPrompt } from './insight-prompts.ts'
 
-export interface InsightRecords {
+export interface ClinicalScreening {
+  instrument: string
+  totalScore: number
+  severity: string
+  day: string
+}
+
+export interface PlainScreening {
+  topic: string
+  level: string
+  day: string
+}
+
+export interface InsightRecords<Screening> {
   locale: Locale
   period: { start: string; end: string }
   checkIns: {
@@ -19,14 +32,16 @@ export interface InsightRecords {
     contexts: string[]
     note: string | null
   }[]
-  screenings: { instrument: string; totalScore: number; severity: string; day: string }[]
+  screenings: Screening[]
   journal: { day: string; title: string | null; text: string }[]
 }
 
 export interface InsightWriter {
   readonly model: string
-  forPatient(records: InsightRecords): Promise<PatientInsightContent | null>
-  forProfessional(records: InsightRecords): Promise<ProfessionalInsightContent | null>
+  forPatient(records: InsightRecords<PlainScreening>): Promise<PatientInsightContent | null>
+  forProfessional(
+    records: InsightRecords<ClinicalScreening>,
+  ): Promise<ProfessionalInsightContent | null>
 }
 
 export const insightModel = 'claude-haiku-5-5'
@@ -34,7 +49,7 @@ export const insightModel = 'claude-haiku-5-5'
 export function createClaudeInsightWriter(apiKey: string): InsightWriter {
   const client = new Anthropic({ apiKey })
 
-  function request(system: string, records: InsightRecords) {
+  function request<Screening>(system: string, records: InsightRecords<Screening>) {
     return {
       model: insightModel,
       max_tokens: 4000,

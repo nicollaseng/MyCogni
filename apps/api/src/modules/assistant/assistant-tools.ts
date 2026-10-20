@@ -16,12 +16,11 @@ import {
   notableEffects,
   patternRules,
   periodSummary,
+  plainWordsOf,
   weekSummary,
   type AssistantMode,
-  type InstrumentId,
   type LabelSet,
   type Locale,
-  type Severity,
 } from '@mycogni/domain'
 import { z } from 'zod'
 import type { AssistantToolDefinition, ToolCall, ToolRunner } from '../../ai/assistant-model.ts'
@@ -150,40 +149,6 @@ const noteLength = 280
 
 const pageLength = 6000
 
-interface PlainWords {
-  topics: Readonly<Record<InstrumentId, string>>
-  levels: Readonly<Record<Severity, string>>
-}
-
-const portugueseWords: PlainWords = {
-  topics: { phq9: 'ânimo', gad7: 'ansiedade' },
-  levels: {
-    minimal: 'baixo',
-    mild: 'leve',
-    moderate: 'moderado',
-    moderately_severe: 'alto',
-    severe: 'alto',
-  },
-}
-
-const englishWords: PlainWords = {
-  topics: { phq9: 'mood', gad7: 'anxiety' },
-  levels: {
-    minimal: 'low',
-    mild: 'mild',
-    moderate: 'moderate',
-    moderately_severe: 'high',
-    severe: 'high',
-  },
-}
-
-const plainWords: Readonly<Record<Locale, PlainWords>> = {
-  'pt-BR': portugueseWords,
-  'pt-PT': portugueseWords,
-  'en-US': englishWords,
-  'en-GB': englishWords,
-}
-
 const patternCheckIns = 400
 
 function rounded(value: number | null): number | null {
@@ -307,13 +272,15 @@ export function createAssistantToolbox({
     const labels = labelsFor(subject.locale)
     const records = (await assessments.list(subject.viewerId, subject.ownerId)).slice(0, 6)
     if (subject.mode === 'personal') {
-      const words = plainWords[subject.locale]
-      return records.map((record) => ({
-        topic: words.topics[record.instrument],
-        signs: words.levels[record.severity],
-        day: dayKey(record.completedAt, subject.timeZone),
-        ...(record.instrument === 'phq9' ? { selfHarmItemPositive: record.hasRiskFlag } : {}),
-      }))
+      return records.map((record) => {
+        const words = plainWordsOf(subject.locale, record.instrument, record.severity)
+        return {
+          topic: words.topic,
+          signs: words.level,
+          day: dayKey(record.completedAt, subject.timeZone),
+          ...(record.instrument === 'phq9' ? { selfHarmItemPositive: record.hasRiskFlag } : {}),
+        }
+      })
     }
     return records.map((record) => ({
       questionnaire: record.instrument === 'phq9' ? 'PHQ-9' : 'GAD-7',

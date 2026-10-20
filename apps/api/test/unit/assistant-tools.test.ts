@@ -82,15 +82,21 @@ describe('questionnaire tool', () => {
   it('gives the person plain words and levels, with no instrument names or scores', async () => {
     const result = await questionnaires('personal')
 
-    expect(result).toContain('"topic":"ânimo","signs":"moderado"')
+    expect(result).toContain('"topic":"desânimo","signs":"moderado"')
     expect(result).toContain('"topic":"ansiedade","signs":"leve"')
     expect(result).not.toMatch(/PHQ|GAD|score|13|"7"|:7/)
+  })
+
+  it('uses the European Portuguese level names in Portugal', async () => {
+    const result = await questionnaires('personal', 'pt-PT')
+
+    expect(result).toContain('"topic":"ansiedade","signs":"ligeiro"')
   })
 
   it('speaks English to the person in English', async () => {
     const result = await questionnaires('personal', 'en-US')
 
-    expect(result).toContain('"topic":"mood","signs":"moderate"')
+    expect(result).toContain('"topic":"feeling down","signs":"moderate"')
     expect(result).toContain('"topic":"anxiety","signs":"mild"')
   })
 

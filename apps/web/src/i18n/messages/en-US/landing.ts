@@ -18,7 +18,7 @@ export const landing: LandingMessages = {
     kicker: 'Mood journal',
     question: 'How are you feeling right now?',
     intro:
-      'Drag and watch the map respond. A check-in takes less than a minute, and every two weeks the <nowrap>PHQ-9</nowrap> and <nowrap>GAD-7</nowrap> show how your anxiety and mood change over time.',
+      'Drag and watch the map respond. A check-in takes less than a minute, and every two weeks a few questions about mood and anxiety show how you change over time.',
   },
   howItWorks: {
     title: 'A minute a day, a snapshot every two weeks.',
@@ -31,7 +31,7 @@ export const landing: LandingMessages = {
       answer: {
         title: 'Answer',
         description:
-          'Every two weeks, the PHQ-9 and GAD-7, questionnaires used around the world to track depression and anxiety.',
+          'Every two weeks, short questions about mood and anxiety, used around the world.',
       },
       understand: {
         title: 'Understand',
@@ -44,7 +44,7 @@ export const landing: LandingMessages = {
       caption: 'example · 14 days',
     },
     questionnaire: {
-      caption: 'PHQ-9 · question 2 of 9',
+      caption: 'Feeling down · question 2 of 9',
       question:
         'Over the last 2 weeks, how often have you been bothered by feeling down, depressed, or hopeless?',
     },
@@ -104,9 +104,9 @@ export const landing: LandingMessages = {
           'No. It helps you keep track of how you are doing and arrive at appointments with data. Diagnosis and treatment are for health professionals.',
       },
       instruments: {
-        question: 'What are the PHQ-9 and GAD-7?',
+        question: 'What are these questions?',
         answer:
-          'They are short, validated questionnaires used in the US and around the world to screen for signs of depression (PHQ-9) and anxiety (GAD-7). They show intensity; they do not give a diagnosis.',
+          'They are short, validated questionnaires used in the US and around the world to follow signs of low mood and anxiety. They show intensity; they do not give a diagnosis. If you want to look them up, they are the PHQ-9 and GAD-7.',
       },
       ai: {
         question: 'How does the AI use my data?',
@@ -138,7 +138,8 @@ export const landing: LandingMessages = {
     lead: 'It takes less than a minute.',
   },
   footer: {
-    tagline: 'A mood journal with the PHQ-9, GAD-7 and weekly summaries written by AI.',
+    tagline:
+      'A mood journal with questions about mood and anxiety and weekly summaries written by AI.',
     product: 'Product',
     help: 'Help now',
     legal: 'Legal',

@@ -50,7 +50,7 @@ describe('TodayCard', () => {
     await user.click(screen.getByRole('button', { name: 'Por que esta sugestão?' }))
 
     expect(
-      screen.getByText('Seu GAD-7 mais recente ficou na faixa moderada ou acima.'),
+      screen.getByText('Sua última resposta sobre ansiedade ficou em moderado ou acima.'),
     ).toBeVisible()
     expect(screen.getByRole('link', { name: 'Refazer os questionários' })).toHaveAttribute(
       'href',

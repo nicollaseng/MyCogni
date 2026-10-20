@@ -105,6 +105,16 @@ export const americanEnglish: LabelSet = {
     moderately_severe: 'Moderately severe',
     severe: 'Severe',
   },
+  plainNames: {
+    phq9: 'Feeling down',
+    gad7: 'Anxiety',
+  },
+  plainLevels: {
+    low: 'Low',
+    mild: 'Mild',
+    moderate: 'Moderate',
+    high: 'High',
+  },
   moods: {
     veryBad: 'Very bad',
     bad: 'Bad',

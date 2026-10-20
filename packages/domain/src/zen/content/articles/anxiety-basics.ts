@@ -20,7 +20,7 @@ export const anxietyBasics: Article = {
           paragraphs: [
             'A Organização Mundial da Saúde descreve os transtornos de ansiedade como quadros em que o medo e a preocupação são intensos, excessivos e difíceis de controlar, trazem sofrimento importante e atrapalham a vida em casa, nos estudos ou no trabalho. Os sintomas costumam durar meses, e é comum a pessoa passar a evitar o que desperta a ansiedade.',
             'Alguns sinais frequentes: dificuldade para se concentrar ou decidir, irritação, tensão, coração disparado, suor ou tremor, enjoo, sono ruim e a sensação de que algo ruim está para acontecer. No transtorno de ansiedade generalizada, a preocupação aparece na maior parte dos dias, envolve muitos assuntos, é desproporcional à situação e difícil de interromper, por pelo menos seis meses.',
-            'Quem faz esse diagnóstico é um profissional, depois de uma conversa cuidadosa. Um questionário como o GAD-7 mostra a intensidade dos sinais nas últimas semanas, mas não decide se existe um transtorno.',
+            'Quem faz esse diagnóstico é um profissional, depois de uma conversa cuidadosa. Um questionário como as perguntas sobre ansiedade do app mostra a intensidade dos sinais nas últimas semanas, mas não decide se existe um transtorno.',
           ],
         },
         {
@@ -64,7 +64,7 @@ export const anxietyBasics: Article = {
           paragraphs: [
             'A Organização Mundial da Saúde descreve as perturbações de ansiedade como quadros em que o medo e a preocupação são intensos, excessivos e difíceis de controlar, trazem sofrimento importante e prejudicam a vida em casa, nos estudos ou no trabalho. Os sintomas costumam durar meses, e é frequente a pessoa começar a evitar o que desperta a ansiedade.',
             'Alguns sinais frequentes: dificuldade em concentrar-se ou decidir, irritabilidade, tensão, coração acelerado, suor ou tremor, náuseas, sono de má qualidade e a sensação de que algo de mau está para acontecer. Na perturbação de ansiedade generalizada, a preocupação surge na maior parte dos dias, abrange muitos assuntos, é desproporcionada e difícil de travar, durante pelo menos seis meses.',
-            'Quem faz este diagnóstico é um profissional, depois de uma avaliação cuidadosa. Um questionário como o GAD-7 mostra a intensidade dos sinais nas últimas semanas, mas não decide se existe uma perturbação.',
+            'Quem faz este diagnóstico é um profissional, depois de uma avaliação cuidadosa. Um questionário como as perguntas sobre ansiedade da app mostra a intensidade dos sinais nas últimas semanas, mas não decide se existe uma perturbação.',
           ],
         },
         {
@@ -108,7 +108,7 @@ export const anxietyBasics: Article = {
           paragraphs: [
             'The World Health Organization describes anxiety disorders as conditions in which fear and worry are intense, excessive and hard to control, cause real distress and get in the way of life at home, in education or at work. Symptoms tend to last for months, and people often start avoiding whatever sets the anxiety off.',
             'Some common signs: trouble concentrating or making decisions, irritability, tension, a pounding heart, sweating or trembling, nausea, poor sleep and a sense that something bad is about to happen. In generalised anxiety disorder, worry is present on most days, covers many topics, is out of proportion to the situation and is hard to stop, for at least six months.',
-            'This diagnosis is made by a professional after a careful conversation. A questionnaire such as the GAD-7 shows how intense the signs have been over recent weeks, but it does not decide whether a disorder is present.',
+            'This diagnosis is made by a professional after a careful conversation. A questionnaire such as the anxiety questions in the app shows how intense the signs have been over recent weeks, but it does not decide whether a disorder is present.',
           ],
         },
         {

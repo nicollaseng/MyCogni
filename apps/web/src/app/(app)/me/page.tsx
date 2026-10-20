@@ -34,7 +34,7 @@ import { LocaleSelect } from '@/features/locale/components/locale-select'
 import { LatestScreening } from '@/features/screening/components/latest-screening'
 import { ScreeningHistory } from '@/features/screening/components/screening-history'
 import { ScreeningSchedule } from '@/features/screening/components/screening-schedule'
-import { latestByInstrument } from '@/features/screening/latest'
+import { latestPlainResults } from '@/features/screening/latest'
 import { SupportSection } from '@/features/support/components/support-section'
 import { Panel, Section } from '@/shared/components/section'
 import { fetchCareLinks } from '@/shared/lib/api/care'
@@ -90,7 +90,7 @@ export default async function MePage() {
         onPhotoSaved={refreshAfterUpload}
       />
 
-      <LatestScreening results={latestByInstrument(assessments)} timeZone={profile.timezone}>
+      <LatestScreening results={latestPlainResults(assessments)} timeZone={profile.timezone}>
         <ScreeningHistory assessments={assessments} timeZone={profile.timezone} />
         {lastAnswer !== undefined && (
           <ScreeningSchedule

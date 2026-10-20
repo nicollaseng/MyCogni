@@ -86,7 +86,7 @@ export const europeanTracks: TrackTexts = {
       },
       questionnaires: {
         title: 'Acompanhar com os questionários',
-        body: 'Responda ao PHQ-9 e ao GAD-7 de duas em duas semanas para ver como muda. É um rastreio, não um diagnóstico.',
+        body: 'Responda às perguntas sobre ânimo e ansiedade de duas em duas semanas para ver como muda. É um rastreio, não um diagnóstico.',
       },
     },
   },

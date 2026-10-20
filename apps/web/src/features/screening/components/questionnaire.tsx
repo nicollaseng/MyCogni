@@ -24,6 +24,7 @@ interface QuestionnaireProps {
 
 export function Questionnaire({ instrument, send, onDone }: QuestionnaireProps) {
   const t = useTranslations('screening.questionnaire')
+  const plain = useTranslations('screening.plain')
   const text = instrumentText(useLocale(), instrument.id)
   const total = instrument.itemCount
   const [index, setIndex] = useState(0)
@@ -71,7 +72,11 @@ export function Questionnaire({ instrument, send, onDone }: QuestionnaireProps) 
           {t('back')}
         </button>
         <p className="text-muted-foreground">
-          {t('progress', { name: instrument.name, current: index + 1, total })}
+          {t('progress', {
+            name: plain(`names.${instrument.id}`),
+            current: index + 1,
+            total,
+          })}
         </p>
       </div>
       <div aria-hidden className="mt-2 h-[2px] rounded-full bg-rule">

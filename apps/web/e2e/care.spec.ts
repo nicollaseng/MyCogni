@@ -73,7 +73,7 @@ test.describe('a visitor', () => {
       page.getByRole('heading', { level: 1, name: `${name} quer acompanhar seus registros.` }),
     ).toBeVisible()
     await expect(page.getByRole('region', { name: `O que ${name} vai ver` })).toContainText(
-      'Seus resultados do PHQ-9 e do GAD-7',
+      'Suas respostas sobre ânimo e ansiedade',
     )
     await expect(page.getByText('O convite vale por mais 3 dias.')).toBeVisible()
     await page.getByRole('link', { name: 'Criar conta para responder' }).click()

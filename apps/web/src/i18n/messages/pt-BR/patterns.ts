@@ -59,9 +59,8 @@ export const patterns = {
     none: 'Nada marcado ainda.',
   },
   scores: {
-    title: 'Questionários',
-    latest: 'Último: {score} de {max}, {severity}.',
-    point: '{date}: {score} de {max}, {severity}',
+    title: 'Ânimo e ansiedade',
+    point: '{date}: {level}',
   },
   upcoming: {
     title: 'Em breve',
@@ -70,7 +69,7 @@ export const patterns = {
       weekdays: 'Dias da semana',
       frequent: 'Emoções e contextos',
       associations: 'O que acompanha seus dias',
-      scores: 'Questionários',
+      scores: 'Ânimo e ansiedade',
     },
     progress: {
       records: '{current} de {required} registros',

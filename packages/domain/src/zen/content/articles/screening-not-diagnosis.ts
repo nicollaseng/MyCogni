@@ -6,34 +6,34 @@ export const screeningNotDiagnosis: Article = {
     'pt-BR': {
       title: 'Triagem não é diagnóstico',
       summary:
-        'O PHQ-9 e o GAD-7 mostram a intensidade de sinais de depressão e de ansiedade. Eles ajudam a acompanhar e a decidir quando buscar ajuda, mas não dizem o que você tem.',
+        'As perguntas sobre desânimo e ansiedade que você responde no app mostram a intensidade desses sinais nas últimas semanas. Elas ajudam a acompanhar e a decidir quando buscar ajuda, mas não dizem o que você tem.',
       sections: [
         {
-          heading: 'O que os questionários medem',
+          heading: 'O que as perguntas medem',
           paragraphs: [
-            'O PHQ-9 tem nove perguntas sobre sinais de depressão nas últimas duas semanas, como pouco interesse, desânimo, sono e cansaço. Cada resposta vale de 0 a 3, e o total vai de 0 a 27. O GAD-7 faz o mesmo com sete sinais de ansiedade, com total de 0 a 21.',
-            'As faixas de pontuação vêm dos estudos que criaram os questionários. No PHQ-9, 5, 10, 15 e 20 marcam o início das faixas leve, moderada, moderadamente grave e grave. No GAD-7, 5, 10 e 15 marcam as faixas leve, moderada e grave, e o manual dos autores recomenda uma avaliação mais completa a partir de 10.',
+            'São dois questionários curtos, usados no mundo todo. Um tem nove perguntas sobre desânimo nas últimas duas semanas, como pouco interesse pelas coisas, tristeza, sono e cansaço. O outro tem sete perguntas sobre ansiedade, como preocupação difícil de controlar, tensão e inquietação. Em cada pergunta, você diz com que frequência aquilo aconteceu.',
+            'Suas respostas viram um nível: baixo, leve, moderado ou alto. Esses níveis vêm dos estudos que criaram os questionários e foram testados com milhares de pessoas. Os autores recomendam uma avaliação mais completa quando o nível chega a moderado ou acima.',
           ],
         },
         {
           heading: 'Por que não é diagnóstico',
           paragraphs: [
             'Diagnóstico é uma conclusão clínica. Ele leva em conta sua história, há quanto tempo os sinais existem, o quanto atrapalham a vida, outras condições de saúde que podem explicar o que você sente e o que mais está acontecendo. Um questionário não enxerga nada disso.',
-            'No estudo original do PHQ-9, a pontuação 10 ou mais identificou corretamente 88% das pessoas com depressão maior confirmada por entrevista com um profissional, e 88% das pessoas sem ela. Uma análise de 2019, com dados de mais de dezessete mil participantes, encontrou números parecidos. São resultados bons para uma triagem, mas que deixam espaço para erros nos dois sentidos.',
-            'Outra análise, de 2020, mostrou o tamanho desse espaço: entre mais de nove mil pessoas, 24,6% tiveram PHQ-9 de 10 ou mais, mas só 12,1% preenchiam os critérios de depressão maior numa entrevista diagnóstica com um profissional. Ou seja, a pontuação sozinha tende a apontar mais casos do que existem de fato.',
+            'No estudo original das perguntas sobre desânimo, o nível moderado ou acima encontrou cerca de nove em cada dez pessoas com depressão confirmada por entrevista com um profissional, e deixou de fora cerca de nove em cada dez pessoas sem ela. Uma análise de 2019, com dados de mais de dezessete mil participantes, encontrou números parecidos. São resultados bons para uma triagem, mas que deixam espaço para erros nos dois sentidos.',
+            'Outra análise, de 2020, mostrou o tamanho desse espaço: entre mais de nove mil pessoas, cerca de uma em cada quatro ficou no nível moderado ou acima, mas só cerca de uma em cada oito preenchia os critérios de depressão numa entrevista diagnóstica com um profissional. Ou seja, as respostas sozinhas tendem a apontar mais casos do que existem de fato.',
           ],
         },
         {
-          heading: 'O que um resultado alto significa',
+          heading: 'O que um nível alto significa',
           paragraphs: [
-            'Um resultado alto é um sinal para conversar com um profissional, não uma sentença. A força-tarefa de prevenção dos Estados Unidos, que recomenda a triagem de depressão em adultos, deixa claro que todo resultado positivo precisa de uma avaliação adicional para confirmar o diagnóstico e entender a gravidade.',
-            'O mesmo vale para o item 9 do PHQ-9, sobre pensamentos de morte ou de se machucar. Qualquer resposta acima de zero merece atenção, e o manual dos autores lembra que avaliar o risco de verdade exige uma conversa clínica. Por isso o app mostra contatos de ajuda sempre que isso acontece.',
+            'Um nível alto é um sinal para conversar com um profissional, não uma sentença. A força-tarefa de prevenção dos Estados Unidos, que recomenda a triagem de depressão em adultos, deixa claro que todo resultado que chama atenção precisa de uma avaliação adicional para confirmar o diagnóstico e entender a gravidade.',
+            'O mesmo vale para a última pergunta sobre desânimo, que fala de pensamentos de morte ou de se machucar. Qualquer resposta diferente de "nenhuma vez" merece atenção, e o manual dos autores lembra que avaliar o risco de verdade exige uma conversa clínica. Por isso o app mostra contatos de ajuda sempre que isso acontece.',
           ],
         },
         {
-          heading: 'O que um resultado baixo significa',
+          heading: 'O que um nível baixo significa',
           paragraphs: [
-            'Um resultado baixo também não garante que está tudo bem. Se você sente que algo mudou, se está sofrendo ou se as pessoas próximas estão preocupadas, vale procurar ajuda, qualquer que seja o número.',
+            'Um nível baixo também não garante que está tudo bem. Se você sente que algo mudou, se está sofrendo ou se as pessoas próximas estão preocupadas, vale procurar ajuda, qualquer que seja o resultado.',
           ],
         },
         {
@@ -43,9 +43,9 @@ export const screeningNotDiagnosis: Article = {
           ],
         },
         {
-          heading: 'Como usar bem seus resultados',
+          heading: 'Como usar bem suas respostas',
           paragraphs: [
-            'Responda a cada duas semanas, pensando em como as coisas foram de verdade. Observe a tendência ao longo do tempo, mais do que um número isolado. Leve os resultados e seus registros para a conversa com o profissional que acompanha você; eles ajudam a contar sua história.',
+            'Responda a cada duas semanas, pensando em como as coisas foram de verdade. Observe a tendência ao longo do tempo, mais do que um resultado isolado. Leve suas respostas e seus registros para a conversa com o profissional que acompanha você; eles ajudam a contar sua história.',
           ],
         },
       ],
@@ -53,34 +53,34 @@ export const screeningNotDiagnosis: Article = {
     'pt-PT': {
       title: 'Rastreio não é diagnóstico',
       summary:
-        'O PHQ-9 e o GAD-7 mostram a intensidade de sinais de depressão e de ansiedade. Ajudam a acompanhar e a decidir quando procurar ajuda, mas não dizem o que tem.',
+        'As perguntas sobre desânimo e ansiedade a que responde na app mostram a intensidade destes sinais nas últimas semanas. Ajudam a acompanhar e a decidir quando procurar ajuda, mas não dizem o que tem.',
       sections: [
         {
-          heading: 'O que os questionários medem',
+          heading: 'O que as perguntas medem',
           paragraphs: [
-            'O PHQ-9 tem nove perguntas sobre sinais de depressão nos últimos 14 dias, como pouco interesse, desânimo, sono e cansaço. Cada resposta vale de 0 a 3, e o total vai de 0 a 27. O GAD-7 faz o mesmo com sete sinais de ansiedade, com um total de 0 a 21.',
-            'Os intervalos de pontuação vêm dos estudos que criaram os questionários. No PHQ-9, 5, 10, 15 e 20 marcam o início dos níveis ligeiro, moderado, moderadamente grave e grave. No GAD-7, 5, 10 e 15 marcam os níveis ligeiro, moderado e grave, e o manual dos autores recomenda uma avaliação mais completa a partir de 10.',
+            'São dois questionários curtos, usados em todo o mundo. Um tem nove perguntas sobre desânimo nos últimos 14 dias, como pouco interesse pelas coisas, tristeza, sono e cansaço. O outro tem sete perguntas sobre ansiedade, como preocupação difícil de controlar, tensão e inquietação. Em cada pergunta, indica com que frequência isso aconteceu.',
+            'As suas respostas dão um nível: baixo, ligeiro, moderado ou alto. Estes níveis vêm dos estudos que criaram os questionários e foram testados com milhares de pessoas. Os autores recomendam uma avaliação mais completa quando o nível chega a moderado ou acima.',
           ],
         },
         {
-          heading: 'Porque é que não é diagnóstico',
+          heading: 'Porque não é diagnóstico',
           paragraphs: [
-            'O diagnóstico é uma conclusão clínica. Tem em conta a sua história, há quanto tempo os sinais existem, o quanto prejudicam a vida, outras condições de saúde que possam explicar o que sente e o que mais está a acontecer. Um questionário não vê nada disso.',
-            'No estudo original do PHQ-9, a pontuação de 10 ou mais identificou corretamente 88% das pessoas com depressão major confirmada por entrevista com um profissional, e 88% das pessoas sem ela. Uma análise de 2019, com dados de mais de dezassete mil participantes, encontrou números parecidos. São bons resultados para um rastreio, mas deixam margem para erros nos dois sentidos.',
-            'Outra análise, de 2020, mostrou o tamanho dessa margem: entre mais de nove mil pessoas, 24,6% tiveram um PHQ-9 de 10 ou mais, mas só 12,1% cumpriam os critérios de depressão major numa entrevista diagnóstica com um profissional. Ou seja, a pontuação sozinha tende a apontar mais casos do que os que existem de facto.',
+            'O diagnóstico é uma conclusão clínica. Tem em conta a sua história, há quanto tempo os sinais existem, o quanto interferem na sua vida, outras condições de saúde que podem explicar o que sente e o que mais está a acontecer. Um questionário não vê nada disso.',
+            'No estudo original das perguntas sobre desânimo, o nível moderado ou acima encontrou cerca de nove em cada dez pessoas com depressão major confirmada por entrevista com um profissional, e deixou de fora cerca de nove em cada dez pessoas sem ela. Uma análise de 2019, com dados de mais de dezassete mil participantes, encontrou números semelhantes. São bons resultados para um rastreio, mas deixam margem para erros nos dois sentidos.',
+            'Outra análise, de 2020, mostrou o tamanho dessa margem: entre mais de nove mil pessoas, cerca de uma em cada quatro ficou no nível moderado ou acima, mas só cerca de uma em cada oito cumpria os critérios de depressão major numa entrevista diagnóstica com um profissional. Ou seja, as respostas sozinhas tendem a apontar mais casos do que os que existem de facto.',
           ],
         },
         {
-          heading: 'O que significa um resultado alto',
+          heading: 'O que significa um nível alto',
           paragraphs: [
-            'Um resultado alto é um sinal para falar com um profissional, não uma sentença. O grupo de trabalho de prevenção dos Estados Unidos, que recomenda o rastreio da depressão em adultos, deixa claro que todos os resultados positivos precisam de uma avaliação adicional para confirmar o diagnóstico e perceber a gravidade.',
-            'O mesmo se aplica ao item 9 do PHQ-9, sobre pensamentos de morte ou de se magoar. Qualquer resposta acima de zero merece atenção, e o manual dos autores lembra que avaliar o risco a sério exige uma conversa clínica. Por isso a app mostra contactos de ajuda sempre que isso acontece.',
+            'Um nível alto é um sinal para falar com um profissional, não uma sentença. O grupo de trabalho de prevenção dos Estados Unidos, que recomenda o rastreio da depressão em adultos, deixa claro que qualquer resultado que chame a atenção precisa de uma avaliação adicional para confirmar o diagnóstico e perceber a gravidade.',
+            'O mesmo se aplica à última pergunta sobre desânimo, que fala de pensamentos de morte ou de se magoar. Qualquer resposta diferente de "nunca" merece atenção, e o manual dos autores lembra que avaliar o risco a sério exige uma conversa clínica. Por isso a app mostra contactos de ajuda sempre que isso acontece.',
           ],
         },
         {
-          heading: 'O que significa um resultado baixo',
+          heading: 'O que significa um nível baixo',
           paragraphs: [
-            'Um resultado baixo também não garante que está tudo bem. Se sente que algo mudou, se está em sofrimento ou se as pessoas próximas estão preocupadas, vale a pena procurar ajuda, seja qual for o número.',
+            'Um nível baixo também não garante que está tudo bem. Se sente que algo mudou, se está a sofrer ou se as pessoas próximas estão preocupadas, vale a pena procurar ajuda, seja qual for o resultado.',
           ],
         },
         {
@@ -90,9 +90,9 @@ export const screeningNotDiagnosis: Article = {
           ],
         },
         {
-          heading: 'Como usar bem os seus resultados',
+          heading: 'Como usar bem as suas respostas',
           paragraphs: [
-            'Responda de duas em duas semanas, a pensar em como as coisas correram de verdade. Observe a tendência ao longo do tempo, mais do que um número isolado. Leve os resultados e os seus registos para a conversa com o profissional que o/a acompanha; ajudam a contar a sua história.',
+            'Responda de duas em duas semanas, a pensar em como as coisas correram de verdade. Observe a tendência ao longo do tempo, mais do que um resultado isolado. Leve as suas respostas e os seus registos para a conversa com o profissional que o/a acompanha; ajudam a contar a sua história.',
           ],
         },
       ],
@@ -100,34 +100,34 @@ export const screeningNotDiagnosis: Article = {
     en: {
       title: 'Screening is not diagnosis',
       summary:
-        'The PHQ-9 and GAD-7 show how intense signs of depression and anxiety have been. They help you keep track and decide when to seek help, but they do not tell you what you have.',
+        'The questions about feeling down and anxiety that you answer in the app show how intense these signs have been in recent weeks. They help you keep track and decide when to seek help, but they do not tell you what you have.',
       sections: [
         {
-          heading: 'What the questionnaires measure',
+          heading: 'What the questions measure',
           paragraphs: [
-            'The PHQ-9 asks nine questions about signs of depression over the last two weeks, such as little interest, feeling down, sleep and tiredness. Each answer scores from 0 to 3, and the total runs from 0 to 27. The GAD-7 does the same with seven signs of anxiety, for a total from 0 to 21.',
-            'The score ranges come from the studies that created the questionnaires. On the PHQ-9, 5, 10, 15 and 20 mark the start of the mild, moderate, moderately severe and severe ranges. On the GAD-7, 5, 10 and 15 mark mild, moderate and severe, and the authors’ manual recommends further evaluation from 10 upwards.',
+            'They are two short questionnaires used around the world. One asks nine questions about feeling down over the last two weeks, such as little interest in things, sadness, sleep and tiredness. The other asks seven questions about anxiety, such as worry that is hard to control, tension and restlessness. For each question, you say how often it happened.',
+            'Your answers become a level: low, mild, moderate or high. These levels come from the studies that created the questionnaires and were tested with thousands of people. The authors recommend a fuller assessment when the level reaches moderate or above.',
           ],
         },
         {
           heading: 'Why it is not a diagnosis',
           paragraphs: [
-            'A diagnosis is a clinical conclusion. It takes into account your history, how long the signs have been there, how much they affect your life, other health conditions that could explain what you feel and whatever else is going on. A questionnaire sees none of that.',
-            'In the original PHQ-9 study, a score of 10 or more correctly picked out 88% of people with major depression confirmed by a professional interview, and 88% of people without it. A 2019 analysis using data from more than seventeen thousand participants found similar figures. These are good results for screening, but they leave room for errors in both directions.',
-            'Another analysis, from 2020, showed how much room: among more than nine thousand people, 24.6% scored 10 or more on the PHQ-9, but only 12.1% met the criteria for major depression in a diagnostic interview with a professional. In other words, the score alone tends to point to more cases than really exist.',
+            'A diagnosis is a clinical conclusion. It takes into account your history, how long the signs have been there, how much they get in the way of your life, other health conditions that could explain what you feel, and whatever else is going on. A questionnaire sees none of that.',
+            'In the original study of the questions about feeling down, a moderate level or above picked out about nine in ten people with major depression confirmed by a professional interview, and left out about nine in ten people without it. A 2019 analysis using data from more than seventeen thousand participants found similar numbers. These are good results for a screening, but they leave room for mistakes in both directions.',
+            'Another analysis, from 2020, showed how much room: among more than nine thousand people, about one in four had a moderate level or above, but only about one in eight met the criteria for major depression in a diagnostic interview with a professional. In other words, the answers alone tend to point to more cases than there really are.',
           ],
         },
         {
-          heading: 'What a high score means',
+          heading: 'What a high level means',
           paragraphs: [
-            'A high score is a signal to talk to a professional, not a verdict. The US Preventive Services Task Force, which recommends depression screening for adults, is clear that every positive screen needs further assessment to confirm the diagnosis and understand its severity.',
-            'The same goes for item 9 of the PHQ-9, about thoughts of death or of hurting yourself. Any answer above zero deserves attention, and the authors’ manual notes that properly assessing risk requires a clinical conversation. That is why the app shows help contacts whenever it happens.',
+            'A high level is a signal to talk to a professional, not a verdict. The US Preventive Services Task Force, which recommends screening adults for depression, makes clear that any result that stands out needs a further assessment to confirm the diagnosis and understand how severe it is.',
+            'The same goes for the last question about feeling down, about thoughts of death or of hurting yourself. Any answer other than "not at all" deserves attention, and the authors’ manual notes that properly assessing risk requires a clinical conversation. That is why the app shows help contacts whenever this happens.',
           ],
         },
         {
-          heading: 'What a low score means',
+          heading: 'What a low level means',
           paragraphs: [
-            'A low score does not guarantee that all is well either. If you feel something has changed, if you are struggling or if people close to you are worried, it is worth seeking help, whatever the number.',
+            'A low level does not guarantee that all is well either. If you feel something has changed, if you are struggling or if people close to you are worried, it is worth seeking help, whatever the result.',
           ],
         },
         {
@@ -137,9 +137,9 @@ export const screeningNotDiagnosis: Article = {
           ],
         },
         {
-          heading: 'Using your results well',
+          heading: 'Using your answers well',
           paragraphs: [
-            'Answer every two weeks, thinking about how things have really been. Look at the trend over time more than at any single number. Take your results and your check-ins to the conversation with the professional who sees you; they help tell your story.',
+            'Answer every two weeks, thinking about how things have really been. Look at the trend over time more than at any single result. Take your answers and your check-ins to the conversation with the professional who sees you; they help tell your story.',
           ],
         },
       ],

@@ -1,29 +1,35 @@
 import type { Assessment } from '@mycogni/contracts'
-import { dayKey } from '@mycogni/domain'
+import { dayKey, instrumentIds, plainLevelOf, type InstrumentId } from '@mycogni/domain'
 import { useLocale, useTranslations } from 'next-intl'
+import { useId } from 'react'
 import { formatDayMonth } from '@/shared/lib/time'
 
 interface Session {
   key: string
   date: string
-  scores: Assessment[]
+  answers: Partial<Record<InstrumentId, Assessment>>
 }
 
 function sessionsOf(assessments: readonly Assessment[], timeZone: string): Session[] {
   const sessions: Session[] = []
-  for (const assessment of assessments) {
+  const newestFirst = [...assessments].sort((first, second) =>
+    second.completedAt.localeCompare(first.completedAt),
+  )
+  for (const assessment of newestFirst) {
     const key = dayKey(new Date(assessment.completedAt), timeZone)
     const last = sessions.at(-1)
     if (last?.key === key) {
-      last.scores.push(assessment)
+      last.answers[assessment.instrument] ??= assessment
     } else {
-      sessions.push({ key, date: assessment.completedAt, scores: [assessment] })
+      sessions.push({
+        key,
+        date: assessment.completedAt,
+        answers: { [assessment.instrument]: assessment },
+      })
     }
   }
   return sessions
 }
-
-const names = { phq9: 'PHQ-9', gad7: 'GAD-7' } as const
 
 export function ScreeningHistory({
   assessments,
@@ -33,26 +39,49 @@ export function ScreeningHistory({
   timeZone: string
 }) {
   const t = useTranslations('screening.history')
+  const plain = useTranslations('screening.plain')
   const locale = useLocale()
+  const titleId = useId()
   const sessions = sessionsOf(assessments, timeZone)
   if (sessions.length < 2) {
     return null
   }
   return (
     <div className="space-y-2 pt-2">
-      <h3 className="text-sm text-muted-foreground">{t('title')}</h3>
-      <ul className="space-y-1">
-        {sessions.slice(0, 8).map((session) => (
-          <li key={session.key} className="flex items-baseline justify-between gap-4 py-1">
-            <span>{formatDayMonth(new Date(session.date), timeZone, locale)}</span>
-            <span className="shrink-0 text-sm text-muted-foreground tabular-nums">
-              {session.scores
-                .map((score) => `${names[score.instrument]} ${String(score.totalScore)}`)
-                .join(' · ')}
-            </span>
-          </li>
-        ))}
-      </ul>
+      <h3 id={titleId} className="text-sm text-muted-foreground">
+        {t('title')}
+      </h3>
+      <table aria-labelledby={titleId} className="w-full text-left">
+        <thead>
+          <tr className="text-xs text-muted-foreground">
+            <th scope="col" className="sr-only">
+              {t('day')}
+            </th>
+            {instrumentIds.map((id) => (
+              <th key={id} scope="col" className="pb-1 font-normal">
+                {plain(`names.${id}`)}
+              </th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {sessions.slice(0, 8).map((session) => (
+            <tr key={session.key}>
+              <th scope="row" className="py-1.5 pr-4 font-normal">
+                {formatDayMonth(new Date(session.date), timeZone, locale)}
+              </th>
+              {instrumentIds.map((id) => {
+                const answer = session.answers[id]
+                return (
+                  <td key={id} className="py-1.5 text-sm text-muted-foreground">
+                    {answer === undefined ? '–' : plain(`levels.${plainLevelOf(answer.severity)}`)}
+                  </td>
+                )
+              })}
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </div>
   )
 }

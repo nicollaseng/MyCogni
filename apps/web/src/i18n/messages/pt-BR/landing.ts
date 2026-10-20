@@ -16,7 +16,7 @@ export const landing = {
     kicker: 'Diário de humor',
     question: 'Como você está agora?',
     intro:
-      'Arraste e veja o mapa responder. Um registro leva menos de um minuto, e a cada duas semanas o <nowrap>PHQ-9</nowrap> e o <nowrap>GAD-7</nowrap> mostram como ansiedade e humor mudam com o tempo.',
+      'Arraste e veja o mapa responder. Um registro leva menos de um minuto, e a cada duas semanas algumas perguntas sobre ânimo e ansiedade mostram como você muda com o tempo.',
   },
   howItWorks: {
     title: 'Um minuto por dia, um retrato a cada duas semanas.',
@@ -29,7 +29,7 @@ export const landing = {
       answer: {
         title: 'Responda',
         description:
-          'A cada duas semanas, o PHQ-9 e o GAD-7, questionários usados no mundo todo para acompanhar depressão e ansiedade.',
+          'A cada duas semanas, perguntas curtas sobre ânimo e ansiedade, usadas no mundo todo.',
       },
       understand: {
         title: 'Entenda',
@@ -42,7 +42,7 @@ export const landing = {
       caption: 'exemplo · 14 dias',
     },
     questionnaire: {
-      caption: 'PHQ-9 · pergunta 2 de 9',
+      caption: 'Desânimo · pergunta 2 de 9',
       question:
         'Nas últimas duas semanas, com que frequência você se sentiu para baixo, deprimido(a) ou sem perspectiva?',
     },
@@ -101,9 +101,9 @@ export const landing = {
           'Não. Ele ajuda você a acompanhar como está e a chegar na consulta com dados. Diagnóstico e tratamento são com profissionais de saúde.',
       },
       instruments: {
-        question: 'O que são o PHQ-9 e o GAD-7?',
+        question: 'Que perguntas são essas?',
         answer:
-          'São questionários curtos e validados, usados no Brasil e no mundo para rastrear sinais de depressão (PHQ-9) e de ansiedade (GAD-7). Eles indicam intensidade, não dão diagnóstico.',
+          'São questionários curtos e validados, usados no Brasil e no mundo para acompanhar sinais de desânimo e de ansiedade. Eles indicam intensidade, não dão diagnóstico. Para quem quiser conferir, os nomes são PHQ-9 e GAD-7.',
       },
       ai: {
         question: 'Como a IA usa meus dados?',
@@ -135,7 +135,8 @@ export const landing = {
     lead: 'Leva menos de um minuto.',
   },
   footer: {
-    tagline: 'Diário de humor com PHQ-9, GAD-7 e resumos semanais escritos por IA.',
+    tagline:
+      'Diário de humor com perguntas sobre ânimo e ansiedade e resumos semanais escritos por IA.',
     product: 'Produto',
     help: 'Ajuda agora',
     legal: 'Legal',

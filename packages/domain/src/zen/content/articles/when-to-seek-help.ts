@@ -36,7 +36,7 @@ export const whenToSeekHelp: Article = {
           heading: 'Por onde começar',
           paragraphs: [
             'Um médico de atenção primária, um psicólogo ou um psiquiatra são bons pontos de partida. Se você tem um profissional vinculado no app, ele já acompanha os registros que você escolheu compartilhar, e você pode contar o que mudou.',
-            'Antes da consulta, anote o que tem sentido, desde quando, o que piora e o que ajuda, além de remédios que usa. Seus resultados do PHQ-9 e do GAD-7 e seus registros de humor também ajudam a contar sua história.',
+            'Antes da consulta, anote o que tem sentido, desde quando, o que piora e o que ajuda, além de remédios que usa. Suas respostas sobre ânimo e ansiedade e seus registros de humor também ajudam a contar sua história.',
           ],
         },
         {
@@ -80,7 +80,7 @@ export const whenToSeekHelp: Article = {
           heading: 'Por onde começar',
           paragraphs: [
             'O médico de família, um psicólogo ou um psiquiatra são bons pontos de partida. Se tem um profissional associado na app, ele já acompanha os registos que escolheu partilhar, e pode contar-lhe o que mudou.',
-            'Antes da consulta, anote o que tem sentido, desde quando, o que piora e o que ajuda, além dos medicamentos que toma. Os seus resultados do PHQ-9 e do GAD-7 e os seus registos de humor também ajudam a contar a sua história.',
+            'Antes da consulta, anote o que tem sentido, desde quando, o que piora e o que ajuda, além dos medicamentos que toma. As suas respostas sobre ânimo e ansiedade e os seus registos de humor também ajudam a contar a sua história.',
           ],
         },
         {
@@ -124,7 +124,7 @@ export const whenToSeekHelp: Article = {
           heading: 'Where to start',
           paragraphs: [
             'A primary care doctor, a psychologist or a psychiatrist are good places to start. If you have a professional linked in the app, they already follow the records you chose to share, and you can tell them what has changed.',
-            'Before the appointment, write down what you have been feeling, since when, what makes it worse and what helps, plus any medicines you take. Your PHQ-9 and GAD-7 results and your mood check-ins also help tell your story.',
+            'Before the appointment, write down what you have been feeling, since when, what makes it worse and what helps, plus any medicines you take. Your answers about mood and anxiety and your mood check-ins also help tell your story.',
           ],
         },
         {

@@ -106,7 +106,7 @@ describe('OnboardingFlow', () => {
   it('stops for support when PHQ-9 item 9 is above zero, then moves on to GAD-7', async () => {
     renderFlow({ step: 'phq9', displayName: 'Ana', results: {} })
 
-    await answerAll(9, 'PHQ-9', 'Vários dias')
+    await answerAll(9, 'Desânimo', 'Vários dias')
 
     expect(await screen.findByRole('heading', { name: 'Obrigado por contar.' })).toBeInTheDocument()
     expect(screen.getByRole('link', { name: 'Ligar para o CVV' })).toHaveAttribute(
@@ -116,14 +116,14 @@ describe('OnboardingFlow', () => {
 
     await userEvent.click(screen.getByRole('button', { name: 'Continuar o questionário' }))
 
-    expect(screen.getByText('GAD-7 · 1 de 7')).toBeInTheDocument()
+    expect(screen.getByText('Ansiedade · 1 de 7')).toBeInTheDocument()
   })
 
   it('goes straight to GAD-7 without the flag and ends on the results', async () => {
     renderFlow({ step: 'phq9', displayName: 'Ana', results: {} })
 
-    await answerAll(9, 'PHQ-9')
-    await answerAll(7, 'GAD-7')
+    await answerAll(9, 'Desânimo')
+    await answerAll(7, 'Ansiedade')
 
     expect(
       await screen.findByRole('heading', { name: 'Seu ponto de partida.' }),
@@ -141,7 +141,7 @@ describe('OnboardingFlow', () => {
       },
     })
 
-    expect(screen.getByRole('region', { name: 'Sinais de ansiedade' })).toHaveTextContent('6de 21')
+    expect(screen.getByRole('region', { name: 'Ansiedade' })).toHaveTextContent('AnsiedadeLeve')
     expect(screen.getByText('Etapa 4 de 4')).toBeInTheDocument()
   })
 

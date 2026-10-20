@@ -44,7 +44,7 @@ export const care: CareMessages = {
     sharedTitle: 'O que {name} vai ver',
     shared: {
       checkIns: 'Os seus registos de humor, com emoções, contextos e notas',
-      screenings: 'Os seus resultados do PHQ-9 e do GAD-7',
+      screenings: 'As suas respostas sobre ânimo e ansiedade',
     },
     privateTitle: 'O que continua só consigo',
     private: {

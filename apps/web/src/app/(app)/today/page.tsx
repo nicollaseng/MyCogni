@@ -9,7 +9,7 @@ import { MoodMap } from '@/features/mood/components/mood-map'
 import { RecentMood } from '@/features/mood/components/recent-mood'
 import { LatestScreening } from '@/features/screening/components/latest-screening'
 import { ScreeningSchedule } from '@/features/screening/components/screening-schedule'
-import { latestByInstrument } from '@/features/screening/latest'
+import { latestPlainResults } from '@/features/screening/latest'
 import { PageTitle } from '@/shared/components/page-title'
 import { fetchCareLinks } from '@/shared/lib/api/care'
 import { fetchAssessments, fetchCheckIns, fetchInsights } from '@/shared/lib/api/resources'
@@ -68,7 +68,7 @@ export default async function TodayPage() {
         <ReadingTeaser reading={latestReading} timeZone={timezone} />
       )}
 
-      <LatestScreening results={latestByInstrument(assessments)} timeZone={timezone}>
+      <LatestScreening results={latestPlainResults(assessments)} timeZone={timezone}>
         {lastAnswer !== undefined && (
           <ScreeningSchedule
             lastAnswer={lastAnswer}

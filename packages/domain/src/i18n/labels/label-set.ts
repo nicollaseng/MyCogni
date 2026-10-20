@@ -1,4 +1,5 @@
 import type { InstrumentId, Severity } from '../../assessments/instrument.ts'
+import type { PlainLevel } from '../../assessments/plain.ts'
 import type { ContextId, EmotionId } from '../../check-ins/catalog.ts'
 
 export const moodNames = [
@@ -18,5 +19,7 @@ export interface LabelSet {
   contexts: Readonly<Record<ContextId, string>>
   instruments: Readonly<Record<InstrumentId, string>>
   severities: Readonly<Record<Severity, string>>
+  plainNames: Readonly<Record<InstrumentId, string>>
+  plainLevels: Readonly<Record<PlainLevel, string>>
   moods: Readonly<Record<MoodName, string>>
 }

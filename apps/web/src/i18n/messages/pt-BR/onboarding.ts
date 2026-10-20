@@ -36,7 +36,7 @@ export const onboarding = {
   },
   intro: {
     title: 'Dois questionários curtos',
-    lead: 'O <nowrap>PHQ-9</nowrap> e o <nowrap>GAD-7</nowrap> são usados no mundo todo para acompanhar sinais de depressão e de ansiedade. Eles viram o seu ponto de partida.',
+    lead: 'São perguntas usadas no mundo todo para acompanhar sinais de ânimo e ansiedade. Elas viram o seu ponto de partida.',
     facts: {
       questions: 'perguntas, uma por tela',
       minutes: 'minutos, mais ou menos',
