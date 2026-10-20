@@ -191,13 +191,15 @@ describe('TrackSteps', () => {
     expect(router.push).not.toHaveBeenCalled()
   })
 
-  it('opens the breathing exercise in a sheet', async () => {
+  it('opens the breathing exercise in the full-screen breathing mode', async () => {
     const user = userEvent.setup()
     renderTrack({ done: ['read-anxiety-basics'] })
 
     await user.click(screen.getByRole('button', { name: 'Continuar' }))
 
     const dialog = screen.getByRole('dialog', { name: 'Respirar em quadrado' })
+    expect(dialog.className).toMatch(/fixed inset-0/)
+    expect(within(dialog).getByTestId('breathing-square')).toBeInTheDocument()
     expect(within(dialog).getByRole('button', { name: 'Começar' })).toBeInTheDocument()
   })
 

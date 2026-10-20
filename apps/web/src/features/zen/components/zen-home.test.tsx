@@ -9,7 +9,6 @@ import { fakeRouter, WithRouter } from '@/test/router'
 import { ReadingRows, TrackRows } from './library'
 import { TodayCard } from './today-card'
 import { TopicTiles } from './topic-tiles'
-import { ZenHero } from './zen-hero'
 import { BreatheRing } from './breathe-ring'
 
 function renderToday(locale: 'pt-BR' | 'pt-PT' = 'pt-BR', anxious = true) {
@@ -20,6 +19,7 @@ function renderToday(locale: 'pt-BR' | 'pt-PT' = 'pt-BR', anxious = true) {
   renderWithIntl(
     <WithRouter router={fakeRouter()}>
       <TodayCard
+        title="Zen Space"
         pick={todayPick(suggestion.tracks, [
           { trackId: 'everyday-anxiety', stepId: 'read-anxiety-basics' },
         ])}
@@ -72,7 +72,7 @@ describe('TodayCard', () => {
   it('suggests a minute of breathing when every track is done', () => {
     renderWithIntl(
       <WithRouter router={fakeRouter()}>
-        <TodayCard pick={null} language="pt-BR" reasons={['starting']} />
+        <TodayCard title="Zen Space" pick={null} language="pt-BR" reasons={['starting']} />
       </WithRouter>,
     )
 
@@ -144,41 +144,62 @@ describe('library', () => {
   })
 })
 
-describe('ZenHero', () => {
-  it('shows the background sound playing and lets the person pause it from the hero', async () => {
+describe('the green card at the top', () => {
+  function renderTop() {
+    const suggestion = zenSuggestion({ latest: [], moodAverage: null })
+    const engine = fakeEngine()
+    renderWithIntl(
+      <AmbientRoot pathname="/zen" engine={() => engine}>
+        <WithRouter router={fakeRouter()}>
+          <TodayCard
+            title="Zen Space"
+            pick={todayPick(suggestion.tracks, [])}
+            language="pt-BR"
+            reasons={suggestion.reasons}
+          />
+        </WithRouter>
+      </AmbientRoot>,
+    )
+  }
+
+  it('holds the page title, the sound playing and the step for today', async () => {
     const user = userEvent.setup()
     Object.defineProperty(window.navigator, 'userActivation', {
       configurable: true,
       value: { hasBeenActive: true, isActive: false },
     })
-    const engine = fakeEngine()
-    renderWithIntl(
-      <AmbientRoot pathname="/zen" engine={() => engine}>
-        <ZenHero title="Zen Space" />
-      </AmbientRoot>,
+    renderTop()
+
+    const title = screen.getByRole('heading', { level: 1, name: 'Zen Space' })
+    const card = title.closest('.bg-zen')
+    expect(card).not.toBeNull()
+    const inCard = within(card as HTMLElement)
+    expect(inCard.getByRole('heading', { level: 2, name: 'Para hoje' })).toBeVisible()
+    expect(inCard.getByText('Sono e descanso · passo 1 de 5')).toBeVisible()
+    expect(inCard.getByRole('heading', { level: 3, name: 'Sono e humor' })).toBeVisible()
+    expect(inCard.getByRole('link', { name: 'Começar' })).toHaveAttribute(
+      'href',
+      '/zen/articles/sleep-and-mood',
+    )
+    expect(card?.querySelector('svg[aria-hidden]')?.getAttribute('class')).toMatch(
+      /animate-zen-swell/,
     )
 
-    expect(screen.getByRole('heading', { level: 1, name: 'Zen Space' })).toBeVisible()
-    const sound = await screen.findByRole('button', { name: 'Pausar o som de fundo: Mar' })
+    const sound = await inCard.findByRole('button', { name: 'Pausar o som de fundo: Mar' })
     expect(sound).toHaveTextContent('Mar · tocando')
-
     await user.click(sound)
-
-    expect(screen.getByRole('button', { name: 'Tocar o som de fundo: Mar' })).toHaveTextContent(
+    expect(inCard.getByRole('button', { name: 'Tocar o som de fundo: Mar' })).toHaveTextContent(
       'Mar · pausado',
     )
     Reflect.deleteProperty(window.navigator, 'userActivation')
     window.localStorage.clear()
   })
 
-  it('leaves the sound out of the hero when it is off', () => {
+  it('leaves the sound out of the card when it is off', () => {
     window.localStorage.setItem('mycogni.audio', JSON.stringify({ scope: 'off' }))
-    renderWithIntl(
-      <AmbientRoot pathname="/zen" engine={() => fakeEngine()}>
-        <ZenHero title="Zen Space" />
-      </AmbientRoot>,
-    )
+    renderTop()
 
+    expect(screen.getByRole('heading', { level: 1, name: 'Zen Space' })).toBeVisible()
     expect(screen.queryByRole('button', { name: /som de fundo/ })).not.toBeInTheDocument()
     window.localStorage.clear()
   })
@@ -191,7 +212,10 @@ describe('BreatheRing', () => {
 
     await user.click(screen.getByRole('button', { name: 'Respirar 1 min' }))
 
-    expect(screen.getByRole('dialog', { name: 'Respirar em quadrado' })).toBeVisible()
+    const mode = screen.getByRole('dialog', { name: 'Respirar em quadrado' })
+    expect(mode).toBeVisible()
+    expect(mode.className).toMatch(/fixed inset-0/)
+    expect(within(mode).getByTestId('breathing-square')).toBeVisible()
   })
 })
 
@@ -210,6 +234,7 @@ describe('personal reasons', () => {
     renderWithIntl(
       <WithRouter router={fakeRouter()}>
         <TodayCard
+          title="Zen Space"
           pick={todayPick(suggestion.tracks, [])}
           language="pt-BR"
           reasons={suggestion.reasons}
@@ -235,8 +260,11 @@ describe('personal reasons', () => {
     renderSuggestion(true)
 
     const breathe = screen.getByRole('button', { name: 'Respirar 1 min' })
+    const title = screen.getByRole('heading', { level: 1, name: 'Zen Space' })
     const heading = screen.getByRole('heading', { name: 'Para hoje' })
+    expect(breathe.compareDocumentPosition(title) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy()
     expect(breathe.compareDocumentPosition(heading) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy()
+    expect(title.closest('.bg-zen')?.contains(breathe)).toBe(false)
 
     await user.click(screen.getByRole('button', { name: 'Por que esta sugestão?' }))
 
@@ -248,7 +276,7 @@ describe('personal reasons', () => {
     renderSuggestion(false)
 
     const breathe = screen.getByRole('button', { name: 'Respirar 1 min' })
-    const heading = screen.getByRole('heading', { name: 'Para hoje' })
-    expect(breathe.compareDocumentPosition(heading) & Node.DOCUMENT_POSITION_PRECEDING).toBeTruthy()
+    const title = screen.getByRole('heading', { level: 1, name: 'Zen Space' })
+    expect(breathe.compareDocumentPosition(title) & Node.DOCUMENT_POSITION_PRECEDING).toBeTruthy()
   })
 })

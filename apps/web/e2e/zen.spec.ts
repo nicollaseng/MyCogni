@@ -135,13 +135,13 @@ test('breathes for a minute and opens a MyBook page from a prompt', async ({ pag
   await page.goto('/zen')
 
   await page.getByRole('button', { name: 'Respirar 1 min' }).click()
-  const sheet = page.getByRole('dialog', { name: 'Respirar em quadrado' })
-  await sheet.getByRole('button', { name: 'Começar' }).click()
-  await expect(sheet.getByRole('status')).toHaveText('Inspire')
-  await expect(sheet.getByRole('status')).toHaveText('Segure', { timeout: 6000 })
-  await sheet.getByRole('button', { name: 'Pausar' }).click()
+  const mode = page.getByRole('dialog', { name: 'Respirar em quadrado' })
+  await mode.getByRole('button', { name: 'Começar' }).click()
+  await expect(mode.getByRole('status')).toHaveText('Inspire')
+  await expect(mode.getByRole('status')).toHaveText('Segure', { timeout: 6000 })
+  await mode.getByRole('button', { name: 'Pausar' }).click()
   await page.keyboard.press('Escape')
-  await expect(sheet).toHaveCount(0)
+  await expect(mode).toHaveCount(0)
 
   await page.getByRole('link', { name: 'Sono', exact: true }).click()
   await expect(page).toHaveURL('/zen/topics/sleep')
@@ -153,6 +153,41 @@ test('breathes for a minute and opens a MyBook page from a prompt', async ({ pag
   await expect(page.getByRole('textbox', { name: 'Texto da página' })).toContainText(
     'Como foram suas últimas três noites?',
   )
+})
+
+test('opens Zen on the green card and breathes in the full-screen breathing mode', async ({
+  page,
+}) => {
+  await signInAsReadyPerson(page)
+  await mainNavigation(page).getByRole('link', { name: 'Zen' }).click()
+
+  const card = page.getByTestId('zen-card')
+  await expect(card.getByRole('heading', { level: 1, name: 'Zen Space' })).toBeVisible()
+  await expect(card.getByRole('button', { name: 'Pausar o som de fundo: Mar' })).toBeVisible()
+  await expect(card.getByRole('heading', { level: 3, name: 'Sono e humor' })).toBeVisible()
+  await expect(page.locator('main svg[viewBox="0 0 300 300"]')).toHaveCount(1)
+  await expect(card.locator('svg[viewBox="0 0 300 300"]')).toHaveCount(1)
+  await expect(page.locator('main header')).toHaveCount(0)
+
+  await page.getByRole('button', { name: 'Respirar 1 min' }).click()
+  const mode = page.getByRole('dialog', { name: 'Respirar em quadrado' })
+  await expect(mode.getByTestId('breathing-square')).toBeVisible()
+  const viewport = page.viewportSize()
+  const box = await mode.boundingBox()
+  expect(box?.width).toBe(viewport?.width)
+  expect(box?.height).toBe(viewport?.height)
+
+  await mode.getByRole('button', { name: 'Começar' }).click()
+  await expect(mode.getByRole('status')).toHaveText('Inspire')
+  await expect(mode.getByText('Inspire', { exact: true }).first()).toBeVisible()
+  await expect(mode.getByText('Volta 1 de 4')).toBeVisible()
+  await mode.getByRole('button', { name: 'Pausar' }).click()
+  await expect(mode.getByRole('button', { name: 'Continuar' })).toBeVisible()
+  await mode.getByRole('button', { name: 'Fechar' }).click()
+
+  await expect(mode).toHaveCount(0)
+  await expect(page.getByRole('button', { name: 'Respirar 1 min' })).toBeFocused()
+  await expect(card.getByRole('button', { name: 'Pausar o som de fundo: Mar' })).toBeVisible()
 })
 
 test('answers the questionnaires again and sees the suggestion change', async ({ page }) => {
@@ -342,10 +377,9 @@ test('puts sleep and a breathing minute first at night in the person own time zo
 
   await expect(today(page)).toContainText('Sono e descanso · passo 1 de 5')
   const breathe = today(page).getByRole('button', { name: 'Respirar 1 min' })
-  const heading = today(page).getByRole('heading', { name: 'Para hoje' })
   const breatheBox = await breathe.boundingBox()
-  const headingBox = await heading.boundingBox()
-  expect(breatheBox?.y ?? 0).toBeLessThan(headingBox?.y ?? 0)
+  const cardBox = await page.getByTestId('zen-card').boundingBox()
+  expect((breatheBox?.y ?? 0) + (breatheBox?.height ?? 0)).toBeLessThan(cardBox?.y ?? 0)
   await today(page).getByRole('button', { name: 'Por que esta sugestão?' }).click()
   await expect(today(page).getByText('É noite: um passo para descansar.')).toBeVisible()
 })

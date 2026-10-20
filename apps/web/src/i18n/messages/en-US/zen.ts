@@ -99,7 +99,6 @@ export const zen: ZenMessages = {
     start: 'Start',
     pause: 'Pause',
     resume: 'Resume',
-    restart: 'Start again',
     close: 'Close',
     phases: {
       inhale: 'Breathe in',
@@ -107,8 +106,9 @@ export const zen: ZenMessages = {
       exhale: 'Breathe out',
       holdOut: 'Wait',
     },
-    ready: 'Ready when you are',
     round: 'Round {current} of {total}',
-    finished: 'Done. How are you feeling now?',
+    done: 'Done.',
+    howNow: 'How are you feeling now?',
+    more: 'One more round',
   },
 }
