@@ -197,7 +197,7 @@ test('plays the background sound on arrival in Zen and follows the sound chosen 
   await expect(page.getByRole('button', { name: /Som de fundo/ })).toHaveCount(0)
 
   await mainNavigation(page).getByRole('link', { name: 'Zen' }).click()
-  const sea = page.getByRole('button', { name: 'Som de fundo: Mar' })
+  const sea = page.getByRole('button', { name: 'Som de fundo: Mar', exact: true })
   await expect(sea).toHaveAttribute('aria-pressed', 'true')
   await page.getByRole('link', { name: 'Ansiedade', exact: true }).click()
   await expect(page).toHaveURL('/zen/topics/anxiety')
@@ -210,12 +210,11 @@ test('plays the background sound on arrival in Zen and follows the sound chosen 
   await expect(settings.getByText('Essas escolhas ficam salvas só neste aparelho.')).toBeVisible()
 
   await mainNavigation(page).getByRole('link', { name: 'Hoje' }).click()
-  await expect(page.getByRole('button', { name: 'Som de fundo: Chuva' })).toHaveAttribute(
-    'aria-pressed',
-    'true',
-  )
+  await expect(
+    page.getByRole('button', { name: 'Som de fundo: Chuva', exact: true }),
+  ).toHaveAttribute('aria-pressed', 'true')
   await mainNavigation(page).getByRole('link', { name: 'Zen' }).click()
-  await expect(page.getByRole('button', { name: 'Som de fundo: Chuva' })).toBeVisible()
+  await expect(page.getByRole('button', { name: 'Som de fundo: Chuva', exact: true })).toBeVisible()
 
   await page.goto('/me')
   await page.getByRole('region', { name: 'Som e voz' }).getByText('Desligado').click()
@@ -227,7 +226,7 @@ test('plays the background sound on arrival in Zen and follows the sound chosen 
 test('remembers a pause across reloads until the person plays again', async ({ page }) => {
   await signInAsReadyPerson(page)
   await mainNavigation(page).getByRole('link', { name: 'Zen' }).click()
-  const sea = page.getByRole('button', { name: 'Som de fundo: Mar' })
+  const sea = page.getByRole('button', { name: 'Som de fundo: Mar', exact: true })
   await expect(sea).toHaveAttribute('aria-pressed', 'true')
 
   await sea.click()
@@ -272,7 +271,9 @@ test('chooses, previews and keeps each of the new background sounds', async ({ p
     await page.reload()
     await expect(sound).toHaveValue(id)
     await page.goto('/zen')
-    await expect(page.getByRole('button', { name: `Som de fundo: ${name}` })).toBeVisible()
+    await expect(
+      page.getByRole('button', { name: `Som de fundo: ${name}`, exact: true }),
+    ).toBeVisible()
     await page.goto('/me')
   }
 })

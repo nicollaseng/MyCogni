@@ -2,11 +2,15 @@ import { describe, expect, it } from '@jest/globals'
 import { articleIds, todayPick, trackIds, zenSuggestion } from '@mycogni/domain'
 import { screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import { AmbientRoot } from '@/features/audio/ambient-provider'
+import { fakeEngine } from '@/test/ambient'
 import { renderWithIntl } from '@/test/render'
 import { fakeRouter, WithRouter } from '@/test/router'
 import { ReadingRows, TrackRows } from './library'
 import { TodayCard } from './today-card'
 import { TopicTiles } from './topic-tiles'
+import { ZenHero } from './zen-hero'
+import { BreatheRing } from './breathe-ring'
 
 function renderToday(locale: 'pt-BR' | 'pt-PT' = 'pt-BR', anxious = true) {
   const suggestion = zenSuggestion({
@@ -92,6 +96,10 @@ describe('TopicTiles', () => {
       'Buscar ajuda',
     ])
     expect(tiles[4]).toHaveAttribute('href', '/zen/topics/help')
+    for (const tile of tiles) {
+      expect(tile.querySelector('svg[aria-hidden]')).not.toBeNull()
+      expect(tile.className).toMatch(/min-h-28/)
+    }
   })
 })
 
@@ -112,6 +120,12 @@ describe('library', () => {
     const rows = within(screen.getByRole('region', { name: 'Trilhas' })).getAllByRole('link')
     expect(rows).toHaveLength(5)
     expect(screen.getByRole('link', { name: /Humor para baixo/ })).toHaveTextContent('2 de 5')
+    expect(
+      screen.getByRole('link', { name: /Humor para baixo/ }).querySelector('circle + circle'),
+    ).not.toBeNull()
+    expect(
+      screen.getByRole('link', { name: /Sono e descanso/ }).querySelector('circle + circle'),
+    ).toBeNull()
     expect(screen.getByRole('link', { name: /Sono e descanso/ })).toHaveTextContent(/\d+ min/)
   })
 
@@ -127,5 +141,56 @@ describe('library', () => {
 
     expect(reads.getAllByRole('link')).toHaveLength(8)
     expect(reads.getByRole('link', { name: /Worry time/ })).toHaveTextContent(/\d min/)
+  })
+})
+
+describe('ZenHero', () => {
+  it('shows the background sound playing and lets the person pause it from the hero', async () => {
+    const user = userEvent.setup()
+    Object.defineProperty(window.navigator, 'userActivation', {
+      configurable: true,
+      value: { hasBeenActive: true, isActive: false },
+    })
+    const engine = fakeEngine()
+    renderWithIntl(
+      <AmbientRoot pathname="/zen" engine={() => engine}>
+        <ZenHero title="Zen Space" />
+      </AmbientRoot>,
+    )
+
+    expect(screen.getByRole('heading', { level: 1, name: 'Zen Space' })).toBeVisible()
+    const sound = await screen.findByRole('button', { name: 'Pausar o som de fundo: Mar' })
+    expect(sound).toHaveTextContent('Mar · tocando')
+
+    await user.click(sound)
+
+    expect(screen.getByRole('button', { name: 'Tocar o som de fundo: Mar' })).toHaveTextContent(
+      'Mar · pausado',
+    )
+    Reflect.deleteProperty(window.navigator, 'userActivation')
+    window.localStorage.clear()
+  })
+
+  it('leaves the sound out of the hero when it is off', () => {
+    window.localStorage.setItem('mycogni.audio', JSON.stringify({ scope: 'off' }))
+    renderWithIntl(
+      <AmbientRoot pathname="/zen" engine={() => fakeEngine()}>
+        <ZenHero title="Zen Space" />
+      </AmbientRoot>,
+    )
+
+    expect(screen.queryByRole('button', { name: /som de fundo/ })).not.toBeInTheDocument()
+    window.localStorage.clear()
+  })
+})
+
+describe('BreatheRing', () => {
+  it('opens the breathing exercise from the breathing visual', async () => {
+    const user = userEvent.setup()
+    renderWithIntl(<BreatheRing />)
+
+    await user.click(screen.getByRole('button', { name: 'Respirar 1 min' }))
+
+    expect(screen.getByRole('dialog', { name: 'Respirar em quadrado' })).toBeVisible()
   })
 })

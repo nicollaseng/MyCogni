@@ -15,12 +15,15 @@ import { BreatheButton } from './breathe-button'
 
 export type PromptPages = Pick<PageClient, 'create' | 'save'>
 
+type ActionVariant = 'default' | 'outline' | 'inverse'
+
 interface StepActionProps {
   step: TrackStep
   text: StepText
   primary: boolean
   label?: string
   pages?: PromptPages
+  inverse?: boolean
 }
 
 function outcomeOf(kind: 'failed' | 'outdated', error: string): ActionResult<never> | null {
@@ -34,12 +37,12 @@ function outcomeOf(kind: 'failed' | 'outdated', error: string): ActionResult<nev
 function WriteAction({
   prompt,
   pages,
-  primary,
+  variant,
   label,
 }: {
   prompt: string
   pages: PromptPages
-  primary: boolean
+  variant: ActionVariant
   label: string
 }) {
   const t = useTranslations('zen.track')
@@ -63,8 +66,8 @@ function WriteAction({
   return (
     <div className="space-y-2">
       <Button
-        variant={primary ? 'default' : 'outline'}
-        size={primary ? 'default' : 'sm'}
+        variant={variant}
+        size={variant === 'outline' ? 'sm' : 'default'}
         disabled={pending}
         onClick={() => {
           submit()
@@ -83,10 +86,12 @@ export function StepAction({
   primary,
   label,
   pages = browserPageClient,
+  inverse = false,
 }: StepActionProps) {
   const t = useTranslations('zen.track')
   const size = primary ? 'default' : 'sm'
-  const linkAction = buttonVariants({ size, variant: primary ? 'default' : 'outline' })
+  const variant: ActionVariant = primary ? (inverse ? 'inverse' : 'default') : 'outline'
+  const linkAction = buttonVariants({ size, variant })
 
   switch (step.kind) {
     case 'read':
@@ -96,19 +101,13 @@ export function StepAction({
         </Link>
       )
     case 'breathe':
-      return (
-        <BreatheButton
-          label={label ?? t('actions.breathe')}
-          variant={primary ? 'default' : 'outline'}
-          size={size}
-        />
-      )
+      return <BreatheButton label={label ?? t('actions.breathe')} variant={variant} size={size} />
     case 'write':
       return (
         <WriteAction
           prompt={text.body}
           pages={pages}
-          primary={primary}
+          variant={variant}
           label={label ?? t('actions.write')}
         />
       )

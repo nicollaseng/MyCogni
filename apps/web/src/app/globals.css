@@ -9,6 +9,7 @@
   --animate-rise: rise 420ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
   --animate-marker: marker 900ms cubic-bezier(0.2, 0.7, 0.2, 1) 150ms both;
   --animate-breathe: breathe 1.6s ease-in-out infinite;
+  --animate-zen-breath: zen-breath 16s ease-in-out infinite;
 
   @keyframes rise {
     from {
@@ -29,6 +30,20 @@
       opacity: 0.55;
     }
   }
+
+  @keyframes zen-breath {
+    0%,
+    100% {
+      transform: scale(0.78);
+    }
+    25%,
+    50% {
+      transform: scale(1);
+    }
+    75% {
+      transform: scale(0.78);
+    }
+  }
 }
 
 @theme inline {
@@ -46,6 +61,13 @@
   --color-emphasis: var(--emphasis);
   --color-help: var(--help);
   --color-danger: var(--danger);
+  --color-zen: var(--zen);
+  --color-zen-foreground: var(--zen-foreground);
+  --color-zen-line: var(--zen-line);
+  --color-tint-calm: color-mix(in srgb, var(--mood-low) 10%, var(--background));
+  --color-tint-bright: color-mix(in srgb, var(--mood-high) 11%, var(--background));
+  --color-tint-night: color-mix(in srgb, var(--mood-low) 13%, var(--background));
+  --color-tint-earth: color-mix(in srgb, var(--mood-mid) 12%, var(--background));
 }
 
 :root {
@@ -64,6 +86,9 @@
   --mood-low: #3f5874;
   --mood-mid: #8a9a94;
   --mood-high: #3f7458;
+  --zen: #23423a;
+  --zen-foreground: #f2f5ef;
+  --zen-line: #8fb3a3;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -83,6 +108,9 @@
     --mood-low: #7f9cc0;
     --mood-mid: #6b7772;
     --mood-high: #93c29c;
+    --zen: #1f3a32;
+    --zen-foreground: #e6efe8;
+    --zen-line: #6f9a88;
   }
 }
 
