@@ -36,32 +36,6 @@ function renderFlow(share: Share, preselected: string[] = []) {
   )
 }
 
-beforeEach(() => {
-  jest.useFakeTimers({
-    now,
-    doNotFake: [
-      'setTimeout',
-      'clearTimeout',
-      'setInterval',
-      'clearInterval',
-      'setImmediate',
-      'clearImmediate',
-      'nextTick',
-      'queueMicrotask',
-      'requestAnimationFrame',
-      'cancelAnimationFrame',
-      'requestIdleCallback',
-      'cancelIdleCallback',
-      'performance',
-      'hrtime',
-    ],
-  })
-})
-
-afterEach(() => {
-  jest.useRealTimers()
-})
-
 function succeed(): Promise<ActionResult<null>> {
   return Promise.resolve({ ok: true, value: null })
 }
