@@ -5,14 +5,21 @@ import { getLocale } from 'next-intl/server'
 import { fetchNarrationManifest, narrationSources } from '@/features/audio/narration'
 import { ArticleView } from '@/features/zen/components/article-view'
 import { ZenTopBar } from '@/features/zen/components/zen-top-bar'
+import { articlePath } from '@/features/zen/share'
 import { requireOnboardedProfile } from '@/shared/lib/auth/session'
 import { guarded } from '@/shared/lib/settled'
+import { siteUrlOf } from '@/shared/lib/site-url'
 
 export async function generateMetadata({
   params,
 }: PageProps<'/zen/articles/[id]'>): Promise<Metadata> {
   const [{ id }, locale] = await Promise.all([params, getLocale()])
-  return isArticleId(id) ? { title: zenArticles[id].text[contentLanguageOf(locale)].title } : {}
+  return isArticleId(id)
+    ? {
+        title: zenArticles[id].text[contentLanguageOf(locale)].title,
+        alternates: { canonical: articlePath(id) },
+      }
+    : {}
 }
 
 export default async function ZenArticlePage({ params }: PageProps<'/zen/articles/[id]'>) {
@@ -35,6 +42,7 @@ export default async function ZenArticlePage({ params }: PageProps<'/zen/article
           language,
           articleNarration(zenArticles[id].text[language]),
         )}
+        shareUrl={siteUrlOf(articlePath(id)).toString()}
       />
     </>
   )
