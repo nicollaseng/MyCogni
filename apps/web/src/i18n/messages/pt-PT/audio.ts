@@ -3,6 +3,10 @@ import type { AudioMessages } from '../pt-BR/audio'
 export const audio: AudioMessages = {
   ambient: {
     control: 'Som de fundo: {sound}',
+    playing: 'a tocar',
+    paused: 'em pausa',
+    pauseSound: 'Pausar o som de fundo: {sound}',
+    playSound: 'Reproduzir o som de fundo: {sound}',
     sounds: {
       sea: 'Mar',
       rain: 'Chuva',

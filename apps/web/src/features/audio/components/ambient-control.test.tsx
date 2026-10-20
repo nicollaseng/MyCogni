@@ -51,7 +51,7 @@ describe('AmbientControl', () => {
   })
 
   it('starts the sea on arrival in the Zen Space, low and looping', async () => {
-    const { engine } = renderAt('/zen')
+    const { engine } = renderAt('/zen/topics/anxiety')
 
     await waitFor(() => {
       expect(control()).toHaveAttribute('aria-pressed', 'true')
@@ -59,6 +59,15 @@ describe('AmbientControl', () => {
     expect(engine.unlock).toHaveBeenCalled()
     expect(engine.setVolume).toHaveBeenCalledWith(0.12)
     expect(engine.play).toHaveBeenCalledWith('sea')
+  })
+
+  it('leaves the control to the hero on the Zen home while the sound still starts', async () => {
+    const { engine } = renderAt('/zen')
+
+    await waitFor(() => {
+      expect(engine.play).toHaveBeenCalledWith('sea')
+    })
+    expect(screen.queryByRole('button', { name: /Som de fundo/ })).not.toBeInTheDocument()
   })
 
   it('waits for the first touch or key when the browser keeps the sound suspended', async () => {
@@ -101,7 +110,7 @@ describe('AmbientControl', () => {
 
   it('remembers a pause on this device and plays again only when asked', async () => {
     const user = userEvent.setup()
-    const { engine, unmount } = renderAt('/zen')
+    const { engine, unmount } = renderAt('/zen/topics/anxiety')
     await waitFor(() => {
       expect(control()).toHaveAttribute('aria-pressed', 'true')
     })
@@ -115,7 +124,7 @@ describe('AmbientControl', () => {
     unmount()
 
     const next = fakeEngine()
-    renderAt('/zen', next)
+    renderAt('/zen/topics/anxiety', next)
     await act(async () => {
       await Promise.resolve()
     })
@@ -149,14 +158,14 @@ describe('AmbientControl', () => {
 
   it('names the chosen sound in the control', () => {
     saveAudioPreferences({ sound: 'owl' })
-    renderAt('/zen')
+    renderAt('/zen/articles/worry-time')
 
     expect(control('Coruja')).toHaveTextContent('Coruja')
   })
 
   it('never starts when the background sound is off or set to none', async () => {
     saveAudioPreferences({ scope: 'off' })
-    const off = renderAt('/zen')
+    const off = renderAt('/zen/topics/anxiety')
     await act(async () => {
       await Promise.resolve()
     })
@@ -166,7 +175,7 @@ describe('AmbientControl', () => {
     off.unmount()
 
     saveAudioPreferences({ scope: 'zen', sound: 'none' })
-    const none = renderAt('/zen')
+    const none = renderAt('/zen/topics/anxiety')
     await act(async () => {
       await Promise.resolve()
     })

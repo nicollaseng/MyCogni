@@ -10,9 +10,9 @@ describe('NavigationLinks', () => {
     expect(screen.getAllByRole('link').map((link) => link.textContent)).toEqual([
       'Hoje',
       'Registros',
+      'Zen',
       'MyBook',
       'Padrões',
-      'Zen',
     ])
     expect(screen.getByRole('link', { name: 'Hoje' })).toHaveAttribute('href', '/today')
     expect(screen.getByRole('link', { name: 'Registros' })).toHaveAttribute('href', '/entries')
@@ -64,4 +64,24 @@ describe('NavigationLinks', () => {
       expect(link).not.toHaveAttribute('aria-current')
     }
   })
+
+  it.each(['bar', 'top'] as const)(
+    'puts Zen in the middle with its own mark and active state on the %s',
+    (variant) => {
+      const { container, rerender } = renderWithIntl(
+        <NavigationLinks pathname="/today" variant={variant} />,
+      )
+      const zen = screen.getByRole('link', { name: 'Zen' })
+
+      expect(zen).toHaveAttribute('data-zen-tab')
+      expect(zen.querySelector('svg')).toHaveAttribute('aria-hidden')
+      expect(zen).not.toHaveAttribute('aria-current')
+      expect(container.querySelectorAll('[data-zen-tab]')).toHaveLength(1)
+
+      rerender(<NavigationLinks pathname="/zen/tracks/sleep-and-rest" variant={variant} />)
+
+      expect(screen.getByRole('link', { name: 'Zen' })).toHaveAttribute('aria-current', 'page')
+      expect(screen.getByRole('link', { name: 'Hoje' })).not.toHaveAttribute('aria-current')
+    },
+  )
 })

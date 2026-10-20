@@ -26,6 +26,7 @@ interface AmbientControls {
 
 export interface AmbientState {
   loop: AmbientLoopId | null
+  onZenHome: boolean
   playing: boolean
   toggle: () => void
   preview: (sound: AmbientSoundId) => void
@@ -90,7 +91,7 @@ function hasBeenActive(): boolean {
 }
 
 function useSession(session: AmbientSession) {
-  return useSyncExternalStore(session.subscribe, session.snapshot, session.snapshot)
+  return useSyncExternalStore(session.subscribe, session.snapshot, session.initial)
 }
 
 export function useAmbient(): AmbientState {
@@ -102,6 +103,7 @@ export function useAmbient(): AmbientState {
 
   return {
     loop,
+    onZenHome: pathname === '/zen',
     playing,
     toggle: () => {
       if (playing) {

@@ -8,7 +8,7 @@ import { BreathingExercise } from './breathing-exercise'
 
 interface BreatheButtonProps {
   label: string
-  variant?: 'default' | 'outline'
+  variant?: 'default' | 'outline' | 'inverse'
   size?: 'default' | 'sm'
   className?: string
 }

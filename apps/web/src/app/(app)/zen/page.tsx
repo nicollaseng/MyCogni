@@ -14,7 +14,7 @@ import { latestByInstrument } from '@/features/screening/latest'
 import { ReadingRows, TrackRows } from '@/features/zen/components/library'
 import { TodayCard } from '@/features/zen/components/today-card'
 import { TopicTiles } from '@/features/zen/components/topic-tiles'
-import { PageTitle } from '@/shared/components/page-title'
+import { ZenHero } from '@/features/zen/components/zen-hero'
 import { fetchCareLinks } from '@/shared/lib/api/care'
 import { fetchAssessments, fetchCheckInsSince } from '@/shared/lib/api/resources'
 import { fetchStepProgress } from '@/shared/lib/api/zen'
@@ -50,8 +50,8 @@ export default async function ZenPage() {
   const professionals = linkedProfessionalsOf(careLinks)
 
   return (
-    <>
-      <PageTitle title={t('title')} />
+    <div className="space-y-14">
+      <ZenHero title={t('title')} />
 
       {needsCrisisHelp(suggestion) && <SafetyPanel level="urgent" professionals={professionals} />}
 
@@ -73,6 +73,6 @@ export default async function ZenPage() {
       <ReadingRows ids={articleIds} language={language} title={t('library.readings')} shown={4} />
 
       <p className="text-sm text-muted-foreground">{t('disclaimer')}</p>
-    </>
+    </div>
   )
 }

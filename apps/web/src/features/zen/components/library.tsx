@@ -13,10 +13,13 @@ import Link from 'next/link'
 import { useTranslations } from 'next-intl'
 import { Disclosure } from '@/shared/components/disclosure'
 import { trackStatusOf } from '../model'
-import { StatusDot } from './status-dot'
+import { ProgressRing } from './progress-ring'
+import { ReadingIcon } from './topic-icon'
 
 const rowStyles =
-  'flex min-h-12 items-center justify-between gap-4 rounded-md px-3 py-2.5 transition-colors duration-150 hover:bg-sage motion-reduce:transition-none'
+  'flex min-h-14 items-center gap-3.5 rounded-md px-3 py-3 transition-colors duration-150 hover:bg-sage motion-reduce:transition-none'
+
+const headingStyles = 'font-serif text-[26px] leading-tight tracking-[-0.01em]'
 
 interface TrackRowsProps {
   ids: readonly TrackId[]
@@ -29,8 +32,8 @@ export function TrackRows({ ids, doneSteps, language, title }: TrackRowsProps) {
   const t = useTranslations('zen')
 
   return (
-    <section aria-label={title} className="space-y-3">
-      <h2 className="text-[15px] font-medium">{title}</h2>
+    <section aria-label={title} className="space-y-4">
+      <h2 className={headingStyles}>{title}</h2>
       <ul className="rounded-lg bg-surface p-2">
         {ids.map((id) => {
           const progress = progressOf(id, doneSteps)
@@ -38,19 +41,15 @@ export function TrackRows({ ids, doneSteps, language, title }: TrackRowsProps) {
           return (
             <li key={id}>
               <Link href={`/zen/tracks/${id}`} className={rowStyles}>
-                <span className="text-pretty">{trackText(language, id).title}</span>
-                <span className="flex shrink-0 items-center gap-2 text-sm text-muted-foreground tabular-nums">
-                  {status === 'new' ? (
-                    t('minutes', { minutes: trackMinutes(id, language) })
-                  ) : (
-                    <>
-                      <StatusDot status={status} />
-                      {t(`status.${status}`, {
+                <ProgressRing done={progress.done.length} total={progress.total} />
+                <span className="min-w-0 flex-1 text-pretty">{trackText(language, id).title}</span>
+                <span className="shrink-0 text-sm text-muted-foreground tabular-nums">
+                  {status === 'new'
+                    ? t('minutes', { minutes: trackMinutes(id, language) })
+                    : t(`status.${status}`, {
                         done: progress.done.length,
                         total: progress.total,
                       })}
-                    </>
-                  )}
                 </span>
               </Link>
             </li>
@@ -78,7 +77,8 @@ function ReadingList({ ids, language }: Pick<ReadingRowsProps, 'ids' | 'language
         return (
           <li key={id}>
             <Link href={`/zen/articles/${id}`} className={rowStyles}>
-              <span className="text-pretty">{text.title}</span>
+              <ReadingIcon className="text-emphasis" />
+              <span className="min-w-0 flex-1 text-pretty">{text.title}</span>
               <span className="shrink-0 text-sm text-muted-foreground tabular-nums">
                 {t('minutes', { minutes: readingMinutes(text) })}
               </span>
@@ -95,8 +95,8 @@ export function ReadingRows({ ids, language, title, shown = ids.length }: Readin
   const rest = ids.slice(shown)
 
   return (
-    <section aria-label={title} className="space-y-3">
-      <h2 className="text-[15px] font-medium">{title}</h2>
+    <section aria-label={title} className="space-y-4">
+      <h2 className={headingStyles}>{title}</h2>
       <div className="rounded-lg bg-surface p-2">
         <ReadingList ids={ids.slice(0, shown)} language={language} />
         {rest.length > 0 && (

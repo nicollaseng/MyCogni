@@ -8,9 +8,9 @@ export interface NavigationItem {
 export const navigationItems: readonly NavigationItem[] = [
   { href: '/today', key: 'today' },
   { href: '/entries', key: 'entries' },
+  { href: '/zen', key: 'zen' },
   { href: '/mybook', key: 'mybook' },
   { href: '/patterns', key: 'patterns' },
-  { href: '/zen', key: 'zen' },
 ]
 
 export function isActivePath(pathname: string, href: string): boolean {

@@ -7,9 +7,9 @@ import { useAmbient } from '../ambient-provider'
 
 export function AmbientControl() {
   const t = useTranslations('audio.ambient')
-  const { loop, playing, toggle } = useAmbient()
+  const { loop, onZenHome, playing, toggle } = useAmbient()
 
-  if (loop === null) {
+  if (loop === null || onZenHome) {
     return null
   }
 
