@@ -38,8 +38,7 @@ async function readyPerson(prefix: string): Promise<{ email: string; id: string 
 }
 
 async function expectDisclaimer(chat: Locator, lines: readonly string[]): Promise<void> {
-  const first = chat.getByText(lines[0] ?? '', { exact: true })
-  const note = chat.locator('p').filter({ has: first })
+  const note = chat.locator('p').filter({ hasText: lines[0] })
   await expect(note).toHaveCSS('text-align', 'center')
   await expect(note.locator('span')).toHaveText([...lines])
   const [top, bottom] = await Promise.all(
