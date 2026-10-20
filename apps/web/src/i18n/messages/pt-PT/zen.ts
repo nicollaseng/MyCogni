@@ -114,7 +114,6 @@ export const zen: ZenMessages = {
     start: 'Começar',
     pause: 'Pausar',
     resume: 'Continuar',
-    restart: 'Recomeçar',
     close: 'Fechar',
     phases: {
       inhale: 'Inspire',
@@ -122,8 +121,9 @@ export const zen: ZenMessages = {
       exhale: 'Expire',
       holdOut: 'Espere',
     },
-    ready: 'Pronto para começar',
     round: 'Volta {current} de {total}',
-    finished: 'Pronto. Como se sente agora?',
+    done: 'Pronto.',
+    howNow: 'Como se sente agora?',
+    more: 'Mais uma volta',
   },
 }

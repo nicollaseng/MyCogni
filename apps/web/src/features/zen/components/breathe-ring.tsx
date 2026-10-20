@@ -2,7 +2,7 @@
 
 import { useTranslations } from 'next-intl'
 import { useState } from 'react'
-import { BreathingSheet } from './breathe-button'
+import { BreathingMode } from './breathing-mode'
 
 export function BreatheRing() {
   const t = useTranslations('zen')
@@ -28,7 +28,7 @@ export function BreatheRing() {
         <span className="text-[17px] font-medium">{t('quickBreathe')}</span>
       </button>
       {open && (
-        <BreathingSheet
+        <BreathingMode
           onClose={() => {
             setOpen(false)
           }}

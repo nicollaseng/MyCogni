@@ -8,53 +8,80 @@ export const breathingRounds = 4
 
 const phaseMs = phaseSeconds * 1000
 
-const roundMs = phaseMs * breathingPhases.length
+export const roundMs = phaseMs * breathingPhases.length
 
 export const exerciseMs = roundMs * breathingRounds
 
 export interface BreathingMoment {
   phase: BreathingPhase
-  side: number
   count: number
   round: number
-  progress: number
 }
 
-export interface Point {
-  x: number
-  y: number
-}
-
-const corners: readonly Point[] = [
-  { x: 0, y: 100 },
-  { x: 0, y: 0 },
-  { x: 100, y: 0 },
-  { x: 100, y: 100 },
-]
-
-function cornerAt(index: number): Point {
-  return corners[index % corners.length] ?? { x: 0, y: 100 }
-}
-
-export function momentAt(elapsedMs: number): BreathingMoment {
-  const clamped = Math.min(Math.max(elapsedMs, 0), exerciseMs - 1)
+export function momentAt(elapsedMs: number, rounds: number = breathingRounds): BreathingMoment {
+  const clamped = Math.min(Math.max(elapsedMs, 0), rounds * roundMs - 1)
   const inRound = clamped % roundMs
   const side = Math.floor(inRound / phaseMs)
-  const inPhase = inRound % phaseMs
   return {
     phase: breathingPhases[side] ?? 'inhale',
-    side,
-    count: phaseSeconds - Math.floor(inPhase / 1000),
+    count: phaseSeconds - Math.floor((inRound % phaseMs) / 1000),
     round: Math.floor(clamped / roundMs) + 1,
-    progress: inPhase / phaseMs,
   }
 }
 
-export function sideOf(side: number): { from: Point; to: Point } {
-  return { from: cornerAt(side), to: cornerAt(side + 1) }
+export type BreathingStatus = 'idle' | 'running' | 'paused' | 'finished'
+
+export interface BreathingRun {
+  status: BreathingStatus
+  rounds: number
+  base: number
+  since: number
+  now: number
+  run: number
 }
 
-export function pointAt({ side, progress }: Pick<BreathingMoment, 'side' | 'progress'>): Point {
-  const { from, to } = sideOf(side)
-  return { x: from.x + (to.x - from.x) * progress, y: from.y + (to.y - from.y) * progress }
+export interface BreathingAction {
+  type: 'start' | 'pause' | 'resume' | 'more' | 'tick'
+  now: number
+}
+
+export const idleRun: BreathingRun = {
+  status: 'idle',
+  rounds: breathingRounds,
+  base: 0,
+  since: 0,
+  now: 0,
+  run: 0,
+}
+
+export function elapsedOf(run: BreathingRun): number {
+  return run.status === 'running' ? run.base + run.now - run.since : run.base
+}
+
+function tick(run: BreathingRun, now: number): BreathingRun {
+  if (run.status !== 'running') {
+    return run
+  }
+  const total = run.rounds * roundMs
+  const next = { ...run, now }
+  return elapsedOf(next) >= total ? { ...next, status: 'finished', base: total } : next
+}
+
+export function advance(run: BreathingRun, { type, now }: BreathingAction): BreathingRun {
+  switch (type) {
+    case 'start':
+      return { ...idleRun, status: 'running', since: now, now, run: run.run + 1 }
+    case 'pause':
+      return run.status === 'running'
+        ? { ...run, status: 'paused', base: elapsedOf({ ...run, now }), now }
+        : run
+    case 'resume':
+      return run.status === 'paused' ? { ...run, status: 'running', since: now, now } : run
+    case 'more':
+      return run.status === 'finished'
+        ? { ...run, status: 'running', rounds: run.rounds + 1, since: now, now, run: run.run + 1 }
+        : run
+    case 'tick':
+      return tick(run, now)
+  }
 }

@@ -10,6 +10,11 @@
   --animate-marker: marker 900ms cubic-bezier(0.2, 0.7, 0.2, 1) 150ms both;
   --animate-breathe: breathe 1.6s ease-in-out infinite;
   --animate-zen-breath: zen-breath 16s ease-in-out infinite;
+  --animate-zen-swell: zen-swell 4s ease-in-out infinite alternate;
+  --animate-box-idle: box-idle 4s ease-in-out infinite alternate;
+  --animate-box-dot: box-dot 16s linear infinite;
+  --animate-box-trail: box-trail 16s linear infinite;
+  --animate-box-fill: box-fill 16s linear infinite;
 
   @keyframes rise {
     from {
@@ -42,6 +47,65 @@
     }
     75% {
       transform: scale(0.78);
+    }
+  }
+
+  @keyframes zen-swell {
+    from {
+      transform: scale(0.97);
+    }
+    to {
+      transform: scale(1.03);
+    }
+  }
+
+  @keyframes box-idle {
+    from {
+      transform: scale(0.62);
+    }
+    to {
+      transform: scale(0.74);
+    }
+  }
+
+  @keyframes box-dot {
+    0%,
+    100% {
+      transform: translate(0, 100%);
+    }
+    25% {
+      transform: translate(0, 0);
+    }
+    50% {
+      transform: translate(100%, 0);
+    }
+    75% {
+      transform: translate(100%, 100%);
+    }
+  }
+
+  @keyframes box-trail {
+    from {
+      stroke-dashoffset: 4;
+    }
+    to {
+      stroke-dashoffset: 0;
+    }
+  }
+
+  @keyframes box-fill {
+    0% {
+      transform: scale(0.62);
+      animation-timing-function: cubic-bezier(0.37, 0, 0.63, 1);
+    }
+    25%,
+    50% {
+      transform: scale(1);
+      animation-timing-function: cubic-bezier(0.37, 0, 0.63, 1);
+    }
+    75%,
+    100% {
+      transform: scale(0.62);
     }
   }
 }
@@ -140,6 +204,11 @@
     outline: 2px solid var(--foreground);
     outline-offset: 3px;
   }
+}
+
+@utility on-zen {
+  --foreground: var(--zen-foreground);
+  color: var(--zen-foreground);
 }
 
 @layer components {
