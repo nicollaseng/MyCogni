@@ -4,6 +4,7 @@ import { NextIntlClientProvider } from 'next-intl'
 import { getLocale, getTranslations } from 'next-intl/server'
 import type { ReactNode } from 'react'
 import { OutdatedAppNotice } from '@/shared/components/outdated-app-notice'
+import { serverEnv } from '@/shared/lib/env'
 import './globals.css'
 
 const serif = Newsreader({
@@ -23,6 +24,7 @@ const sans = Schibsted_Grotesk({
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations('common.meta')
   return {
+    metadataBase: new URL(serverEnv().siteUrl),
     title: { default: 'MyCogniAI', template: '%s · MyCogniAI' },
     description: t('description'),
   }

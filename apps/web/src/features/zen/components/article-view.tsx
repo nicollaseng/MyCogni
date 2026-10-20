@@ -11,8 +11,10 @@ import Link from 'next/link'
 import { useLocale, useTranslations } from 'next-intl'
 import { NarrationPlayer } from '@/features/audio/components/narration-player'
 import type { NarrationSource } from '@/features/audio/narration'
+import { firstSentence } from '@/features/insights/readings'
 import { SafetyPanel } from '@/features/safety/components/safety-panel'
 import { Disclosure } from '@/shared/components/disclosure'
+import { ShareRow } from './share-row'
 
 const textLink = 'underline decoration-1 underline-offset-4'
 
@@ -23,16 +25,21 @@ function hostOf(url: string): string {
 interface ArticleViewProps {
   id: ArticleId
   narration?: readonly NarrationSource[]
+  shareUrl?: string
+  showTracks?: boolean
 }
 
-export function ArticleView({ id, narration = [] }: ArticleViewProps) {
+export function ArticleView({ id, narration = [], shareUrl, showTracks = true }: ArticleViewProps) {
   const t = useTranslations('zen')
-  const language = contentLanguageOf(useLocale())
+  const locale = useLocale()
+  const language = contentLanguageOf(locale)
   const text = zenArticles[id].text[language]
   const { references } = zenArticles[id]
-  const inTracks = trackIds.filter((trackId) =>
-    tracks[trackId].steps.some((step) => step.kind === 'read' && step.article === id),
-  )
+  const inTracks = showTracks
+    ? trackIds.filter((trackId) =>
+        tracks[trackId].steps.some((step) => step.kind === 'read' && step.article === id),
+      )
+    : []
 
   return (
     <article className="space-y-10">
@@ -43,14 +50,22 @@ export function ArticleView({ id, narration = [] }: ArticleViewProps) {
         <h1 className="font-serif text-[38px] leading-[1.06] tracking-[-0.02em] text-balance sm:text-5xl">
           {text.title}
         </h1>
-        {narration.length > 0 && (
-          <div className="max-w-[38rem]">
-            <NarrationPlayer sources={narration} title={text.title} />
-          </div>
-        )}
         <p className="max-w-[38rem] text-lg leading-relaxed text-pretty text-muted-foreground">
           {text.summary}
         </p>
+        {(narration.length > 0 || shareUrl !== undefined) && (
+          <div className="flex max-w-[38rem] flex-wrap items-center gap-x-4 gap-y-3">
+            {narration.length > 0 && <NarrationPlayer sources={narration} title={text.title} />}
+            {shareUrl !== undefined && (
+              <ShareRow
+                title={text.title}
+                lead={text.summary}
+                teaser={firstSentence(text.summary, locale)}
+                url={shareUrl}
+              />
+            )}
+          </div>
+        )}
       </header>
 
       <div className="max-w-[38rem] space-y-9">

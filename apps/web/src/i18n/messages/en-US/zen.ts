@@ -66,6 +66,19 @@ export const zen: ZenMessages = {
     started: '{done} of {total}',
     complete: 'Completed',
   },
+  share: {
+    label: 'Share',
+    whatsapp: 'Share on WhatsApp',
+    email: 'Share by email',
+    copy: 'Copy link',
+    copied: 'Link copied',
+    more: 'More ways to share',
+    message: '{title} — {lead}\n{url}',
+    emailBody: '{lead}\n\n{url}',
+  },
+  public: {
+    cta: 'Discover MyCogniAI',
+  },
   article: {
     kicker: 'Read · {minutes} min',
     sources: 'Sources',

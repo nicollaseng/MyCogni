@@ -54,6 +54,28 @@ describe('ArticleView', () => {
     expect(document.querySelector('audio')).toHaveAttribute('src', 'https://storage.test/worry.mp3')
   })
 
+  it('puts listening first and then the ways to share, right under the lead', () => {
+    renderWithIntl(
+      <ArticleView
+        id="worry-time"
+        narration={[{ voice: 'jessica', url: 'https://storage.test/worry.mp3' }]}
+        shareUrl="http://localhost:3400/articles/worry-time"
+      />,
+    )
+
+    const listen = screen.getByRole('button', { name: 'Ouvir: A hora da preocupação' })
+    const whatsapp = screen.getByRole('link', { name: 'Compartilhar no WhatsApp' })
+    const lead = screen.getByText(/^Uma técnica simples para quando a preocupação/)
+    expect(lead.compareDocumentPosition(listen) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy()
+    expect(listen.compareDocumentPosition(whatsapp) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy()
+  })
+
+  it('leaves out the ways to share when there is no public link', () => {
+    renderWithIntl(<ArticleView id="worry-time" />)
+
+    expect(screen.queryByRole('link', { name: 'Compartilhar no WhatsApp' })).not.toBeInTheDocument()
+  })
+
   it('adds the local crisis lines to the article about seeking help', () => {
     renderWithIntl(<ArticleView id="when-to-seek-help" />, { locale: 'pt-PT' })
 
