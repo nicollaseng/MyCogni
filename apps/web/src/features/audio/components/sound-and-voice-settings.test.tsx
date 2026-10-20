@@ -58,6 +58,7 @@ describe('SoundAndVoiceSettings', () => {
       sound: 'rain',
       volume: 0.12,
       scope: 'app',
+      paused: false,
     })
   })
 

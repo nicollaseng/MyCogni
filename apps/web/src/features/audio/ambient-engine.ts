@@ -1,7 +1,9 @@
 import { ambientLoopFiles, duckedAmbientShare, type AmbientLoopId } from '@mycogni/domain'
 
 export interface AmbientEngine {
-  unlock(): void
+  unlock(): Promise<boolean>
+  running(): boolean
+  subscribe(listener: () => void): () => void
   play(loop: AmbientLoopId): void
   stop(): void
   setVolume(volume: number): void
@@ -12,6 +14,7 @@ export type AmbientContext = Pick<
   AudioContext,
   | 'currentTime'
   | 'state'
+  | 'onstatechange'
   | 'destination'
   | 'resume'
   | 'createGain'
@@ -67,6 +70,13 @@ export function createAmbientEngine({
   let ducked = false
   let session: Session | null = null
   const buffers = new Map<AmbientLoopId, Promise<AudioBuffer>>()
+  const listeners = new Set<() => void>()
+
+  function notify() {
+    for (const listener of listeners) {
+      listener()
+    }
+  }
 
   function ready(): { context: AmbientContext; master: GainNode } {
     if (audio === null) {
@@ -74,6 +84,7 @@ export function createAmbientEngine({
       const master = context.createGain()
       master.gain.value = volume * (ducked ? duckedAmbientShare : 1)
       master.connect(context.destination)
+      context.onstatechange = notify
       audio = { context, master }
     }
     return audio
@@ -142,10 +153,21 @@ export function createAmbientEngine({
   }
 
   return {
-    unlock() {
+    async unlock() {
       const { context } = ready()
-      if (context.state === 'suspended') {
-        void context.resume()
+      if (context.state !== 'running') {
+        await context.resume().catch(() => undefined)
+      }
+      notify()
+      return context.state === 'running'
+    },
+    running() {
+      return audio?.context.state === 'running'
+    },
+    subscribe(listener) {
+      listeners.add(listener)
+      return () => {
+        listeners.delete(listener)
       }
     },
     play(loop) {

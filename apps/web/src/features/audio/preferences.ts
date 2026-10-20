@@ -21,6 +21,7 @@ export interface AudioPreferences {
   sound: AmbientSoundId
   volume: number
   scope: AmbientScope
+  paused: boolean
 }
 
 export const defaultAudioPreferences: AudioPreferences = {
@@ -29,6 +30,7 @@ export const defaultAudioPreferences: AudioPreferences = {
   sound: defaultAmbientSound,
   volume: defaultAmbientVolume,
   scope: defaultAmbientScope,
+  paused: false,
 }
 
 export const audioPreferencesKey = 'mycogni.audio'
@@ -46,13 +48,14 @@ export function parseAudioPreferences(raw: string | null): AudioPreferences {
   if (raw === null) {
     return defaultAudioPreferences
   }
-  const { voice, speed, sound, volume, scope } = fieldsOf(raw)
+  const { voice, speed, sound, volume, scope, paused } = fieldsOf(raw)
   return {
     voice: isNarrationVoiceId(voice) ? voice : null,
     speed: isNarrationSpeed(speed) ? speed : defaultNarrationSpeed,
     sound: isAmbientSoundId(sound) ? sound : defaultAmbientSound,
     volume: volume === undefined ? defaultAmbientVolume : ambientVolumeOf(volume),
     scope: isAmbientScope(scope) ? scope : defaultAmbientScope,
+    paused: paused === true,
   }
 }
 
