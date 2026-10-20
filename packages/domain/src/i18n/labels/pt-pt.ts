@@ -105,6 +105,16 @@ export const europeanPortuguese: LabelSet = {
     moderately_severe: 'Moderadamente grave',
     severe: 'Grave',
   },
+  plainNames: {
+    phq9: 'Desânimo',
+    gad7: 'Ansiedade',
+  },
+  plainLevels: {
+    low: 'Baixo',
+    mild: 'Ligeiro',
+    moderate: 'Moderado',
+    high: 'Alto',
+  },
   moods: {
     veryBad: 'Muito mal',
     bad: 'Mal',

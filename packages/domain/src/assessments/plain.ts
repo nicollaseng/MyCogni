@@ -1,4 +1,4 @@
-import type { InstrumentId, Severity } from './instrument.ts'
+import type { Severity } from './instrument.ts'
 
 export const plainLevels = ['low', 'mild', 'moderate', 'high'] as const
 
@@ -7,12 +7,6 @@ export type PlainLevel = (typeof plainLevels)[number]
 export const plainTrends = ['same', 'better', 'higher'] as const
 
 export type PlainTrend = (typeof plainTrends)[number]
-
-export const plainTopics = { phq9: 'mood', gad7: 'anxiety' } as const satisfies Readonly<
-  Record<InstrumentId, string>
->
-
-export type PlainTopic = (typeof plainTopics)[InstrumentId]
 
 const levelOfSeverity: Readonly<Record<Severity, PlainLevel>> = {
   minimal: 'low',
