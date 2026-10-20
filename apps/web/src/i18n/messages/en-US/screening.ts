@@ -16,16 +16,8 @@ export const screening: ScreeningMessages = {
   },
   plain: {
     title: 'Mood and anxiety',
-    names: {
-      phq9: 'Feeling down',
-      gad7: 'Anxiety',
-    },
-    levels: {
-      low: 'Low',
-      mild: 'Mild',
-      moderate: 'Moderate',
-      high: 'High',
-    },
+    names: labels.plainNames,
+    levels: labels.plainLevels,
     trend: {
       same: 'Same as last time',
       better: 'Better than last time',

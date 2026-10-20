@@ -16,16 +16,8 @@ export const screening: ScreeningMessages = {
   },
   plain: {
     title: 'Ânimo e ansiedade',
-    names: {
-      phq9: 'Desânimo',
-      gad7: 'Ansiedade',
-    },
-    levels: {
-      low: 'Baixo',
-      mild: 'Ligeiro',
-      moderate: 'Moderado',
-      high: 'Alto',
-    },
+    names: labels.plainNames,
+    levels: labels.plainLevels,
     trend: {
       same: 'Igual à última vez',
       better: 'Melhor do que da última vez',
