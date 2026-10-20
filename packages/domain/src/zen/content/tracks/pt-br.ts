@@ -86,7 +86,7 @@ export const brazilianTracks: TrackTexts = {
       },
       questionnaires: {
         title: 'Acompanhar com os questionários',
-        body: 'Responda o PHQ-9 e o GAD-7 a cada duas semanas para ver como você muda. É uma triagem, não um diagnóstico.',
+        body: 'Responda às perguntas sobre ânimo e ansiedade a cada duas semanas para ver como você muda. É uma triagem, não um diagnóstico.',
       },
     },
   },

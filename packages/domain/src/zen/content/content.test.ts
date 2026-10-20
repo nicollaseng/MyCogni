@@ -27,6 +27,18 @@ describe('articles', () => {
     expect(articles[id].id).toBe(id)
   })
 
+  it.each(articleIds)('keeps questionnaire names and scores out of the text of %s', (id) => {
+    for (const language of languages) {
+      const text = articles[id].text[language]
+      const written = [
+        text.title,
+        text.summary,
+        ...text.sections.flatMap((section) => [section.heading ?? '', ...section.paragraphs]),
+      ].join(' ')
+      expect(written).not.toMatch(/PHQ|GAD|\b(de|of) (27|21)\b/)
+    }
+  })
+
   it('lists references with secure links only', () => {
     for (const id of articleIds) {
       for (const reference of articles[id].references) {
@@ -43,6 +55,11 @@ describe('tracks', () => {
       const text = trackText(language, id)
       expect(Object.keys(text.steps).sort()).toEqual(tracks[id].steps.map((step) => step.id).sort())
       expect(text.title).not.toBe('')
+      expect(
+        Object.values(text.steps)
+          .map((step) => step.body)
+          .join(' '),
+      ).not.toMatch(/PHQ|GAD/)
     }
   })
 })

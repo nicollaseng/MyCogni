@@ -86,7 +86,7 @@ export const englishTracks: TrackTexts = {
       },
       questionnaires: {
         title: 'Follow up with the questionnaires',
-        body: 'Answer the PHQ-9 and GAD-7 every two weeks to see how you change. It is a screening, not a diagnosis.',
+        body: 'Answer the questions about mood and anxiety every two weeks to see how you change. It is a screening, not a diagnosis.',
       },
     },
   },
