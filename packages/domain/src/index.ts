@@ -16,6 +16,17 @@ export {
   type SeverityBand,
 } from './assessments/instrument.ts'
 export { gad7 } from './assessments/gad7.ts'
+export {
+  plainLevelOf,
+  plainLevelRank,
+  plainLevels,
+  plainTopics,
+  plainTrendOf,
+  plainTrends,
+  type PlainLevel,
+  type PlainTopic,
+  type PlainTrend,
+} from './assessments/plain.ts'
 export { phq9 } from './assessments/phq9.ts'
 export type { InstrumentText } from './assessments/texts/instrument-text.ts'
 export { instrumentText } from './assessments/texts/texts.ts'
