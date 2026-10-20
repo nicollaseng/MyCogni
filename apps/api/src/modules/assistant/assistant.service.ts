@@ -264,7 +264,7 @@ export function createAssistantService({
           journal: access.journal,
           watch: question.watch,
         }),
-        tools: toolbox.definitions(access),
+        tools: toolbox.definitions(access, scope.mode),
         runTool: (call) => {
           tools += 1
           return run(call)

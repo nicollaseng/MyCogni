@@ -1,4 +1,4 @@
-import { expect, test, type Page } from '@playwright/test'
+import { expect, test, type Locator, type Page } from '@playwright/test'
 import {
   acceptInvitation,
   allowSummaries,
@@ -37,6 +37,16 @@ async function readyPerson(prefix: string): Promise<{ email: string; id: string 
   return { email, id }
 }
 
+async function expectDisclaimer(chat: Locator, lines: readonly string[]): Promise<void> {
+  const note = chat.locator('p').filter({ hasText: lines[0] })
+  await expect(note).toHaveCSS('text-align', 'center')
+  await expect(note.locator('span')).toHaveText([...lines])
+  const [top, bottom] = await Promise.all(
+    [0, 1].map(async (index) => (await note.locator('span').nth(index).boundingBox())?.y ?? 0),
+  )
+  expect(bottom).toBeGreaterThan(top ?? 0)
+}
+
 async function openChat(page: Page) {
   await page.getByRole('button', { name: 'Perguntar', exact: true }).click()
   return page.getByRole('dialog', { name: 'Perguntar' })
@@ -49,9 +59,10 @@ test('asks about the records after allowing it and gets an answer', async ({ pag
   await expect(page.getByRole('button', { name: 'Perguntar', exact: true })).toHaveCount(0)
   await page.goto('/patterns')
   const chat = await openChat(page)
-  await expect(chat).toContainText(
-    'IA pode cometer erros. Essa conversa não substitui um aconselhamento de saúde profissional.',
-  )
+  await expectDisclaimer(chat, [
+    'IA pode cometer erros.',
+    'Essa conversa não substitui um aconselhamento de saúde profissional.',
+  ])
   await expect(chat.getByRole('button', { name: 'Ajuda agora' })).toHaveCount(0)
   const consent = chat.getByRole('region', { name: 'Posso ler os seus registros?' })
   await consent.getByRole('button', { name: 'Permitir' }).click()
@@ -82,11 +93,31 @@ test('answers a crisis message with the crisis card once, next to that answer', 
 
   const notice = chat.locator('[data-role="notice"]')
   await expect(notice).toContainText(
-    'Que bom que você me contou. Você merece o apoio de uma pessoa agora: ligue para um dos contatos abaixo.',
+    'Que bom que você me contou: você está em segurança agora? Ligue para um dos contatos abaixo.',
   )
   const card = notice.getByRole('region', { name: 'Apoio agora' })
   await expect(card).not.toContainText('Você não precisa passar por isso sem apoio')
   await expect(card.getByRole('link', { name: '188 CVV' })).toHaveAttribute('href', 'tel:188')
+  await expect(chat.getByRole('region', { name: 'Apoio agora' })).toHaveCount(1)
+})
+
+test('puts the safety of a friend first and shows the numbers once', async ({ page }) => {
+  const person = await readyPerson('amigo')
+  await signIn(page, person.email)
+  await page.goto('/entries')
+  const chat = await openChat(page)
+  await chat.getByRole('button', { name: 'Agora não' }).click()
+
+  await chat.getByRole('textbox', { name: 'Mensagem' }).fill('Meu amigo teve vontade de se matar')
+  await chat.getByRole('textbox', { name: 'Mensagem' }).press('Enter')
+
+  const reply = chat.locator('[data-role="assistant"]')
+  await expect(reply).toContainText('Ele está em perigo agora?')
+  await expect(reply).toContainText('contatos abaixo')
+  await expect(reply).not.toContainText('Como você está se sentindo')
+  const card = reply.getByRole('region', { name: 'Apoio agora' })
+  await expect(card.getByRole('link', { name: '188 CVV' })).toHaveAttribute('href', 'tel:188')
+  await expect(card.getByRole('link', { name: '192 SAMU' })).toHaveAttribute('href', 'tel:192')
   await expect(chat.getByRole('region', { name: 'Apoio agora' })).toHaveCount(1)
 })
 
@@ -102,7 +133,10 @@ test('lets a professional ask about a linked patient', async ({ page }) => {
 
   await page.getByRole('button', { name: 'Perguntar sobre este paciente' }).click()
   const chat = page.getByRole('dialog', { name: /^Perguntar sobre / })
-  await expect(chat).toContainText('IA pode cometer erros. Não substitui o seu julgamento clínico.')
+  await expectDisclaimer(chat, [
+    'IA pode cometer erros.',
+    'Não substitui o seu julgamento clínico.',
+  ])
   await chat.getByRole('button', { name: 'Como o humor mudou nas últimas semanas?' }).click()
 
   await expect(chat.getByRole('log')).toContainText('aparecem 3 check-ins')

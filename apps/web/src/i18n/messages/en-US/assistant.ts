@@ -6,9 +6,11 @@ export const assistant: AssistantMessages = {
   professionalTitle: 'Ask about {name}',
   professionalAction: 'Ask about this patient',
   close: 'Close',
-  disclaimer:
-    'AI can make mistakes. This conversation is not a substitute for professional health advice.',
-  professionalDisclaimer: 'AI can make mistakes. It does not replace your clinical judgment.',
+  disclaimer: {
+    mistakes: 'AI can make mistakes.',
+    personal: 'This conversation is not a substitute for professional health advice.',
+    professional: 'It does not replace your clinical judgment.',
+  },
   toolbar: {
     new: 'New conversation',
     history: 'Conversations',
