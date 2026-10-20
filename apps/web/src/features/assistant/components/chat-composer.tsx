@@ -6,12 +6,12 @@ import { Button } from '@/shared/ui/button'
 interface ChatComposerProps {
   pending: boolean
   onSend: (text: string) => Promise<boolean>
-  note: string
+  notes: readonly string[]
 }
 
 const nearLimit = 100
 
-export function ChatComposer({ pending, onSend, note }: ChatComposerProps) {
+export function ChatComposer({ pending, onSend, notes }: ChatComposerProps) {
   const t = useTranslations('assistant.composer')
   const id = useId()
   const form = useRef<HTMLFormElement>(null)
@@ -61,16 +61,18 @@ export function ChatComposer({ pending, onSend, note }: ChatComposerProps) {
           {t('send')}
         </Button>
       </div>
-      <div className="flex items-baseline justify-between gap-4 text-xs text-muted-foreground">
-        <p id={`${id}-note`} className="text-pretty">
-          {note}
+      {showCount && (
+        <p aria-live="polite" className="text-right text-xs text-muted-foreground tabular-nums">
+          {t('count', { count: text.length, max })}
         </p>
-        {showCount && (
-          <p aria-live="polite" className="shrink-0 tabular-nums">
-            {t('count', { count: text.length, max })}
-          </p>
-        )}
-      </div>
+      )}
+      <p id={`${id}-note`} className="text-center text-xs text-pretty text-muted-foreground">
+        {notes.map((line, index) => (
+          <span key={line} className="block">
+            {index > 0 ? ` ${line}` : line}
+          </span>
+        ))}
+      </p>
     </form>
   )
 }

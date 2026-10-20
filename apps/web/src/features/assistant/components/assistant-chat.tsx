@@ -107,7 +107,7 @@ export function AssistantChat({ target, actions, timeZone }: AssistantChatProps)
         <ChatComposer
           pending={chat.pending}
           onSend={chat.send}
-          note={mode === 'personal' ? t('disclaimer') : t('professionalDisclaimer')}
+          notes={[t('disclaimer.mistakes'), t(`disclaimer.${mode}`)]}
         />
       </div>
     </div>
