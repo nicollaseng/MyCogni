@@ -25,6 +25,15 @@ export const assistant = {
     professional:
       'Pergunte sobre tendências, contextos e questionários deste paciente. As respostas ficam só com você.',
   },
+  page: {
+    context: 'Sobre esta página',
+    suggestions: 'Sugestões para esta página',
+    starters: {
+      continue: 'Me ajude a continuar',
+      feeling: 'O que este texto diz sobre como estou?',
+      summary: 'Resuma esta página',
+    },
+  },
   starters: {
     personal: {
       mood: 'Como foi meu humor nas últimas duas semanas?',

@@ -15,20 +15,25 @@ function summaryOf(
   exchange: AssistantExchange,
   text: string,
   existing: AssistantConversationSummary | undefined,
-  mode: AssistantTarget['mode'],
+  target: AssistantTarget,
 ): AssistantConversationSummary {
   const now = exchange.messages.at(-1)?.createdAt ?? new Date().toISOString()
   return {
     id: exchange.conversationId,
-    mode,
+    mode: target.mode,
     risk: exchange.risk,
     preview: existing?.preview ?? text.slice(0, 80),
+    entryId: existing?.entryId ?? (target.mode === 'personal' ? (target.entryId ?? null) : null),
     createdAt: existing?.createdAt ?? now,
     updatedAt: now,
   }
 }
 
-export function useAssistantChat(target: AssistantTarget, actions: AssistantActions) {
+export function useAssistantChat(
+  target: AssistantTarget,
+  actions: AssistantActions,
+  prepare?: () => Promise<unknown>,
+) {
   const [state, setState] = useState<AssistantState | null>(null)
   const [loadError, setLoadError] = useState<string | null>(null)
   const [conversationId, setConversationId] = useState<string | null>(null)
@@ -91,6 +96,7 @@ export function useAssistantChat(target: AssistantTarget, actions: AssistantActi
       createdAt: new Date().toISOString(),
     }
     setMessages((current) => [...current, optimistic])
+    await prepare?.()
     const result = await unlessOutdated(() => actions.send(target, conversationId, trimmed))
     setPending(false)
     if (result?.ok !== true) {
@@ -120,7 +126,7 @@ export function useAssistantChat(target: AssistantTarget, actions: AssistantActi
         ...current,
         overview: {
           ...current.overview,
-          conversations: [summaryOf(exchange, trimmed, existing, target.mode), ...others],
+          conversations: [summaryOf(exchange, trimmed, existing, target), ...others],
         },
       }
     })

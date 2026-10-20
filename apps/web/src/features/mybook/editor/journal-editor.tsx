@@ -7,6 +7,8 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useLocale, useTranslations } from 'next-intl'
 import { useCallback, useEffect, useLayoutEffect, useRef, useState, useTransition } from 'react'
+import { PageAssistant } from '@/features/assistant/components/page-assistant'
+import type { AssistantActions } from '@/features/assistant/model'
 import { SafetyNotice } from '@/features/safety/components/safety-notice'
 import { ReloadNotice } from '@/shared/components/reload-notice'
 import { useSubmit } from '@/shared/hooks/use-submit'
@@ -32,6 +34,7 @@ interface JournalEditorProps {
   timeZone: string
   client?: PageClient
   photoTools?: PhotoTools
+  assistantActions?: AssistantActions
 }
 
 function imageFiles(list: FileList | null | undefined): File[] {
@@ -43,6 +46,7 @@ export function JournalEditor({
   timeZone,
   client = browserPageClient,
   photoTools = browserPhotoTools,
+  assistantActions,
 }: JournalEditorProps) {
   const t = useTranslations('mybook.editor')
   const feedback = useTranslations('mybook.feedback')
@@ -199,6 +203,14 @@ export function JournalEditor({
               void autosave.flush()
             }}
           />
+          {assistantActions !== undefined && (
+            <PageAssistant
+              entryId={entry.id}
+              actions={assistantActions}
+              timeZone={timeZone}
+              prepare={autosave.flush}
+            />
+          )}
           <PageMenu
             entryId={entry.id}
             deleting={deletion.pending}
