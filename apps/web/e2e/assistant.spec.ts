@@ -7,6 +7,7 @@ import {
   recordCheckIns,
   verifiedProfessional,
 } from './support/api'
+import { pageBody } from './support/mybook'
 import { signedOut } from './support/session'
 import { createUser, uniqueEmail } from './support/supabase'
 
@@ -140,4 +141,30 @@ test('lets a professional ask about a linked patient', async ({ page }) => {
   await chat.getByRole('button', { name: 'Como o humor mudou nas últimas semanas?' }).click()
 
   await expect(chat.getByRole('log')).toContainText('aparecem 3 check-ins')
+})
+
+test('asks about the MyBook page being written from its editor', async ({ page }) => {
+  const person = await readyPerson('pagina')
+  await signIn(page, person.email)
+  await page.goto('/mybook')
+  await page.getByRole('button', { name: 'Nova página' }).click()
+  await expect(page).toHaveURL(/\/mybook\/[0-9a-f-]{36}$/)
+  await page.getByLabel('Título da página').fill('Domingo no parque')
+  await pageBody(page).click()
+  await page.keyboard.type('Fui ao parque com a minha irmã.')
+
+  await page.getByRole('button', { name: 'Perguntar', exact: true }).click()
+  const chat = page.getByRole('dialog', { name: 'Perguntar' })
+  await expect(chat).toContainText('Sobre esta página')
+  const consent = chat.getByRole('region', { name: 'Posso ler os seus registros?' })
+  await expect(consent.getByRole('checkbox', { name: 'Ler também o MyBook' })).toBeChecked()
+  await consent.getByRole('button', { name: 'Permitir' }).click()
+  await chat.getByRole('button', { name: 'Resuma esta página' }).click()
+
+  await expect(chat.getByRole('log')).toContainText(
+    'Sua página “Domingo no parque” fala de um momento que você quis guardar.',
+  )
+  await chat.getByRole('button', { name: 'Fechar' }).click()
+  await expect(page.getByLabel('Título da página')).toHaveValue('Domingo no parque')
+  await expect(pageBody(page)).toContainText('Fui ao parque com a minha irmã.')
 })
