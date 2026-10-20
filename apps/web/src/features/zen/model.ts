@@ -1,5 +1,6 @@
 import type { TrackProgress, TrackStep } from '@mycogni/domain'
-import type { TrackStatus } from './components/status-dot'
+
+export type TrackStatus = 'new' | 'started' | 'complete'
 
 export function trackStatusOf({ started, complete }: TrackProgress): TrackStatus {
   if (complete) {

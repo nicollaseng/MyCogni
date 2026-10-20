@@ -5,12 +5,13 @@ import {
   type AssistantConversation,
   type AssistantExchange,
   type AssistantOverview,
-  type SendAssistantMessageInput,
+  type SendPersonalAssistantMessageInput,
 } from '@mycogni/contracts'
 import { z } from 'zod'
 import { apiRequest } from './client'
 
-export type AssistantTarget = { mode: 'personal' } | { mode: 'professional'; patientId: string }
+export type AssistantTarget =
+  { mode: 'personal'; entryId?: string } | { mode: 'professional'; patientId: string }
 
 function basePath(target: AssistantTarget): `/v1/${string}` {
   return target.mode === 'personal'
@@ -24,7 +25,7 @@ export function fetchAssistant(target: AssistantTarget): Promise<AssistantOvervi
 
 export function sendAssistantMessage(
   target: AssistantTarget,
-  body: SendAssistantMessageInput,
+  body: SendPersonalAssistantMessageInput,
 ): Promise<AssistantExchange> {
   return apiRequest({
     path: `${basePath(target)}/messages`,

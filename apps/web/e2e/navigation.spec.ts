@@ -33,9 +33,9 @@ test('keeps five sections in the navigation and the account in the header', asyn
   await expect(mainNavigation(page).getByRole('link')).toHaveText([
     'Hoje',
     'Registros',
+    'Zen',
     'MyBook',
     'Padrões',
-    'Zen',
   ])
   await expect(page.getByRole('link', { name: 'Você', exact: true })).toHaveCount(0)
   await expect(page.getByRole('button', { name: 'Sua conta' })).toBeVisible()
@@ -87,4 +87,25 @@ test('answers unknown addresses with a friendly page', async ({ page }) => {
 
   expect(response?.status()).toBe(404)
   await expect(page.getByRole('heading', { name: 'Esta página não existe.' })).toBeVisible()
+})
+
+test('highlights Zen in the middle of the navigation and marks it when open', async ({ page }) => {
+  await page.goto('/today')
+  const zen = mainNavigation(page).getByRole('link', { name: 'Zen' })
+
+  await expect(zen).toHaveAttribute('data-zen-tab')
+  await expect(zen).not.toHaveAttribute('aria-current')
+  const zenBox = await zen.boundingBox()
+  const navigationBox = await mainNavigation(page).getByRole('list').boundingBox()
+  if (zenBox === null || navigationBox === null) {
+    throw new Error('The navigation is not rendered')
+  }
+  const offset = zenBox.x + zenBox.width / 2 - (navigationBox.x + navigationBox.width / 2)
+  expect(Math.abs(offset)).toBeLessThan(navigationBox.width * 0.15)
+
+  await zen.click()
+
+  await expect(page).toHaveURL('/zen')
+  await expect(zen).toHaveAttribute('aria-current', 'page')
+  await expect(page.getByRole('heading', { level: 1, name: 'Zen Space' })).toBeVisible()
 })

@@ -4,9 +4,11 @@ export const assistant = {
   professionalTitle: 'Perguntar sobre {name}',
   professionalAction: 'Perguntar sobre este paciente',
   close: 'Fechar',
-  disclaimer:
-    'IA pode cometer erros. Essa conversa não substitui um aconselhamento de saúde profissional.',
-  professionalDisclaimer: 'IA pode cometer erros. Não substitui o seu julgamento clínico.',
+  disclaimer: {
+    mistakes: 'IA pode cometer erros.',
+    personal: 'Essa conversa não substitui um aconselhamento de saúde profissional.',
+    professional: 'Não substitui o seu julgamento clínico.',
+  },
   toolbar: {
     new: 'Nova conversa',
     history: 'Conversas',
@@ -22,6 +24,15 @@ export const assistant = {
       'Pergunte sobre os seus registros ou conte como você está. As respostas são curtas e ficam só com você.',
     professional:
       'Pergunte sobre tendências, contextos e questionários deste paciente. As respostas ficam só com você.',
+  },
+  page: {
+    context: 'Sobre esta página',
+    suggestions: 'Sugestões para esta página',
+    starters: {
+      continue: 'Me ajude a continuar',
+      feeling: 'O que este texto diz sobre como estou?',
+      summary: 'Resuma esta página',
+    },
   },
   starters: {
     personal: {

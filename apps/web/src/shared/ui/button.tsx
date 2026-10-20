@@ -10,6 +10,7 @@ export const buttonVariants = cva(
         default: 'bg-primary text-primary-foreground hover:bg-primary/90',
         outline: 'border border-rule hover:bg-sage',
         ghost: 'text-muted-foreground hover:text-foreground',
+        inverse: 'bg-zen-foreground text-zen hover:bg-zen-foreground/90',
       },
       size: {
         default: 'h-12 px-6 text-[15px]',

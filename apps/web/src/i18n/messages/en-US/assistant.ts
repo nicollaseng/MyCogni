@@ -6,9 +6,11 @@ export const assistant: AssistantMessages = {
   professionalTitle: 'Ask about {name}',
   professionalAction: 'Ask about this patient',
   close: 'Close',
-  disclaimer:
-    'AI can make mistakes. This conversation is not a substitute for professional health advice.',
-  professionalDisclaimer: 'AI can make mistakes. It does not replace your clinical judgment.',
+  disclaimer: {
+    mistakes: 'AI can make mistakes.',
+    personal: 'This conversation is not a substitute for professional health advice.',
+    professional: 'It does not replace your clinical judgment.',
+  },
   toolbar: {
     new: 'New conversation',
     history: 'Conversations',
@@ -24,6 +26,15 @@ export const assistant: AssistantMessages = {
       'Ask about your records or tell me how you are doing. Answers are short and stay with you.',
     professional:
       'Ask about this patient’s trends, contexts and questionnaires. Answers stay with you.',
+  },
+  page: {
+    context: 'About this page',
+    suggestions: 'Suggestions for this page',
+    starters: {
+      continue: 'Help me continue',
+      feeling: 'What does this text say about how I am?',
+      summary: 'Summarize this page',
+    },
   },
   starters: {
     personal: {

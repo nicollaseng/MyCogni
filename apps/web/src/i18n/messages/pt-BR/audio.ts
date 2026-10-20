@@ -1,6 +1,10 @@
 export const audio = {
   ambient: {
     control: 'Som de fundo: {sound}',
+    playing: 'tocando',
+    paused: 'pausado',
+    pauseSound: 'Pausar o som de fundo: {sound}',
+    playSound: 'Tocar o som de fundo: {sound}',
     sounds: {
       sea: 'Mar',
       rain: 'Chuva',

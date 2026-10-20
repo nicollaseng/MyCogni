@@ -9,11 +9,12 @@ import {
 import Link from 'next/link'
 import { useTranslations } from 'next-intl'
 import { buttonVariants } from '@/shared/ui/button'
-import { BreatheButton } from './breathe-button'
 import { hasStepAction } from '../model'
 import { stepTitle } from '../titles'
+import { BreatheRing } from './breathe-ring'
 import { StepAction } from './step-action'
 import { WhySuggestion } from './why-suggestion'
+import { ZenContour } from './zen-contour'
 
 interface TodayCardProps {
   pick: TodayPick | null
@@ -30,33 +31,41 @@ function TodayStep({ pick, language }: { pick: TodayPick; language: ContentLangu
   const label = pick.started ? t('today.continue') : t('today.start')
 
   return (
-    <div className="space-y-5 rounded-lg bg-surface px-5 py-6 sm:px-7 sm:py-7">
-      <p className="text-sm text-muted-foreground">
-        {t('today.kicker', {
-          track: track.title,
-          step: steps.indexOf(pick.step) + 1,
-          total: steps.length,
-        })}
-      </p>
-      <div className="space-y-1.5">
-        <h3 className="font-serif text-[28px] leading-[1.1] tracking-[-0.015em] text-balance">
-          {title}
-        </h3>
-        <p className="text-sm text-muted-foreground">
-          {t(`kinds.${pick.step.kind}`)} ·{' '}
-          {t('minutes', { minutes: stepMinutes(pick.step, language) })}
+    <div className="relative overflow-hidden rounded-lg bg-zen px-6 py-7 text-zen-foreground sm:px-9 sm:py-10">
+      <ZenContour
+        rings={7}
+        calm={0.9}
+        drift={false}
+        className="absolute -right-24 -bottom-36 size-[320px] text-zen-line opacity-70 sm:-right-10 sm:-bottom-28 sm:size-[360px]"
+      />
+      <div className="relative max-w-[28rem] space-y-6">
+        <p className="text-sm text-zen-foreground/75">
+          {t('today.kicker', {
+            track: track.title,
+            step: steps.indexOf(pick.step) + 1,
+            total: steps.length,
+          })}
         </p>
+        <div className="space-y-2.5">
+          <h3 className="font-serif text-[32px] leading-[1.05] tracking-[-0.02em] text-balance sm:text-[38px]">
+            {title}
+          </h3>
+          <p className="text-sm text-zen-foreground/75">
+            {t(`kinds.${pick.step.kind}`)} ·{' '}
+            {t('minutes', { minutes: stepMinutes(pick.step, language) })}
+          </p>
+        </div>
+        {hasStepAction(pick.step) ? (
+          <StepAction step={pick.step} text={text} primary inverse label={label} />
+        ) : (
+          <Link
+            href={`/zen/tracks/${pick.trackId}#step-${pick.step.id}`}
+            className={buttonVariants({ variant: 'inverse' })}
+          >
+            {label}
+          </Link>
+        )}
       </div>
-      {hasStepAction(pick.step) ? (
-        <StepAction step={pick.step} text={text} primary label={label} />
-      ) : (
-        <Link
-          href={`/zen/tracks/${pick.trackId}#step-${pick.step.id}`}
-          className={buttonVariants()}
-        >
-          {label}
-        </Link>
-      )}
     </div>
   )
 }
@@ -65,8 +74,8 @@ export function TodayCard({ pick, language, reasons }: TodayCardProps) {
   const t = useTranslations('zen')
 
   return (
-    <section aria-labelledby="zen-today" className="space-y-3">
-      <h2 id="zen-today" className="text-[15px] font-medium">
+    <section aria-labelledby="zen-today" className="space-y-4">
+      <h2 id="zen-today" className="font-serif text-[26px] leading-tight tracking-[-0.01em]">
         {t('today.title')}
       </h2>
       {pick === null ? (
@@ -74,8 +83,8 @@ export function TodayCard({ pick, language, reasons }: TodayCardProps) {
       ) : (
         <TodayStep pick={pick} language={language} />
       )}
-      <div className="flex flex-wrap items-center justify-between gap-x-6 gap-y-2 pt-1">
-        <BreatheButton label={t('quickBreathe')} />
+      <div className="flex flex-col gap-3 pt-1 sm:flex-row sm:items-center sm:justify-between sm:gap-6">
+        <BreatheRing />
         <WhySuggestion reasons={reasons} />
       </div>
     </section>

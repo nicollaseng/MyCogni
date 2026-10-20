@@ -6,9 +6,11 @@ export const assistant: AssistantMessages = {
   professionalTitle: 'Perguntar sobre {name}',
   professionalAction: 'Perguntar sobre este paciente',
   close: 'Fechar',
-  disclaimer:
-    'A IA pode cometer erros. Esta conversa não substitui aconselhamento de saúde profissional.',
-  professionalDisclaimer: 'A IA pode cometer erros. Não substitui o seu juízo clínico.',
+  disclaimer: {
+    mistakes: 'A IA pode cometer erros.',
+    personal: 'Esta conversa não substitui aconselhamento de saúde profissional.',
+    professional: 'Não substitui o seu juízo clínico.',
+  },
   toolbar: {
     new: 'Nova conversa',
     history: 'Conversas',
@@ -24,6 +26,15 @@ export const assistant: AssistantMessages = {
       'Pergunte sobre os seus registos ou conte como está. As respostas são curtas e ficam só consigo.',
     professional:
       'Pergunte sobre tendências, contextos e questionários deste paciente. As respostas ficam só consigo.',
+  },
+  page: {
+    context: 'Sobre esta página',
+    suggestions: 'Sugestões para esta página',
+    starters: {
+      continue: 'Ajude-me a continuar',
+      feeling: 'O que este texto diz sobre como estou?',
+      summary: 'Resuma esta página',
+    },
   },
   starters: {
     personal: {

@@ -4,6 +4,7 @@ import { screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { renderWithIntl } from '@/test/render'
 import { fakeRouter, WithRouter } from '@/test/router'
+import { exchange, fakeActions, message, overview } from '@/features/assistant/test-data'
 import { readDraft, writeDraft } from '../drafts'
 import type { PageClient, RemoveOutcome, SaveOutcome } from '../page-client'
 import { JournalEditor } from './journal-editor'
@@ -163,6 +164,57 @@ describe('JournalEditor support', () => {
     }, patience)
     expect(screen.queryByRole('region', { name: 'Apoio agora' })).not.toBeInTheDocument()
     expect(screen.queryByRole('button', { name: 'Ajuda agora' })).not.toBeInTheDocument()
+  })
+})
+
+describe('JournalEditor assistant', () => {
+  it('asks about the page from its header after saving what is being written', async () => {
+    const steps: string[] = []
+    const client = {
+      create: jest.fn<PageClient['create']>(),
+      save: jest.fn<Save>(() => {
+        steps.push('save')
+        return Promise.resolve({ kind: 'saved', updatedAt: savedAt, safety: null })
+      }),
+      remove: jest.fn<(id: string) => Promise<RemoveOutcome>>(() => Promise.resolve('removed')),
+    }
+    const actions = fakeActions({ overview: overview(true), contacts: [] })
+    actions.send.mockImplementation(() => {
+      steps.push('send')
+      return Promise.resolve({
+        ok: true,
+        value: exchange('Resuma esta página', message('assistant', 'Fala de um domingo.')),
+      })
+    })
+    renderWithIntl(
+      <WithRouter router={fakeRouter()}>
+        <JournalEditor
+          entry={entry}
+          timeZone="America/Sao_Paulo"
+          client={client}
+          assistantActions={actions}
+        />
+      </WithRouter>,
+    )
+
+    await userEvent.type(titleField(), ' de sol')
+    await userEvent.click(screen.getByRole('button', { name: 'Perguntar' }))
+    await userEvent.click(await screen.findByRole('button', { name: 'Resuma esta página' }))
+
+    expect(await screen.findByText('Fala de um domingo.')).toBeVisible()
+    expect(steps).toEqual(['save', 'send'])
+    expect(client.save).toHaveBeenCalledWith(
+      entry.id,
+      expect.objectContaining({ title: 'Domingo de sol' }),
+    )
+    await userEvent.click(screen.getByRole('button', { name: 'Fechar' }))
+    expect(titleField()).toHaveValue('Domingo de sol')
+  })
+
+  it('stays out of the editor when the assistant is not available', () => {
+    clientSaving(() => Promise.resolve({ kind: 'saved', updatedAt: savedAt, safety: null }))
+
+    expect(screen.queryByRole('button', { name: 'Perguntar' })).not.toBeInTheDocument()
   })
 })
 

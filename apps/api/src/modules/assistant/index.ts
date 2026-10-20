@@ -29,6 +29,7 @@ export function assistantModule({
 }: AssistantModuleOptions): FastifyPluginCallbackZod {
   const now = () => new Date()
   const assessments = createAssessmentRepository(db)
+  const journal = createJournalRepository(db)
   return assistantRoutes(
     createAssistantService({
       conversations: createAssistantRepository(db),
@@ -36,13 +37,14 @@ export function assistantModule({
         checkIns: createCheckInRepository(db),
         assessments,
         insights: createInsightRepository(db),
-        journal: createJournalRepository(db),
+        journal,
         now,
       }),
       consents: createConsentRepository(db),
       careLinks: createCareLinkRepository(db),
       professionals: createProfessionalRepository(db),
       assessments,
+      journal,
       model,
       limiter,
       log,

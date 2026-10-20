@@ -8,16 +8,19 @@ export interface AmbientSnapshot {
 }
 
 export interface AmbientSession {
+  initial: () => AmbientSnapshot
   snapshot: () => AmbientSnapshot
   subscribe: (listener: () => void) => () => void
   update: (change: Partial<AmbientSnapshot>) => void
 }
 
 export function createAmbientSession(pathname: string): AmbientSession {
-  let state: AmbientSnapshot = { pathname, running: false, previewing: null, ducks: 0 }
+  const initial: AmbientSnapshot = { pathname, running: false, previewing: null, ducks: 0 }
+  let state = initial
   const listeners = new Set<() => void>()
 
   return {
+    initial: () => initial,
     snapshot: () => state,
     subscribe(listener) {
       listeners.add(listener)

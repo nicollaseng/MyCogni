@@ -4,7 +4,7 @@ import type {
   AssistantExchange,
   AssistantMessage,
   AssistantOverview,
-  SendAssistantMessageInput,
+  SendPersonalAssistantMessageInput,
 } from '@mycogni/contracts'
 import {
   assistantLimits,
@@ -29,6 +29,7 @@ import type { RateLimiter } from '../../shared/rate-limiter.ts'
 import type { AssessmentRepository } from '../assessments/assessment.repository.ts'
 import type { CareLinkRepository } from '../care-links/care-link.repository.ts'
 import type { ConsentRepository } from '../consents/consent.repository.ts'
+import type { JournalRepository } from '../journal/journal.repository.ts'
 import type { ProfessionalRepository } from '../professionals/professional.repository.ts'
 import { assistantToolNames, type AssistantToolbox, type ToolAccess } from './assistant-tools.ts'
 import type {
@@ -49,7 +50,7 @@ export interface AssistantService {
   send(
     user: AuthenticatedUser,
     scope: AssistantScope,
-    input: SendAssistantMessageInput,
+    input: SendPersonalAssistantMessageInput,
   ): Promise<AssistantExchange>
   remove(user: AuthenticatedUser, id: string): Promise<void>
 }
@@ -61,6 +62,7 @@ export interface AssistantDependencies {
   careLinks: CareLinkRepository
   professionals: ProfessionalRepository
   assessments: AssessmentRepository
+  journal: Pick<JournalRepository, 'find'>
   model: AssistantModel | null
   limiter: RateLimiter
   log: AssistantLog
@@ -85,6 +87,7 @@ interface Question {
   text: string
   locale: Locale
   watch: boolean
+  pageId: string | null
 }
 
 const dayInMilliseconds = 24 * 60 * 60 * 1000
@@ -107,6 +110,7 @@ function toSummary(record: ConversationRecord): AssistantConversationSummary {
     mode: record.mode,
     risk: record.risk,
     preview: record.preview,
+    entryId: record.journalEntryId,
     createdAt: record.createdAt.toISOString(),
     updatedAt: record.updatedAt.toISOString(),
   }
@@ -141,6 +145,7 @@ export function createAssistantService({
   careLinks,
   professionals,
   assessments,
+  journal,
   model,
   limiter,
   log,
@@ -204,6 +209,25 @@ export function createAssistantService({
     return found
   }
 
+  async function pageOf(
+    user: AuthenticatedUser,
+    scope: AssistantScope,
+    existing: ConversationRecord | null,
+    entryId: string | undefined,
+  ): Promise<string | null> {
+    if (existing !== null) {
+      return existing.journalEntryId
+    }
+    if (scope.mode !== 'personal' || entryId === undefined) {
+      return null
+    }
+    const page = await journal.find(user.id, entryId)
+    if (page?.userId !== user.id) {
+      throw new NotFoundError('Page not found')
+    }
+    return entryId
+  }
+
   async function consumeLimits(user: AuthenticatedUser): Promise<void> {
     const hourly = await limiter.consume(`assistant:hour:${user.id}`, {
       limit: assistantLimits.hourlyMessages,
@@ -248,6 +272,7 @@ export function createAssistantService({
       timeZone,
       records: access.records,
       journal: access.journal,
+      pageId: question.pageId,
     })
     const system = assistantPrompt(scope.mode)
     let tools = 0
@@ -263,8 +288,9 @@ export function createAssistantService({
           records: access.records,
           journal: access.journal,
           watch: question.watch,
+          page: question.pageId !== null,
         }),
-        tools: toolbox.definitions(access),
+        tools: toolbox.definitions(access, scope.mode, question.pageId !== null),
         runTool: (call) => {
           tools += 1
           return run(call)
@@ -311,6 +337,7 @@ export function createAssistantService({
       const started = Date.now()
       await requireScope(user, scope)
       const existing = await existingConversation(user, scope, input.conversationId)
+      const pageId = await pageOf(user, scope, existing, input.entryId)
       const history =
         existing === null
           ? []
@@ -330,6 +357,7 @@ export function createAssistantService({
         text: input.text,
         locale: input.locale,
         watch: detector !== 'none',
+        pageId,
       }
       let outcome: Outcome
       if (detector === 'urgent') {
@@ -338,7 +366,7 @@ export function createAssistantService({
         await consumeLimits(user)
         outcome = await ask(question)
       }
-      const conversation = existing ?? (await conversations.create(user.id, scope))
+      const conversation = existing ?? (await conversations.create(user.id, scope, pageId))
       const risk = mergeRisk(detector, outcome.risk)
       const saved = await conversations.append(
         user.id,
@@ -353,6 +381,7 @@ export function createAssistantService({
         {
           conversationId: conversation.id,
           mode: scope.mode,
+          page: pageId !== null,
           outcome: outcome.kind,
           detector,
           signals: detected.signals,

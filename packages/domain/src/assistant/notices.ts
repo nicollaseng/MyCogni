@@ -10,7 +10,7 @@ type Notices = Readonly<Record<NoticeKind, string>>
 const brazilian: Readonly<Record<AssistantMode, Notices>> = {
   personal: {
     crisis:
-      'Que bom que você me contou. Você merece o apoio de uma pessoa agora: ligue para um dos contatos abaixo.',
+      'Que bom que você me contou: você está em segurança agora? Ligue para um dos contatos abaixo.',
     refusal:
       'Não posso ajudar com esse pedido. Posso conversar sobre como você está e sobre os seus registros.',
     unavailable: 'Não consegui responder agora. Tente de novo em alguns instantes.',
@@ -26,8 +26,7 @@ const brazilian: Readonly<Record<AssistantMode, Notices>> = {
 
 const european: Readonly<Record<AssistantMode, Notices>> = {
   personal: {
-    crisis:
-      'Ainda bem que me contou. Merece o apoio de uma pessoa agora: ligue para um dos contactos abaixo.',
+    crisis: 'Ainda bem que me contou: está em segurança agora? Ligue para um dos contactos abaixo.',
     refusal:
       'Não posso ajudar com esse pedido. Posso conversar sobre como está e sobre os seus registos.',
     unavailable: 'Não consegui responder agora. Tente novamente dentro de instantes.',
@@ -43,8 +42,7 @@ const european: Readonly<Record<AssistantMode, Notices>> = {
 
 const english: Readonly<Record<AssistantMode, Notices>> = {
   personal: {
-    crisis:
-      'I’m glad you told me. You deserve support from a person right now: call one of the contacts below.',
+    crisis: 'I’m glad you told me: are you safe right now? Please call one of the contacts below.',
     refusal:
       'I can’t help with that request. I can talk about how you are doing and about your records.',
     unavailable: 'I couldn’t answer just now. Please try again in a moment.',
