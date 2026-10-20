@@ -12,6 +12,12 @@ export const sendAssistantMessageSchema = z.object({
 
 export type SendAssistantMessageInput = z.infer<typeof sendAssistantMessageSchema>
 
+export const sendPersonalAssistantMessageSchema = sendAssistantMessageSchema.extend({
+  entryId: z.uuid().optional(),
+})
+
+export type SendPersonalAssistantMessageInput = z.infer<typeof sendPersonalAssistantMessageSchema>
+
 export const assistantMessageSchema = z.object({
   id: z.uuid(),
   role: z.enum(assistantRoles),
@@ -27,6 +33,7 @@ export const assistantConversationSummarySchema = z.object({
   mode: z.enum(assistantModes),
   risk: riskLevelSchema,
   preview: z.string(),
+  entryId: z.uuid().nullable(),
   createdAt: timestamp,
   updatedAt: timestamp,
 })

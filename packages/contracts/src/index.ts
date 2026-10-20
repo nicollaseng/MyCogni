@@ -219,6 +219,7 @@ export {
   assistantMessageSchema,
   assistantOverviewSchema,
   sendAssistantMessageSchema,
+  sendPersonalAssistantMessageSchema,
   type AssistantAccess,
   type AssistantConversation,
   type AssistantConversationSummary,
@@ -226,6 +227,7 @@ export {
   type AssistantMessage,
   type AssistantOverview,
   type SendAssistantMessageInput,
+  type SendPersonalAssistantMessageInput,
 } from './assistant.ts'
 export { riskLevelSchema, supportSignalSchema, type SupportSignal } from './safety.ts'
 export { narrationManifestSchema } from './narration.ts'

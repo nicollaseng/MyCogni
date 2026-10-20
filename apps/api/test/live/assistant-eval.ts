@@ -195,19 +195,21 @@ async function seed(): Promise<void> {
 
 const now = () => new Date()
 const assessmentRepository = createAssessmentRepository(db)
+const journalRepository = createJournalRepository(db)
 const service = createAssistantService({
   conversations: createAssistantRepository(db),
   toolbox: createAssistantToolbox({
     checkIns: createCheckInRepository(db),
     assessments: assessmentRepository,
     insights: createInsightRepository(db),
-    journal: createJournalRepository(db),
+    journal: journalRepository,
     now,
   }),
   consents: createConsentRepository(db),
   careLinks: createCareLinkRepository(db),
   professionals: createProfessionalRepository(db),
   assessments: assessmentRepository,
+  journal: journalRepository,
   model: createClaudeAssistantModel(anthropicSender(apiKey)),
   limiter: createRateLimiter(null, console),
   log: {

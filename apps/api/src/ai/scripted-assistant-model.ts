@@ -2,6 +2,8 @@ import type { AssistantModel, AssistantRequest } from './assistant-model.ts'
 
 const countPattern = /"checkInsInLast90Days":(\d+)/
 
+const titlePattern = /"title":"([^"]*)"/
+
 const someoneElse = /\b(amig[oa]|friend)\b/i
 
 const thirdParty = {
@@ -22,12 +24,16 @@ const replies = {
       `Nos seus registros dos últimos 90 dias aparecem ${count} check-ins. Os dias com caminhada e boas noites de sono costumam vir com o humor mais alto. Uma ideia simples para esta semana: repetir a caminhada curta depois do almoço.`,
     private:
       'Não consigo ver os seus registros, porque você ainda não permitiu. Posso conversar sobre como você está e sugerir coisas simples para o dia.',
+    page: (title: string) =>
+      `Sua página “${title}” fala de um momento que você quis guardar. O que você gostaria de lembrar dele daqui a um tempo?`,
   },
   en: {
     counted: (count: string) =>
       `Your records from the last 90 days show ${count} check-ins. Days with a walk and a good night of sleep tend to come with a higher mood. A simple idea for this week: repeat the short walk after lunch.`,
     private:
       'I can’t see your records because you haven’t allowed it yet. I can still talk about how you feel and suggest small things for the day.',
+    page: (title: string) =>
+      `Your page “${title}” is about a moment you wanted to keep. What would you like to remember about it later on?`,
   },
 }
 
@@ -44,6 +50,10 @@ export function createScriptedAssistantModel(): AssistantModel {
         return { kind: 'answer', text: thirdParty[english ? 'en' : 'pt'], risk: 'urgent' }
       }
       const risk = watch ? 'watch' : 'none'
+      if (request.tools.some((tool) => tool.name === 'read_page')) {
+        const page = await request.runTool({ name: 'read_page', input: {} })
+        return { kind: 'answer', text: copy.page(titlePattern.exec(page)?.[1] ?? ''), risk }
+      }
       if (request.tools.length === 0) {
         return { kind: 'answer', text: copy.private, risk }
       }
