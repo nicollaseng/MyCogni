@@ -164,6 +164,7 @@ describe('AssistantChat', () => {
       mode: 'personal' as const,
       risk: 'urgent' as const,
       preview: 'Vontade de morrer',
+      entryId: null,
       createdAt: '2026-10-14T13:00:00Z',
       updatedAt: '2026-10-14T13:05:00Z',
     }
@@ -211,6 +212,7 @@ describe('AssistantChat', () => {
       mode: 'personal' as const,
       risk: 'none' as const,
       preview: 'Como foi a semana?',
+      entryId: null,
       createdAt: '2026-10-14T13:00:00Z',
       updatedAt: '2026-10-14T13:05:00Z',
     }

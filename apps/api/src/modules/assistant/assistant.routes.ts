@@ -3,6 +3,7 @@ import {
   assistantExchangeSchema,
   assistantOverviewSchema,
   sendAssistantMessageSchema,
+  sendPersonalAssistantMessageSchema,
 } from '@mycogni/contracts'
 import type { FastifyPluginCallbackZod } from 'fastify-type-provider-zod'
 import { z } from 'zod'
@@ -25,7 +26,10 @@ export function assistantRoutes(service: AssistantService): FastifyPluginCallbac
       '/assistant/messages',
       {
         config: forPatients,
-        schema: { body: sendAssistantMessageSchema, response: { 200: assistantExchangeSchema } },
+        schema: {
+          body: sendPersonalAssistantMessageSchema,
+          response: { 200: assistantExchangeSchema },
+        },
       },
       (request) => service.send(currentUser(request), { mode: 'personal' }, request.body),
     )

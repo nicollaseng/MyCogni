@@ -12,6 +12,7 @@ import {
   type AnyPgColumn,
 } from 'drizzle-orm/pg-core'
 import { authenticatedRole, authUid, authUsers } from 'drizzle-orm/supabase'
+import { journalEntries } from './journal.ts'
 
 export const assistantMode = pgEnum('assistant_mode', assistantModes)
 
@@ -39,6 +40,9 @@ export const assistantConversations = pgTable(
       .references(() => authUsers.id, { onDelete: 'cascade' }),
     mode: assistantMode('mode').notNull(),
     patientId: uuid('patient_id').references(() => authUsers.id, { onDelete: 'cascade' }),
+    journalEntryId: uuid('journal_entry_id').references(() => journalEntries.id, {
+      onDelete: 'set null',
+    }),
     risk: assistantRisk('risk').notNull().default('none'),
     createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
     updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
@@ -49,6 +53,10 @@ export const assistantConversations = pgTable(
       sql`(${table.mode} = 'professional') = (${table.patientId} is not null)`,
     ),
     check('assistant_conversations_not_self', sql`${table.patientId} <> ${table.ownerId}`),
+    check(
+      'assistant_conversations_page_personal',
+      sql`${table.journalEntryId} is null or ${table.mode} = 'personal'`,
+    ),
     index('assistant_conversations_owner_idx').on(table.ownerId, table.updatedAt.desc()),
     index('assistant_conversations_patient_idx').on(table.patientId),
     pgPolicy('assistant_conversations_select_own', {
@@ -59,7 +67,11 @@ export const assistantConversations = pgTable(
     pgPolicy('assistant_conversations_insert_own', {
       for: 'insert',
       to: authenticatedRole,
-      withCheck: sql`${table.ownerId} = ${authUid} and ${allowedScope(table.mode, table.patientId)}`,
+      withCheck: sql`${table.ownerId} = ${authUid} and ${allowedScope(table.mode, table.patientId)}
+        and (${table.journalEntryId} is null or exists (
+          select 1 from public.journal_entries e
+          where e.id = ${table.journalEntryId} and e.user_id = ${authUid}
+        ))`,
     }),
     pgPolicy('assistant_conversations_update_own', {
       for: 'update',

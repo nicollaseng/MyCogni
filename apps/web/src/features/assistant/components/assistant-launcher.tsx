@@ -14,7 +14,7 @@ interface LauncherProps {
 
 const personal: AssistantTarget = { mode: 'personal' }
 
-function AskIcon() {
+export function AskIcon() {
   return (
     <svg aria-hidden viewBox="0 0 20 20" className="size-[18px]">
       <path

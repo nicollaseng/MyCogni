@@ -19,7 +19,7 @@ import { grantConsents } from '@/shared/lib/api/resources'
 import type { AssistantState } from './model'
 
 const targetSchema = z.discriminatedUnion('mode', [
-  z.object({ mode: z.literal('personal') }),
+  z.object({ mode: z.literal('personal'), entryId: z.uuid().optional() }),
   z.object({ mode: z.literal('professional'), patientId: z.uuid() }),
 ])
 
@@ -37,7 +37,7 @@ export async function openAssistant(
   }
   return attempt(async () => {
     const [overview, links] = await Promise.all([
-      fetchAssistant(parsed.data),
+      fetchAssistant(parsed.data.mode === 'personal' ? { mode: 'personal' } : parsed.data),
       parsed.data.mode === 'personal' ? fetchCareLinks() : Promise.resolve([]),
     ])
     return {
@@ -75,6 +75,9 @@ export async function askAssistant(
         conversationId: parsedId.data,
         text: parsedText.data,
         locale: await getLocale(),
+        ...(parsedTarget.data.mode === 'personal' && parsedTarget.data.entryId !== undefined
+          ? { entryId: parsedTarget.data.entryId }
+          : {}),
       }),
     }
   } catch (cause) {

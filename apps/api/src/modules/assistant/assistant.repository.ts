@@ -10,6 +10,7 @@ export interface ConversationRecord {
   id: string
   mode: AssistantMode
   patientId: string | null
+  journalEntryId: string | null
   risk: RiskLevel
   preview: string
   createdAt: Date
@@ -33,7 +34,11 @@ export interface NewMessage {
 export interface AssistantRepository {
   list(ownerId: string, scope: AssistantScope, limit: number): Promise<ConversationRecord[]>
   find(ownerId: string, id: string): Promise<ConversationRecord | undefined>
-  create(ownerId: string, scope: AssistantScope): Promise<ConversationRecord>
+  create(
+    ownerId: string,
+    scope: AssistantScope,
+    journalEntryId: string | null,
+  ): Promise<ConversationRecord>
   messages(ownerId: string, conversationId: string, limit: number): Promise<MessageRecord[]>
   append(
     ownerId: string,
@@ -51,6 +56,7 @@ const conversationColumns = {
   id: assistantConversations.id,
   mode: assistantConversations.mode,
   patientId: assistantConversations.patientId,
+  journalEntryId: assistantConversations.journalEntryId,
   risk: assistantConversations.risk,
   preview: sql<string>`coalesce((
     select left(m.content, ${previewLength}) from public.assistant_messages m
@@ -101,7 +107,7 @@ export function createAssistantRepository(db: Database): AssistantRepository {
         return row
       })
     },
-    create(ownerId, scope) {
+    create(ownerId, scope, journalEntryId) {
       return withUser(db, ownerId, async (tx) => {
         const [row] = await tx
           .insert(assistantConversations)
@@ -109,11 +115,13 @@ export function createAssistantRepository(db: Database): AssistantRepository {
             ownerId,
             mode: scope.mode,
             patientId: scope.mode === 'personal' ? null : scope.patientId,
+            journalEntryId,
           })
           .returning({
             id: assistantConversations.id,
             mode: assistantConversations.mode,
             patientId: assistantConversations.patientId,
+            journalEntryId: assistantConversations.journalEntryId,
             risk: assistantConversations.risk,
             createdAt: assistantConversations.createdAt,
             updatedAt: assistantConversations.updatedAt,

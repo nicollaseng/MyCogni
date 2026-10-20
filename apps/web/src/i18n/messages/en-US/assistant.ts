@@ -27,6 +27,15 @@ export const assistant: AssistantMessages = {
     professional:
       'Ask about this patient’s trends, contexts and questionnaires. Answers stay with you.',
   },
+  page: {
+    context: 'About this page',
+    suggestions: 'Suggestions for this page',
+    starters: {
+      continue: 'Help me continue',
+      feeling: 'What does this text say about how I am?',
+      summary: 'Summarize this page',
+    },
+  },
   starters: {
     personal: {
       mood: 'How has my mood been over the last two weeks?',

@@ -3,14 +3,19 @@ import { useId, useState } from 'react'
 import { Button } from '@/shared/ui/button'
 
 interface ConsentPromptProps {
+  journalByDefault?: boolean
   onAllow: (journal: boolean) => Promise<boolean>
   onDismiss: () => void
 }
 
-export function ConsentPrompt({ onAllow, onDismiss }: ConsentPromptProps) {
+export function ConsentPrompt({
+  journalByDefault = false,
+  onAllow,
+  onDismiss,
+}: ConsentPromptProps) {
   const t = useTranslations('assistant.consent')
   const titleId = useId()
-  const [journal, setJournal] = useState(false)
+  const [journal, setJournal] = useState(journalByDefault)
   const [saving, setSaving] = useState(false)
 
   async function allow() {

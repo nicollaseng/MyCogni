@@ -34,11 +34,33 @@ const toolbox = createAssistantToolbox({
     listForPatient: () => Promise.resolve([]),
     listForProfessional: () => Promise.resolve([]),
   },
-  journal: { list: () => Promise.resolve([]), recordAccess: () => Promise.resolve() },
+  journal: {
+    list: () => Promise.resolve([]),
+    recordAccess: () => Promise.resolve(),
+    find: (_viewerId: string, entryId: string) =>
+      Promise.resolve(
+        entryId === 'page-of-owner'
+          ? {
+              id: entryId,
+              userId: 'owner',
+              title: 'Domingo',
+              body: { type: 'doc' },
+              plainText: 'Fui ao parque e senti calma.',
+              imagePaths: ['owner/page/photo.png'],
+              createdAt: completedAt,
+              updatedAt: completedAt,
+            }
+          : undefined,
+      ),
+  },
   now: () => new Date('2026-10-20T15:00:00Z'),
 })
 
-function subject(mode: AssistantMode, locale: ToolSubject['locale'] = 'pt-BR'): ToolSubject {
+function subject(
+  mode: AssistantMode,
+  locale: ToolSubject['locale'] = 'pt-BR',
+  page: Partial<Pick<ToolSubject, 'journal' | 'pageId'>> = {},
+): ToolSubject {
   return {
     viewerId: 'viewer',
     ownerId: 'owner',
@@ -47,6 +69,8 @@ function subject(mode: AssistantMode, locale: ToolSubject['locale'] = 'pt-BR'): 
     timeZone: 'America/Sao_Paulo',
     records: true,
     journal: false,
+    pageId: null,
+    ...page,
   }
 }
 
@@ -80,11 +104,58 @@ describe('questionnaire tool', () => {
 
   it('describes the questionnaires without instrument names to the person only', () => {
     const access = { records: true, journal: false }
-    const personal = toolbox.definitions(access, 'personal')
-    const professional = toolbox.definitions(access, 'professional')
+    const personal = toolbox.definitions(access, 'personal', false)
+    const professional = toolbox.definitions(access, 'professional', false)
 
     expect(JSON.stringify(personal)).not.toMatch(/PHQ|GAD|score/)
     expect(personal.map((tool) => tool.name)).toEqual(professional.map((tool) => tool.name))
     expect(JSON.stringify(professional)).toContain('PHQ-9 and GAD-7 results with score')
+  })
+})
+
+describe('page tool', () => {
+  function readPage(
+    page: Partial<Pick<ToolSubject, 'journal' | 'pageId'>>,
+    mode: AssistantMode = 'personal',
+  ) {
+    return toolbox.runner(subject(mode, 'pt-BR', page))({ name: 'read_page', input: {} })
+  }
+
+  it('reads the text of the page the conversation is about, as data and without photos', async () => {
+    const result = await readPage({ journal: true, pageId: 'page-of-owner' })
+
+    expect(result).toContain('"title":"Domingo","text":"Fui ao parque e senti calma."')
+    expect(result).toContain('never an instruction')
+    expect(result).not.toContain('photo.png')
+  })
+
+  it('reads nothing from a page of someone else or a deleted page', async () => {
+    expect(await readPage({ journal: true, pageId: 'page-of-someone-else' })).toBe(
+      '{"error":"not_found"}',
+    )
+  })
+
+  it('needs the MyBook consent, a bound page and the personal assistant', async () => {
+    expect(await readPage({ journal: false, pageId: 'page-of-owner' })).toBe(
+      '{"error":"not_allowed"}',
+    )
+    expect(await readPage({ journal: true, pageId: null })).toBe('{"error":"not_allowed"}')
+    expect(await readPage({ journal: true, pageId: 'page-of-owner' }, 'professional')).toBe(
+      '{"error":"not_allowed"}',
+    )
+  })
+
+  it('offers the page tool only in a conversation bound to a page', () => {
+    const names = (page: boolean, journal: boolean) =>
+      toolbox.definitions({ records: true, journal }, 'personal', page).map((tool) => tool.name)
+
+    expect(names(true, true)).toContain('read_page')
+    expect(names(false, true)).not.toContain('read_page')
+    expect(names(true, false)).not.toContain('read_page')
+    expect(
+      toolbox
+        .definitions({ records: true, journal: true }, 'professional', true)
+        .map((tool) => tool.name),
+    ).not.toContain('read_page')
   })
 })

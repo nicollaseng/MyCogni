@@ -14,21 +14,28 @@ export interface AssistantChatProps {
   target: AssistantTarget
   actions: AssistantActions
   timeZone: string
+  prepare?: () => Promise<unknown>
 }
 
 const personalStarters = ['mood', 'helps', 'sleep'] as const
 
 const professionalStarters = ['trend', 'contexts', 'screenings'] as const
 
-export function AssistantChat({ target, actions, timeZone }: AssistantChatProps) {
+const pageStarters = ['continue', 'feeling', 'summary'] as const
+
+export function AssistantChat({ target, actions, timeZone, prepare }: AssistantChatProps) {
   const t = useTranslations('assistant')
-  const chat = useAssistantChat(target, actions)
+  const chat = useAssistantChat(target, actions, prepare)
   const [dismissed, setDismissed] = useState(false)
   const scroller = useRef<HTMLDivElement>(null)
   const mode = target.mode
   const access = chat.state?.overview.access
   const contacts = chat.state?.contacts ?? []
   const showConsent = mode === 'personal' && access?.records === false && !dismissed
+  const pageTarget = target.mode === 'personal' && target.entryId !== undefined
+  const current = chat.state?.overview.conversations.find((item) => item.id === chat.conversationId)
+  const aboutPage = chat.conversationId === null ? pageTarget : (current?.entryId ?? null) !== null
+  const pageChips = pageTarget && chat.conversationId === null
   const starters =
     mode === 'personal'
       ? personalStarters.map((key) => t(`starters.personal.${key}`))
@@ -43,7 +50,7 @@ export function AssistantChat({ target, actions, timeZone }: AssistantChatProps)
 
   return (
     <div className="flex h-[min(80dvh,46rem)] min-h-0 flex-col sm:h-auto sm:flex-1">
-      <div className="px-5 pb-3 sm:px-6">
+      <div className="space-y-1 px-5 pb-3 sm:px-6">
         <ChatToolbar
           conversations={chat.state?.overview.conversations ?? []}
           current={chat.conversationId}
@@ -52,6 +59,7 @@ export function AssistantChat({ target, actions, timeZone }: AssistantChatProps)
           onSelect={(id) => void chat.select(id)}
           onDelete={chat.remove}
         />
+        {aboutPage && <p className="text-sm text-muted-foreground">{t('page.context')}</p>}
       </div>
       <div
         ref={scroller}
@@ -64,6 +72,7 @@ export function AssistantChat({ target, actions, timeZone }: AssistantChatProps)
         )}
         {showConsent && (
           <ConsentPrompt
+            journalByDefault={pageTarget}
             onAllow={chat.allow}
             onDismiss={() => {
               setDismissed(true)
@@ -75,7 +84,22 @@ export function AssistantChat({ target, actions, timeZone }: AssistantChatProps)
             {mode === 'personal' ? t('noAccess') : t('professionalNoAccess')}
           </p>
         )}
-        {chat.state !== null && chat.messages.length === 0 && !chat.pending && (
+        {chat.state !== null && chat.messages.length === 0 && !chat.pending && pageChips && (
+          <ul aria-label={t('page.suggestions')} className="flex flex-wrap gap-2">
+            {pageStarters.map((key) => (
+              <li key={key}>
+                <button
+                  type="button"
+                  onClick={() => void chat.send(t(`page.starters.${key}`))}
+                  className="rounded-[6px] border border-rule px-3 py-2 text-left text-[15px] transition-colors hover:bg-surface"
+                >
+                  {t(`page.starters.${key}`)}
+                </button>
+              </li>
+            ))}
+          </ul>
+        )}
+        {chat.state !== null && chat.messages.length === 0 && !chat.pending && !pageChips && (
           <div className="space-y-3">
             <p className="text-[15px] leading-relaxed text-pretty text-muted-foreground">
               {t(`empty.${mode}`)}
