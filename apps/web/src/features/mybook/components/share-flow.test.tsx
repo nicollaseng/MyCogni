@@ -1,4 +1,4 @@
-import { describe, expect, it, jest } from '@jest/globals'
+import { afterEach, beforeEach, describe, expect, it, jest } from '@jest/globals'
 import type { CreateJournalShareInput } from '@mycogni/contracts'
 import { fireEvent, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
@@ -46,6 +46,32 @@ async function openSheet() {
 }
 
 describe('ShareFlow', () => {
+  beforeEach(() => {
+    jest.useFakeTimers({
+      now,
+      doNotFake: [
+        'hrtime',
+        'nextTick',
+        'performance',
+        'queueMicrotask',
+        'requestAnimationFrame',
+        'cancelAnimationFrame',
+        'requestIdleCallback',
+        'cancelIdleCallback',
+        'setImmediate',
+        'clearImmediate',
+        'setInterval',
+        'clearInterval',
+        'setTimeout',
+        'clearTimeout',
+      ],
+    })
+  })
+
+  afterEach(() => {
+    jest.useRealTimers()
+  })
+
   it('asks for pages, then states who reads what until when', async () => {
     const share = jest.fn<Share>(succeed)
     renderFlow(share)
