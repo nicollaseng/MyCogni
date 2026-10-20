@@ -14,7 +14,7 @@ const anxiety = assessmentOf({
 })
 
 describe('ResultsStep', () => {
-  it('shows each score with its band and what it suggests', () => {
+  it('shows a plain level for each topic and what it suggests, without scores', () => {
     renderWithIntl(
       <ResultsStep
         depression={depression}
@@ -23,18 +23,18 @@ describe('ResultsStep', () => {
       />,
     )
 
-    const phq9 = screen.getByRole('region', { name: 'Sinais de depressão' })
-    const gad7 = screen.getByRole('region', { name: 'Sinais de ansiedade' })
+    const mood = screen.getByRole('region', { name: 'Desânimo' })
+    const worry = screen.getByRole('region', { name: 'Ansiedade' })
 
-    expect(phq9).toHaveTextContent('11de 27')
-    expect(within(phq9).getByText('Moderada')).toBeInTheDocument()
-    expect(within(phq9).getByText(/conversar com um profissional de saúde/)).toBeInTheDocument()
-    expect(gad7).toHaveTextContent('4de 21')
-    expect(within(gad7).getByText('Mínima')).toBeInTheDocument()
+    expect(within(mood).getByText('Moderado')).toBeInTheDocument()
+    expect(within(mood).getByText(/conversar com um profissional de saúde/)).toBeInTheDocument()
+    expect(within(worry).getByText('Baixo')).toBeInTheDocument()
+    expect(mood).not.toHaveTextContent(/PHQ|de 27|11/)
+    expect(worry).not.toHaveTextContent(/GAD|de 21/)
     expect(screen.getByText(/É uma triagem, não um diagnóstico/)).toBeInTheDocument()
   })
 
-  it('keeps the crisis lines in view when PHQ-9 item 9 was flagged', () => {
+  it('keeps the crisis lines in view when the risk question was flagged', () => {
     renderWithIntl(
       <ResultsStep
         depression={{ ...depression, hasRiskFlag: true }}

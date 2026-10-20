@@ -14,13 +14,24 @@ export const screening: ScreeningMessages = {
     moderately_severe: 'Recomendamos que fale com um profissional de saúde em breve.',
     severe: 'Recomendamos que procure um profissional de saúde o mais depressa possível.',
   },
-  score: {
-    outOf: 'de {max}',
-  },
-  comparison: {
-    same: 'Igual a {day}',
-    up: '{points, plural, one {# ponto} other {# pontos}} a mais do que em {day}',
-    down: '{points, plural, one {# ponto} other {# pontos}} a menos do que em {day}',
+  plain: {
+    title: 'Ânimo e ansiedade',
+    names: {
+      phq9: 'Desânimo',
+      gad7: 'Ansiedade',
+    },
+    levels: {
+      low: 'Baixo',
+      mild: 'Ligeiro',
+      moderate: 'Moderado',
+      high: 'Alto',
+    },
+    trend: {
+      same: 'Igual à última vez',
+      better: 'Melhor do que da última vez',
+      higher: 'Mais alto do que da última vez',
+    },
+    level: '{name}: {level}',
   },
   questionnaire: {
     back: 'Voltar',
@@ -41,7 +52,7 @@ export const screening: ScreeningMessages = {
   retake: {
     close: 'Fechar',
     title: 'Como correram as últimas duas semanas?',
-    firstTime: 'São 16 perguntas do PHQ-9 e do GAD-7, uma por ecrã.',
+    firstTime: 'São 16 perguntas sobre ânimo e ansiedade, uma por ecrã.',
     since: 'Da última vez respondeu em {date}. No fim, vê o que mudou desde então.',
     honest: 'Não há respostas certas. Responda a pensar em como as coisas correram de verdade.',
     start: 'Começar',
@@ -51,8 +62,8 @@ export const screening: ScreeningMessages = {
     zen: 'Ver sugestões no Zen Space',
   },
   latest: {
-    title: 'Os seus questionários',
-    empty: 'Ainda não respondeu ao PHQ-9 e ao GAD-7.',
+    title: 'Ânimo e ansiedade',
+    empty: 'Ainda não respondeu aos questionários.',
     answeredOn: 'Respondidos em {date}. É um rastreio, não um diagnóstico.',
     retake: 'Responder novamente aos questionários',
     next: 'Sugerimos responder novamente a partir de {date}, para ver como vai mudando.',
@@ -60,6 +71,7 @@ export const screening: ScreeningMessages = {
   },
   history: {
     title: 'Histórico',
+    day: 'Dia',
   },
   errors: {
     save: 'Não foi possível guardar as suas respostas agora. Tente novamente dentro de instantes.',

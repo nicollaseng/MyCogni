@@ -14,13 +14,24 @@ export const screening: ScreeningMessages = {
     moderately_severe: 'We recommend talking to a health professional soon.',
     severe: 'We recommend seeing a health professional as soon as you can.',
   },
-  score: {
-    outOf: 'of {max}',
-  },
-  comparison: {
-    same: 'Same as on {day}',
-    up: '{points, plural, one {# point} other {# points}} higher than on {day}',
-    down: '{points, plural, one {# point} other {# points}} lower than on {day}',
+  plain: {
+    title: 'Mood and anxiety',
+    names: {
+      phq9: 'Feeling down',
+      gad7: 'Anxiety',
+    },
+    levels: {
+      low: 'Low',
+      mild: 'Mild',
+      moderate: 'Moderate',
+      high: 'High',
+    },
+    trend: {
+      same: 'Same as last time',
+      better: 'Better than last time',
+      higher: 'Higher than last time',
+    },
+    level: '{name}: {level}',
   },
   questionnaire: {
     back: 'Back',
@@ -41,7 +52,7 @@ export const screening: ScreeningMessages = {
   retake: {
     close: 'Close',
     title: 'How have the last two weeks been?',
-    firstTime: 'There are 16 questions from the PHQ-9 and GAD-7, one per screen.',
+    firstTime: 'There are 16 questions about mood and anxiety, one per screen.',
     since: 'Last time you answered on {date}. At the end, you’ll see what has changed since then.',
     honest: 'There are no right answers. Answer based on how things have really been.',
     start: 'Start',
@@ -52,8 +63,8 @@ export const screening: ScreeningMessages = {
     zen: 'See suggestions in Zen Space',
   },
   latest: {
-    title: 'Your questionnaires',
-    empty: 'You haven’t answered the PHQ-9 and GAD-7 yet.',
+    title: 'Mood and anxiety',
+    empty: 'You haven’t answered the questionnaires yet.',
     answeredOn: 'Answered on {date}. This is a screening, not a diagnosis.',
     retake: 'Retake the questionnaires',
     next: 'We suggest answering again from {date}, to see how you change.',
@@ -61,6 +72,7 @@ export const screening: ScreeningMessages = {
   },
   history: {
     title: 'History',
+    day: 'Day',
   },
   errors: {
     save: 'We couldn’t save your answers right now. Please try again in a moment.',

@@ -1,35 +1,25 @@
-import type { Assessment } from '@mycogni/contracts'
+import { instrumentIds, type InstrumentId } from '@mycogni/domain'
 import type { ReactNode } from 'react'
-import { instrumentIds, instruments } from '@mycogni/domain'
 import { useLocale, useTranslations } from 'next-intl'
 import { Section } from '@/shared/components/section'
 import { formatLongDate } from '@/shared/lib/time'
-import type { LatestResults } from '../latest'
+import type { PlainResult } from '../latest'
+import { PlainScale } from './plain-scale'
 
 interface LatestScreeningProps {
-  results: LatestResults
+  results: Partial<Record<InstrumentId, PlainResult>>
   timeZone: string
   children?: ReactNode
 }
 
-function Row({ assessment }: { assessment: Assessment }) {
-  const t = useTranslations('screening')
+function Row({ result }: { result: PlainResult }) {
+  const t = useTranslations('screening.plain')
   return (
     <li className="space-y-1.5">
-      <p className="text-sm text-muted-foreground">
-        {t(`topics.${assessment.instrument}`)}
-        <span className="block sm:inline">
-          <span className="hidden sm:inline"> · </span>
-          {instruments[assessment.instrument].name}
-        </span>
-      </p>
-      <p className="flex items-baseline gap-1.5">
-        <span className="font-serif text-[32px] leading-none">{assessment.totalScore}</span>
-        <span className="text-sm text-muted-foreground">
-          {t('score.outOf', { max: assessment.maxScore })}
-        </span>
-      </p>
-      <p>{t(`severity.${assessment.severity}`)}</p>
+      <p className="text-sm text-muted-foreground">{t(`names.${result.assessment.instrument}`)}</p>
+      <p className="font-serif text-[28px] leading-none">{t(`levels.${result.level}`)}</p>
+      <PlainScale level={result.level} className="max-w-40 pt-1" />
+      {result.trend !== null && <p className="text-sm">{t(`trend.${result.trend}`)}</p>}
     </li>
   )
 }
@@ -41,9 +31,11 @@ export function LatestScreening({ results, timeZone, children }: LatestScreening
     const result = results[id]
     return result === undefined ? [] : [result]
   })
-  const latest = answered.reduce<Assessment | undefined>(
+  const latest = answered.reduce<PlainResult | undefined>(
     (newest, result) =>
-      newest === undefined || result.completedAt > newest.completedAt ? result : newest,
+      newest === undefined || result.assessment.completedAt > newest.assessment.completedAt
+        ? result
+        : newest,
     undefined,
   )
 
@@ -54,13 +46,13 @@ export function LatestScreening({ results, timeZone, children }: LatestScreening
       ) : (
         <>
           <ul className="grid grid-cols-2 gap-x-6 gap-y-5 pt-1">
-            {answered.map((assessment) => (
-              <Row key={assessment.id} assessment={assessment} />
+            {answered.map((result) => (
+              <Row key={result.assessment.id} result={result} />
             ))}
           </ul>
           <p className="text-sm text-muted-foreground">
             {t('answeredOn', {
-              date: formatLongDate(new Date(latest.completedAt), timeZone, locale),
+              date: formatLongDate(new Date(latest.assessment.completedAt), timeZone, locale),
             })}
           </p>
         </>

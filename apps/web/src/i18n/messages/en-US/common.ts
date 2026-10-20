@@ -4,7 +4,7 @@ import type { CommonMessages } from '../pt-BR/common'
 export const common: CommonMessages = {
   meta: {
     description:
-      'A mood journal: one check-in a day, plus the PHQ-9 and GAD-7 every two weeks, to see how anxiety and mood change.',
+      'A mood journal: one check-in a day, plus questions about mood and anxiety every two weeks, to see how you change.',
   },
   navigation: {
     label: 'Main navigation',

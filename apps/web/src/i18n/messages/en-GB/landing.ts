@@ -22,7 +22,7 @@ export const landing: LandingMessages = {
       instruments: {
         ...american.faq.questions.instruments,
         answer:
-          'They are short, validated questionnaires used in the UK and around the world to screen for signs of depression (PHQ-9) and anxiety (GAD-7). They show intensity; they do not give a diagnosis.',
+          'They are short, validated questionnaires used in the UK and around the world to follow signs of low mood and anxiety. They show intensity; they do not give a diagnosis. If you want to look them up, they are the PHQ-9 and GAD-7.',
       },
       crisis: {
         ...american.faq.questions.crisis,

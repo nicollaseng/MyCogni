@@ -137,8 +137,8 @@ test('answers the questionnaires again and sees the suggestion change', async ({
   await expect(page).toHaveURL('/questionnaires')
   await page.getByRole('button', { name: 'Começar' }).click()
   for (const [form, total, choice] of [
-    ['PHQ-9', 9, 'Nenhuma vez'],
-    ['GAD-7', 7, 'Mais da metade dos dias'],
+    ['Desânimo', 9, 'Nenhuma vez'],
+    ['Ansiedade', 7, 'Mais da metade dos dias'],
   ] as const) {
     for (let index = 1; index <= total; index++) {
       await expect(page.getByText(`${form} · ${String(index)} de ${String(total)}`)).toBeVisible()
@@ -155,7 +155,7 @@ test('answers the questionnaires again and sees the suggestion change', async ({
   ).toBeVisible()
   await today(page).getByRole('button', { name: 'Por que esta sugestão?' }).click()
   await expect(
-    today(page).getByText('Seu GAD-7 mais recente ficou na faixa moderada ou acima.'),
+    today(page).getByText('Sua última resposta sobre ansiedade ficou em moderado ou acima.'),
   ).toBeVisible()
 })
 

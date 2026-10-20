@@ -61,9 +61,8 @@ export const patterns: PatternsMessages = {
     none: 'Nothing marked yet.',
   },
   scores: {
-    title: 'Questionnaires',
-    latest: 'Latest: {score} of {max}, {severity}.',
-    point: '{date}: {score} of {max}, {severity}',
+    title: 'Mood and anxiety',
+    point: '{date}: {level}',
   },
   upcoming: {
     title: 'Coming up',
@@ -72,7 +71,7 @@ export const patterns: PatternsMessages = {
       weekdays: 'Days of the week',
       frequent: 'Emotions and contexts',
       associations: 'What comes with your days',
-      scores: 'Questionnaires',
+      scores: 'Mood and anxiety',
     },
     progress: {
       records: '{current} of {required} entries',

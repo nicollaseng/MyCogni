@@ -27,7 +27,7 @@ describe('invite landing', () => {
       }),
     ).toBeInTheDocument()
     expect(screen.getByRole('region', { name: 'O que Helena Prado vai ver' })).toHaveTextContent(
-      'Seus resultados do PHQ-9 e do GAD-7',
+      'Suas respostas sobre ânimo e ansiedade',
     )
     expect(screen.getByText('O convite vale por mais 1 dia.')).toBeInTheDocument()
     expect(screen.getByRole('link', { name: 'Criar conta para responder' })).toHaveAttribute(

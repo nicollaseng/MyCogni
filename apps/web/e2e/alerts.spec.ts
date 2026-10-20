@@ -27,7 +27,7 @@ async function answerPhq9WithRisk(page: Page): Promise<void> {
   await page.goto('/questionnaires')
   await page.getByRole('button', { name: 'Começar' }).click()
   for (let index = 1; index <= 9; index++) {
-    await expect(page.getByText(`PHQ-9 · ${String(index)} de 9`)).toBeVisible()
+    await expect(page.getByText(`Desânimo · ${String(index)} de 9`)).toBeVisible()
     const choice = index === 9 ? 'Vários dias' : 'Mais da metade dos dias'
     await page.getByRole('button', { name: choice, exact: true }).click()
   }

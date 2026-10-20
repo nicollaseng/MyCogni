@@ -32,11 +32,10 @@ export const zen: ZenMessages = {
     retake: 'Answer the questionnaires again',
     reasons: {
       risk_item:
-        'On your latest PHQ-9, you said you had thoughts of being better off dead or of hurting yourself.',
-      severe_result:
-        'One of your latest questionnaires was in the severe or moderately severe range.',
-      anxiety: 'Your latest GAD-7 was in the moderate range or above.',
-      depression: 'Your latest PHQ-9 was in the moderate range or above.',
+        'In your latest answers, you said you had thoughts of being better off dead or of hurting yourself.',
+      severe_result: 'One of your latest answers was high.',
+      anxiety: 'Your latest answers about anxiety were moderate or above.',
+      depression: 'Your latest answers about feeling down were moderate or above.',
       low_mood: 'Your average mood over the last 7 days of check-ins was low.',
       starting: 'Nothing in your results needs attention right now. Sleep is a good start.',
     },

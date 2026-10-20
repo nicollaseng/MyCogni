@@ -2,6 +2,7 @@ import { describe, expect, it } from '@jest/globals'
 import type { Assessment } from '@mycogni/contracts'
 import { screen, within } from '@testing-library/react'
 import { renderWithIntl } from '@/test/render'
+import { latestPlainResults } from '../latest'
 import { LatestScreening } from './latest-screening'
 
 const depression: Assessment = {
@@ -23,53 +24,64 @@ const anxiety: Assessment = {
   severity: 'severe',
 }
 
+const earlierAnxiety: Assessment = {
+  ...anxiety,
+  id: '0b7c6c8e-6a8f-4f53-9f4b-000000000003',
+  totalScore: 8,
+  severity: 'mild',
+  completedAt: '2026-10-01T03:24:00Z',
+}
+
 describe('LatestScreening', () => {
-  it('shows the last score and band of each form with the day it was answered', () => {
+  it('shows a plain level for each topic, without names of questionnaires or scores', () => {
     renderWithIntl(
       <LatestScreening
-        results={{ phq9: depression, gad7: anxiety }}
+        results={latestPlainResults([depression, anxiety, earlierAnxiety])}
         timeZone="America/Sao_Paulo"
       />,
     )
 
-    const [phq9, gad7] = within(screen.getByRole('list')).getAllByRole('listitem')
-    expect(phq9).toHaveTextContent('Sinais de depressão · PHQ-917de 27Moderadamente grave')
-    expect(gad7).toHaveTextContent('Sinais de ansiedade · GAD-721de 21Grave')
+    const section = screen.getByRole('region', { name: 'Ânimo e ansiedade' })
+    const [mood, worry] = within(screen.getByRole('list')).getAllByRole('listitem')
+    expect(mood).toHaveTextContent(/^DesânimoAlto$/)
+    expect(worry).toHaveTextContent('AnsiedadeAltoMais alto que da última vez')
+    expect(mood?.querySelectorAll('[data-filled="true"]')).toHaveLength(4)
+    expect(section).not.toHaveTextContent(/PHQ|GAD|27|21/)
     expect(screen.getByText(/Respondidos em quinta-feira, 15 de outubro\./)).toBeInTheDocument()
   })
 
   it('says when the forms were never answered', () => {
     renderWithIntl(<LatestScreening results={{}} timeZone="America/Sao_Paulo" />)
 
-    expect(screen.getByText('Você ainda não respondeu o PHQ-9 e o GAD-7.')).toBeInTheDocument()
+    expect(screen.getByText('Você ainda não respondeu os questionários.')).toBeInTheDocument()
   })
 
-  it('speaks English with the standard severity names', () => {
+  it('speaks English', () => {
     renderWithIntl(
       <LatestScreening
-        results={{ phq9: depression, gad7: anxiety }}
+        results={latestPlainResults([depression, anxiety])}
         timeZone="America/Sao_Paulo"
       />,
       { locale: 'en-US' },
     )
 
-    expect(screen.getByRole('region', { name: 'Your questionnaires' })).toBeInTheDocument()
-    const [phq9, gad7] = within(screen.getByRole('list')).getAllByRole('listitem')
-    expect(phq9).toHaveTextContent('Signs of depression · PHQ-917of 27Moderately severe')
-    expect(gad7).toHaveTextContent('Signs of anxiety · GAD-721of 21Severe')
+    expect(screen.getByRole('region', { name: 'Mood and anxiety' })).toBeInTheDocument()
+    const [mood, worry] = within(screen.getByRole('list')).getAllByRole('listitem')
+    expect(mood).toHaveTextContent('Feeling downHigh')
+    expect(worry).toHaveTextContent('AnxietyHigh')
     expect(screen.getByText(/Answered on Thursday, October 15\./)).toBeInTheDocument()
   })
 
-  it('uses the European Portuguese severity names in Portugal', () => {
+  it('uses the European Portuguese level names in Portugal', () => {
     renderWithIntl(
       <LatestScreening
-        results={{ phq9: { ...depression, totalScore: 6, severity: 'mild' } }}
+        results={latestPlainResults([{ ...depression, totalScore: 6, severity: 'mild' }])}
         timeZone="Europe/Lisbon"
       />,
       { locale: 'pt-PT' },
     )
 
-    expect(screen.getByRole('listitem')).toHaveTextContent('Ligeira')
+    expect(screen.getByRole('listitem')).toHaveTextContent('DesânimoLigeiro')
     expect(screen.getByText(/É um rastreio, não um diagnóstico\./)).toBeInTheDocument()
   })
 })

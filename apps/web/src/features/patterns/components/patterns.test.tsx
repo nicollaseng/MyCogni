@@ -149,14 +149,23 @@ describe('ScoreHistory', () => {
     }),
   ]
 
-  it('charts only the questionnaires answered at least twice, with the latest result in words', () => {
+  it('charts the questionnaires answered at least twice on four plain levels, without scores', () => {
     const { container } = renderWithIntl(<ScoreHistory assessments={sessions} timeZone={zone} />)
 
-    const figures = screen.getAllByRole('figure')
+    const section = screen.getByRole('region', { name: 'Ânimo e ansiedade' })
+    const figures = within(section).getAllByRole('figure')
     expect(figures).toHaveLength(1)
-    expect(figures[0]).toHaveTextContent('PHQ-9 · Sinais de depressãoÚltimo: 5 de 27, leve.')
-    expect(figures[0]).toHaveTextContent('21 de ago.: 12 de 27, moderada')
-    expect(container.querySelectorAll('[data-severity]')).toHaveLength(5)
-    expect(screen.queryByText(/GAD-7/)).not.toBeInTheDocument()
+    expect(figures[0]).toHaveTextContent('DesânimoLeve · Melhor que da última vez')
+    expect(figures[0]).toHaveTextContent('21 de ago.: Moderado')
+    expect(figures[0]).toHaveTextContent('3 de out.: Leve')
+    expect(container.querySelectorAll('[data-level]')).toHaveLength(4)
+    expect(section).not.toHaveTextContent(/PHQ|GAD|de 27|\b12\b|\b5\b/)
+    expect(screen.queryByText('Ansiedade')).not.toBeInTheDocument()
+  })
+
+  it('speaks English', () => {
+    renderWithIntl(<ScoreHistory assessments={sessions} timeZone={zone} />, { locale: 'en-US' })
+
+    expect(screen.getByRole('figure')).toHaveTextContent('Feeling downMild · Better than last time')
   })
 })

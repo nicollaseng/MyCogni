@@ -98,11 +98,7 @@ export function RetakeFlow({ previous: initial, timeZone, send }: RetakeFlowProp
             <section className="flex min-h-0 flex-1 flex-col overflow-y-auto [scrollbar-width:none]">
               <StepHeading title={t('retake.resultsTitle')} />
               <div className="mt-6">
-                <ScreeningResults
-                  depression={depression}
-                  anxiety={anxiety}
-                  previous={{ depression: previous.phq9, anxiety: previous.gad7, timeZone }}
-                />
+                <ScreeningResults depression={depression} anxiety={anxiety} previous={previous} />
               </div>
               <StepActions>
                 <p className="mb-3 text-center text-sm text-balance text-muted-foreground">

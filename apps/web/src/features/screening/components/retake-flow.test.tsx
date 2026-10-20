@@ -22,7 +22,7 @@ function inPortuguese(name: string, total: number) {
 }
 
 const previous = {
-  phq9: assessmentOf({ totalScore: 6, completedAt: '2026-10-01T13:00:00Z' }),
+  phq9: assessmentOf({ totalScore: 6, severity: 'mild', completedAt: '2026-10-01T13:00:00Z' }),
   gad7: assessmentOf({
     instrument: 'gad7',
     totalScore: 0,
@@ -57,18 +57,18 @@ describe('RetakeFlow', () => {
     )
 
     await userEvent.click(screen.getByRole('button', { name: 'Começar' }))
-    await answerAll(9, inPortuguese('PHQ-9', 9), 'Nenhuma vez', 'Vários dias')
+    await answerAll(9, inPortuguese('Desânimo', 9), 'Nenhuma vez', 'Vários dias')
     await userEvent.click(await screen.findByRole('button', { name: 'Continuar o questionário' }))
-    await answerAll(7, inPortuguese('GAD-7', 7), 'Nenhuma vez')
+    await answerAll(7, inPortuguese('Ansiedade', 7), 'Nenhuma vez')
 
     expect(
       await screen.findByRole('heading', { name: 'Seus resultados de hoje.' }),
     ).toBeInTheDocument()
-    expect(screen.getByRole('region', { name: 'Sinais de depressão' })).toHaveTextContent(
-      '5 pontos a menos que em 1 de outubro',
+    expect(screen.getByRole('region', { name: 'Desânimo' })).toHaveTextContent(
+      'Melhor que da última vez',
     )
-    expect(screen.getByRole('region', { name: 'Sinais de ansiedade' })).toHaveTextContent(
-      'Igual a 1 de outubro',
+    expect(screen.getByRole('region', { name: 'Ansiedade' })).toHaveTextContent(
+      'Igual à última vez',
     )
     expect(screen.getByRole('link', { name: 'Voltar ao perfil' })).toHaveAttribute('href', '/me')
     expect(screen.getByRole('link', { name: 'Ver sugestões no Zen Space' })).toHaveAttribute(
@@ -84,18 +84,18 @@ describe('RetakeFlow', () => {
     )
 
     await userEvent.click(screen.getByRole('button', { name: 'Começar' }))
-    await answerAll(9, inPortuguese('PHQ-9', 9), 'Nenhuma vez')
+    await answerAll(9, inPortuguese('Desânimo', 9), 'Nenhuma vez')
     rerender(
       <RetakeFlow
-        previous={{ ...previous, phq9: assessmentOf({ totalScore: 0 }) }}
+        previous={{ ...previous, phq9: assessmentOf({ totalScore: 0, severity: 'minimal' }) }}
         timeZone="America/Sao_Paulo"
         send={send}
       />,
     )
-    await answerAll(7, inPortuguese('GAD-7', 7), 'Nenhuma vez')
+    await answerAll(7, inPortuguese('Ansiedade', 7), 'Nenhuma vez')
 
-    expect(await screen.findByRole('region', { name: 'Sinais de depressão' })).toHaveTextContent(
-      '6 pontos a menos que em 1 de outubro',
+    expect(await screen.findByRole('region', { name: 'Desânimo' })).toHaveTextContent(
+      'Melhor que da última vez',
     )
   })
 
@@ -113,7 +113,7 @@ describe('RetakeFlow', () => {
       screen.getByText(/Da última vez respondeu em quinta-feira, 1 de outubro/),
     ).toBeInTheDocument()
     await userEvent.click(screen.getByRole('button', { name: 'Começar' }))
-    await answerAll(9, inPortuguese('PHQ-9', 9), 'Nunca', 'Em vários dias')
+    await answerAll(9, inPortuguese('Desânimo', 9), 'Nunca', 'Em vários dias')
 
     expect(
       await screen.findByRole('heading', { name: 'Obrigado por partilhar.' }),
@@ -123,13 +123,14 @@ describe('RetakeFlow', () => {
       'tel:808242424',
     )
     await userEvent.click(screen.getByRole('button', { name: 'Continuar o questionário' }))
-    await answerAll(7, inPortuguese('GAD-7', 7), 'Em vários dias')
+    await answerAll(7, inPortuguese('Ansiedade', 7), 'Em vários dias')
 
     expect(
       await screen.findByRole('heading', { name: 'Os seus resultados de hoje.' }),
     ).toBeInTheDocument()
-    expect(screen.getByRole('region', { name: 'Sinais de ansiedade' })).toHaveTextContent(
-      '7 pontos a mais do que em 1 de outubro',
+    expect(screen.getByRole('region', { name: 'Ansiedade' })).toHaveTextContent('AnsiedadeLigeiro')
+    expect(screen.getByRole('region', { name: 'Ansiedade' })).toHaveTextContent(
+      'Mais alto do que da última vez',
     )
     expect(screen.getByRole('link', { name: '112' })).toHaveAttribute('href', 'tel:112')
     expect(screen.getByRole('link', { name: 'Voltar ao perfil' })).toHaveAttribute('href', '/me')

@@ -1,5 +1,6 @@
 import { jest } from '@jest/globals'
 import type { Assessment } from '@mycogni/contracts'
+import { instruments, scoreAssessment } from '@mycogni/domain'
 import type { ActionResult } from '@/shared/lib/actions/result'
 import type { OnboardingActions } from '../model'
 
@@ -29,9 +30,8 @@ export function fakeActions(overrides: Partial<OnboardingActions> = {}) {
           ok: true,
           value: assessmentOf({
             instrument,
-            totalScore: answers.reduce((sum, answer) => sum + answer, 0),
+            ...scoreAssessment(instruments[instrument], answers),
             maxScore: answers.length * 3,
-            hasRiskFlag: instrument === 'phq9' && (answers[8] ?? 0) > 0,
           }),
         }),
       ),

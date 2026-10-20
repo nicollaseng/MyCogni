@@ -38,7 +38,7 @@ export const onboarding: OnboardingMessages = {
   },
   intro: {
     title: 'Two short questionnaires',
-    lead: 'The <nowrap>PHQ-9</nowrap> and the <nowrap>GAD-7</nowrap> are used around the world to follow signs of depression and anxiety. They become your starting point.',
+    lead: 'These questions are used around the world to follow signs of low mood and anxiety. They become your starting point.',
     facts: {
       questions: 'questions, one per screen',
       minutes: 'minutes, more or less',
