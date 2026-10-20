@@ -1,4 +1,4 @@
-import { describe, expect, it, jest } from '@jest/globals'
+import { afterEach, beforeEach, describe, expect, it, jest } from '@jest/globals'
 import type { CreateJournalShareInput } from '@mycogni/contracts'
 import { fireEvent, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
@@ -35,6 +35,32 @@ function renderFlow(share: Share, preselected: string[] = []) {
     />,
   )
 }
+
+beforeEach(() => {
+  jest.useFakeTimers({
+    now,
+    doNotFake: [
+      'setTimeout',
+      'clearTimeout',
+      'setInterval',
+      'clearInterval',
+      'setImmediate',
+      'clearImmediate',
+      'nextTick',
+      'queueMicrotask',
+      'requestAnimationFrame',
+      'cancelAnimationFrame',
+      'requestIdleCallback',
+      'cancelIdleCallback',
+      'performance',
+      'hrtime',
+    ],
+  })
+})
+
+afterEach(() => {
+  jest.useRealTimers()
+})
 
 function succeed(): Promise<ActionResult<null>> {
   return Promise.resolve({ ok: true, value: null })
