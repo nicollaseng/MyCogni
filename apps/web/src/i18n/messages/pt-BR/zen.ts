@@ -64,6 +64,19 @@ export const zen = {
     started: '{done} de {total}',
     complete: 'Concluída',
   },
+  share: {
+    label: 'Compartilhar',
+    whatsapp: 'Compartilhar no WhatsApp',
+    email: 'Compartilhar por e-mail',
+    copy: 'Copiar link',
+    copied: 'Link copiado',
+    more: 'Mais opções para compartilhar',
+    message: '{title} — {lead}\n{url}',
+    emailBody: '{lead}\n\n{url}',
+  },
+  public: {
+    cta: 'Conheça o MyCogniAI',
+  },
   article: {
     kicker: 'Leitura · {minutes} min',
     sources: 'Fontes',

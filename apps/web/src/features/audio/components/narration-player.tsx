@@ -48,7 +48,9 @@ export function NarrationPlayer({ sources, title, compact = false }: NarrationPl
       role={full ? 'group' : undefined}
       aria-label={full ? t('label') : undefined}
       className={
-        full ? 'space-y-2 rounded-lg bg-surface px-3 py-3 sm:px-4' : 'flex items-center gap-3'
+        full
+          ? 'basis-full space-y-2 rounded-lg bg-surface px-3 py-3 sm:px-4'
+          : 'flex items-center gap-3'
       }
     >
       <audio
