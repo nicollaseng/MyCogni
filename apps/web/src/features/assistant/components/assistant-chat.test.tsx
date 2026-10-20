@@ -127,7 +127,7 @@ describe('AssistantChat', () => {
     const card = await screen.findByRole('region', { name: 'Apoio agora' })
     expect(within(screen.getByRole('log')).getByText(notice)).toBeInTheDocument()
     expect(notice).toBe(
-      'Que bom que você me contou. Ligue agora para um dos contatos abaixo: você merece o apoio de uma pessoa. Você está em segurança neste momento?',
+      'Que bom que você me contou: você está em segurança agora? Ligue para um dos contatos abaixo.',
     )
     expect(card).not.toHaveTextContent('Você não precisa passar por isso sem apoio')
     expect(card).toHaveTextContent('Dra. Helena Prado acompanha você.')
