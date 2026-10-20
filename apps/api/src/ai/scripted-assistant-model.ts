@@ -2,6 +2,13 @@ import type { AssistantModel, AssistantRequest } from './assistant-model.ts'
 
 const countPattern = /"checkInsInLast90Days":(\d+)/
 
+const someoneElse = /\b(amig[oa]|friend)\b/i
+
+const thirdParty = {
+  pt: 'Obrigado por me contar. Se ele pode estar em perigo agora, ligue para a emergência nos contatos abaixo e, se estiver com ele, não o deixe sozinho. Ele está em perigo agora? Você está com ele ou consegue falar com ele ou com alguém da família?',
+  en: 'Thank you for telling me. If he may be in danger now, call the emergency number in the contacts below and, if you are with him, do not leave him alone. Is he in danger right now? Are you with him, or can you reach him or someone in his family?',
+}
+
 const clinical = {
   pt: (count: string) =>
     `Nos registros compartilhados dos últimos 90 dias aparecem ${count} check-ins. O humor fica mais alto nos dias com exercício e sono registrados e mais baixo nos dias com trabalho e deslocamento. Vale explorar em sessão o peso das reuniões longas.`,
@@ -32,6 +39,10 @@ export function createScriptedAssistantModel(): AssistantModel {
       const copy = english ? replies.en : replies.pt
       const professional = request.system.includes('verified health professional')
       const watch = request.notes.some((note) => note.startsWith('Signs of'))
+      const latest = request.history.at(-1)?.text ?? ''
+      if (!professional && watch && someoneElse.test(latest)) {
+        return { kind: 'answer', text: thirdParty[english ? 'en' : 'pt'], risk: 'urgent' }
+      }
       const risk = watch ? 'watch' : 'none'
       if (request.tools.length === 0) {
         return { kind: 'answer', text: copy.private, risk }
