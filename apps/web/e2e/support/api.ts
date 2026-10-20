@@ -128,6 +128,24 @@ export async function rename(email: string, password: string, displayName: strin
   }
 }
 
+export async function setTimeZone(
+  email: string,
+  password: string,
+  timezone: string,
+): Promise<void> {
+  const response = await fetch(`${apiUrl}/v1/me`, {
+    method: 'PATCH',
+    headers: {
+      authorization: `Bearer ${await accessToken(email, password)}`,
+      'content-type': 'application/json',
+    },
+    body: JSON.stringify({ timezone }),
+  })
+  if (!response.ok) {
+    throw new Error(`PATCH /v1/me answered ${String(response.status)}: ${await response.text()}`)
+  }
+}
+
 export async function finishOnboarding(email: string, password: string): Promise<void> {
   const post = await poster(email, password)
 

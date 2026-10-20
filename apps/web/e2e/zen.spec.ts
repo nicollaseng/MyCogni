@@ -1,5 +1,12 @@
 import { expect, test, type Locator, type Page } from '@playwright/test'
-import { answerQuestionnaires, finishOnboarding } from './support/api'
+import {
+  answerQuestionnaires,
+  finishOnboarding,
+  recordCheckIns,
+  setTimeZone,
+  type CheckInSeed,
+} from './support/api'
+import { zoneAtHour } from './support/clock'
 import { signedOut } from './support/session'
 import { createUser, uniqueEmail } from './support/supabase'
 
@@ -16,12 +23,29 @@ const riskAnswer: Answers = { phq9: [1, 1, 1, 1, 0, 0, 1, 0, 1], gad7: [1, 1, 1,
 
 const severeAnswers: Answers = { phq9: [3, 3, 3, 3, 3, 3, 3, 3, 0], gad7: [3, 3, 3, 3, 3, 3, 3] }
 
-async function signInAsReadyPerson(page: Page, answers: Answers | null = null): Promise<void> {
+const daytime = 12
+
+const night = 23
+
+interface Person {
+  hour?: number
+  checkIns?: readonly CheckInSeed[]
+}
+
+async function signInAsReadyPerson(
+  page: Page,
+  answers: Answers | null = null,
+  { hour = daytime, checkIns = [] }: Person = {},
+): Promise<void> {
   const email = uniqueEmail('zen')
   await createUser(email, password)
   await finishOnboarding(email, password)
+  await setTimeZone(email, password, zoneAtHour(hour))
   if (answers !== null) {
     await answerQuestionnaires(email, password, answers.phq9, answers.gad7)
+  }
+  if (checkIns.length > 0) {
+    await recordCheckIns(email, password, checkIns)
   }
   await page.goto('/sign-in')
   await page.getByLabel('Email').fill(email)
@@ -251,6 +275,7 @@ test('remembers a pause across reloads until the person plays again', async ({ p
 test('chooses, previews and keeps each of the new background sounds', async ({ page }) => {
   await signInAsReadyPerson(page)
   await page.goto('/me')
+  await page.waitForLoadState('networkidle')
   const settings = page.getByRole('region', { name: 'Som e voz' })
   const sound = settings.getByLabel('Qual som')
 
@@ -263,7 +288,10 @@ test('chooses, previews and keeps each of the new background sounds', async ({ p
     ['snow', 'Neve'],
     ['owl', 'Coruja'],
   ] as const) {
-    await sound.selectOption(id)
+    await expect(async () => {
+      await sound.selectOption(id)
+      await expect(sound).toHaveValue(id, { timeout: 2000 })
+    }).toPass()
     const preview = page.waitForResponse((response) =>
       response.url().includes(`/audio/ambient/${id}.`),
     )
@@ -279,5 +307,45 @@ test('chooses, previews and keeps each of the new background sounds', async ({ p
       page.getByRole('button', { name: new RegExp(`o som de fundo: ${name}$`) }),
     ).toBeVisible()
     await page.goto('/me')
+    await page.waitForLoadState('networkidle')
   }
+})
+
+const sleepNights: readonly CheckInSeed[] = Array.from({ length: 3 }, () => ({
+  moodLevel: 3,
+  emotions: ['tiredness'],
+  contexts: ['sleep'],
+  note: null,
+}))
+
+test('suggests sleep after several sleep check-ins and says why in one sentence', async ({
+  page,
+}) => {
+  await signInAsReadyPerson(page, null, { checkIns: sleepNights })
+  await mainNavigation(page).getByRole('link', { name: 'Zen' }).click()
+
+  await expect(today(page)).toContainText('Sono e descanso · passo 1 de 5')
+  await today(page).getByRole('button', { name: 'Por que esta sugestão?' }).click()
+  await expect(today(page).getByText('O sono apareceu em vários registros recentes.')).toBeVisible()
+  await expect(today(page).getByText('É noite: um passo para descansar.')).toHaveCount(0)
+})
+
+test('puts sleep and a breathing minute first at night in the person own time zone', async ({
+  page,
+}) => {
+  await signInAsReadyPerson(
+    page,
+    { phq9: Array.from({ length: 9 }, () => 0), gad7: [2, 2, 2, 2, 2, 2, 2] },
+    { hour: night },
+  )
+  await mainNavigation(page).getByRole('link', { name: 'Zen' }).click()
+
+  await expect(today(page)).toContainText('Sono e descanso · passo 1 de 5')
+  const breathe = today(page).getByRole('button', { name: 'Respirar 1 min' })
+  const heading = today(page).getByRole('heading', { name: 'Para hoje' })
+  const breatheBox = await breathe.boundingBox()
+  const headingBox = await heading.boundingBox()
+  expect(breatheBox?.y ?? 0).toBeLessThan(headingBox?.y ?? 0)
+  await today(page).getByRole('button', { name: 'Por que esta sugestão?' }).click()
+  await expect(today(page).getByText('É noite: um passo para descansar.')).toBeVisible()
 })

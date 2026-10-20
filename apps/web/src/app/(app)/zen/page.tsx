@@ -1,10 +1,13 @@
 import {
   articleIds,
-  averageOf,
   contentLanguageOf,
+  isNight,
   needsCrisisHelp,
+  recentRecords,
+  recordWindowDays,
   todayPick,
   trackIds,
+  windowStart,
   zenSuggestion,
 } from '@mycogni/domain'
 import type { Metadata } from 'next'
@@ -27,25 +30,25 @@ export async function generateMetadata(): Promise<Metadata> {
   return { title: t('title') }
 }
 
-const moodWindowMs = 7 * 24 * 60 * 60 * 1000
-
 export default async function ZenPage() {
   const now = new Date()
-  const [, [t, locale, assessments, checkIns, doneSteps, careLinks]] = await guarded(
+  const [{ timezone }, [t, locale, assessments, checkIns, doneSteps, careLinks]] = await guarded(
     requireOnboardedProfile(),
     Promise.all([
       getTranslations('zen'),
       getLocale(),
       fetchAssessments(),
-      fetchCheckInsSince(new Date(now.getTime() - moodWindowMs)),
+      fetchCheckInsSince(windowStart(now, recordWindowDays)),
       fetchStepProgress(),
       fetchCareLinks(),
     ]),
   )
   const language = contentLanguageOf(locale)
+  const night = isNight(now, timezone)
   const suggestion = zenSuggestion({
     latest: Object.values(latestByInstrument(assessments)),
-    moodAverage: averageOf(checkIns.map((checkIn) => checkIn.moodLevel)),
+    ...recentRecords(checkIns, now),
+    night,
   })
   const professionals = linkedProfessionalsOf(careLinks)
 
@@ -59,6 +62,7 @@ export default async function ZenPage() {
         pick={todayPick(suggestion.tracks, doneSteps)}
         language={language}
         reasons={suggestion.reasons}
+        night={night && suggestion.reasons.includes('night')}
       />
 
       <TopicTiles />

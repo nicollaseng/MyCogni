@@ -338,7 +338,11 @@ export {
   needsCrisisHelp,
   readArticles,
   suggestedArticles,
+  frequentAnxietyRecords,
+  frequentSleepRecords,
   suggestionReasons,
+  workPressureMood,
+  workPressureRecords,
   zenSuggestion,
   type ScreeningSignal,
   type SuggestionReason,
@@ -359,6 +363,20 @@ export {
   type TrackText,
 } from './zen/content/types.ts'
 export { stepMinutes, trackMinutes } from './zen/minutes.ts'
+export {
+  fallbackTimeZone,
+  isNight,
+  localHour,
+  moodWindowDays,
+  nightEndsAt,
+  nightStartsAt,
+  recentRecords,
+  recordWindowDays,
+  windowStart,
+  type DatedRecord,
+  type RecentRecords,
+  type RecordSignal,
+} from './zen/signals.ts'
 export {
   articleKey,
   articleNarration,
