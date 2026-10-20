@@ -34,7 +34,11 @@ function fakeContext() {
     currentTime: 10,
     state: 'suspended',
     destination: {},
-    resume: jest.fn(() => Promise.resolve()),
+    onstatechange: null as (() => void) | null,
+    resume: jest.fn(() => {
+      context.state = 'running'
+      return Promise.resolve()
+    }),
     createGain: () => {
       const node = { gain: param(), connect: () => undefined, disconnect: () => undefined }
       gains.push(node)
@@ -79,6 +83,34 @@ describe('createAmbientEngine', () => {
     jest.useRealTimers()
   })
 
+  it('reports when the sound can run and tells its listeners', async () => {
+    const fake = fakeContext()
+    const { engine } = engineWith(fake)
+    const listener = jest.fn()
+    const unsubscribe = engine.subscribe(listener)
+
+    expect(engine.running()).toBe(false)
+    expect(await engine.unlock()).toBe(true)
+    expect(engine.running()).toBe(true)
+    expect(listener).toHaveBeenCalled()
+
+    listener.mockClear()
+    fake.context.onstatechange?.()
+    expect(listener).toHaveBeenCalledTimes(1)
+    unsubscribe()
+    fake.context.onstatechange?.()
+    expect(listener).toHaveBeenCalledTimes(1)
+  })
+
+  it('stays suspended without an error when the browser refuses to start', async () => {
+    const fake = fakeContext()
+    fake.context.resume.mockImplementation(() => Promise.reject(new Error('not allowed')))
+    const { engine } = engineWith(fake)
+
+    expect(await engine.unlock()).toBe(false)
+    expect(engine.running()).toBe(false)
+  })
+
   it('creates no audio context until the person starts a sound', () => {
     const fake = fakeContext()
     const { engine, createContext } = engineWith(fake)
@@ -95,7 +127,7 @@ describe('createAmbientEngine', () => {
     const { engine, load } = engineWith(fake)
 
     engine.setVolume(0.12)
-    engine.unlock()
+    void engine.unlock()
     engine.play('sea')
     await jest.runOnlyPendingTimersAsync()
 

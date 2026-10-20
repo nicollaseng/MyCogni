@@ -190,7 +190,7 @@ test('keeps Zen calm after severe results without a risk answer', async ({ page 
   await expect(page.getByRole('button', { name: 'Precisa de ajuda agora?' })).toBeVisible()
 })
 
-test('plays the background sound only after a tap and follows the sound chosen in settings', async ({
+test('plays the background sound on arrival in Zen and follows the sound chosen in settings', async ({
   page,
 }) => {
   await signInAsReadyPerson(page)
@@ -198,14 +198,10 @@ test('plays the background sound only after a tap and follows the sound chosen i
 
   await mainNavigation(page).getByRole('link', { name: 'Zen' }).click()
   const sea = page.getByRole('button', { name: 'Som de fundo: Mar' })
-  await expect(sea).toHaveAttribute('aria-pressed', 'false')
-  await sea.click()
   await expect(sea).toHaveAttribute('aria-pressed', 'true')
   await page.getByRole('link', { name: 'Ansiedade', exact: true }).click()
   await expect(page).toHaveURL('/zen/topics/anxiety')
   await expect(sea).toHaveAttribute('aria-pressed', 'true')
-  await sea.click()
-  await expect(sea).toHaveAttribute('aria-pressed', 'false')
 
   await page.goto('/me')
   const settings = page.getByRole('region', { name: 'Som e voz' })
@@ -213,16 +209,40 @@ test('plays the background sound only after a tap and follows the sound chosen i
   await settings.getByText('Em todo o app').click()
   await expect(settings.getByText('Essas escolhas ficam salvas só neste aparelho.')).toBeVisible()
 
-  await page.goto('/today')
-  await expect(page.getByRole('button', { name: 'Som de fundo: Chuva' })).toBeVisible()
-  await page.goto('/zen')
+  await mainNavigation(page).getByRole('link', { name: 'Hoje' }).click()
+  await expect(page.getByRole('button', { name: 'Som de fundo: Chuva' })).toHaveAttribute(
+    'aria-pressed',
+    'true',
+  )
+  await mainNavigation(page).getByRole('link', { name: 'Zen' }).click()
   await expect(page.getByRole('button', { name: 'Som de fundo: Chuva' })).toBeVisible()
 
   await page.goto('/me')
   await page.getByRole('region', { name: 'Som e voz' }).getByText('Desligado').click()
-  await page.goto('/zen')
+  await mainNavigation(page).getByRole('link', { name: 'Zen' }).click()
   await expect(page.getByRole('heading', { level: 1, name: 'Zen Space' })).toBeVisible()
   await expect(page.getByRole('button', { name: /Som de fundo/ })).toHaveCount(0)
+})
+
+test('remembers a pause across reloads until the person plays again', async ({ page }) => {
+  await signInAsReadyPerson(page)
+  await mainNavigation(page).getByRole('link', { name: 'Zen' }).click()
+  const sea = page.getByRole('button', { name: 'Som de fundo: Mar' })
+  await expect(sea).toHaveAttribute('aria-pressed', 'true')
+
+  await sea.click()
+  await expect(sea).toHaveAttribute('aria-pressed', 'false')
+
+  await page.reload()
+  await page.getByRole('heading', { level: 1, name: 'Zen Space' }).click()
+  await page.keyboard.press('Tab')
+  await expect(sea).toHaveAttribute('aria-pressed', 'false')
+
+  await sea.click()
+  await expect(sea).toHaveAttribute('aria-pressed', 'true')
+  await page.reload()
+  await page.getByRole('heading', { level: 1, name: 'Zen Space' }).click()
+  await expect(sea).toHaveAttribute('aria-pressed', 'true')
 })
 
 test('chooses, previews and keeps each of the new background sounds', async ({ page }) => {

@@ -17,18 +17,33 @@ describe('parseAudioPreferences', () => {
       sound: 'sea',
       volume: 0.12,
       scope: 'zen',
+      paused: false,
     })
   })
 
   it('keeps valid choices and replaces anything else with the default', () => {
     expect(
       parseAudioPreferences(
-        JSON.stringify({ voice: 'mark', speed: 1.1, sound: 'rain', volume: 0.4, scope: 'app' }),
+        JSON.stringify({
+          voice: 'mark',
+          speed: 1.1,
+          sound: 'rain',
+          volume: 0.4,
+          scope: 'app',
+          paused: true,
+        }),
       ),
-    ).toEqual({ voice: 'mark', speed: 1.1, sound: 'rain', volume: 0.4, scope: 'app' })
+    ).toEqual({ voice: 'mark', speed: 1.1, sound: 'rain', volume: 0.4, scope: 'app', paused: true })
     expect(
       parseAudioPreferences(
-        JSON.stringify({ voice: 'rachel', speed: 3, sound: 'jazz', volume: 'alto', scope: 'x' }),
+        JSON.stringify({
+          voice: 'rachel',
+          speed: 3,
+          sound: 'jazz',
+          volume: 'alto',
+          scope: 'x',
+          paused: 'yes',
+        }),
       ),
     ).toEqual({ ...defaultAudioPreferences, volume: 0.12 })
     expect(parseAudioPreferences('{not json')).toEqual(defaultAudioPreferences)
