@@ -28,7 +28,7 @@ export const zen: ZenMessages = {
   why: {
     title: 'Why this suggestion?',
     rules:
-      'Simple rules about your latest questionnaires and your check-ins from the last 7 days. It is not a diagnosis.',
+      'Simple rules about your latest answers, your check-ins from the last two weeks and the time of day. It is not a diagnosis.',
     retake: 'Answer the questionnaires again',
     reasons: {
       risk_item:
@@ -37,6 +37,10 @@ export const zen: ZenMessages = {
       anxiety: 'Your latest answers about anxiety were moderate or above.',
       depression: 'Your latest answers about feeling down were moderate or above.',
       low_mood: 'Your average mood over the last 7 days of check-ins was low.',
+      frequent_sleep: 'Sleep came up in several recent check-ins.',
+      work_pressure: 'Work came up on your hardest days.',
+      frequent_anxiety: 'Anxiety came up in several recent check-ins.',
+      night: 'It is night: a step to help you rest.',
       starting: 'Nothing in your results needs attention right now. Sleep is a good start.',
     },
   },

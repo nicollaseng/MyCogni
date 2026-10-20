@@ -194,3 +194,61 @@ describe('BreatheRing', () => {
     expect(screen.getByRole('dialog', { name: 'Respirar em quadrado' })).toBeVisible()
   })
 })
+
+describe('personal reasons', () => {
+  function renderSuggestion(night: boolean) {
+    const suggestion = zenSuggestion({
+      latest: [],
+      moodAverage: null,
+      records: Array.from({ length: 3 }, () => ({
+        moodLevel: 3,
+        emotions: [],
+        contexts: ['sleep'],
+      })),
+      night,
+    })
+    renderWithIntl(
+      <WithRouter router={fakeRouter()}>
+        <TodayCard
+          pick={todayPick(suggestion.tracks, [])}
+          language="pt-BR"
+          reasons={suggestion.reasons}
+          night={suggestion.reasons.includes('night')}
+        />
+      </WithRouter>,
+    )
+  }
+
+  it('explains a suggestion that comes from the records in one plain sentence', async () => {
+    const user = userEvent.setup()
+    renderSuggestion(false)
+
+    expect(screen.getByRole('heading', { name: 'Sono e humor' })).toBeVisible()
+    await user.click(screen.getByRole('button', { name: 'Por que esta sugestão?' }))
+
+    expect(screen.getByText('O sono apareceu em vários registros recentes.')).toBeVisible()
+    expect(screen.queryByText('É noite: um passo para descansar.')).not.toBeInTheDocument()
+  })
+
+  it('puts the breathing minute first at night and says it is night', async () => {
+    const user = userEvent.setup()
+    renderSuggestion(true)
+
+    const breathe = screen.getByRole('button', { name: 'Respirar 1 min' })
+    const heading = screen.getByRole('heading', { name: 'Para hoje' })
+    expect(breathe.compareDocumentPosition(heading) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy()
+
+    await user.click(screen.getByRole('button', { name: 'Por que esta sugestão?' }))
+
+    expect(screen.getByText('É noite: um passo para descansar.')).toBeVisible()
+    expect(screen.getByText('O sono apareceu em vários registros recentes.')).toBeVisible()
+  })
+
+  it('keeps the breathing minute after today at daytime', () => {
+    renderSuggestion(false)
+
+    const breathe = screen.getByRole('button', { name: 'Respirar 1 min' })
+    const heading = screen.getByRole('heading', { name: 'Para hoje' })
+    expect(breathe.compareDocumentPosition(heading) & Node.DOCUMENT_POSITION_PRECEDING).toBeTruthy()
+  })
+})

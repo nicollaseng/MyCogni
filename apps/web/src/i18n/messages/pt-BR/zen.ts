@@ -26,7 +26,7 @@ export const zen = {
   why: {
     title: 'Por que esta sugestão?',
     rules:
-      'Regras simples sobre seus questionários mais recentes e seus registros dos últimos 7 dias. Não é um diagnóstico.',
+      'Regras simples sobre suas respostas mais recentes, seus registros das últimas duas semanas e a hora do dia. Não é um diagnóstico.',
     retake: 'Refazer os questionários',
     reasons: {
       risk_item:
@@ -35,6 +35,10 @@ export const zen = {
       anxiety: 'Sua última resposta sobre ansiedade ficou em moderado ou acima.',
       depression: 'Sua última resposta sobre desânimo ficou em moderado ou acima.',
       low_mood: 'O humor médio dos seus registros dos últimos 7 dias ficou baixo.',
+      frequent_sleep: 'O sono apareceu em vários registros recentes.',
+      work_pressure: 'O trabalho apareceu nos seus dias mais difíceis.',
+      frequent_anxiety: 'A ansiedade apareceu em vários registros recentes.',
+      night: 'É noite: um passo para descansar.',
       starting: 'Nada nos seus resultados pede atenção agora. O sono é um bom começo.',
     },
   },

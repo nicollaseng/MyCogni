@@ -8,6 +8,7 @@ import {
 } from '@mycogni/domain'
 import Link from 'next/link'
 import { useTranslations } from 'next-intl'
+import { cn } from '@/shared/lib/utils'
 import { buttonVariants } from '@/shared/ui/button'
 import { hasStepAction } from '../model'
 import { stepTitle } from '../titles'
@@ -20,6 +21,7 @@ interface TodayCardProps {
   pick: TodayPick | null
   language: ContentLanguage
   reasons: readonly SuggestionReason[]
+  night?: boolean
 }
 
 function TodayStep({ pick, language }: { pick: TodayPick; language: ContentLanguage }) {
@@ -70,12 +72,16 @@ function TodayStep({ pick, language }: { pick: TodayPick; language: ContentLangu
   )
 }
 
-export function TodayCard({ pick, language, reasons }: TodayCardProps) {
+export function TodayCard({ pick, language, reasons, night = false }: TodayCardProps) {
   const t = useTranslations('zen')
 
   return (
-    <section aria-labelledby="zen-today" className="space-y-4">
-      <h2 id="zen-today" className="font-serif text-[26px] leading-tight tracking-[-0.01em]">
+    <section aria-labelledby="zen-today" className="space-y-4" data-night={night || undefined}>
+      {night && <BreatheRing />}
+      <h2
+        id="zen-today"
+        className={cn('font-serif text-[26px] leading-tight tracking-[-0.01em]', night && 'pt-6')}
+      >
         {t('today.title')}
       </h2>
       {pick === null ? (
@@ -84,7 +90,7 @@ export function TodayCard({ pick, language, reasons }: TodayCardProps) {
         <TodayStep pick={pick} language={language} />
       )}
       <div className="flex flex-col gap-3 pt-1 sm:flex-row sm:items-center sm:justify-between sm:gap-6">
-        <BreatheRing />
+        {!night && <BreatheRing />}
         <WhySuggestion reasons={reasons} />
       </div>
     </section>
