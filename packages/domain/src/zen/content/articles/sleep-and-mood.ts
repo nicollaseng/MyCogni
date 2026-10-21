@@ -42,7 +42,7 @@ export const sleepAndMood: Article = {
         {
           heading: 'Tirando as preocupações da cama',
           paragraphs: [
-            'Se a cabeça dispara quando você deita, experimente deixar um horário mais cedo para as preocupações e anotá-las antes de dormir. Um estudo com pessoas muito preocupadas encontrou, depois de duas semanas com uma hora diária da preocupação, melhora não só da preocupação, mas também da insônia. A leitura sobre a hora da preocupação, nesta mesma trilha, explica como fazer.',
+            'Se a cabeça dispara quando você deita, experimente deixar um horário mais cedo para as preocupações e anotá-las antes de dormir. Um estudo com pessoas muito preocupadas encontrou, depois de duas semanas com uma hora diária da preocupação, melhora não só da preocupação, mas também da insônia. A leitura “A hora da preocupação” explica como fazer.',
             'Alguns minutos de respiração lenta antes de deitar também podem ajudar a desacelerar. E, se o sono continuar difícil por semanas, procure ajuda: insônia tem tratamento.',
           ],
         },
@@ -87,7 +87,7 @@ export const sleepAndMood: Article = {
         {
           heading: 'Tirar as preocupações da cama',
           paragraphs: [
-            'Se a cabeça dispara quando se deita, experimente reservar um horário mais cedo para as preocupações e anotá-las antes de dormir. Um estudo com pessoas muito preocupadas encontrou, depois de duas semanas com uma hora diária para as preocupações, melhoria não só da preocupação, mas também da insónia. A leitura sobre a hora da preocupação, neste mesmo percurso, explica como fazer.',
+            'Se a cabeça dispara quando se deita, experimente reservar um horário mais cedo para as preocupações e anotá-las antes de dormir. Um estudo com pessoas muito preocupadas encontrou, depois de duas semanas com uma hora diária para as preocupações, melhoria não só da preocupação, mas também da insónia. A leitura “A hora da preocupação” explica como fazer.',
             'Alguns minutos de respiração lenta antes de se deitar também podem ajudar a abrandar. E, se o sono continuar difícil durante semanas, procure ajuda: a insónia tem tratamento.',
           ],
         },
@@ -132,7 +132,7 @@ export const sleepAndMood: Article = {
         {
           heading: 'Keeping worries out of bed',
           paragraphs: [
-            'If your mind races when you lie down, try setting an earlier time for worries and writing them down before bed. One study of heavy worriers found that two weeks of a daily worry period improved not only worry but also insomnia. The piece on worry time, in this same track, explains how.',
+            'If your mind races when you lie down, try setting an earlier time for worries and writing them down before bed. One study of heavy worriers found that two weeks of a daily worry period improved not only worry but also insomnia. The piece “Worry time” explains how.',
             'A few minutes of slow breathing before bed can also help you wind down. And if sleep stays difficult for weeks, get help: insomnia can be treated.',
           ],
         },
