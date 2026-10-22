@@ -9,6 +9,14 @@ export {
 } from './alerts.ts'
 export { accountExportSchema, exportedAssessmentSchema, type AccountExport } from './account.ts'
 export {
+  dataExportDownloadSchema,
+  dataExportSchema,
+  latestDataExportSchema,
+  type DataExport,
+  type DataExportDownload,
+  type LatestDataExport,
+} from './exports.ts'
+export {
   createMemorySchema,
   memoryListSchema,
   memoryOperationsSchema,

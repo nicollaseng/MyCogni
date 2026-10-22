@@ -80,6 +80,8 @@ describe('notifications', () => {
       'insight',
       'support',
       'reminder',
+      'export_ready',
+      'export_failed',
     ])
   })
 })

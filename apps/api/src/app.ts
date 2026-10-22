@@ -26,6 +26,7 @@ import { healthRoutes } from './modules/health/health.routes.ts'
 import { insightModule } from './modules/insights/index.ts'
 import { invitationModule, invitationPublicModule } from './modules/invitations/index.ts'
 import { journalModule } from './modules/journal/index.ts'
+import { dataExportModule } from './modules/exports/index.ts'
 import { memoryModule } from './modules/memories/index.ts'
 import { notificationModule } from './modules/notifications/index.ts'
 import { onboardingModule } from './modules/onboarding/index.ts'
@@ -57,6 +58,7 @@ export interface AppDependencies {
   profileFiles: ProfileFileStores
   photoFetcher: Fetcher
   supportAttachments: BucketStore
+  exportFiles: BucketStore
   assistantModel: AssistantModel | null
   transcriber: Transcriber | null
   logStream?: { write(line: string): void }
@@ -94,6 +96,7 @@ function authenticatedRoutes(
     profileFiles,
     photoFetcher,
     supportAttachments,
+    exportFiles,
     assistantModel,
     transcriber,
   }: AppDependencies,
@@ -123,6 +126,7 @@ function authenticatedRoutes(
         profileFiles.photos,
         profileFiles.documents,
         supportAttachments,
+        exportFiles,
       ]),
     )
     await api.register(
@@ -149,6 +153,7 @@ function authenticatedRoutes(
     )
     await api.register(memoryModule(db))
     await api.register(transcriptionModule({ transcriber, limiter, log: api.log }))
+    await api.register(dataExportModule({ db, store: exportFiles, jobs, limiter }))
     await api.register(reminderModule(reminderOptions(config, db)))
     await api.register(
       supportModule({

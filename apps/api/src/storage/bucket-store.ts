@@ -1,8 +1,13 @@
+import { createReadStream } from 'node:fs'
+import { Readable } from 'node:stream'
+import type { ReadableStream } from 'node:stream/web'
 import { createSignedLinkCache, signedLinkWindow, type SignedLinkCache } from '@mycogni/domain'
 import { z } from 'zod'
 
 export interface BucketStore {
   upload(path: string, content: Uint8Array, contentType: string): Promise<void>
+  uploadFile(path: string, file: string, size: number, contentType: string): Promise<void>
+  open(path: string): Promise<ReadableStream<Uint8Array>>
   sign(paths: readonly string[]): Promise<Record<string, string>>
   remove(paths: readonly string[]): Promise<void>
   removeFolder(folder: string): Promise<void>
@@ -141,6 +146,32 @@ export function createBucketStore({
       if (!response.ok) {
         throw new Error(`Storage refused to store the ${bucket} file: ${String(response.status)}`)
       }
+    },
+    async uploadFile(path, file, size, contentType) {
+      const response = await fetch(`${base}/object/${bucket}/${path}`, {
+        method: 'POST',
+        headers: {
+          apikey: secretKey,
+          authorization: `Bearer ${secretKey}`,
+          'content-type': contentType,
+          'content-length': String(size),
+          'x-upsert': 'true',
+        },
+        body: Readable.toWeb(createReadStream(file)),
+        duplex: 'half',
+      })
+      if (!response.ok) {
+        throw new Error(`Storage refused to store the ${bucket} file: ${String(response.status)}`)
+      }
+    },
+    async open(path) {
+      const response = await fetch(`${base}/object/authenticated/${bucket}/${path}`, {
+        headers: { apikey: secretKey, authorization: `Bearer ${secretKey}` },
+      })
+      if (!response.ok || response.body === null) {
+        throw new Error(`Storage refused to read the ${bucket} file: ${String(response.status)}`)
+      }
+      return response.body
     },
     sign,
     remove,

@@ -11,6 +11,7 @@ export { careLinkEndedBy, careLinks } from './care-links.ts'
 export { checkInAddenda } from './check-in-addenda.ts'
 export { checkIns } from './check-ins.ts'
 export { consentKind, consents } from './consents.ts'
+export { dataExports, dataExportStatus } from './exports.ts'
 export { insightAudience, insights } from './insights.ts'
 export { invitationChannel, invitations, invitationStatus } from './invitations.ts'
 export {

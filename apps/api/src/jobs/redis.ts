@@ -13,3 +13,5 @@ export const alertQueueName = 'alerts'
 export const memoryQueueName = 'memories'
 
 export const reminderQueueName = 'reminders'
+
+export const dataExportQueueName = 'exports'

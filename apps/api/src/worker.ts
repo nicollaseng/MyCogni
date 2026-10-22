@@ -12,6 +12,7 @@ import {
   createRedis,
   insightQueueName,
   maintenanceQueueName,
+  dataExportQueueName,
   memoryQueueName,
   reminderQueueName,
 } from './jobs/redis.ts'
@@ -22,6 +23,10 @@ import { createAlertStore } from './modules/alerts/alert-store.ts'
 import { createAssessmentRepository } from './modules/assessments/assessment.repository.ts'
 import { createPatientMetricsRepository } from './modules/care-links/patient-metrics.repository.ts'
 import { createCheckInRepository } from './modules/check-ins/check-in.repository.ts'
+import { createExportCollector } from './modules/exports/export-collector.ts'
+import { createDataExportJob } from './modules/exports/export-job.ts'
+import { archiveFilesOf, createExportNotifier } from './modules/exports/export-notifier.ts'
+import { createDataExportRepository } from './modules/exports/export.repository.ts'
 import { createInsightJob } from './modules/insights/insight-job.ts'
 import { createInsightRepository } from './modules/insights/insight.repository.ts'
 import { createMemoryExtractionRepository } from './modules/memories/memory-extraction.repository.ts'
@@ -30,6 +35,9 @@ import { createReminderJob } from './modules/reminders/reminder-job.ts'
 import { createReminderStore } from './modules/reminders/reminder-store.ts'
 import { createUnsubscribeTokens } from './modules/reminders/unsubscribe-token.ts'
 import { createWebPushSender } from './push/push-sender.ts'
+import { createDataExportStore } from './storage/data-exports.ts'
+import { createJournalImageStore } from './storage/journal-images.ts'
+import { createProfileFileStores } from './storage/profile-files.ts'
 import type { ErrorLog } from './shared/log.ts'
 
 const config = loadConfig(process.env)
@@ -93,11 +101,31 @@ const reminderJob = createReminderJob({
   now: () => new Date(),
 })
 
+const profileFiles = createProfileFileStores(config.supabaseUrl, config.supabaseSecretKey)
+const exportJob = createDataExportJob({
+  exports: createDataExportRepository(database.db),
+  collector: createExportCollector(database.db),
+  files: archiveFilesOf({
+    journal: createJournalImageStore(config.supabaseUrl, config.supabaseSecretKey),
+    avatar: profileFiles.photos,
+    documents: profileFiles.documents,
+  }),
+  store: createDataExportStore(config.supabaseUrl, config.supabaseSecretKey),
+  notifier: createExportNotifier(database.db),
+  mailer,
+  webUrl: config.webUrl,
+  log,
+  now: () => new Date(),
+})
+
 const insightPayload = z.object({ patientId: z.uuid() })
+
+const exportPayload = z.object({ exportId: z.uuid() })
 
 const memoryPayload = z.object({ userId: z.uuid() })
 
 const connections = [
+  createRedis(redisUrl),
   createRedis(redisUrl),
   createRedis(redisUrl),
   createRedis(redisUrl),
@@ -125,9 +153,17 @@ await maintenanceQueue.upsertJobScheduler(
   { every: 60 * 60 * 1000 },
   { name: 'expire-invitations' },
 )
+await maintenanceQueue.upsertJobScheduler(
+  'sweep-exports',
+  { every: 60 * 60 * 1000 },
+  { name: 'sweep-exports' },
+)
 const maintenanceWorker = new Worker(
   maintenanceQueueName,
-  async () => ({ expired: await expireInvitations(database.db) }),
+  async (job) =>
+    job.name === 'sweep-exports'
+      ? exportJob.sweep()
+      : { expired: await expireInvitations(database.db) },
   { connection: connections[2], prefix },
 )
 
@@ -160,7 +196,20 @@ const reminderWorker = new Worker(reminderQueueName, () => reminderJob.run(), {
   prefix,
 })
 
-const workers = [insightWorker, maintenanceWorker, alertWorker, memoryWorker, reminderWorker]
+const exportWorker = new Worker(
+  dataExportQueueName,
+  (job) => exportJob.run(exportPayload.parse(job.data).exportId),
+  { connection: connections[8], concurrency: 1, prefix },
+)
+
+const workers = [
+  insightWorker,
+  maintenanceWorker,
+  alertWorker,
+  memoryWorker,
+  reminderWorker,
+  exportWorker,
+]
 
 for (const worker of workers) {
   worker.on('failed', (job, error) => {
