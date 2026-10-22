@@ -22,22 +22,12 @@ export const assignmentNoteMaxLength = 280
 
 export const assignmentLifetimeDays = 30
 
-const dayInMilliseconds = 24 * 60 * 60 * 1000
-
 export function isRepeatInterval(value: unknown): value is RepeatInterval {
   return repeatIntervals.some((days) => days === value)
 }
 
 export function isOpenAssignment(status: AssignmentStatus): boolean {
   return openAssignmentStatuses.some((open) => open === status)
-}
-
-export function nextAvailableFrom(completedAt: Date, days: RepeatInterval): Date {
-  return new Date(completedAt.getTime() + days * dayInMilliseconds)
-}
-
-export function expiresAt(availableFrom: Date): Date {
-  return new Date(availableFrom.getTime() + assignmentLifetimeDays * dayInMilliseconds)
 }
 
 export interface PlainQuestionnaireSummary {

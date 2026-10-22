@@ -4,12 +4,7 @@ import { asrsTexts } from './asrs.ts'
 import { k10Texts, k6Texts } from './kessler.ts'
 import { pcl5Texts } from './pcl5.ts'
 import { gad7Texts, phq8Texts, phq9Texts } from './phq.ts'
-import {
-  textLocales,
-  type QuestionnaireText,
-  type QuestionnaireTexts,
-  type TextLocale,
-} from './text.ts'
+import type { QuestionnaireText, QuestionnaireTexts, TextLocale } from './text.ts'
 
 const textsByVariant: Readonly<Record<QuestionnaireVariant, QuestionnaireTexts>> = {
   phq9: phq9Texts,
@@ -30,8 +25,4 @@ export function questionnaireText(
   locale: Locale,
 ): QuestionnaireText | null {
   return textsByVariant[variant][textLocaleOf(locale)] ?? null
-}
-
-export function textLocalesOf(variant: QuestionnaireVariant): TextLocale[] {
-  return textLocales.filter((locale) => textsByVariant[variant][locale] !== undefined)
 }

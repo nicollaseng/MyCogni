@@ -1,12 +1,6 @@
 import { describe, expect, it } from '@jest/globals'
 import { isBlockedForKind, isComplementarySource, unavailableReasonOf } from './access.ts'
-import {
-  expiresAt,
-  isOpenAssignment,
-  isRepeatInterval,
-  nextAvailableFrom,
-  plainSummaryOf,
-} from './lifecycle.ts'
+import { isOpenAssignment, isRepeatInterval, plainSummaryOf } from './lifecycle.ts'
 import { scoreQuestionnaire } from './scoring.ts'
 
 describe('assignment lifecycle', () => {
@@ -14,12 +8,6 @@ describe('assignment lifecycle', () => {
     expect([7, 14, 28].every(isRepeatInterval)).toBe(true)
     expect(isRepeatInterval(30)).toBe(false)
     expect(isRepeatInterval(null)).toBe(false)
-  })
-
-  it('opens the next repetition counted from the completion', () => {
-    const completedAt = new Date('2026-10-22T13:00:00Z')
-    expect(nextAvailableFrom(completedAt, 14).toISOString()).toBe('2026-11-05T13:00:00.000Z')
-    expect(expiresAt(completedAt).toISOString()).toBe('2026-11-21T13:00:00.000Z')
   })
 
   it('treats only assigned and started questionnaires as open', () => {

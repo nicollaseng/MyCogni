@@ -1,8 +1,8 @@
 import { describe, expect, it } from '@jest/globals'
 import { locales } from '../../i18n/locales.ts'
-import { catalogEntryOf, questionnaireVariants } from '../catalog.ts'
+import { catalogEntryOf, questionnaireVariants, type QuestionnaireVariant } from '../catalog.ts'
 import { questionnaireForms } from '../forms.ts'
-import { questionnaireText, textLocaleOf, textLocalesOf } from './texts.ts'
+import { questionnaireText, textLocaleOf } from './texts.ts'
 
 describe('questionnaire texts', () => {
   it('has one official item per question and the scored values as options', () => {
@@ -27,13 +27,14 @@ describe('questionnaire texts', () => {
   })
 
   it('ships only the languages that have an official text', () => {
-    expect(textLocalesOf('phq9')).toEqual(['pt-BR', 'pt-PT', 'en'])
-    expect(textLocalesOf('phq8')).toEqual(['pt-BR', 'pt-PT', 'en'])
-    expect(textLocalesOf('gad7')).toEqual(['pt-BR', 'pt-PT', 'en'])
-    expect(textLocalesOf('asrs6')).toEqual(['pt-BR', 'pt-PT', 'en'])
-    expect(textLocalesOf('pcl5')).toEqual(['pt-BR', 'en'])
-    expect(textLocalesOf('k10')).toEqual(['pt-BR', 'en'])
-    expect(textLocalesOf('k6')).toEqual(['en'])
+    const shipped = (variant: QuestionnaireVariant) =>
+      locales.filter((locale) => questionnaireText(variant, locale) !== null)
+    for (const variant of ['phq9', 'phq8', 'gad7', 'asrs6'] as const) {
+      expect(shipped(variant)).toEqual([...locales])
+    }
+    expect(shipped('pcl5')).toEqual(['pt-BR', 'en-US', 'en-GB'])
+    expect(shipped('k10')).toEqual(['pt-BR', 'en-US', 'en-GB'])
+    expect(shipped('k6')).toEqual(['en-US', 'en-GB'])
     expect(questionnaireText('pcl5', 'pt-PT')).toBeNull()
     expect(questionnaireText('k6', 'pt-BR')).toBeNull()
   })

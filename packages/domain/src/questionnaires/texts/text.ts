@@ -1,6 +1,4 @@
-export const textLocales = ['pt-BR', 'pt-PT', 'en'] as const
-
-export type TextLocale = (typeof textLocales)[number]
+export type TextLocale = 'pt-BR' | 'pt-PT' | 'en'
 
 export interface QuestionnaireOption {
   label: string
