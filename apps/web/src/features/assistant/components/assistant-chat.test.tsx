@@ -16,7 +16,7 @@ const contacts = [{ name: 'Dra. Helena Prado', emergencyWhatsapp: null }]
 function renderChat(state: AssistantState, target: AssistantTarget = personal) {
   const actions = fakeActions(state)
   const user = userEvent.setup()
-  renderWithIntl(
+  const view = renderWithIntl(
     <AssistantChat
       target={target}
       actions={actions}
@@ -25,7 +25,7 @@ function renderChat(state: AssistantState, target: AssistantTarget = personal) {
       onClose={jest.fn()}
     />,
   )
-  return { actions, user }
+  return { actions, user, view }
 }
 
 function input(): HTMLElement {
@@ -120,6 +120,47 @@ describe('AssistantChat', () => {
     expect(screen.queryByText('899 de 1000')).toBeNull()
     await user.type(input(), 'a')
     expect(screen.getByText('900 de 1000')).toBeVisible()
+  })
+
+  it('introduces Cogni once and then opens with the usual start', async () => {
+    window.localStorage.clear()
+    const first = renderChat({ overview: overview(true), contacts })
+
+    const intro = await screen.findByText(
+      'Oi, eu sou o Cogni, seu parceiro virtual. Posso olhar seus registros com você ou só ouvir como foi o seu dia.',
+    )
+    expect(intro.closest('[data-role="intro"]')).toHaveTextContent('Cogni:')
+    expect(screen.queryByText(/^Pergunte sobre os seus registros/)).toBeNull()
+    first.view.unmount()
+
+    renderChat({ overview: overview(true), contacts })
+
+    expect(await screen.findByText(/^Pergunte sobre os seus registros/)).toBeVisible()
+    expect(screen.queryByText(/parceiro virtual/)).toBeNull()
+  })
+
+  it('shows the actions of an answer right under it', async () => {
+    const { actions, user } = renderChat({ overview: overview(true), contacts })
+    actions.send.mockResolvedValue({
+      ok: true,
+      value: exchange('Estou tenso', {
+        ...message('assistant', 'Faz sentido. O que acha de respirar um minuto?'),
+        actions: [{ type: 'breathe' }, { type: 'article', id: 'breathing-and-grounding' }],
+      }),
+    })
+
+    await user.type(input(), 'Estou tenso{Enter}')
+
+    const reply = (
+      await screen.findByText('Faz sentido. O que acha de respirar um minuto?')
+    ).closest('[data-role]')
+    const group = within(reply as HTMLElement).getByRole('group', { name: 'Sugestões do Cogni' })
+    expect(within(group).getByRole('button', { name: 'Respirar 1 minuto' })).toBeVisible()
+    expect(within(group).getByRole('link', { name: /^Ler: / })).toHaveAttribute(
+      'href',
+      '/zen/articles/breathing-and-grounding',
+    )
+    expect(screen.getAllByRole('group', { name: 'Sugestões do Cogni' })).toHaveLength(1)
   })
 
   it('answers a crisis with the short notice and the crisis card right after it', async () => {
@@ -254,6 +295,7 @@ describe('AssistantChat', () => {
     ).toBeInTheDocument()
     expect(screen.queryByRole('button', { name: 'Ajuda agora' })).toBeNull()
     expect(screen.queryByRole('region', { name: 'Posso ler os seus registros?' })).toBeNull()
+    expect(screen.queryByText(/parceiro virtual/)).toBeNull()
 
     await user.type(input(), 'Risco?{Enter}')
     await screen.findByText('Item 9 positivo em outubro.')

@@ -19,7 +19,7 @@ describe('PatientAssistant', () => {
 
     await userEvent.click(screen.getByRole('button', { name: 'Perguntar sobre este paciente' }))
 
-    const chat = screen.getByRole('dialog', { name: 'Perguntar' })
+    const chat = screen.getByRole('dialog', { name: 'Cogni' })
     expect(chat).toHaveTextContent('Sobre Ana Lima')
     expect(screen.getByRole('button', { name: 'Conversas' })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'Nova conversa' })).toHaveAttribute(
@@ -43,7 +43,7 @@ describe('PatientAssistant', () => {
 
     await userEvent.click(screen.getByRole('button', { name: 'Ask about this patient' }))
 
-    expect(screen.getByRole('dialog', { name: 'Ask' })).toHaveTextContent('About Ana Lima')
+    expect(screen.getByRole('dialog', { name: 'Cogni' })).toHaveTextContent('About Ana Lima')
     expect(screen.getByRole('button', { name: 'Conversations' })).toBeInTheDocument()
   })
 })

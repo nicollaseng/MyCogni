@@ -6,6 +6,7 @@ import { ActionError } from '@/shared/components/action-error'
 import { conversationTitle } from '../history'
 import type { AssistantActions, AssistantTarget } from '../model'
 import { useAssistantChat } from '../use-assistant-chat'
+import { useIntroOnce } from '../use-intro-once'
 import { ChatComposer } from './chat-composer'
 import { ChatHeader } from './chat-header'
 import { ChatStart } from './chat-start'
@@ -45,6 +46,7 @@ export function AssistantChat({
   const backButton = useRef<HTMLButtonElement>(null)
   const pendingFocus = useRef<'history' | 'composer' | null>(null)
   const mode = target.mode
+  const intro = useIntroOnce(mode === 'personal')
   const access = chat.state?.overview.access
   const contacts = chat.state?.contacts ?? []
   const conversations = chat.state?.overview.conversations ?? []
@@ -145,6 +147,7 @@ export function AssistantChat({
             <ChatStart
               mode={mode}
               page={pageTarget && chat.conversationId === null}
+              intro={intro}
               onAsk={(text) => void chat.send(text)}
             />
           )}
@@ -153,6 +156,7 @@ export function AssistantChat({
             pending={chat.pending}
             mode={mode}
             contacts={contacts}
+            onLeave={onClose}
           />
         </div>
         <div className="border-t border-rule px-5 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] sm:px-6 sm:pb-5">

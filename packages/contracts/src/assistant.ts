@@ -1,4 +1,12 @@
-import { assistantLimits, assistantModes, assistantRoles, locales } from '@mycogni/domain'
+import {
+  articleIds,
+  assistantLimits,
+  assistantModes,
+  assistantRoles,
+  locales,
+  maxAssistantActions,
+  trackIds,
+} from '@mycogni/domain'
 import { z } from 'zod'
 import { riskLevelSchema } from './safety.ts'
 
@@ -18,12 +26,21 @@ export const sendPersonalAssistantMessageSchema = sendAssistantMessageSchema.ext
 
 export type SendPersonalAssistantMessageInput = z.infer<typeof sendPersonalAssistantMessageSchema>
 
+export const assistantActionSchema = z.discriminatedUnion('type', [
+  z.object({ type: z.literal('breathe') }),
+  z.object({ type: z.literal('article'), id: z.enum(articleIds) }),
+  z.object({ type: z.literal('track'), id: z.enum(trackIds) }),
+  z.object({ type: z.literal('check_in') }),
+  z.object({ type: z.literal('mybook') }),
+])
+
 export const assistantMessageSchema = z.object({
   id: z.uuid(),
   role: z.enum(assistantRoles),
   text: z.string(),
   risk: riskLevelSchema,
   createdAt: timestamp,
+  actions: z.array(assistantActionSchema).max(maxAssistantActions).optional(),
 })
 
 export type AssistantMessage = z.infer<typeof assistantMessageSchema>

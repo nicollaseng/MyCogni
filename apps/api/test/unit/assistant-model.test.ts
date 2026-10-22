@@ -71,7 +71,11 @@ function request(overrides: Partial<AssistantRequest> = {}): AssistantRequest {
   }
 }
 
-const answer = JSON.stringify({ reply: 'Você está bem.', risk: 'watch' })
+const answer = JSON.stringify({
+  reply: 'Você está bem.',
+  risk: 'watch',
+  actions: [{ type: 'breathe', id: null }],
+})
 
 describe('createClaudeAssistantModel', () => {
   it('sends the cached system prompt, the turns and the notes, and reads the JSON answer', async () => {
@@ -79,7 +83,12 @@ describe('createClaudeAssistantModel', () => {
 
     const result = await createClaudeAssistantModel(send).answer(request())
 
-    expect(result).toEqual({ kind: 'answer', text: 'Você está bem.', risk: 'watch' })
+    expect(result).toEqual({
+      kind: 'answer',
+      text: 'Você está bem.',
+      risk: 'watch',
+      actions: [{ type: 'breathe', id: null }],
+    })
     expect(sent[0]?.model).toBe('claude-haiku-5-5')
     expect(sent[0]?.system).toEqual([
       { type: 'text', text: 'system prompt', cache_control: { type: 'ephemeral' } },
@@ -144,8 +153,11 @@ describe('createClaudeAssistantModel', () => {
     for (const response of [
       message('max_tokens', [text('{"reply":')]),
       message('end_turn', [text('not json')]),
-      message('end_turn', [text('{"reply":"  ","risk":"none"}')]),
-      message('end_turn', [text('{"reply":"ok","risk":"high"}')]),
+      message('end_turn', [text('{"reply":"  ","risk":"none","actions":[]}')]),
+      message('end_turn', [text('{"reply":"ok","risk":"high","actions":[]}')]),
+      message('end_turn', [
+        text('{"reply":"ok","risk":"none","actions":[{"type":"link","id":null}]}'),
+      ]),
     ]) {
       const { send } = scripted([response])
       await expect(createClaudeAssistantModel(send).answer(request())).rejects.toThrow(

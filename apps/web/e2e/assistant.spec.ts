@@ -53,7 +53,7 @@ const launcher = 'Conversar com o Cogni'
 async function openChat(page: Page) {
   await page.getByRole('button', { name: launcher }).click()
   const chat = page.getByRole('dialog')
-  await expect(chat.getByRole('heading', { level: 2 })).toHaveText('Perguntar')
+  await expect(chat.getByRole('heading', { level: 2 })).toHaveText('Cogni')
   return chat
 }
 
@@ -103,7 +103,7 @@ test('keeps conversations in a history to reopen, delete and start again', async
   await ask(chat, 'Por que durmo mal antes das reuniões de segunda?', 1)
   await expect(title).toHaveText('Por que durmo mal antes das reuniões de…')
   await fresh.click()
-  await expect(title).toHaveText('Perguntar')
+  await expect(title).toHaveText('Cogni')
   await ask(chat, 'O que fazer na pausa do almoço?', 1)
 
   await chat.getByRole('button', { name: 'Conversas' }).click()
@@ -138,8 +138,37 @@ test('keeps conversations in a history to reopen, delete and start again', async
   await again.getByRole('button', { name: 'Conversas' }).click()
   await expect(again.getByRole('listitem')).toHaveCount(1)
   await again.getByRole('button', { name: 'Nova conversa' }).click()
-  await expect(again.getByRole('heading', { level: 2 })).toHaveText('Perguntar')
+  await expect(again.getByRole('heading', { level: 2 })).toHaveText('Cogni')
   await expect(again.getByRole('textbox', { name: 'Mensagem' })).toBeFocused()
+})
+
+test('introduces Cogni once and offers a breathing minute under its answer', async ({ page }) => {
+  const person = await readyPerson('cogni')
+  await signIn(page, person.email)
+  await page.goto('/entries')
+  const intro =
+    'Oi, eu sou o Cogni, seu parceiro virtual. Posso olhar seus registros com você ou só ouvir como foi o seu dia.'
+
+  const chat = await openChat(page)
+  await expect(chat.locator('[data-role="intro"]')).toHaveText(`Cogni: ${intro}`)
+  await chat.getByRole('button', { name: 'Fechar' }).click()
+  await expect(chat).toHaveCount(0)
+  const again = await openChat(page)
+  await expect(again.getByText(intro)).toHaveCount(0)
+  await again.getByRole('button', { name: 'Agora não' }).click()
+
+  await ask(again, 'Estou tenso depois do trabalho', 1)
+  const reply = again.locator('[data-role="assistant"]')
+  await expect(reply).toContainText('O que acha de começar com um minuto de respiração?')
+  const suggestions = reply.getByRole('group', { name: 'Sugestões do Cogni' })
+  await suggestions.getByRole('button', { name: 'Respirar 1 minuto' }).click()
+
+  const breathing = page.getByRole('dialog', { name: 'Respirar em quadrado' })
+  await expect(breathing).toBeVisible()
+  await page.keyboard.press('Escape')
+  await expect(breathing).toHaveCount(0)
+  await expect(again).toBeVisible()
+  await expect(suggestions.getByRole('button', { name: 'Respirar 1 minuto' })).toBeFocused()
 })
 
 test('answers a crisis message with the crisis card once, next to that answer', async ({
