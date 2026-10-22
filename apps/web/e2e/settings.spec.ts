@@ -12,8 +12,9 @@ const photo = fileURLToPath(new URL('./fixtures/photo.png', import.meta.url))
 const sections = [
   ['Ânimo e ansiedade', '/me/wellbeing'],
   ['Profissionais', '/me/professionals'],
-  ['Memórias', '/me/memories'],
+  ['Lembretes', '/me/reminders'],
   ['Som e voz', '/me/sound'],
+  ['Memórias', '/me/memories'],
   ['Privacidade e dados', '/me/privacy'],
   ['Conta', '/me/account'],
   ['Suporte', '/me/support'],

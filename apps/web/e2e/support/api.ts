@@ -63,7 +63,7 @@ async function storeFile(
 
 async function send(
   { token }: Session,
-  method: 'POST' | 'PATCH',
+  method: 'POST' | 'PATCH' | 'PUT',
   path: string,
   body: unknown,
 ): Promise<void> {
@@ -311,4 +311,20 @@ export async function shareWholeJournal(email: string, password: string): Promis
       expiresAt: null,
     })
   }
+}
+
+export interface ReminderSeed {
+  enabled: boolean
+  time: string
+  days: number[]
+  push: boolean
+  email: boolean
+}
+
+export async function setReminders(
+  email: string,
+  password: string,
+  settings: ReminderSeed,
+): Promise<void> {
+  await send(await signedSession(email, password), 'PUT', '/v1/reminders', settings)
 }
