@@ -6,11 +6,28 @@ import type {
   SubmitProfessionalDocumentInput,
   UpdateProfessionalInput,
 } from '@mycogni/contracts'
-import { isOwnProfessionalDocumentPath, professionalDocumentName } from '@mycogni/domain'
+import {
+  councilOf,
+  isOwnProfessionalDocumentPath,
+  professionalDocumentName,
+  registrationLabel,
+  sniffDocumentType,
+} from '@mycogni/domain'
 import type { AuthenticatedUser } from '../../auth/token-verifier.ts'
-import { ConflictError, NotFoundError, UnprocessableError } from '../../shared/errors.ts'
+import {
+  ConflictError,
+  IdentityLockedError,
+  NotFoundError,
+  RegistrationTakenError,
+  UnprocessableError,
+  UnsupportedMediaTypeError,
+} from '../../shared/errors.ts'
+import type { BucketStore } from '../../storage/bucket-store.ts'
+import { fileHead } from '../../storage/file-head.ts'
 import {
   DocumentNotStoredError,
+  DuplicateRegistrationError,
+  LockedIdentityError,
   type ProfessionalDocumentRecord,
   type ProfessionalRecord,
   type ProfessionalRepository,
@@ -37,6 +54,7 @@ export function toDocument(record: ProfessionalDocumentRecord): ProfessionalDocu
 function toProfessional(record: ProfessionalRecord): ProfessionalProfile {
   return {
     ...record,
+    registration: registrationLabel(record.registration),
     createdAt: record.createdAt.toISOString(),
     verifiedAt: record.verifiedAt?.toISOString() ?? null,
     reviewedAt: record.reviewedAt?.toISOString() ?? null,
@@ -44,7 +62,27 @@ function toProfessional(record: ProfessionalRecord): ProfessionalProfile {
   }
 }
 
-export function createProfessionalService(repository: ProfessionalRepository): ProfessionalService {
+async function guarded<T>(work: Promise<T>): Promise<T> {
+  try {
+    return await work
+  } catch (error) {
+    if (error instanceof DuplicateRegistrationError) {
+      throw new RegistrationTakenError()
+    }
+    if (error instanceof LockedIdentityError) {
+      throw new IdentityLockedError()
+    }
+    if (error instanceof DocumentNotStoredError) {
+      throw new UnprocessableError('Upload the document to your folder before sending it')
+    }
+    throw error
+  }
+}
+
+export function createProfessionalService(
+  repository: ProfessionalRepository,
+  documents: Pick<BucketStore, 'open'>,
+): ProfessionalService {
   async function findOrFail(user: AuthenticatedUser): Promise<ProfessionalRecord> {
     const record = await repository.find(user.id)
     if (record === undefined) {
@@ -53,30 +91,54 @@ export function createProfessionalService(repository: ProfessionalRepository): P
     return record
   }
 
+  function found(record: ProfessionalRecord | undefined): ProfessionalProfile {
+    if (record === undefined) {
+      throw new NotFoundError('Professional profile not found')
+    }
+    return toProfessional(record)
+  }
+
+  async function verifyDocumentContent(input: SubmitProfessionalDocumentInput): Promise<void> {
+    const head = await fileHead(documents, input.path)
+    if (head === null) {
+      throw new UnprocessableError('Upload the document to your folder before sending it')
+    }
+    if (sniffDocumentType(head) !== input.contentType) {
+      throw new UnsupportedMediaTypeError(
+        'UNSUPPORTED_TYPE',
+        'The document content is not the PDF, JPG or PNG it claims to be',
+      )
+    }
+  }
+
   return {
     async get(user) {
       return toProfessional(await findOrFail(user))
     },
-    async register(user, input) {
-      const record = await repository.create(user.id, input)
+    async register(user, { kind, fullName, registration, institutionRegistration }) {
+      const council = councilOf(kind)
+      const record = await guarded(
+        repository.create(user.id, {
+          kind,
+          fullName,
+          registration:
+            council === null || registration === null ? null : { council, ...registration },
+          institutionRegistration,
+        }),
+      )
       if (record === undefined) {
         throw new ConflictError('Professional profile already exists')
       }
       return toProfessional(record)
     },
     async rename(user, input) {
-      const record = await repository.rename(user.id, input.fullName)
-      if (record === undefined) {
-        throw new NotFoundError('Professional profile not found')
+      if ((await findOrFail(user)).status === 'verified') {
+        throw new IdentityLockedError()
       }
-      return toProfessional(record)
+      return found(await guarded(repository.rename(user.id, input.fullName)))
     },
     async setEmergencyWhatsapp(user, input) {
-      const record = await repository.setEmergencyWhatsapp(user.id, input.emergencyWhatsapp)
-      if (record === undefined) {
-        throw new NotFoundError('Professional profile not found')
-      }
-      return toProfessional(record)
+      return found(await repository.setEmergencyWhatsapp(user.id, input.emergencyWhatsapp))
     },
     async submitDocument(user, input) {
       if ((await findOrFail(user)).status === 'verified') {
@@ -85,21 +147,15 @@ export function createProfessionalService(repository: ProfessionalRepository): P
       if (!isOwnProfessionalDocumentPath(input.path, user.id)) {
         throw new UnprocessableError('The document must be stored in your own folder')
       }
-      try {
-        const record = await repository.submitDocument(user.id, {
-          ...input,
-          fileName: professionalDocumentName(input.fileName, input.contentType),
-        })
-        if (record === undefined) {
-          throw new NotFoundError('Professional profile not found')
-        }
-        return toProfessional(record)
-      } catch (error) {
-        if (error instanceof DocumentNotStoredError) {
-          throw new UnprocessableError('Upload the document to your folder before sending it')
-        }
-        throw error
-      }
+      await verifyDocumentContent(input)
+      return found(
+        await guarded(
+          repository.submitDocument(user.id, {
+            ...input,
+            fileName: professionalDocumentName(input.fileName, input.contentType),
+          }),
+        ),
+      )
     },
   }
 }

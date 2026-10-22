@@ -56,7 +56,11 @@ export const profiles = pgTable(
       for: 'update',
       to: authenticatedRole,
       using: sql`${table.id} = ${authUid}`,
-      withCheck: sql`${table.id} = ${authUid}`,
+      withCheck: sql`${table.id} = ${authUid}
+        and not exists (
+          select 1 from public.locked_identity() l
+          where l.avatar_path is distinct from ${table.avatarPath}
+        )`,
     }),
   ],
 ).enableRLS()

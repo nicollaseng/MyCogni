@@ -1,8 +1,18 @@
 import { afterAll, beforeAll, describe, expect, it } from '@jest/globals'
 import { connectDatabase, type DatabaseConnection } from '../../src/db/client.ts'
+import { randomUUID } from 'node:crypto'
+import { avatarBucket } from '@mycogni/domain'
 import type { App } from '../../src/shared/http.ts'
+import { registerProfessional } from '../support/care.ts'
 import { testDatabaseUrl } from '../support/database.ts'
-import { bearer, createTestUser, deleteTestUser, type TestUser } from '../support/supabase.ts'
+import { downloadAs, tinyPdf, tinyPng, uploadAs, uploadAvatar } from '../support/storage.ts'
+import {
+  bearer,
+  createTestUser,
+  deleteTestUser,
+  testSupabaseUrl,
+  type TestUser,
+} from '../support/supabase.ts'
 import { buildTestApp, supabaseVerifier } from '../support/test-app.ts'
 
 describe('/v1/me', () => {
@@ -11,6 +21,29 @@ describe('/v1/me', () => {
   let ana: TestUser
   let bruno: TestUser
   let carla: TestUser
+  let dora: TestUser
+
+  async function storageDelete(user: TestUser, path: string): Promise<unknown> {
+    const response = await fetch(`${testSupabaseUrl}/storage/v1/object/${avatarBucket}`, {
+      method: 'DELETE',
+      headers: {
+        apikey: process.env.SUPABASE_ANON_KEY ?? '',
+        authorization: `Bearer ${user.accessToken}`,
+        'content-type': 'application/json',
+      },
+      body: JSON.stringify({ prefixes: [path] }),
+    })
+    return response.json()
+  }
+
+  function savePhoto(user: TestUser, avatarPath: string | null) {
+    return app.inject({
+      method: 'PATCH',
+      url: '/v1/me',
+      headers: bearer(user),
+      payload: { avatarPath },
+    })
+  }
 
   beforeAll(async () => {
     connection = connectDatabase(testDatabaseUrl)
@@ -19,12 +52,14 @@ describe('/v1/me', () => {
     ana = await createTestUser({ full_name: 'Ana Lima' })
     bruno = await createTestUser({ name: 'Bruno' })
     carla = await createTestUser({ name: 'Carla', locale: 'pt-PT' })
+    dora = await createTestUser()
   })
 
   afterAll(async () => {
     await deleteTestUser(ana.id)
     await deleteTestUser(bruno.id)
     await deleteTestUser(carla.id)
+    await deleteTestUser(dora.id)
     await app.close()
     await connection.close()
   })
@@ -192,27 +227,55 @@ describe('/v1/me', () => {
   })
 
   it('keeps the photo inside the person own folder', async () => {
-    const own = await app.inject({
-      method: 'PATCH',
-      url: '/v1/me',
-      headers: bearer(ana),
-      payload: { avatarPath: `${ana.id}/avatar-1.jpg` },
-    })
-    const foreign = await app.inject({
-      method: 'PATCH',
-      url: '/v1/me',
-      headers: bearer(ana),
-      payload: { avatarPath: `${bruno.id}/avatar-1.jpg` },
-    })
-    const cleared = await app.inject({
-      method: 'PATCH',
-      url: '/v1/me',
-      headers: bearer(ana),
-      payload: { avatarPath: null },
-    })
+    const path = await uploadAvatar(ana)
+    const own = await savePhoto(ana, path)
+    const foreign = await savePhoto(ana, `${bruno.id}/avatar-1.png`)
+    const cleared = await savePhoto(ana, null)
 
-    expect(own.json()).toEqual(expect.objectContaining({ avatarPath: `${ana.id}/avatar-1.jpg` }))
+    expect(own.json()).toEqual(expect.objectContaining({ avatarPath: path }))
     expect(foreign.statusCode).toBe(422)
     expect(cleared.json()).toEqual(expect.objectContaining({ avatarPath: null }))
+  })
+
+  it('keeps only photos that were really uploaded and really are images', async () => {
+    const missing = await savePhoto(bruno, `${bruno.id}/${randomUUID()}.png`)
+    const disguised = `${bruno.id}/${randomUUID()}.png`
+    await uploadAs(bruno, avatarBucket, disguised, 'image/png', tinyPdf)
+    const renamed = `${bruno.id}/${randomUUID()}.jpg`
+    await uploadAs(bruno, avatarBucket, renamed, 'image/jpeg', tinyPng)
+
+    const fake = await savePhoto(bruno, disguised)
+    const mismatched = await savePhoto(bruno, renamed)
+
+    expect(missing.statusCode).toBe(422)
+    expect(fake.statusCode).toBe(415)
+    expect(fake.json()).toEqual(expect.objectContaining({ code: 'UNSUPPORTED_TYPE' }))
+    expect(mismatched.statusCode).toBe(415)
+  })
+
+  it('locks the photo of a verified professional, who changes it through support', async () => {
+    const first = await uploadAvatar(dora)
+    await savePhoto(dora, first)
+    await registerProfessional(connection.db, dora.id)
+    const second = await uploadAvatar(dora)
+
+    const changed = await savePhoto(dora, second)
+    const removed = await savePhoto(dora, null)
+    const renamed = await app.inject({
+      method: 'PATCH',
+      url: '/v1/me',
+      headers: bearer(dora),
+      payload: { displayName: 'Dora' },
+    })
+
+    expect(changed.statusCode).toBe(409)
+    expect(changed.json()).toEqual(expect.objectContaining({ code: 'IDENTITY_LOCKED' }))
+    expect(removed.statusCode).toBe(409)
+    expect(await storageDelete(dora, first)).toEqual([])
+    expect((await uploadAs(dora, avatarBucket, first, 'image/png', tinyPdf, true)).ok).toBe(false)
+    expect((await downloadAs(dora, avatarBucket, first)).status).toBe(200)
+    expect(renamed.json()).toEqual(
+      expect.objectContaining({ avatarPath: first, displayName: 'Dora' }),
+    )
   })
 })

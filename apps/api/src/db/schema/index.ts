@@ -30,7 +30,13 @@ export {
 } from './memories.ts'
 export { notificationKind, notifications } from './notifications.ts'
 export { professionalDocuments } from './professional-documents.ts'
-export { professionalKind, professionalProfiles, professionalStatus } from './professionals.ts'
+export { professionalReviews } from './professional-reviews.ts'
+export {
+  professionalCouncil,
+  professionalKind,
+  professionalProfiles,
+  professionalStatus,
+} from './professionals.ts'
 export { accountType, profiles, type Profile } from './profiles.ts'
 export { pushSubscriptions, reminderSettings } from './reminders.ts'
 export {

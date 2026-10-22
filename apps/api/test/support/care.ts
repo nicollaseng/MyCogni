@@ -1,7 +1,9 @@
 import { randomInt } from 'node:crypto'
 import {
+  councilOf,
   invitationCodeAlphabet,
   invitationCodeLength,
+  type ProfessionalKind,
   type ProfessionalStatus,
 } from '@mycogni/domain'
 import { eq, sql } from 'drizzle-orm'
@@ -16,20 +18,34 @@ export function invitationCode(): string {
   ).join('')
 }
 
+export function councilNumber(): string {
+  return String(randomInt(10_000_000, 100_000_000))
+}
+
 export async function registerProfessional(
   db: Database,
   userId: string,
   {
     fullName = 'Dra. Helena Prado',
     status = 'verified',
-  }: { fullName?: string; status?: ProfessionalStatus } = {},
+    number = councilNumber(),
+    kind = 'psychologist',
+  }: {
+    fullName?: string
+    status?: ProfessionalStatus
+    number?: string
+    kind?: ProfessionalKind
+  } = {},
 ): Promise<void> {
+  const council = councilOf(kind)
   await db.update(profiles).set({ accountType: 'professional' }).where(eq(profiles.id, userId))
   await db.insert(professionalProfiles).values({
     userId,
-    kind: 'psychologist',
+    kind,
     fullName,
-    registration: 'CRP 06/123456',
+    registrationCouncil: council,
+    registrationUf: council === null ? null : 'SP',
+    registrationNumber: council === null ? null : number,
     status,
     verifiedAt: status === 'verified' ? new Date() : null,
   })

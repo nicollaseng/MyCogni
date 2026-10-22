@@ -1,6 +1,12 @@
-import type { InvitationChannel, InvitationStatus, ProfessionalKind } from '@mycogni/domain'
+import {
+  registrationLabel,
+  type InvitationChannel,
+  type InvitationStatus,
+  type ProfessionalKind,
+} from '@mycogni/domain'
 import { and, desc, eq, isNull, sql } from 'drizzle-orm'
 import type { Database, Transaction } from '../../db/client.ts'
+import { isUniqueViolation } from '../../db/errors.ts'
 import { asAnonymous, withUser } from '../../db/rls.ts'
 import {
   careLinks,
@@ -8,6 +14,7 @@ import {
   notifications,
   professionalProfiles,
 } from '../../db/schema/index.ts'
+import { registrationColumns } from '../professionals/professional.repository.ts'
 
 export interface InvitationRecord {
   id: string
@@ -61,6 +68,7 @@ export type AcceptOutcome =
   | { kind: 'not_found' }
   | { kind: 'not_pending' }
   | { kind: 'already_linked' }
+  | { kind: 'unavailable' }
 
 export class DuplicateInvitationCodeError extends Error {
   constructor() {
@@ -99,24 +107,19 @@ const receivedColumns = {
   professional: {
     name: professionalProfiles.fullName,
     kind: professionalProfiles.kind,
-    registration: professionalProfiles.registration,
   },
+  registration: registrationColumns,
   status: invitations.status,
   createdAt: invitations.createdAt,
   expiresAt: invitations.expiresAt,
   respondedAt: invitations.respondedAt,
 }
 
-function isUniqueViolation(error: unknown): boolean {
-  const cause: unknown = error instanceof Error ? error.cause : undefined
-  return typeof cause === 'object' && cause !== null && 'code' in cause && cause.code === '23505'
-}
-
 const stillPending = sql`${invitations.status} = 'pending' and ${invitations.expiresAt} > now()`
 
 export function createInvitationRepository(db: Database): InvitationRepository {
-  function receivedQuery(patientId: string) {
-    return withUser(db, patientId, (tx) =>
+  async function receivedQuery(patientId: string): Promise<ReceivedInvitationRecord[]> {
+    const rows = await withUser(db, patientId, (tx) =>
       tx
         .select(receivedColumns)
         .from(invitations)
@@ -127,6 +130,10 @@ export function createInvitationRepository(db: Database): InvitationRepository {
         .where(eq(invitations.patientId, patientId))
         .orderBy(desc(invitations.createdAt)),
     )
+    return rows.map(({ professional, registration, ...row }) => ({
+      ...row,
+      professional: { ...professional, registration: registrationLabel(registration) },
+    }))
   }
 
   async function markInvitationRead(tx: Transaction, patientId: string, id: string): Promise<void> {
@@ -253,6 +260,13 @@ export function createInvitationRepository(db: Database): InvitationRepository {
           }
           if (!invitation.pending) {
             return { kind: 'not_pending' }
+          }
+          const [professional] = await tx
+            .select({ status: professionalProfiles.status })
+            .from(professionalProfiles)
+            .where(eq(professionalProfiles.userId, invitation.professionalId))
+          if (professional?.status !== 'verified') {
+            return { kind: 'unavailable' }
           }
           const [active] = await tx
             .select({ id: careLinks.id })

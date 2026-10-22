@@ -1,8 +1,10 @@
 import { afterAll, beforeAll, describe, expect, it } from '@jest/globals'
 import { isInvitationCode, sharingConsentVersion } from '@mycogni/domain'
+import { eq } from 'drizzle-orm'
 import { connectDatabase, type DatabaseConnection } from '../../src/db/client.ts'
+import { careLinks, professionalProfiles } from '../../src/db/schema/index.ts'
 import type { App } from '../../src/shared/http.ts'
-import { registerProfessional } from '../support/care.ts'
+import { councilNumber, registerProfessional, seedInvitation } from '../support/care.ts'
 import { testDatabaseUrl } from '../support/database.ts'
 import { lastMailTo } from '../support/mailpit.ts'
 import { bearer, createTestUser, deleteTestUser, type TestUser } from '../support/supabase.ts'
@@ -17,6 +19,7 @@ describe('invitations and care links', () => {
   let pedro: TestUser
   let ana: TestUser
   let bruno: TestUser
+  const helenaNumber = councilNumber()
 
   function call(method: Method, url: string, user?: TestUser, payload?: object) {
     return app.inject({
@@ -51,7 +54,7 @@ describe('invitations and care links', () => {
     pedro = await createTestUser()
     ana = await createTestUser({ full_name: 'Ana Lima' })
     bruno = await createTestUser({ full_name: 'Bruno Reis' })
-    await registerProfessional(connection.db, helena.id)
+    await registerProfessional(connection.db, helena.id, { number: helenaNumber })
     await registerProfessional(connection.db, pedro.id, {
       fullName: 'Pedro Lima',
       status: 'pending',
@@ -150,7 +153,7 @@ describe('invitations and care links', () => {
         professional: {
           name: 'Dra. Helena Prado',
           kind: 'psychologist',
-          registration: 'CRP 06/123456',
+          registration: `CRP 06/${helenaNumber}`,
         },
       }),
     )
@@ -300,5 +303,42 @@ describe('invitations and care links', () => {
         .json<{ id: string }[]>()
         .map((patient) => patient.id),
     ).toEqual([bruno.id])
+  })
+
+  it('does not link a patient to a professional who is no longer verified', async () => {
+    const invitation = await seedInvitation(connection.db, {
+      professionalId: pedro.id,
+      patientId: bruno.id,
+    })
+
+    const accepted = await call('POST', `/v1/invitations/${invitation.id}/accept`, bruno, {
+      sharesHistory: false,
+      consentVersion: sharingConsentVersion,
+    })
+
+    expect(accepted.statusCode).toBe(409)
+    expect(accepted.json()).toEqual(expect.objectContaining({ code: 'PROFESSIONAL_UNAVAILABLE' }))
+  })
+
+  it('hides a professional who is no longer verified from the patient list', async () => {
+    await connection.db.insert(careLinks).values({
+      professionalId: pedro.id,
+      patientId: bruno.id,
+      consentVersion: sharingConsentVersion,
+    })
+    const before = (await call('GET', '/v1/care-links', bruno)).json<
+      { professional: { name: string } }[]
+    >()
+    await connection.db
+      .update(professionalProfiles)
+      .set({ status: 'verified', verifiedAt: new Date() })
+      .where(eq(professionalProfiles.userId, pedro.id))
+
+    const after = (await call('GET', '/v1/care-links', bruno)).json<
+      { professional: { name: string } }[]
+    >()
+
+    expect(before.map((link) => link.professional.name)).not.toContain('Pedro Lima')
+    expect(after.map((link) => link.professional.name)).toContain('Pedro Lima')
   })
 })

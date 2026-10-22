@@ -178,7 +178,9 @@ describe('profiles.account_type', () => {
         userId: patient,
         kind: 'psychologist',
         fullName: 'Ana Lima',
-        registration: 'CRP 06/000001',
+        registrationCouncil: 'crp',
+        registrationUf: 'SP',
+        registrationNumber: '000001',
       }),
     )
 

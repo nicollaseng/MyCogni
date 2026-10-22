@@ -88,3 +88,25 @@ export class ServiceUnavailableError extends AppError {
     super(503, code, message)
   }
 }
+
+export class IdentityLockedError extends AppError {
+  constructor() {
+    super(
+      409,
+      'IDENTITY_LOCKED',
+      'A verified professional changes the name and photo only through support',
+    )
+  }
+}
+
+export class RegistrationTakenError extends AppError {
+  constructor() {
+    super(409, 'REGISTRATION_TAKEN', 'This council registration already belongs to another account')
+  }
+}
+
+export class ProfessionalUnavailableError extends AppError {
+  constructor() {
+    super(409, 'PROFESSIONAL_UNAVAILABLE', 'This professional is no longer available')
+  }
+}

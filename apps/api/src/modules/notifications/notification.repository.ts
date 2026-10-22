@@ -2,19 +2,25 @@ import type {
   InvitationStatus,
   NotificationKind,
   ProfessionalKind,
+  ProfessionalStatus,
   SupportTicketStatus,
 } from '@mycogni/domain'
 import { and, count, desc, eq, inArray, isNull } from 'drizzle-orm'
+import { alias } from 'drizzle-orm/pg-core'
 import type { Database } from '../../db/client.ts'
 import { withUser } from '../../db/rls.ts'
 import {
+  careLinks,
   invitations,
   notifications,
   professionalProfiles,
   profiles,
   questionnaireAssignments,
+  professionalReviews,
   supportTickets,
 } from '../../db/schema/index.ts'
+
+const linkedProfessional = alias(professionalProfiles, 'linked_professional')
 
 export interface NotificationRecord {
   id: string
@@ -31,6 +37,8 @@ export interface NotificationRecord {
     professionalKind: ProfessionalKind
   } | null
   questionnaire: { assignmentId: string; patientId: string; patientName: string | null } | null
+  review: { decision: ProfessionalStatus; note: string | null } | null
+  unavailableProfessional: { name: string } | null
 }
 
 export interface NotificationRepository {
@@ -61,6 +69,9 @@ export function createNotificationRepository(db: Database): NotificationReposito
             questionnaireId: questionnaireAssignments.id,
             questionnairePatientId: questionnaireAssignments.patientId,
             questionnairePatientName: profiles.displayName,
+            reviewDecision: professionalReviews.decision,
+            reviewNote: professionalReviews.note,
+            unavailableName: linkedProfessional.fullName,
           })
           .from(notifications)
           .leftJoin(invitations, eq(invitations.id, notifications.invitationId))
@@ -74,6 +85,12 @@ export function createNotificationRepository(db: Database): NotificationReposito
             eq(questionnaireAssignments.id, notifications.questionnaireAssignmentId),
           )
           .leftJoin(profiles, eq(profiles.id, questionnaireAssignments.patientId))
+          .leftJoin(
+            professionalReviews,
+            eq(professionalReviews.id, notifications.professionalReviewId),
+          )
+          .leftJoin(careLinks, eq(careLinks.id, notifications.careLinkId))
+          .leftJoin(linkedProfessional, eq(linkedProfessional.userId, careLinks.professionalId))
           .where(eq(notifications.userId, userId))
           .orderBy(desc(notifications.createdAt))
           .limit(limit),
@@ -110,6 +127,12 @@ export function createNotificationRepository(db: Database): NotificationReposito
                 patientId: row.questionnairePatientId,
                 patientName: row.questionnairePatientName,
               },
+        review:
+          row.reviewDecision === null
+            ? null
+            : { decision: row.reviewDecision, note: row.reviewNote },
+        unavailableProfessional:
+          row.unavailableName === null ? null : { name: row.unavailableName },
       }))
     },
     unread(userId) {

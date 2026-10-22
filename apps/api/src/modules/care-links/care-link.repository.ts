@@ -1,8 +1,10 @@
+import { registrationLabel } from '@mycogni/domain'
 import { and, desc, eq, isNull, sql } from 'drizzle-orm'
 import type { Database } from '../../db/client.ts'
 import { withUser } from '../../db/rls.ts'
 import { careLinks, professionalProfiles, profiles } from '../../db/schema/index.ts'
 import type { ProfessionalSummaryRecord } from '../invitations/invitation.repository.ts'
+import { registrationColumns } from '../professionals/professional.repository.ts'
 
 export interface LinkedProfessionalRecord extends ProfessionalSummaryRecord {
   avatarPath: string | null
@@ -41,8 +43,8 @@ const linkColumns = {
   professional: {
     name: professionalProfiles.fullName,
     kind: professionalProfiles.kind,
-    registration: professionalProfiles.registration,
   },
+  registration: registrationColumns,
   sharesHistory: careLinks.sharesHistory,
   startedAt: careLinks.startedAt,
   consentVersion: careLinks.consentVersion,
@@ -59,6 +61,7 @@ export function createCareLinkRepository(db: Database): CareLinkRepository {
           and(
             eq(careLinks.patientId, patientId),
             isNull(careLinks.endedAt),
+            eq(professionalProfiles.status, 'verified'),
             linkId === undefined ? undefined : eq(careLinks.id, linkId),
           ),
         )
@@ -75,10 +78,11 @@ export function createCareLinkRepository(db: Database): CareLinkRepository {
       const whatsappOf = new Map(
         Array.from(whatsapps).map((row) => [row.professional_id, row.emergency_whatsapp]),
       )
-      return links.map(({ professionalId, professional, ...link }) => ({
+      return links.map(({ professionalId, professional, registration, ...link }) => ({
         ...link,
         professional: {
           ...professional,
+          registration: registrationLabel(registration),
           avatarPath: avatarOf.get(professionalId) ?? null,
           emergencyWhatsapp: whatsappOf.get(professionalId) ?? null,
         },
