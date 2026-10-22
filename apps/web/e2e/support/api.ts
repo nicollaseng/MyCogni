@@ -298,3 +298,17 @@ export async function addMemories(
     await post('/v1/memories', { content })
   }
 }
+
+export async function shareWholeJournal(email: string, password: string): Promise<void> {
+  const session = await signedSession(email, password)
+  const response = await fetch(`${apiUrl}/v1/care-links`, {
+    headers: { authorization: `Bearer ${session.token}` },
+  })
+  for (const { id } of careLinksSchema.parse(await response.json())) {
+    await send(session, 'POST', '/v1/journal/shares', {
+      careLinkId: id,
+      scope: 'all',
+      expiresAt: null,
+    })
+  }
+}
