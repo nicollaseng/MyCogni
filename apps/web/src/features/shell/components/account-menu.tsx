@@ -72,7 +72,7 @@ function AccountPanel({ name, email, signOut, onNavigate }: AccountPanelProps) {
           {t('profile')}
         </Link>
         <Link
-          href="/me#professionals"
+          href="/me/professionals"
           prefetch
           role="menuitem"
           tabIndex={-1}
@@ -82,7 +82,7 @@ function AccountPanel({ name, email, signOut, onNavigate }: AccountPanelProps) {
           {t('professionals')}
         </Link>
         <Link
-          href="/me#support"
+          href="/me/support"
           role="menuitem"
           tabIndex={-1}
           onClick={onNavigate}
