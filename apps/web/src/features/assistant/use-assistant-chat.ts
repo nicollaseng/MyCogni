@@ -133,11 +133,7 @@ export function useAssistantChat(
     return true
   }
 
-  async function remove(): Promise<boolean> {
-    if (conversationId === null) {
-      return false
-    }
-    const removed = conversationId
+  async function remove(removed: string): Promise<boolean> {
     const result = await unlessOutdated(() => actions.remove(removed))
     if (result === null) {
       return false
@@ -146,7 +142,9 @@ export function useAssistantChat(
       setError(result.error)
       return false
     }
-    startNew()
+    if (removed === conversationId) {
+      startNew()
+    }
     setState((current) =>
       current === null
         ? current

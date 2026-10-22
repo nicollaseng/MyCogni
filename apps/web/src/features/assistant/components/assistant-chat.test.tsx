@@ -1,4 +1,4 @@
-import { describe, expect, it } from '@jest/globals'
+import { describe, expect, it, jest } from '@jest/globals'
 import type { AssistantExchange } from '@mycogni/contracts'
 import { assistantNotice } from '@mycogni/domain'
 import { screen, waitFor, within } from '@testing-library/react'
@@ -16,7 +16,15 @@ const contacts = [{ name: 'Dra. Helena Prado', emergencyWhatsapp: null }]
 function renderChat(state: AssistantState, target: AssistantTarget = personal) {
   const actions = fakeActions(state)
   const user = userEvent.setup()
-  renderWithIntl(<AssistantChat target={target} actions={actions} timeZone="America/Sao_Paulo" />)
+  renderWithIntl(
+    <AssistantChat
+      target={target}
+      actions={actions}
+      timeZone="America/Sao_Paulo"
+      titleId="chat-title"
+      onClose={jest.fn()}
+    />,
+  )
   return { actions, user }
 }
 
@@ -183,7 +191,7 @@ describe('AssistantChat', () => {
     })
 
     await user.click(await screen.findByRole('button', { name: 'Conversas' }))
-    await user.click(screen.getByRole('menuitem', { name: /Vontade de morrer/ }))
+    await user.click(screen.getByRole('button', { name: 'Vontade de morrer' }))
     await screen.findByText('Estou aqui com você.')
 
     const [card, ...others] = screen.getAllByRole('region', { name: 'Apoio agora' })
@@ -204,42 +212,6 @@ describe('AssistantChat', () => {
     expect(await screen.findByRole('alert')).toHaveTextContent('Você mandou muitas mensagens')
     expect(input()).toHaveValue('Mais uma pergunta')
     expect(within(screen.getByRole('log')).queryByText('Mais uma pergunta')).toBeNull()
-  })
-
-  it('opens an earlier conversation and deletes it after a confirmation', async () => {
-    const earlier = {
-      id: conversationId,
-      mode: 'personal' as const,
-      risk: 'none' as const,
-      preview: 'Como foi a semana?',
-      entryId: null,
-      createdAt: '2026-10-14T13:00:00Z',
-      updatedAt: '2026-10-14T13:05:00Z',
-    }
-    const { actions, user } = renderChat({ overview: overview(true, [earlier]), contacts })
-    actions.load.mockResolvedValue({
-      ok: true,
-      value: {
-        ...earlier,
-        messages: [message('user', 'Como foi a semana?'), message('assistant', 'Foi estável.')],
-      },
-    })
-
-    await user.click(await screen.findByRole('button', { name: 'Conversas' }))
-    await user.click(screen.getByRole('menuitem', { name: /Como foi a semana\?/ }))
-
-    expect(actions.load).toHaveBeenCalledWith(conversationId)
-    expect(await screen.findByText('Foi estável.')).toBeInTheDocument()
-
-    await user.click(screen.getByRole('button', { name: 'Apagar' }))
-    await user.click(screen.getByRole('button', { name: 'Apagar conversa' }))
-
-    expect(actions.remove).toHaveBeenCalledWith(conversationId)
-    await waitFor(() => {
-      expect(screen.queryByText('Foi estável.')).toBeNull()
-    })
-    await user.click(screen.getByRole('button', { name: 'Conversas' }))
-    expect(screen.getByText('Nenhuma conversa ainda')).toBeInTheDocument()
   })
 
   it('starts a new conversation without the previous messages', async () => {

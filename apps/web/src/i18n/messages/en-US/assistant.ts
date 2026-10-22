@@ -1,25 +1,38 @@
 import type { AssistantMessages } from '../pt-BR/assistant'
 
 export const assistant: AssistantMessages = {
-  launcher: 'Ask',
+  launcher: 'Chat',
+  launcherLabel: 'Chat with Cogni',
   title: 'Ask',
-  professionalTitle: 'Ask about {name}',
   professionalAction: 'Ask about this patient',
+  professionalContext: 'About {name}',
   close: 'Close',
   disclaimer: {
     mistakes: 'AI can make mistakes',
     personal: 'MyCogniAI is not a substitute for professional health advice.',
     professional: 'MyCogniAI does not replace your clinical judgment.',
   },
-  toolbar: {
-    new: 'New conversation',
+  header: {
     history: 'Conversations',
-    historyEmpty: 'No conversations yet',
+    new: 'New conversation',
+  },
+  history: {
+    title: 'Conversations',
+    back: 'Back',
+    empty: 'Your conversations show up here.',
     untitled: 'Conversation without text',
+    more: 'More options for {title}',
     delete: 'Delete',
-    deleteQuestion: 'Delete this conversation? This can’t be undone.',
-    deleteConfirm: 'Delete conversation',
+    deleteTitle: 'Delete this conversation?',
+    deleteBody: '“{title}” leaves your history. This can’t be undone.',
+    deleteConfirm: 'Delete',
     deleteCancel: 'Cancel',
+    groups: {
+      today: 'Today',
+      yesterday: 'Yesterday',
+      week: 'This week',
+      older: 'Older',
+    },
   },
   empty: {
     personal:

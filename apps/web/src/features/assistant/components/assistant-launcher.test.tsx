@@ -17,10 +17,10 @@ describe('AssistantEntry', () => {
   it.each(['/entries', '/mybook', '/patterns'])('offers the button on %s', (pathname) => {
     renderAt(pathname)
 
-    expect(screen.getByRole('button', { name: 'Perguntar' })).toHaveAttribute(
-      'aria-haspopup',
-      'dialog',
-    )
+    const launcher = screen.getByRole('button', { name: 'Conversar com o Cogni' })
+    expect(launcher).toHaveAttribute('aria-haspopup', 'dialog')
+    expect(launcher).toHaveTextContent('Conversar')
+    expect(launcher.querySelector('svg')).toHaveAttribute('aria-hidden')
   })
 
   it.each([
@@ -32,13 +32,13 @@ describe('AssistantEntry', () => {
   ])('stays out of the way on %s', (pathname) => {
     renderAt(pathname)
 
-    expect(screen.queryByRole('button', { name: 'Perguntar' })).not.toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: 'Conversar com o Cogni' })).not.toBeInTheDocument()
   })
 
   it('opens the chat in a dialog for the person', async () => {
     const actions = renderAt('/patterns')
 
-    await userEvent.click(screen.getByRole('button', { name: 'Perguntar' }))
+    await userEvent.click(screen.getByRole('button', { name: 'Conversar com o Cogni' }))
 
     expect(screen.getByRole('dialog', { name: 'Perguntar' })).toBeInTheDocument()
     expect(await screen.findByText('IA pode cometer erros')).toBeInTheDocument()
@@ -46,5 +46,18 @@ describe('AssistantEntry', () => {
       screen.getByText('MyCogniAI não substitui um aconselhamento de saúde profissional.'),
     ).toBeInTheDocument()
     expect(actions.open).toHaveBeenCalledWith({ mode: 'personal' })
+  })
+
+  it('names the launcher in English', () => {
+    renderWithIntl(
+      <AssistantEntry
+        pathname="/entries"
+        actions={fakeActions({ overview: overview(true), contacts: [] })}
+        timeZone="Europe/London"
+      />,
+      { locale: 'en-US' },
+    )
+
+    expect(screen.getByRole('button', { name: 'Chat with Cogni' })).toHaveTextContent('Chat')
   })
 })

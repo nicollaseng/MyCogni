@@ -37,7 +37,7 @@ describe('PageAssistant', () => {
   it('opens the chat about this page with three suggestions', async () => {
     const { user } = renderPage()
 
-    await user.click(screen.getByRole('button', { name: 'Perguntar' }))
+    await user.click(screen.getByRole('button', { name: 'Conversar com o Cogni' }))
 
     const chat = screen.getByRole('dialog', { name: 'Perguntar' })
     expect(await within(chat).findByText('Sobre esta página')).toBeVisible()
@@ -57,7 +57,7 @@ describe('PageAssistant', () => {
   it('saves what is being written before asking, and asks about this page', async () => {
     const { actions, steps, user } = renderPage()
 
-    await user.click(screen.getByRole('button', { name: 'Perguntar' }))
+    await user.click(screen.getByRole('button', { name: 'Conversar com o Cogni' }))
     await user.click(await screen.findByRole('button', { name: 'Resuma esta página' }))
 
     expect(await screen.findByText('Sua página fala do parque.')).toBeVisible()
@@ -68,12 +68,13 @@ describe('PageAssistant', () => {
       'Resuma esta página',
     )
     expect(screen.getByText('Sobre esta página')).toBeVisible()
+    expect(screen.getByRole('dialog', { name: 'Resuma esta página' })).toBeInTheDocument()
   })
 
   it('suggests reading MyBook when asking for permission on a page', async () => {
     const { user } = renderPage(false)
 
-    await user.click(screen.getByRole('button', { name: 'Perguntar' }))
+    await user.click(screen.getByRole('button', { name: 'Conversar com o Cogni' }))
 
     expect(await screen.findByRole('checkbox', { name: 'Ler também o MyBook' })).toBeChecked()
   })

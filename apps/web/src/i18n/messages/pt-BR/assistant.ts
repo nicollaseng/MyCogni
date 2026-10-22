@@ -1,23 +1,36 @@
 export const assistant = {
-  launcher: 'Perguntar',
+  launcher: 'Conversar',
+  launcherLabel: 'Conversar com o Cogni',
   title: 'Perguntar',
-  professionalTitle: 'Perguntar sobre {name}',
   professionalAction: 'Perguntar sobre este paciente',
+  professionalContext: 'Sobre {name}',
   close: 'Fechar',
   disclaimer: {
     mistakes: 'IA pode cometer erros',
     personal: 'MyCogniAI não substitui um aconselhamento de saúde profissional.',
     professional: 'MyCogniAI não substitui o seu julgamento clínico.',
   },
-  toolbar: {
-    new: 'Nova conversa',
+  header: {
     history: 'Conversas',
-    historyEmpty: 'Nenhuma conversa ainda',
+    new: 'Nova conversa',
+  },
+  history: {
+    title: 'Conversas',
+    back: 'Voltar',
+    empty: 'Suas conversas aparecem aqui.',
     untitled: 'Conversa sem texto',
+    more: 'Mais opções para {title}',
     delete: 'Apagar',
-    deleteQuestion: 'Apagar esta conversa? Não dá para desfazer.',
-    deleteConfirm: 'Apagar conversa',
+    deleteTitle: 'Apagar esta conversa?',
+    deleteBody: '“{title}” sai do histórico. Não dá para desfazer.',
+    deleteConfirm: 'Apagar',
     deleteCancel: 'Cancelar',
+    groups: {
+      today: 'Hoje',
+      yesterday: 'Ontem',
+      week: 'Esta semana',
+      older: 'Mais antigas',
+    },
   },
   empty: {
     personal:
