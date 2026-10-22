@@ -1,4 +1,9 @@
-import { professionalDocumentLimits, professionalStatuses } from '@mycogni/domain'
+import {
+  professionalCouncils,
+  professionalDocumentLimits,
+  professionalStatuses,
+  reviewDecisions,
+} from '@mycogni/domain'
 import { z } from 'zod'
 import { professionalDocumentSchema, professionalKindSchema } from './professionals.ts'
 
@@ -15,18 +20,40 @@ export const professionalForReviewSchema = z.object({
   kind: professionalKindSchema,
   fullName: z.string(),
   registration: z.string().nullable(),
+  council: z.enum(professionalCouncils).nullable(),
+  registrationNeedsReview: z.boolean(),
   email: z.string().nullable(),
   status: z.enum(professionalStatuses),
   reviewNote: z.string().nullable(),
   createdAt: timestamp,
   verifiedAt: timestamp.nullable(),
   reviewedAt: timestamp.nullable(),
+  hasPhoto: z.boolean(),
+  activeLinks: z.int().min(0),
+  pendingInvitations: z.int().min(0),
   document: professionalDocumentSchema.nullable(),
 })
 
 export type ProfessionalForReview = z.infer<typeof professionalForReviewSchema>
 
 export const professionalForReviewListSchema = z.array(professionalForReviewSchema)
+
+export const professionalReviewEntrySchema = z.object({
+  id: z.uuid(),
+  decision: z.enum(reviewDecisions),
+  note: z.string().nullable(),
+  adminEmail: z.string().nullable(),
+  createdAt: timestamp,
+})
+
+export type ProfessionalReviewEntry = z.infer<typeof professionalReviewEntrySchema>
+
+export const professionalReviewDetailSchema = professionalForReviewSchema.extend({
+  photoUrl: z.url().nullable(),
+  history: z.array(professionalReviewEntrySchema),
+})
+
+export type ProfessionalReviewDetail = z.infer<typeof professionalReviewDetailSchema>
 
 const reviewNoteSchema = z.string().trim().max(professionalDocumentLimits.reviewNote)
 
