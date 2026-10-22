@@ -1,22 +1,6 @@
-export {
-  accountTypeChoiceMinutes,
-  accountTypes,
-  isBrandNewAccount,
-  signUpAccountType,
-  type AccountFootprint,
-  type AccountType,
-} from './account/account-types.ts'
+export * from './account/account-types.ts'
 export { answerValues, isAnswer, type Answer } from './assessments/frequency.ts'
-export {
-  instrumentIds,
-  screeningDomains,
-  severities,
-  type Instrument,
-  type InstrumentId,
-  type ScreeningDomain,
-  type Severity,
-  type SeverityBand,
-} from './assessments/instrument.ts'
+export * from './assessments/instrument.ts'
 export { gad2 } from './assessments/gad2.ts'
 export { gad7 } from './assessments/gad7.ts'
 export { latestPerDomain, type DomainRecord, type LatestPerDomain } from './assessments/latest.ts'
@@ -117,6 +101,7 @@ export {
   type InvitationStatus,
 } from './care/invitations.ts'
 export { notificationKinds, type NotificationKind } from './care/notifications.ts'
+export * from './questionnaires/index.ts'
 export {
   professionalKinds,
   professionalStatuses,

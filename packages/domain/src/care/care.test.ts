@@ -82,6 +82,8 @@ describe('notifications', () => {
       'reminder',
       'export_ready',
       'export_failed',
+      'questionnaire_assigned',
+      'questionnaire_completed',
     ])
   })
 })
