@@ -220,7 +220,7 @@ test('a new professional signs in from the professional page and is asked for th
   await signIn(page, email)
 
   await expect(page).toHaveURL('/pro/join')
-  await page.getByText('Psicologia', { exact: true }).click()
+  await page.getByLabel('Profissão').selectOption({ label: 'Psicologia' })
   await page.getByLabel('Nome completo').fill(uniqueName('Marta Ribeiro'))
   await page.getByRole('button', { name: 'Enviar para verificação' }).click()
   await expect(page.getByText('Escolha o estado do seu conselho.')).toBeVisible()

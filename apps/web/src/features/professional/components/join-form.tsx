@@ -10,14 +10,18 @@ import Link from 'next/link'
 import { useTranslations } from 'next-intl'
 import { useId, useState, type SubmitEvent } from 'react'
 import { ActionError } from '@/shared/components/action-error'
+import { Chevron } from '@/shared/components/disclosure'
 import { useSubmit } from '@/shared/hooks/use-submit'
-import { cn } from '@/shared/lib/utils'
 import { Button } from '@/shared/ui/button'
 import { TextField } from '@/shared/ui/text-field'
 import { emptyJoinValues, joinIssues, type Join, type JoinIssue, type JoinValues } from '../join'
 import { RegistrationFields } from './registration-fields'
 
 const documentLink = 'underline decoration-1 underline-offset-4'
+
+function kindOf(value: string): ProfessionalKind | null {
+  return professionalKinds.find((kind) => kind === value) ?? null
+}
 
 function FieldError({ id, message }: { id: string; message: string | undefined }) {
   if (message === undefined) {
@@ -30,40 +34,9 @@ function FieldError({ id, message }: { id: string; message: string | undefined }
   )
 }
 
-function KindOption({
-  kind,
-  checked,
-  onChoose,
-}: {
-  kind: ProfessionalKind
-  checked: boolean
-  onChoose: (kind: ProfessionalKind) => void
-}) {
-  const t = useTranslations('common.professionalKinds')
-  return (
-    <label
-      className={cn(
-        'flex cursor-pointer items-center justify-center rounded-[6px] border px-4 py-2.5 text-[15px] transition-colors has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-focus-visible:outline-foreground',
-        checked ? 'border-primary bg-primary text-primary-foreground' : 'border-rule hover:bg-sage',
-      )}
-    >
-      <input
-        type="radio"
-        name="kind"
-        value={kind}
-        checked={checked}
-        onChange={() => {
-          onChoose(kind)
-        }}
-        className="sr-only"
-      />
-      {t(kind)}
-    </label>
-  )
-}
-
 export function JoinForm({ join }: { join: Join }) {
   const t = useTranslations('professional.form')
+  const kinds = useTranslations('common.professionalKinds')
   const ids = useId()
   const [values, setValues] = useState<JoinValues>(emptyJoinValues)
   const [attempted, setAttempted] = useState(false)
@@ -89,25 +62,37 @@ export function JoinForm({ join }: { join: Join }) {
 
   return (
     <form noValidate onSubmit={handleSubmit} className="space-y-8">
-      <fieldset
-        className="space-y-3"
-        aria-describedby={issues.kind === undefined ? undefined : `${ids}-kind`}
-      >
-        <legend className="mb-3 text-sm font-medium">{t('kind')}</legend>
-        <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
-          {professionalKinds.map((kind) => (
-            <KindOption
-              key={kind}
-              kind={kind}
-              checked={values.kind === kind}
-              onChoose={(chosen) => {
-                update({ kind: chosen })
-              }}
-            />
-          ))}
+      <div className="space-y-2">
+        <label htmlFor={`${ids}-kind-field`} className="block text-sm font-medium">
+          {t('kind')}
+        </label>
+        <div className="relative">
+          <select
+            id={`${ids}-kind-field`}
+            value={values.kind ?? ''}
+            aria-invalid={issues.kind === undefined ? undefined : true}
+            aria-describedby={issues.kind === undefined ? undefined : `${ids}-kind`}
+            onChange={(event) => {
+              update({ kind: kindOf(event.currentTarget.value) })
+            }}
+            className="h-12 w-full appearance-none truncate rounded-md border border-rule bg-background pr-9 pl-4 text-base transition-colors outline-none focus:border-foreground aria-invalid:border-danger"
+          >
+            <option value="" disabled>
+              {t('kindPlaceholder')}
+            </option>
+            {professionalKinds.map((kind) => (
+              <option key={kind} value={kind}>
+                {kinds(kind)}
+              </option>
+            ))}
+          </select>
+          <Chevron
+            open={false}
+            className="pointer-events-none absolute top-1/2 right-3.5 -translate-y-1/2 text-muted-foreground"
+          />
         </div>
         <FieldError id={`${ids}-kind`} message={message(issues.kind)} />
-      </fieldset>
+      </div>
 
       <TextField
         label={t('fullName')}

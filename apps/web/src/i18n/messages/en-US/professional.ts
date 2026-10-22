@@ -182,6 +182,7 @@ export const professional: ProfessionalMessages = {
     title: 'Your professional details',
     lead: 'Once you send them, our team checks your license before enabling invitations.',
     kind: 'Profession',
+    kindPlaceholder: 'Choose your profession',
     fullName: 'Full name',
     fullNameHint: 'Use the name on your document. This is how your patients will see you.',
     councils: { crp: 'CRP registration (Brazil)', crm: 'CRM registration (Brazil)' },

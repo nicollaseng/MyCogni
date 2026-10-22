@@ -183,6 +183,7 @@ export const professional: ProfessionalMessages = {
     title: 'O seu registo profissional',
     lead: 'Depois de enviar, a nossa equipa confirma a sua inscrição antes de disponibilizar os convites.',
     kind: 'Profissão',
+    kindPlaceholder: 'Escolha a sua profissão',
     fullName: 'Nome completo',
     fullNameHint:
       'Use o nome que aparece no seu comprovativo. É este o nome que os seus pacientes vão ver.',
