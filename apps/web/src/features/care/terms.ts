@@ -13,5 +13,5 @@ export function termsNoticeHref(links: readonly CareLink[]): TermsHref | null {
   if (only === undefined) {
     return null
   }
-  return outdated.length === 1 ? termsReviewHref(only.id) : '/me#professionals'
+  return outdated.length === 1 ? termsReviewHref(only.id) : '/me/professionals'
 }

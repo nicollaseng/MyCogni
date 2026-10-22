@@ -276,7 +276,7 @@ test('plays the background sound on arrival in Zen and follows the sound chosen 
   await expect(headerSound(page, 'Mar')).toHaveAttribute('aria-pressed', 'true')
   await expect(headerSound(page, 'Mar').locator('svg[data-sound="sea"]')).toBeVisible()
 
-  await page.goto('/me')
+  await page.goto('/me/sound')
   const settings = page.getByRole('region', { name: 'Som e voz' })
   await settings.getByLabel('Qual som').selectOption('rain')
   await settings.getByText('Em todo o app').click()
@@ -289,7 +289,7 @@ test('plays the background sound on arrival in Zen and follows the sound chosen 
   await expect(page.getByRole('button', { name: 'Pausar o som de fundo: Chuva' })).toBeVisible()
   await expect(headerSound(page, 'Chuva')).toHaveCount(0)
 
-  await page.goto('/me')
+  await page.goto('/me/sound')
   await page.getByRole('region', { name: 'Som e voz' }).getByText('Desligado').click()
   await mainNavigation(page).getByRole('link', { name: 'Zen' }).click()
   await expect(page.getByRole('heading', { level: 1, name: 'Zen Space' })).toBeVisible()
@@ -320,7 +320,7 @@ test('remembers a pause across reloads until the person plays again', async ({ p
 
 test('chooses, previews and keeps each of the new background sounds', async ({ page }) => {
   await signInAsReadyPerson(page)
-  await page.goto('/me')
+  await page.goto('/me/sound')
   await page.waitForLoadState('networkidle')
   const settings = page.getByRole('region', { name: 'Som e voz' })
   const sound = settings.getByLabel('Qual som')
@@ -352,7 +352,7 @@ test('chooses, previews and keeps each of the new background sounds', async ({ p
     await expect(
       page.getByRole('button', { name: new RegExp(`o som de fundo: ${name}$`) }),
     ).toBeVisible()
-    await page.goto('/me')
+    await page.goto('/me/sound')
     await page.waitForLoadState('networkidle')
   }
 })

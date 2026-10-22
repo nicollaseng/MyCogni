@@ -75,7 +75,7 @@ test('creates a new password with the link sent by email', async ({ page }) => {
   await page.getByRole('button', { name: 'Salvar nova senha' }).click()
   await expect(page).toHaveURL('/today')
 
-  await page.goto('/me')
+  await page.goto('/me/account')
   await page.getByRole('button', { name: 'Sair' }).click()
   await expect(page).toHaveURL('/')
   await signIn(page, email, password)

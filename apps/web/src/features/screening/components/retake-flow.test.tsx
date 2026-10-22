@@ -70,7 +70,10 @@ describe('RetakeFlow', () => {
     expect(screen.getByRole('region', { name: 'Ansiedade' })).toHaveTextContent(
       'Igual à última vez',
     )
-    expect(screen.getByRole('link', { name: 'Voltar ao perfil' })).toHaveAttribute('href', '/me')
+    expect(screen.getByRole('link', { name: 'Voltar ao perfil' })).toHaveAttribute(
+      'href',
+      '/me/wellbeing',
+    )
     expect(screen.getByRole('link', { name: 'Ver sugestões no Zen Space' })).toHaveAttribute(
       'href',
       '/zen',
@@ -133,6 +136,9 @@ describe('RetakeFlow', () => {
       'Mais alto do que da última vez',
     )
     expect(screen.getByRole('link', { name: '112' })).toHaveAttribute('href', 'tel:112')
-    expect(screen.getByRole('link', { name: 'Voltar ao perfil' })).toHaveAttribute('href', '/me')
+    expect(screen.getByRole('link', { name: 'Voltar ao perfil' })).toHaveAttribute(
+      'href',
+      '/me/wellbeing',
+    )
   })
 })

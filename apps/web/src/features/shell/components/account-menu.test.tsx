@@ -72,9 +72,9 @@ describe('AccountMenu', () => {
     )
     expect(screen.getByRole('menuitem', { name: 'Profissionais' })).toHaveAttribute(
       'href',
-      '/me#professionals',
+      '/me/professionals',
     )
-    expect(screen.getByRole('menuitem', { name: 'Suporte' })).toHaveAttribute('href', '/me#support')
+    expect(screen.getByRole('menuitem', { name: 'Suporte' })).toHaveAttribute('href', '/me/support')
     expect(screen.getByRole('menuitem', { name: 'Perfil e configurações' })).toHaveFocus()
   })
 

@@ -29,11 +29,13 @@ async function signInAsReadyPerson(page: Page, secret = password): Promise<strin
 test('shows the account, the questionnaires and the privacy choices', async ({ page }) => {
   const email = await signInAsReadyPerson(page)
 
-  await expect(page.getByText(email).first()).toBeVisible()
+  await expect(page.getByText(email).filter({ visible: true }).first()).toBeVisible()
+  await page.goto('/me/wellbeing')
   const questionnaires = page.getByRole('region', { name: 'Ânimo e ansiedade' })
   await expect(questionnaires).toContainText('DesânimoBaixo')
   await expect(questionnaires).not.toContainText('PHQ')
-  const privacy = page.getByRole('region', { name: 'Privacidade' })
+  await page.goto('/me/privacy')
+  const privacy = page.getByRole('main')
   await expect(privacy).toContainText('Uso dos seus dados de saúde')
   await expect(privacy).toContainText('Resumos escritos por IA')
   await expect(privacy.getByRole('link', { name: 'Política de privacidade' })).toHaveAttribute(
@@ -44,16 +46,20 @@ test('shows the account, the questionnaires and the privacy choices', async ({ p
 
 test('renames the person', async ({ page }) => {
   await signInAsReadyPerson(page)
+  await page.goto('/me/profile')
 
   await page.getByRole('button', { name: 'Alterar nome' }).click()
   await page.getByLabel('Novo nome').fill('Marina Alves')
   await page.getByRole('button', { name: 'Salvar nome' }).click()
 
-  await expect(page.getByRole('heading', { level: 1, name: 'Marina Alves' })).toBeVisible()
+  await expect(
+    page.getByRole('main').getByText('Marina Alves', { exact: true }).first(),
+  ).toBeVisible()
 })
 
 test('changes the password after checking the current one', async ({ page }) => {
   const email = await signInAsReadyPerson(page)
+  await page.goto('/me/account')
 
   await page.getByRole('button', { name: 'Alterar senha' }).click()
   await page.getByLabel('Senha atual').fill('nao-e-essa-1')
@@ -74,34 +80,48 @@ test('changes the password after checking the current one', async ({ page }) => 
   await expect(page).toHaveURL('/today')
 })
 
-test('adds a photo through the editor, changes it and removes it', async ({ page }) => {
+test('adds a photo through the viewer, edits it and removes it', async ({ page }) => {
   await signInAsReadyPerson(page)
+  await page.goto('/me/profile')
 
-  await page.getByLabel('Adicionar foto').setInputFiles(photo)
+  const avatar = page.getByRole('button', { name: 'Foto do perfil' })
+  await avatar.click()
+  const viewer = page.getByRole('dialog', { name: 'Foto do perfil' })
+  await viewer.getByLabel('Adicionar foto').setInputFiles(photo)
   const editor = page.getByRole('dialog', { name: 'Ajustar foto' })
   await expect(editor).toBeVisible()
   await editor.getByLabel('Tamanho').fill('2')
   await editor.getByRole('button', { name: 'Girar para a direita' }).click()
   await editor.getByRole('button', { name: 'Usar foto' }).click()
 
-  const avatar = page.getByRole('img', { name: 'Sua foto' })
-  await expect(avatar).toBeVisible()
-  await expect(page.getByRole('main').getByRole('status')).toHaveText('Foto atualizada.')
-  const first = await avatar.getAttribute('src')
+  const shown = viewer.getByRole('img', { name: 'Sua foto' })
+  await expect(shown).toBeVisible()
+  await expect(viewer).toContainText('Foto atualizada.')
+  const first = await shown.getAttribute('src')
 
-  await page.getByLabel('Trocar foto').setInputFiles(photo)
+  await viewer.getByRole('button', { name: 'Editar' }).click()
+  await expect(editor.getByText('Escolher outra foto')).toBeVisible()
   await editor.getByLabel('Ângulo').fill('-10')
   await editor.getByRole('button', { name: 'Usar foto' }).click()
-  await expect(avatar).not.toHaveAttribute('src', first ?? '')
+  await expect(shown).not.toHaveAttribute('src', first ?? '')
 
   await page.reload()
-  await expect(page.getByRole('img', { name: 'Sua foto' })).toBeVisible()
-  await page.getByRole('button', { name: 'Remover foto' }).click()
-  await expect(page.getByRole('img', { name: 'Sua foto' })).toHaveCount(0)
+  await expect(avatar.locator('img')).toBeVisible()
+  await avatar.click()
+  await viewer.getByRole('button', { name: 'Remover' }).click()
+  const confirm = page.getByRole('alertdialog', { name: 'Remover a foto do perfil?' })
+  await confirm.getByRole('button', { name: 'Remover' }).click()
+  await expect(confirm).toHaveCount(0)
+  await expect(viewer.getByRole('img')).toHaveCount(0)
+  await expect(viewer.getByLabel('Adicionar foto')).toBeAttached()
+  await page.keyboard.press('Escape')
+  await expect(viewer).toHaveCount(0)
+  await expect(avatar.locator('img')).toHaveCount(0)
 })
 
 test('downloads everything the person recorded', async ({ page }) => {
   const email = await signInAsReadyPerson(page)
+  await page.goto('/me/privacy')
 
   const [download] = await Promise.all([
     page.waitForEvent('download'),
@@ -121,6 +141,7 @@ test('downloads everything the person recorded', async ({ page }) => {
 
 test('deletes the account for good', async ({ page }) => {
   const email = await signInAsReadyPerson(page)
+  await page.goto('/me/account')
 
   await page.getByRole('button', { name: 'Excluir minha conta' }).click()
   const forever = page.getByRole('button', { name: 'Excluir para sempre' })
@@ -138,6 +159,7 @@ test('deletes the account for good', async ({ page }) => {
 
 test('answers the questionnaires again and keeps the history', async ({ page }) => {
   await signInAsReadyPerson(page)
+  await page.goto('/me/wellbeing')
 
   await page.getByRole('link', { name: 'Refazer os questionários' }).click()
   await expect(page).toHaveURL('/questionnaires')
@@ -158,6 +180,7 @@ test('answers the questionnaires again and keeps the history', async ({ page }) 
     'Mais alto que da última vez',
   )
   await page.getByRole('link', { name: 'Voltar ao perfil' }).click()
+  await expect(page).toHaveURL('/me/wellbeing')
   const questionnaires = page.getByRole('region', { name: 'Ânimo e ansiedade' })
   await expect(questionnaires).toContainText('DesânimoLeveMais alto que da última vez')
   await expect(questionnaires).not.toContainText(/de 27|PHQ/)
@@ -165,10 +188,11 @@ test('answers the questionnaires again and keeps the history', async ({ page }) 
 
 test('switches the language from the account page', async ({ page }) => {
   await signInAsReadyPerson(page)
+  await page.goto('/me/profile')
 
   await page.getByRole('combobox', { name: 'Idioma' }).selectOption('en-US')
 
-  await expect(page.getByRole('region', { name: 'Mood and anxiety' })).toBeVisible()
+  await expect(page.getByRole('heading', { level: 1, name: 'Profile' })).toBeVisible()
   await expect(page.getByRole('combobox', { name: 'Language' })).toHaveValue('en-US')
   await page.reload()
   await expect(page.getByRole('region', { name: 'Preferences' })).toBeVisible()
@@ -176,7 +200,8 @@ test('switches the language from the account page', async ({ page }) => {
 
 test('turns the AI summaries on and off', async ({ page }) => {
   await signInAsReadyPerson(page)
-  const privacy = page.getByRole('region', { name: 'Privacidade' })
+  await page.goto('/me/privacy')
+  const privacy = page.getByRole('main')
   const toggle = privacy.getByRole('switch', { name: 'Resumos escritos por IA' })
 
   await expect(toggle).toHaveAttribute('aria-checked', 'false')

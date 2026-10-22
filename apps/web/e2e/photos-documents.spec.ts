@@ -118,7 +118,9 @@ test('a professional sends the document, the team opens and approves it, and a l
   await page.goto('/pro/settings')
   const settings = page.getByRole('main')
   await expect(settings.getByText('Aprovado')).toBeVisible()
-  await expect(settings.getByRole('img', { name: `Foto de ${name}` })).toBeVisible()
+  await expect(
+    settings.getByRole('button', { name: 'Foto do perfil' }).locator('img'),
+  ).toBeVisible()
 
   const { code } = await inviteByLink(email, password)
   const visitor = await browser.newContext({ storageState: signedOut, locale: 'pt-BR' })
@@ -135,7 +137,7 @@ test('a professional sends the document, the team opens and approves it, and a l
   await page.goto('/pro/patients')
   await expect(page.locator('tbody tr').first().locator('img')).toBeVisible()
   const patient = await signedInPage(browser, patientEmail)
-  await patient.goto('/me')
+  await patient.goto('/me/professionals')
   const professionals = patient.getByRole('region', { name: 'Profissionais' })
   await expect(professionals.getByRole('img', { name: `Foto de ${name}` })).toBeVisible()
   await patient.context().close()

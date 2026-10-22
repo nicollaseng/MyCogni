@@ -1,7 +1,7 @@
 'use client'
 
 import { useFormatter, useTranslations } from 'next-intl'
-import { useId, useState } from 'react'
+import { useId, useState, type ChangeEvent } from 'react'
 import Cropper, { type Area, type Point } from 'react-easy-crop'
 import { Sheet } from '@/shared/components/sheet'
 import { Button } from '@/shared/ui/button'
@@ -14,6 +14,7 @@ interface PhotoEditorProps {
   render: RenderPhoto
   onConfirm: (photo: File) => void
   onClose: () => void
+  onChooseAnother?: (event: ChangeEvent<HTMLInputElement>) => void
 }
 
 const cropAreaStyle = {
@@ -25,7 +26,14 @@ const sliderRow = 'grid grid-cols-[5.5rem_minmax(0,1fr)_3rem] items-center gap-3
 
 const turnButton = 'h-9 px-3.5 text-sm'
 
-export function PhotoEditor({ source, preview, render, onConfirm, onClose }: PhotoEditorProps) {
+export function PhotoEditor({
+  source,
+  preview,
+  render,
+  onConfirm,
+  onClose,
+  onChooseAnother,
+}: PhotoEditorProps) {
   const t = useTranslations('account.photoEditor')
   const format = useFormatter()
   const ids = useId()
@@ -135,6 +143,17 @@ export function PhotoEditor({ source, preview, render, onConfirm, onClose }: Pho
               >
                 {t('rotateRight')}
               </Button>
+              {onChooseAnother !== undefined && (
+                <label className="inline-flex h-9 cursor-pointer items-center rounded-md px-3.5 text-sm underline decoration-1 underline-offset-4">
+                  <input
+                    type="file"
+                    accept="image/jpeg,image/png,image/webp"
+                    className="sr-only"
+                    onChange={onChooseAnother}
+                  />
+                  {t('chooseAnother')}
+                </label>
+              )}
             </div>
             {state === 'failed' && (
               <p role="alert" className="text-sm text-danger">

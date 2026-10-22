@@ -24,7 +24,7 @@ export default async function SharingTermsReviewPage({
     notFound()
   }
   if (!link.termsOutdated) {
-    redirect('/me#professionals')
+    redirect('/me/professionals')
   }
   const t = await getTranslations('care.terms')
   const { name } = link.professional

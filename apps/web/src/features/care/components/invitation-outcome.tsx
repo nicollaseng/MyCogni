@@ -23,7 +23,7 @@ export function InvitationOutcome({ status, name, date, timeZone }: InvitationOu
       </p>
       <p className="flex flex-wrap gap-x-6 gap-y-2">
         {status === 'accepted' && (
-          <Link href="/me#professionals" className={footLink}>
+          <Link href="/me/professionals" className={footLink}>
             {t('seeProfessionals')}
           </Link>
         )}

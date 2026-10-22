@@ -62,7 +62,7 @@ test('a patient opens a ticket with a photo and follows it until the team closes
 
   await page.getByRole('button', { name: 'Sua conta' }).click()
   await page.getByRole('menuitem', { name: 'Suporte' }).click()
-  await expect(page).toHaveURL('/me#support')
+  await expect(page).toHaveURL('/me/support')
   await page.getByRole('link', { name: 'Novo chamado' }).click()
   await expect(page.getByRole('heading', { level: 1, name: 'Falar com o suporte' })).toBeVisible()
 

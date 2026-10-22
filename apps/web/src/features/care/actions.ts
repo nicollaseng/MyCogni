@@ -91,7 +91,7 @@ export async function acceptInvite(
   }
   await forgetContinuePath()
   refreshApp()
-  redirect('/me#professionals')
+  redirect('/me/professionals')
 }
 
 export async function declineInvite(id: string): Promise<ActionResult<null>> {
@@ -121,7 +121,7 @@ export async function endReviewedLink(id: string): Promise<ActionResult<null>> {
     return ended
   }
   refreshApp()
-  redirect('/me#professionals')
+  redirect('/me/professionals')
 }
 
 export async function confirmTerms(
@@ -138,7 +138,7 @@ export async function confirmTerms(
     return failure(confirmed.status === 404 ? t('linkEnded') : t('termsError'))
   }
   refreshApp()
-  redirect('/me#professionals')
+  redirect('/me/professionals')
 }
 
 export async function readNotifications(ids: string[]): Promise<ActionResult<null>> {
