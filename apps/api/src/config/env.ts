@@ -47,6 +47,7 @@ const envSchema = z.object({
     .regex(/^(mailto:|https:)/)
     .default('mailto:support@mycogniapp.com'),
   REMINDER_EVERY_MS: z.coerce.number().int().min(1_000).default(300_000),
+  QUESTIONNAIRE_SWEEP_EVERY_MS: z.coerce.number().int().min(1_000).default(900_000),
 })
 
 export interface AppConfig {
@@ -69,6 +70,7 @@ export interface AppConfig {
   zeroRetentionTranscription: boolean
   push: PushConfig | null
   reminderEveryMs: number
+  questionnaireSweepEveryMs: number
 }
 
 export interface PushConfig {
@@ -125,6 +127,7 @@ export function loadConfig(source: Record<string, string | undefined>): AppConfi
             subject: env.VAPID_SUBJECT,
           },
     reminderEveryMs: env.REMINDER_EVERY_MS,
+    questionnaireSweepEveryMs: env.QUESTIONNAIRE_SWEEP_EVERY_MS,
   }
 }
 

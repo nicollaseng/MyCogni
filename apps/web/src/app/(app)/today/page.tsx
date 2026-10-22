@@ -3,6 +3,7 @@ import type { Metadata } from 'next'
 import { getLocale, getTranslations } from 'next-intl/server'
 import { TermsNotice } from '@/features/care/components/terms-notice'
 import { TodayActions } from '@/features/check-in/components/today-actions'
+import { AssignedCard } from '@/features/questionnaires/components/assigned-card'
 import { ReadingTeaser } from '@/features/insights/components/reading-teaser'
 import { isRecentReading } from '@/features/insights/readings'
 import { MoodMap } from '@/features/mood/components/mood-map'
@@ -12,6 +13,7 @@ import { ScreeningSchedule } from '@/features/screening/components/screening-sch
 import { latestPlainResults } from '@/features/screening/latest'
 import { PageTitle } from '@/shared/components/page-title'
 import { fetchCareLinks } from '@/shared/lib/api/care'
+import { fetchMyQuestionnaires } from '@/shared/lib/api/questionnaires'
 import { fetchAssessments, fetchCheckIns, fetchInsights } from '@/shared/lib/api/resources'
 import { requireOnboardedProfile } from '@/shared/lib/auth/session'
 import { guarded } from '@/shared/lib/settled'
@@ -27,17 +29,19 @@ const dayInMs = 24 * 60 * 60 * 1000
 
 export default async function TodayPage() {
   const now = new Date()
-  const [{ timezone }, [t, locale, checkIns, assessments, readings, careLinks]] = await guarded(
-    requireOnboardedProfile(),
-    Promise.all([
-      getTranslations('today'),
-      getLocale(),
-      fetchCheckIns({ since: new Date(now.getTime() - (windowDays + 1) * dayInMs), limit: 200 }),
-      fetchAssessments(),
-      fetchInsights(),
-      fetchCareLinks(),
-    ]),
-  )
+  const [{ timezone }, [t, locale, checkIns, assessments, readings, careLinks, questionnaires]] =
+    await guarded(
+      requireOnboardedProfile(),
+      Promise.all([
+        getTranslations('today'),
+        getLocale(),
+        fetchCheckIns({ since: new Date(now.getTime() - (windowDays + 1) * dayInMs), limit: 200 }),
+        fetchAssessments(),
+        fetchInsights(),
+        fetchCareLinks(),
+        fetchMyQuestionnaires(),
+      ]),
+    )
   const days = moodDays(
     checkIns.map((checkIn) => ({
       moodLevel: checkIn.moodLevel,
@@ -53,6 +57,8 @@ export default async function TodayPage() {
       <PageTitle kicker={formatDayTitle(now, timezone, locale)} title={t('title')} />
 
       <TermsNotice links={careLinks} />
+
+      <AssignedCard open={questionnaires.open} />
 
       <section className="flex items-center gap-6 sm:gap-10">
         <MoodMap valence={0.5} rings={9} className="size-32 shrink-0 sm:size-40" />

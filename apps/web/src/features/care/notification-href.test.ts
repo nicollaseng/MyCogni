@@ -13,6 +13,7 @@ function notification(overrides: Partial<Notification>): Notification {
     createdAt: '2026-10-14T15:00:00.000Z',
     readAt: null,
     insightId: null,
+    questionnaire: null,
     supportTicket: null,
     invitation: null,
     ...overrides,
@@ -20,6 +21,24 @@ function notification(overrides: Partial<Notification>): Notification {
 }
 
 describe('notificationHref', () => {
+  it('opens the questionnaire a professional released, or its result for the professional', () => {
+    const questionnaire = {
+      assignmentId: '7a1c2b3d-0000-4000-8000-000000000040',
+      patientId: '7a1c2b3d-0000-4000-8000-000000000050',
+      patientName: 'Ana Lima',
+    }
+    expect(notificationHref(notification({ kind: 'questionnaire_assigned', questionnaire }))).toBe(
+      `/questionnaires/${questionnaire.assignmentId}`,
+    )
+    expect(notificationHref(notification({ kind: 'questionnaire_completed', questionnaire }))).toBe(
+      `/pro/patients/${questionnaire.patientId}/questionnaires/${questionnaire.assignmentId}`,
+    )
+    expect(notificationHref(notification({ kind: 'questionnaire_assigned' }))).toBe(
+      '/notifications',
+    )
+    expect(notificationHref(notification({ kind: 'questionnaire_completed' }))).toBe('/pro')
+  })
+
   it('opens the invitation an invitation notification is about', () => {
     expect(
       notificationHref(

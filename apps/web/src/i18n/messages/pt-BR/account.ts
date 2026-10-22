@@ -11,6 +11,7 @@ export const account = {
     back: 'Configurações',
     profile: 'Perfil',
     wellbeing: 'Ânimo e ansiedade',
+    questionnaires: 'Questionários',
     professionals: 'Profissionais',
     memories: 'Memórias',
     reminders: 'Lembretes',

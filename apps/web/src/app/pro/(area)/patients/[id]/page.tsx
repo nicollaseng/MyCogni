@@ -6,12 +6,14 @@ import { PatientAssistant } from '@/features/assistant/components/patient-assist
 import { requireVerifiedProfessional } from '@/features/professional/access'
 import { acknowledgeAlert, resolveAlert } from '@/features/professional/alert-actions'
 import { pendingAlerts } from '@/features/professional/alert-table'
+import { AssignmentsTable } from '@/features/professional/components/assignments-table'
 import { CheckInTable } from '@/features/professional/components/check-in-table'
 import { MoodChart } from '@/features/professional/components/mood-chart'
 import { PatientAlerts } from '@/features/professional/components/patient-alerts'
 import { PatientHeader } from '@/features/professional/components/patient-header'
 import { PatientKpis } from '@/features/professional/components/patient-kpis'
 import { QuestionnaireTable } from '@/features/professional/components/questionnaire-table'
+import { ReleaseDialog } from '@/features/professional/components/release-dialog'
 import { ReadingsSection } from '@/features/professional/components/readings-section'
 import {
   quietButton,
@@ -19,6 +21,7 @@ import {
   WorkspaceSection,
 } from '@/features/professional/components/workspace'
 import { moodDays } from '@/features/professional/mood-days'
+import { cancelForPatient, releaseToPatient } from '@/features/professional/questionnaire-actions'
 import { ReportExport } from '@/features/reports/components/report-export'
 import {
   fetchPatient,
@@ -27,6 +30,7 @@ import {
   fetchPatientInsights,
 } from '@/shared/lib/api/care'
 import { fetchAlerts } from '@/shared/lib/api/alerts'
+import { fetchPatientAssignments, fetchQuestionnaireCatalog } from '@/shared/lib/api/questionnaires'
 import { ApiError } from '@/shared/lib/api/client'
 import { requireProfile } from '@/shared/lib/auth/session'
 import { settledValue } from '@/shared/lib/settled'
@@ -53,6 +57,9 @@ async function patientFileOf(params: PageProps<'/pro/patients/[id]'>['params'], 
     fetchAlerts(id),
     getTranslations('professional.patient'),
     getTranslations('professional.patients'),
+    fetchPatientAssignments(id),
+    fetchQuestionnaireCatalog(id),
+    getTranslations('assignments.section'),
   ])
 }
 
@@ -66,7 +73,18 @@ export default async function PatientPage({ params }: PageProps<'/pro/patients/[
   if (file.status === 'rejected' && isMissing(file.reason)) {
     notFound()
   }
-  const [patient, checkIns, assessments, readings, alerts, t, patients] = settledValue(file)
+  const [
+    patient,
+    checkIns,
+    assessments,
+    readings,
+    alerts,
+    t,
+    patients,
+    assignments,
+    catalog,
+    questionnaires,
+  ] = settledValue(file)
   if (patient === null) {
     notFound()
   }
@@ -116,6 +134,21 @@ export default async function PatientPage({ params }: PageProps<'/pro/patients/[
           checkIns={checkIns}
           timeZone={timezone}
           days={windowDays}
+        />
+      </WorkspaceSection>
+      <WorkspaceSection
+        title={questionnaires('title')}
+        description={questionnaires('description')}
+        action={
+          <ReleaseDialog catalog={catalog} release={releaseToPatient.bind(null, patient.id)} />
+        }
+      >
+        <AssignmentsTable
+          patientId={patient.id}
+          assignments={assignments}
+          timeZone={timezone}
+          now={now}
+          cancel={cancelForPatient.bind(null, patient.id)}
         />
       </WorkspaceSection>
       <WorkspaceSection title={t('screenings.title')} description={t('screenings.note')}>

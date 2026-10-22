@@ -13,6 +13,7 @@ describe('settings sections', () => {
     expect(settingsSections.map(settingsHref)).toEqual([
       '/me/profile',
       '/me/wellbeing',
+      '/me/questionnaires',
       '/me/professionals',
       '/me/reminders',
       '/me/sound',

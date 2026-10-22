@@ -69,6 +69,7 @@ function data(overrides: Partial<ExportData> = {}): ExportData {
     consents: [],
     checkIns: [],
     assessments: [],
+    questionnaires: [],
     pages: [page(), page({ id: 'page-2', imagePaths: ['u/p/b.png', 'u/p/c'] })],
     shares: [],
     careLinks: [],

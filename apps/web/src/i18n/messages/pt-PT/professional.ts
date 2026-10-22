@@ -420,7 +420,7 @@ export const professional: ProfessionalMessages = {
       empty: 'Nenhum registo de humor nos últimos {days} dias.',
     },
     screenings: {
-      title: 'Questionários',
+      title: 'Rastreios na app',
       empty: 'Nenhum questionário respondido no período partilhado.',
       note: 'Os questionários mostram a intensidade de sinais. Não fazem diagnóstico.',
       date: 'Data',

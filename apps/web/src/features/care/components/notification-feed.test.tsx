@@ -16,6 +16,7 @@ const notifications: Notification[] = [
     createdAt: '2026-10-14T15:00:00.000Z',
     readAt: null,
     insightId: null,
+    questionnaire: null,
     supportTicket: null,
     invitation: {
       id: invitationId,
@@ -29,6 +30,7 @@ const notifications: Notification[] = [
     createdAt: '2026-10-01T15:00:00.000Z',
     readAt: '2026-10-02T15:00:00.000Z',
     insightId: null,
+    questionnaire: null,
     supportTicket: null,
     invitation: null,
   },
@@ -71,6 +73,7 @@ describe('NotificationFeed', () => {
       createdAt: '2026-10-14T16:00:00.000Z',
       readAt: null,
       insightId: null,
+      questionnaire: null,
       supportTicket: { id: ticketId, number: 1042, status },
       invitation: null,
     })
@@ -106,6 +109,7 @@ describe('NotificationFeed', () => {
             createdAt: '2026-10-13T15:00:00.000Z',
             readAt: '2026-10-13T16:00:00.000Z',
             insightId,
+            questionnaire: null,
             supportTicket: null,
             invitation: null,
           },

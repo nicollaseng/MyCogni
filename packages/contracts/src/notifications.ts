@@ -24,6 +24,13 @@ export const notificationSchema = z.object({
       professional: professionalSummarySchema.pick({ name: true, kind: true }),
     })
     .nullable(),
+  questionnaire: z
+    .object({
+      assignmentId: z.uuid(),
+      patientId: z.uuid(),
+      patientName: z.string().nullable(),
+    })
+    .nullable(),
 })
 
 export type Notification = z.infer<typeof notificationSchema>

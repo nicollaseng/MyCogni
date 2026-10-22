@@ -33,6 +33,11 @@ export { professionalDocuments } from './professional-documents.ts'
 export { professionalKind, professionalProfiles, professionalStatus } from './professionals.ts'
 export { accountType, profiles, type Profile } from './profiles.ts'
 export { pushSubscriptions, reminderSettings } from './reminders.ts'
+export {
+  questionnaireAssignments,
+  questionnaireAssignmentStatus,
+  questionnaireResponses,
+} from './questionnaires.ts'
 export { zenSessionKind, zenSessions, zenStepProgress } from './zen.ts'
 export {
   supportRequesterRole,

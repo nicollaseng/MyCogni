@@ -19,6 +19,7 @@ export const alertTriggerSchema = z.discriminatedUnion('kind', [
   z.object({ kind: z.literal('summary'), insightId: z.uuid() }),
   z.object({ kind: z.literal('daily') }),
   z.object({ kind: z.literal('note'), note: savedNoteSchema }),
+  z.object({ kind: z.literal('questionnaire'), patientId: z.uuid(), responseId: z.uuid() }),
 ])
 
 export type AlertTrigger = z.infer<typeof alertTriggerSchema>

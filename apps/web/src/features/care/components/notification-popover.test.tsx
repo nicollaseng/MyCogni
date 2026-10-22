@@ -28,6 +28,7 @@ const notifications: Notification[] = [
     createdAt: ago(5 * minute),
     readAt: null,
     insightId: null,
+    questionnaire: null,
     supportTicket: null,
     invitation: {
       id: invitationId,
@@ -41,6 +42,7 @@ const notifications: Notification[] = [
     createdAt: ago(3 * 60 * minute),
     readAt: null,
     insightId,
+    questionnaire: null,
     supportTicket: null,
     invitation: null,
   },
@@ -50,6 +52,7 @@ const notifications: Notification[] = [
     createdAt: ago(2 * 24 * 60 * minute),
     readAt: ago(24 * 60 * minute),
     insightId: null,
+    questionnaire: null,
     supportTicket: null,
     invitation: null,
   },

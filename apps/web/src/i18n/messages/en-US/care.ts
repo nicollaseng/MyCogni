@@ -118,6 +118,7 @@ export const care: CareMessages = {
     respond: 'Respond',
   },
   notifications: {
+    questionnaireCompleted: '{name} answered a questionnaire.',
     meta: { title: 'Notifications' },
     title: 'Notifications',
     empty: 'Nothing here yet.',
@@ -138,6 +139,8 @@ export const care: CareMessages = {
       reminder: 'Open Zen',
       export_ready: 'Download data',
       export_failed: 'Try again',
+      questionnaire_assigned: 'Answer',
+      questionnaire_completed: 'See result',
     },
     kinds: {
       invitation: 'An invitation from a professional',
@@ -149,6 +152,8 @@ export const care: CareMessages = {
       reminder: 'Time for your pause. How about a few minutes for yourself?',
       export_ready: 'Your data is ready to download.',
       export_failed: 'We couldn’t prepare your data. Try again.',
+      questionnaire_assigned: 'Your professional has shared a questionnaire with you.',
+      questionnaire_completed: 'A patient answered a questionnaire.',
     },
     support:
       '{status, select, in_progress {Your ticket {ticket} is in progress.} closed {Your ticket {ticket} was closed.} other {Your ticket {ticket} was updated.}}',

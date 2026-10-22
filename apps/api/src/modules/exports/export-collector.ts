@@ -21,6 +21,8 @@ import {
   professionalProfiles,
   profiles,
   pushSubscriptions,
+  questionnaireAssignments,
+  questionnaireResponses,
   reminderSettings,
   supportTickets,
   zenSessions,
@@ -76,6 +78,7 @@ export interface ExportData {
   consents: Record<string, unknown>[]
   checkIns: ExportCheckIn[]
   assessments: Record<string, unknown>[]
+  questionnaires: Record<string, unknown>[]
   pages: ExportPage[]
   shares: Record<string, unknown>[]
   careLinks: Record<string, unknown>[]
@@ -366,6 +369,44 @@ async function ownRows(tx: Transaction, userId: string) {
   }
 }
 
+function questionnairesOf(tx: Transaction, userId: string) {
+  return tx
+    .select({
+      id: questionnaireAssignments.id,
+      professionalName: professionalProfiles.fullName,
+      instrumentId: questionnaireAssignments.instrumentId,
+      variant: questionnaireAssignments.variant,
+      note: questionnaireAssignments.note,
+      repeatEveryDays: questionnaireAssignments.repeatEveryDays,
+      status: questionnaireAssignments.status,
+      availableFrom: questionnaireAssignments.availableFrom,
+      createdAt: questionnaireAssignments.createdAt,
+      completedAt: questionnaireAssignments.completedAt,
+      cancelledAt: questionnaireAssignments.cancelledAt,
+      response: {
+        instrumentVersion: questionnaireResponses.instrumentVersion,
+        locale: questionnaireResponses.locale,
+        answers: questionnaireResponses.answers,
+        score: questionnaireResponses.score,
+        flags: questionnaireResponses.flags,
+        consentedAt: questionnaireResponses.consentedAt,
+        startedAt: questionnaireResponses.startedAt,
+        completedAt: questionnaireResponses.completedAt,
+      },
+    })
+    .from(questionnaireAssignments)
+    .leftJoin(
+      professionalProfiles,
+      eq(professionalProfiles.userId, questionnaireAssignments.professionalId),
+    )
+    .leftJoin(
+      questionnaireResponses,
+      eq(questionnaireResponses.assignmentId, questionnaireAssignments.id),
+    )
+    .where(eq(questionnaireAssignments.patientId, userId))
+    .orderBy(asc(questionnaireAssignments.createdAt))
+}
+
 async function remindersOf(tx: Transaction, userId: string) {
   const [settings] = await tx
     .select({
@@ -449,6 +490,7 @@ export function createExportCollector(db: Database): ExportCollector {
           profile,
           ...own,
           ...(await patientSide(tx, userId)),
+          questionnaires: await questionnairesOf(tx, userId),
           careLinks: await careOf(tx, userId),
           invitations: await invitationsOf(tx, userId),
           memories: await memoriesOf(tx, userId),

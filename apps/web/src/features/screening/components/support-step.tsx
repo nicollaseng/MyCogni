@@ -4,7 +4,12 @@ import { StepActions } from '@/shared/components/step-actions'
 import { cn } from '@/shared/lib/utils'
 import { Button, buttonVariants } from '@/shared/ui/button'
 
-export function SupportStep({ onContinue }: { onContinue: () => void }) {
+interface SupportStepProps {
+  onContinue: () => void
+  continueLabel?: string
+}
+
+export function SupportStep({ onContinue, continueLabel }: SupportStepProps) {
   const t = useTranslations('screening.support')
   const lines = crisisLinesFor(useLocale())
   const [first] = lines
@@ -37,7 +42,7 @@ export function SupportStep({ onContinue }: { onContinue: () => void }) {
           </a>
         )}
         <Button size="lg" variant="outline" onClick={onContinue}>
-          {t('continue')}
+          {continueLabel ?? t('continue')}
         </Button>
       </StepActions>
     </section>

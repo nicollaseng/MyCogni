@@ -68,13 +68,14 @@ export type AlertEvent =
   | { kind: 'daily'; signals: AttentionSignals }
   | { kind: 'summary'; attention: InsightAttention }
   | { kind: 'note' }
+  | { kind: 'questionnaire'; hasRiskFlag: boolean }
 
 export interface Alert {
   reason: AlertReason
   level: AlertLevel
 }
 
-type SignalEvent = Exclude<AlertEvent['kind'], 'summary' | 'note'>
+type SignalEvent = Exclude<AlertEvent['kind'], 'summary' | 'note' | 'questionnaire'>
 
 const reasonsRaisedBy: Readonly<Record<SignalEvent, readonly AttentionReason[]>> = {
   screening: ['risk_item', 'severe_screening'],
@@ -111,6 +112,9 @@ function screeningSignals({
 function reasonsOf(event: AlertEvent): readonly AlertReason[] {
   if (event.kind === 'note') {
     return ['note_risk']
+  }
+  if (event.kind === 'questionnaire') {
+    return event.hasRiskFlag ? ['risk_item'] : []
   }
   if (event.kind === 'summary') {
     const reason = summaryReasons[event.attention]

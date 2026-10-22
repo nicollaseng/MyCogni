@@ -30,6 +30,7 @@ describe('loadConfig', () => {
       zeroRetentionTranscription: false,
       push: null,
       reminderEveryMs: 300_000,
+      questionnaireSweepEveryMs: 900_000,
     })
   })
 
