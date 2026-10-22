@@ -9,7 +9,7 @@ import type {
 } from '@mycogni/contracts'
 import { eq } from 'drizzle-orm'
 import { connectDatabase, type DatabaseConnection } from '../../src/db/client.ts'
-import { professionalProfiles, questionnaireResponses } from '../../src/db/schema/index.ts'
+import { questionnaireResponses } from '../../src/db/schema/index.ts'
 import type { App } from '../../src/shared/http.ts'
 import { linkPatient } from '../support/alerts.ts'
 import { registerProfessional } from '../support/care.ts'
@@ -60,11 +60,10 @@ describe('/v1 questionnaires', () => {
     joana = await createTestUser({ full_name: 'Joana Reis', locale: 'pt-PT' })
     bruno = await createTestUser({ locale: 'pt-BR' })
     await registerProfessional(connection.db, helena.id)
-    await registerProfessional(connection.db, rui.id, { fullName: 'Dr. Rui Matos' })
-    await connection.db
-      .update(professionalProfiles)
-      .set({ kind: 'psychiatrist' })
-      .where(eq(professionalProfiles.userId, rui.id))
+    await registerProfessional(connection.db, rui.id, {
+      fullName: 'Dr. Rui Matos',
+      kind: 'psychiatrist',
+    })
     await linkPatient(app, helena, ana, false)
     await linkPatient(app, rui, ana, false)
     await linkPatient(app, rui, joana, false)

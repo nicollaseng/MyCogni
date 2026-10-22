@@ -1,10 +1,13 @@
 import {
+  brazilianStates,
+  councilOf,
   emergencyWhatsappPattern,
+  institutionRegistrationLimits,
   professionalDocumentLimits,
   professionalDocumentTypes,
   professionalKinds,
   professionalStatuses,
-  requiresRegistration,
+  registrationNumberPattern,
 } from '@mycogni/domain'
 import { z } from 'zod'
 
@@ -31,16 +34,38 @@ export const submitProfessionalDocumentSchema = z.object({
 
 export type SubmitProfessionalDocumentInput = z.infer<typeof submitProfessionalDocumentSchema>
 
+export const councilRegistrationInputSchema = z.object({
+  uf: z.enum(brazilianStates),
+  number: z.string().trim().regex(registrationNumberPattern),
+})
+
+export type CouncilRegistrationInput = z.infer<typeof councilRegistrationInputSchema>
+
 export const registerProfessionalSchema = z
   .object({
     kind: professionalKindSchema,
     fullName: z.string().trim().min(3).max(120),
-    registration: z.string().trim().min(3).max(40).nullable(),
+    registration: councilRegistrationInputSchema.nullable(),
+    institutionRegistration: z
+      .string()
+      .trim()
+      .min(institutionRegistrationLimits.min)
+      .max(institutionRegistrationLimits.max)
+      .nullable()
+      .default(null),
   })
-  .refine(({ kind, registration }) => !requiresRegistration(kind) || registration !== null, {
-    message: 'This profession needs a council registration',
+  .refine(({ kind, registration }) => (councilOf(kind) === null) === (registration === null), {
+    message: 'Council professions need their council registration and psychoanalysts have none',
     path: ['registration'],
   })
+  .refine(
+    ({ kind, institutionRegistration }) =>
+      councilOf(kind) === null || institutionRegistration === null,
+    {
+      message: 'Only psychoanalysts add the registration of their institution',
+      path: ['institutionRegistration'],
+    },
+  )
 
 export type RegisterProfessionalInput = z.infer<typeof registerProfessionalSchema>
 

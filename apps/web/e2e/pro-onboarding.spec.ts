@@ -28,10 +28,10 @@ async function expectStep(page: Page, number: number, title: string) {
   await expect(page.getByRole('heading', { level: 1 })).toHaveText(title)
 }
 
-test('a new professional sends the document, skips the photo and waits for the review', async ({
+test('a new professional sends the document, cannot skip the photo and waits for the review', async ({
   page,
 }) => {
-  const email = uniqueEmail('onboarding-skip')
+  const email = uniqueEmail('onboarding-photo-required')
   const name = uniqueName('Clara Nunes')
   await registeredProfessional(email, password, name)
   await signIn(page, email)
@@ -59,11 +59,18 @@ test('a new professional sends the document, skips the photo and waits for the r
   })
   await page.getByRole('button', { name: 'Enviar comprovante' }).click()
 
-  await expectStep(page, 2, 'Adicione uma foto ao seu perfil.')
+  await expectStep(page, 2, 'Adicione uma foto do seu rosto.')
+  await expect(page.getByText(/A foto é obrigatória/)).toBeVisible()
+  await expect(page.getByRole('button', { name: 'Pular por agora' })).toHaveCount(0)
+  await expect(page.getByRole('button', { name: 'Continuar' })).toHaveCount(0)
   await page.reload()
-  await expectStep(page, 2, 'Adicione uma foto ao seu perfil.')
+  await expectStep(page, 2, 'Adicione uma foto do seu rosto.')
 
-  await page.getByRole('button', { name: 'Pular por agora' }).click()
+  await page.getByLabel('Adicionar foto').setInputFiles(photo)
+  const editor = page.getByRole('dialog', { name: 'Ajustar foto' })
+  await editor.getByRole('button', { name: 'Usar foto' }).click()
+  await expect(editor).toHaveCount(0)
+  await page.getByRole('button', { name: 'Continuar' }).click()
 
   await expectStep(page, 3, 'Seu cadastro está em verificação.')
   await expect(page.getByText('Carteira CRP.pdf')).toBeVisible()
@@ -84,7 +91,7 @@ test('a professional who already sent the document resumes at the photo and adds
   await sendRegistrationDocument(email, password)
   await signIn(page, email)
 
-  await expectStep(page, 2, 'Adicione uma foto ao seu perfil.')
+  await expectStep(page, 2, 'Adicione uma foto do seu rosto.')
   await expect(page.getByText('Comprovante recebido. A análise já começou.')).toBeVisible()
   await page.getByLabel('Adicionar foto').setInputFiles(photo)
   const editor = page.getByRole('dialog', { name: 'Ajustar foto' })

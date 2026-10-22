@@ -2,7 +2,15 @@ import { randomUUID } from 'node:crypto'
 import { readFile } from 'node:fs/promises'
 import { fileURLToPath } from 'node:url'
 import { expect, test, type Browser, type Page } from '@playwright/test'
-import { acceptInvitation, finishOnboarding, inviteByLink, setPhoto, tinyPdf } from './support/api'
+import {
+  acceptInvitation,
+  councilNumber,
+  finishOnboarding,
+  inviteByLink,
+  setPhoto,
+  tinyPdf,
+} from './support/api'
+import { tickChecklist } from './support/review'
 import { signedOut } from './support/session'
 import { createUser, makeAdmin, uniqueEmail } from './support/supabase'
 
@@ -68,7 +76,8 @@ test('a professional sends the document, the team opens and approves it, and a l
   await page.goto('/pro/join')
   await page.getByText('Psicologia', { exact: true }).click()
   await page.getByLabel('Nome completo').fill(name)
-  await page.getByLabel('Registro no conselho').fill('CRP 06/778899')
+  await page.getByLabel('Estado (UF)').selectOption('SP')
+  await page.getByLabel('Número').fill(councilNumber())
   await page.getByRole('checkbox').check()
   await page.getByRole('button', { name: 'Enviar para verificação' }).click()
 
@@ -84,7 +93,7 @@ test('a professional sends the document, the team opens and approves it, and a l
   await page.getByRole('button', { name: 'Enviar comprovante' }).click()
 
   await expect(
-    page.getByRole('heading', { level: 1, name: 'Adicione uma foto ao seu perfil.' }),
+    page.getByRole('heading', { level: 1, name: 'Adicione uma foto do seu rosto.' }),
   ).toBeVisible()
   await choosePhoto(page, 'Adicionar foto')
   await expect(page.getByRole('main').getByRole('img', { name: `Foto de ${name}` })).toBeVisible()
@@ -100,8 +109,8 @@ test('a professional sends the document, the team opens and approves it, and a l
   await makeAdmin(await createUser(adminEmail, password))
   const team = await signedInPage(browser, adminEmail)
   await team.goto('/admin/professionals')
-  const row = team.getByRole('row', { name })
-  const open = row.getByRole('link', { name: `Abrir comprovante de ${name} em nova aba` })
+  await team.getByRole('link', { name: `Revisar cadastro de ${name}` }).click()
+  const open = team.getByRole('link', { name: `Abrir comprovante de ${name} em nova aba` })
   await expect(open).toHaveAttribute('target', '_blank')
   const href = (await open.getAttribute('href')) ?? ''
   const redirect = await team.request.get(href, { maxRedirects: 0 })
@@ -111,16 +120,16 @@ test('a professional sends the document, the team opens and approves it, and a l
   )
   const file = await team.request.get(href)
   expect(Buffer.from(await file.body()).equals(tinyPdf)).toBe(true)
-  await row.getByRole('button', { name: 'Aprovar' }).click()
+  await tickChecklist(team)
+  await team.getByRole('button', { name: 'Aprovar' }).click()
   await expect(team.getByRole('status')).toHaveText(`Cadastro de ${name} aprovado.`)
   await team.context().close()
 
   await page.goto('/pro/settings')
   const settings = page.getByRole('main')
   await expect(settings.getByText('Aprovado')).toBeVisible()
-  await expect(
-    settings.getByRole('button', { name: 'Foto do perfil' }).locator('img'),
-  ).toBeVisible()
+  await expect(settings.getByRole('img', { name: `Foto de ${name}` })).toBeVisible()
+  await expect(settings.getByRole('button', { name: 'Foto do perfil' })).toHaveCount(0)
 
   const { code } = await inviteByLink(email, password)
   const visitor = await browser.newContext({ storageState: signedOut, locale: 'pt-BR' })
@@ -163,7 +172,8 @@ test('the team rejects with a reason that the professional reads before sending 
     buffer: tinyPdf,
   })
   await page.getByRole('button', { name: 'Enviar comprovante' }).click()
-  await page.getByRole('button', { name: 'Pular por agora' }).click()
+  await choosePhoto(page, 'Adicionar foto')
+  await page.getByRole('button', { name: 'Continuar' }).click()
   await expect(
     page.getByRole('heading', { level: 1, name: 'Seu cadastro está em verificação.' }),
   ).toBeVisible()
@@ -172,7 +182,8 @@ test('the team rejects with a reason that the professional reads before sending 
   await makeAdmin(await createUser(adminEmail, password))
   const team = await signedInPage(browser, adminEmail)
   await team.goto('/admin/professionals')
-  await team.getByRole('row', { name }).getByRole('button', { name: 'Recusar' }).click()
+  await team.getByRole('link', { name: `Revisar cadastro de ${name}` }).click()
+  await team.getByRole('button', { name: 'Recusar' }).click()
   await team.getByLabel(`Motivo da recusa para ${name}`).fill('O certificado está sem assinatura.')
   await team.getByRole('button', { name: 'Confirmar recusa' }).click()
   await expect(team.getByRole('status')).toHaveText(`Cadastro de ${name} recusado.`)

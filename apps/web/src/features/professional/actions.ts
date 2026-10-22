@@ -30,16 +30,21 @@ import { photoStepFlag } from './onboarding'
 
 const invitationId = z.uuid()
 
-async function register(input: RegisterProfessionalInput): Promise<null> {
+type Registered = 'registered' | 'taken'
+
+async function register(input: RegisterProfessionalInput): Promise<Registered> {
   await grantConsents({ kinds: [...professionalConsentKinds] })
   try {
     await registerProfessional(input)
   } catch (error) {
+    if (error instanceof ApiError && error.code === 'REGISTRATION_TAKEN') {
+      return 'taken'
+    }
     if (!(error instanceof ApiError && error.status === 409)) {
       throw error
     }
   }
-  return null
+  return 'registered'
 }
 
 export async function joinAsProfessional(values: JoinValues): Promise<ActionResult<null>> {
@@ -50,11 +55,14 @@ export async function joinAsProfessional(values: JoinValues): Promise<ActionResu
   }
   const input = registrationInput(values.kind, values)
   const result = await attempt(() => register(input), t('save'))
-  if (result.ok) {
-    await forgetContinuePath()
-    redirect('/pro')
+  if (!result.ok) {
+    return result
   }
-  return result
+  if (result.value === 'taken') {
+    return failure(t('registrationTaken'))
+  }
+  await forgetContinuePath()
+  redirect('/pro')
 }
 
 export async function invite(input: InviteInput): Promise<ActionResult<CreatedInvitation>> {

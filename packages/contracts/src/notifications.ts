@@ -1,4 +1,9 @@
-import { invitationStatuses, notificationKinds, supportTicketStatuses } from '@mycogni/domain'
+import {
+  invitationStatuses,
+  notificationKinds,
+  reviewDecisions,
+  supportTicketStatuses,
+} from '@mycogni/domain'
 import { z } from 'zod'
 import { professionalSummarySchema } from './invitations.ts'
 
@@ -31,6 +36,8 @@ export const notificationSchema = z.object({
       patientName: z.string().nullable(),
     })
     .nullable(),
+  review: z.object({ decision: z.enum(reviewDecisions), note: z.string().nullable() }).nullable(),
+  unavailableProfessional: z.object({ name: z.string() }).nullable(),
 })
 
 export type Notification = z.infer<typeof notificationSchema>

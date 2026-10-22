@@ -16,12 +16,13 @@ export function notificationHref({
   insightId,
   supportTicket,
   questionnaire,
+  review,
 }: Notification): NotificationHref {
   switch (kind) {
     case 'invitation':
       return invitation === null ? feed : `/invites/${invitation.id}`
     case 'professional':
-      return '/me/professionals'
+      return review === null ? '/me/professionals' : '/pro'
     case 'insight':
       return insightId === null ? feed : `/patterns#reading-${insightId}`
     case 'support':

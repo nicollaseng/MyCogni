@@ -12,7 +12,7 @@ export const verification: VerificationMessages = {
       review: 'Em análise',
     },
     hints: {
-      photo: 'Opcional. Aparece aos seus pacientes.',
+      photo: 'Obrigatória. A equipa compara-a com o documento.',
       review: 'A equipa MyCogniAI confirma tudo antes de disponibilizar os convites.',
     },
   },
@@ -21,14 +21,14 @@ export const verification: VerificationMessages = {
     lead: 'Confirmamos cada profissional antes de disponibilizar os convites. O registo entra em análise assim que recebermos o comprovativo.',
   },
   photo: {
-    title: 'Adicione uma fotografia ao seu perfil.',
-    lead: 'É opcional. A fotografia aparece junto ao seu nome na página dos seus convites e aos pacientes que acompanha.',
+    title: 'Adicione uma fotografia do seu rosto.',
+    lead: 'A fotografia é obrigatória: a nossa equipa compara o seu rosto com o do documento antes de aprovar. Também aparece aos seus pacientes, junto ao seu nome.',
     received: 'Comprovativo recebido. A análise já começou.',
     add: 'Adicionar fotografia',
-    skip: 'Saltar por agora',
+    tips: 'Use uma fotografia recente, de frente, com boa luz e o rosto todo visível.',
     continue: 'Continuar',
     saving: 'A guardar…',
-    later: 'Pode alterar ou remover a fotografia quando quiser, nas Definições.',
+    later: 'Depois da verificação, o nome e a fotografia só mudam através do suporte.',
     failed: 'Não foi possível continuar agora. Tente novamente dentro de instantes.',
   },
   review: {

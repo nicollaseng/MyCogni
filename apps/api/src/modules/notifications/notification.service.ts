@@ -1,7 +1,7 @@
-import type { MarkNotificationsReadInput, NotificationList } from '@mycogni/contracts'
+import type { MarkNotificationsReadInput, Notification, NotificationList } from '@mycogni/contracts'
 import { effectiveStatus } from '@mycogni/domain'
 import type { AuthenticatedUser } from '../../auth/token-verifier.ts'
-import type { NotificationRepository } from './notification.repository.ts'
+import type { NotificationRecord, NotificationRepository } from './notification.repository.ts'
 
 export interface NotificationService {
   list(user: AuthenticatedUser): Promise<NotificationList>
@@ -9,6 +9,12 @@ export interface NotificationService {
 }
 
 const pageSize = 50
+
+function reviewOf(review: NotificationRecord['review']): Notification['review'] {
+  return review === null || review.decision === 'pending'
+    ? null
+    : { decision: review.decision, note: review.note }
+}
 
 export function createNotificationService(
   repository: NotificationRepository,
@@ -22,8 +28,9 @@ export function createNotificationService(
       ])
       return {
         unread,
-        items: records.map(({ invitation, createdAt, readAt, ...record }) => ({
+        items: records.map(({ invitation, review, createdAt, readAt, ...record }) => ({
           ...record,
+          review: reviewOf(review),
           createdAt: createdAt.toISOString(),
           readAt: readAt?.toISOString() ?? null,
           invitation:

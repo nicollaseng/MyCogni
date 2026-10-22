@@ -1,15 +1,30 @@
 import {
+  brazilianStates,
+  professionalCouncils,
   professionalDocumentLimits,
   professionalKinds,
   professionalStatuses,
 } from '@mycogni/domain'
 import { sql } from 'drizzle-orm'
-import { check, pgEnum, pgPolicy, pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core'
+import {
+  check,
+  pgEnum,
+  pgPolicy,
+  pgTable,
+  text,
+  timestamp,
+  uniqueIndex,
+  uuid,
+} from 'drizzle-orm/pg-core'
 import { authenticatedRole, authUid, authUsers } from 'drizzle-orm/supabase'
 
 export const professionalKind = pgEnum('professional_kind', professionalKinds)
 
 export const professionalStatus = pgEnum('professional_status', professionalStatuses)
+
+export const professionalCouncil = pgEnum('professional_council', professionalCouncils)
+
+const states = sql.raw(brazilianStates.map((state) => `'${state}'`).join(', '))
 
 export const professionalProfiles = pgTable(
   'professional_profiles',
@@ -19,7 +34,10 @@ export const professionalProfiles = pgTable(
       .references(() => authUsers.id, { onDelete: 'cascade' }),
     kind: professionalKind('kind').notNull(),
     fullName: text('full_name').notNull(),
-    registration: text('registration'),
+    registrationText: text('registration'),
+    registrationCouncil: professionalCouncil('registration_council'),
+    registrationUf: text('registration_uf'),
+    registrationNumber: text('registration_number'),
     status: professionalStatus('status').notNull().default('pending'),
     createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
     verifiedAt: timestamp('verified_at', { withTimezone: true }),
@@ -36,6 +54,29 @@ export const professionalProfiles = pgTable(
       'professional_profiles_emergency_whatsapp_format',
       sql`${table.emergencyWhatsapp} ~ '^\\+[1-9][0-9]{7,14}$'`,
     ),
+    check('professional_profiles_registration_uf', sql`${table.registrationUf} in (${states})`),
+    check(
+      'professional_profiles_registration_number',
+      sql`${table.registrationNumber} ~ '^[0-9]{4,8}$'`,
+    ),
+    check(
+      'professional_profiles_registration_parts',
+      sql`(${table.registrationCouncil} is null) = (${table.registrationUf} is null)
+        and (${table.registrationCouncil} is null) = (${table.registrationNumber} is null)`,
+    ),
+    check(
+      'professional_profiles_registration_council',
+      sql`${table.registrationCouncil} is null
+        or (${table.registrationCouncil} = 'crp' and ${table.kind} = 'psychologist')
+        or (${table.registrationCouncil} = 'crm' and ${table.kind} in ('psychiatrist', 'physician'))`,
+    ),
+    uniqueIndex('professional_profiles_registration_key')
+      .on(
+        table.registrationCouncil,
+        sql`public.registration_scope(registration_council, registration_uf)`,
+        sql`ltrim(registration_number, '0')`,
+      )
+      .where(sql`status <> 'rejected' and registration_council is not null`),
     pgPolicy('professional_profiles_select_own', {
       for: 'select',
       to: authenticatedRole,
@@ -59,7 +100,11 @@ export const professionalProfiles = pgTable(
       for: 'update',
       to: authenticatedRole,
       using: sql`${table.userId} = ${authUid}`,
-      withCheck: sql`${table.userId} = ${authUid}`,
+      withCheck: sql`${table.userId} = ${authUid}
+        and not exists (
+          select 1 from public.locked_identity() l
+          where l.full_name is distinct from ${table.fullName}
+        )`,
     }),
   ],
 ).enableRLS()

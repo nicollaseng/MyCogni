@@ -65,7 +65,10 @@ describe('professional profiles', () => {
 
   it.each<[string, ProfessionalChanges]>([
     ['profession', { kind: 'psychiatrist' }],
-    ['registration', { registration: 'CRM-SP 99999' }],
+    ['registration text', { registrationText: 'CRM-SP 99999' }],
+    ['council', { registrationCouncil: 'crm' }],
+    ['registration state', { registrationUf: 'RJ' }],
+    ['registration number', { registrationNumber: '99999' }],
     ['status', { status: 'verified' }],
     ['verification date', { verifiedAt: new Date() }],
     ['review note', { reviewNote: 'Aprovado' }],
@@ -79,7 +82,8 @@ describe('professional profiles', () => {
       expect.objectContaining({
         userId: helena,
         kind: 'psychologist',
-        registration: 'CRP 06/123456',
+        registrationCouncil: 'crp',
+        registrationUf: 'SP',
         status: 'pending',
         verifiedAt: null,
       }),

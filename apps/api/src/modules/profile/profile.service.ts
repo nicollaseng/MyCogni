@@ -1,8 +1,27 @@
 import type { Profile, UpdateProfileInput } from '@mycogni/contracts'
-import { isBrandNewAccount, isLocale, isOwnAvatarPath } from '@mycogni/domain'
+import {
+  avatarExtension,
+  isBrandNewAccount,
+  isLocale,
+  isOwnAvatarPath,
+  sniffAvatarType,
+} from '@mycogni/domain'
 import type { AuthenticatedUser } from '../../auth/token-verifier.ts'
-import { AccountTypeLockedError, NotFoundError, UnprocessableError } from '../../shared/errors.ts'
-import type { ProfileChanges, ProfileRecord, ProfileRepository } from './profile.repository.ts'
+import {
+  AccountTypeLockedError,
+  IdentityLockedError,
+  NotFoundError,
+  UnprocessableError,
+  UnsupportedMediaTypeError,
+} from '../../shared/errors.ts'
+import type { BucketStore } from '../../storage/bucket-store.ts'
+import { fileHead } from '../../storage/file-head.ts'
+import {
+  LockedPhotoError,
+  type ProfileChanges,
+  type ProfileRecord,
+  type ProfileRepository,
+} from './profile.repository.ts'
 
 export interface ProfileService {
   get(user: AuthenticatedUser): Promise<Profile>
@@ -43,8 +62,23 @@ function ownsAvatar(user: AuthenticatedUser, avatarPath: string | null | undefin
   return avatarPath === undefined || avatarPath === null || isOwnAvatarPath(avatarPath, user.id)
 }
 
+async function verifyPhotoContent(photos: Pick<BucketStore, 'open'>, path: string): Promise<void> {
+  const head = await fileHead(photos, path)
+  if (head === null) {
+    throw new UnprocessableError('Upload the photo to your folder before saving it')
+  }
+  const type = sniffAvatarType(head)
+  if (type === null || !path.endsWith(`.${avatarExtension(type)}`)) {
+    throw new UnsupportedMediaTypeError(
+      'UNSUPPORTED_TYPE',
+      'The photo content is not the JPG, PNG or WebP image it claims to be',
+    )
+  }
+}
+
 export function createProfileService(
   repository: ProfileRepository,
+  photos: Pick<BucketStore, 'open'>,
   now: () => Date,
 ): ProfileService {
   async function findOrFail(user: AuthenticatedUser): Promise<ProfileRecord> {
@@ -55,6 +89,26 @@ export function createProfileService(
     return record
   }
 
+  async function checkPhoto(user: AuthenticatedUser, avatarPath: string | null): Promise<void> {
+    if (await repository.photoLocked(user.id)) {
+      throw new IdentityLockedError()
+    }
+    if (avatarPath !== null) {
+      await verifyPhotoContent(photos, avatarPath)
+    }
+  }
+
+  async function saved(user: AuthenticatedUser, changes: ProfileChanges) {
+    try {
+      return await repository.update(user.id, changes)
+    } catch (error) {
+      if (error instanceof LockedPhotoError) {
+        throw new IdentityLockedError()
+      }
+      throw error
+    }
+  }
+
   return {
     async get(user) {
       return toProfile(await findOrFail(user), user)
@@ -63,11 +117,14 @@ export function createProfileService(
       if (!ownsAvatar(user, input.avatarPath)) {
         throw new UnprocessableError('The photo must be stored in your own folder')
       }
+      if (input.avatarPath !== undefined) {
+        await checkPhoto(user, input.avatarPath)
+      }
       const changes = toChanges(input)
       if (Object.keys(changes).length === 0) {
         return toProfile(await findOrFail(user), user)
       }
-      const record = await repository.update(user.id, changes)
+      const record = await saved(user, changes)
       if (record === undefined) {
         throw new NotFoundError('Profile not found')
       }

@@ -431,7 +431,10 @@ async function professionalOf(tx: Transaction, userId: string) {
     .select({
       kind: professionalProfiles.kind,
       fullName: professionalProfiles.fullName,
-      registration: professionalProfiles.registration,
+      registration: professionalProfiles.registrationText,
+      registrationCouncil: professionalProfiles.registrationCouncil,
+      registrationUf: professionalProfiles.registrationUf,
+      registrationNumber: professionalProfiles.registrationNumber,
       status: professionalProfiles.status,
       emergencyWhatsapp: sql<string | null>`public.own_emergency_whatsapp()`,
       createdAt: professionalProfiles.createdAt,

@@ -10,6 +10,7 @@ interface OnboardingShellProps {
   name: string
   profession: string
   photoUrl: string | null
+  bell?: ReactNode
   className?: string
   children: ReactNode
 }
@@ -20,6 +21,7 @@ export function OnboardingShell({
   name,
   profession,
   photoUrl,
+  bell,
   className,
   children,
 }: OnboardingShellProps) {
@@ -35,13 +37,16 @@ export function OnboardingShell({
               {t('area')}
             </span>
           </div>
-          <ProfileMenu
-            name={name}
-            profession={profession}
-            photoUrl={photoUrl}
-            signOut={signOut}
-            placement="header"
-          />
+          <div className="flex items-center gap-1">
+            {bell}
+            <ProfileMenu
+              name={name}
+              profession={profession}
+              photoUrl={photoUrl}
+              signOut={signOut}
+              placement="header"
+            />
+          </div>
         </div>
       </header>
       <main

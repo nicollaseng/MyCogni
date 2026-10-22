@@ -1,10 +1,13 @@
 import type {
+  CouncilRegistration,
   ProfessionalDocumentType,
   ProfessionalKind,
   ProfessionalStatus,
+  StoredRegistration,
 } from '@mycogni/domain'
 import { desc, eq, sql } from 'drizzle-orm'
 import type { Database, Transaction } from '../../db/client.ts'
+import { isPolicyViolation, isUniqueViolation } from '../../db/errors.ts'
 import { withUser } from '../../db/rls.ts'
 import { professionalDocuments, professionalProfiles } from '../../db/schema/index.ts'
 
@@ -19,7 +22,7 @@ export interface ProfessionalDocumentRecord {
 export interface ProfessionalRecord {
   kind: ProfessionalKind
   fullName: string
-  registration: string | null
+  registration: StoredRegistration
   status: ProfessionalStatus
   reviewNote: string | null
   createdAt: Date
@@ -32,7 +35,8 @@ export interface ProfessionalRecord {
 export interface NewProfessional {
   kind: ProfessionalKind
   fullName: string
-  registration: string | null
+  registration: CouncilRegistration | null
+  institutionRegistration: string | null
 }
 
 export interface NewProfessionalDocument {
@@ -46,6 +50,20 @@ export class DocumentNotStoredError extends Error {
   constructor() {
     super('The document is not in the folder of this professional')
     this.name = 'DocumentNotStoredError'
+  }
+}
+
+export class DuplicateRegistrationError extends Error {
+  constructor() {
+    super('Another account already holds this council registration')
+    this.name = 'DuplicateRegistrationError'
+  }
+}
+
+export class LockedIdentityError extends Error {
+  constructor() {
+    super('The identity of a verified professional is locked')
+    this.name = 'LockedIdentityError'
   }
 }
 
@@ -63,10 +81,17 @@ export interface ProfessionalRepository {
   ): Promise<ProfessionalRecord | undefined>
 }
 
+export const registrationColumns = {
+  council: professionalProfiles.registrationCouncil,
+  uf: professionalProfiles.registrationUf,
+  number: professionalProfiles.registrationNumber,
+  text: professionalProfiles.registrationText,
+}
+
 const columns = {
   kind: professionalProfiles.kind,
   fullName: professionalProfiles.fullName,
-  registration: professionalProfiles.registration,
+  registration: registrationColumns,
   status: professionalProfiles.status,
   reviewNote: professionalProfiles.reviewNote,
   createdAt: professionalProfiles.createdAt,
@@ -81,11 +106,6 @@ export const documentColumns = {
   contentType: professionalDocuments.contentType,
   sizeBytes: professionalDocuments.sizeBytes,
   createdAt: professionalDocuments.createdAt,
-}
-
-function isPolicyViolation(error: unknown): boolean {
-  const cause: unknown = error instanceof Error ? error.cause : undefined
-  return typeof cause === 'object' && cause !== null && 'code' in cause && cause.code === '42501'
 }
 
 async function withLatestDocument(
@@ -105,6 +125,22 @@ async function withLatestDocument(
   return { ...profile, document: document ?? null }
 }
 
+const registrationKey = 'professional_profiles_registration_key'
+
+async function translated<T>(work: Promise<T>, policyError?: () => Error): Promise<T> {
+  try {
+    return await work
+  } catch (error) {
+    if (isUniqueViolation(error, registrationKey)) {
+      throw new DuplicateRegistrationError()
+    }
+    if (policyError !== undefined && isPolicyViolation(error)) {
+      throw policyError()
+    }
+    throw error
+  }
+}
+
 export function createProfessionalRepository(db: Database): ProfessionalRepository {
   function current(tx: Transaction, userId: string) {
     return tx
@@ -113,32 +149,49 @@ export function createProfessionalRepository(db: Database): ProfessionalReposito
       .where(eq(professionalProfiles.userId, userId))
   }
 
+  async function currentWithDocument(
+    tx: Transaction,
+    userId: string,
+  ): Promise<ProfessionalRecord | undefined> {
+    const [row] = await current(tx, userId)
+    return withLatestDocument(tx, userId, row)
+  }
+
   return {
     find(userId) {
-      return withUser(db, userId, async (tx) => {
-        const [row] = await current(tx, userId)
-        return withLatestDocument(tx, userId, row)
-      })
+      return withUser(db, userId, (tx) => currentWithDocument(tx, userId))
     },
-    create(userId, professional) {
-      return withUser(db, userId, async (tx) => {
-        const [row] = await tx
-          .insert(professionalProfiles)
-          .values({ ...professional, userId })
-          .onConflictDoNothing()
-          .returning(columns)
-        return withLatestDocument(tx, userId, row)
-      })
+    create(userId, { kind, fullName, registration, institutionRegistration }) {
+      return translated(
+        withUser(db, userId, async (tx) => {
+          const [row] = await tx
+            .insert(professionalProfiles)
+            .values({
+              userId,
+              kind,
+              fullName,
+              registrationCouncil: registration?.council ?? null,
+              registrationUf: registration?.uf ?? null,
+              registrationNumber: registration?.number ?? null,
+              registrationText: institutionRegistration,
+            })
+            .onConflictDoNothing({ target: professionalProfiles.userId })
+            .returning({ userId: professionalProfiles.userId })
+          return row === undefined ? undefined : currentWithDocument(tx, userId)
+        }),
+      )
     },
     rename(userId, fullName) {
-      return withUser(db, userId, async (tx) => {
-        const [row] = await tx
-          .update(professionalProfiles)
-          .set({ fullName })
-          .where(eq(professionalProfiles.userId, userId))
-          .returning(columns)
-        return withLatestDocument(tx, userId, row)
-      })
+      return translated(
+        withUser(db, userId, async (tx) => {
+          await tx
+            .update(professionalProfiles)
+            .set({ fullName })
+            .where(eq(professionalProfiles.userId, userId))
+          return currentWithDocument(tx, userId)
+        }),
+        () => new LockedIdentityError(),
+      )
     },
     setEmergencyWhatsapp(userId, emergencyWhatsapp) {
       return withUser(db, userId, async (tx) => {
@@ -146,24 +199,18 @@ export function createProfessionalRepository(db: Database): ProfessionalReposito
           .update(professionalProfiles)
           .set({ emergencyWhatsapp })
           .where(eq(professionalProfiles.userId, userId))
-        const [row] = await current(tx, userId)
-        return withLatestDocument(tx, userId, row)
+        return currentWithDocument(tx, userId)
       })
     },
-    async submitDocument(userId, document) {
-      try {
-        return await withUser(db, userId, async (tx) => {
+    submitDocument(userId, document) {
+      return translated(
+        withUser(db, userId, async (tx) => {
           await tx.insert(professionalDocuments).values({ ...document, userId })
           await tx.execute(sql`select public.reopen_professional_review()`)
-          const [row] = await current(tx, userId)
-          return withLatestDocument(tx, userId, row)
-        })
-      } catch (error) {
-        if (isPolicyViolation(error)) {
-          throw new DocumentNotStoredError()
-        }
-        throw error
-      }
+          return currentWithDocument(tx, userId)
+        }),
+        () => new DocumentNotStoredError(),
+      )
     },
   }
 }

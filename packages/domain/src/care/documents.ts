@@ -1,3 +1,4 @@
+import { sniffOneOf } from '../files/signatures.ts'
 import {
   cleanFileName,
   uploadProblem,
@@ -30,6 +31,10 @@ export function isProfessionalDocumentType(type: string): type is ProfessionalDo
 
 export function professionalDocumentExtension(type: ProfessionalDocumentType): string {
   return extensions[type]
+}
+
+export function sniffDocumentType(content: Uint8Array): ProfessionalDocumentType | null {
+  return sniffOneOf(content, isProfessionalDocumentType)
 }
 
 export function professionalDocumentProblem(file: UploadCandidate): UploadProblem | null {

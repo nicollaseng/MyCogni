@@ -14,6 +14,8 @@ function notification(overrides: Partial<Notification>): Notification {
     readAt: null,
     insightId: null,
     questionnaire: null,
+    review: null,
+    unavailableProfessional: null,
     supportTicket: null,
     invitation: null,
     ...overrides,
@@ -59,6 +61,22 @@ describe('notificationHref', () => {
     expect(notificationHref(notification({ kind: 'reminder' }))).toBe('/zen')
     expect(notificationHref(notification({ kind: 'export_ready' }))).toBe('/me/privacy#data')
     expect(notificationHref(notification({ kind: 'export_failed' }))).toBe('/me/privacy#data')
+  })
+
+  it('sends a verification decision to the professional area and a departure to the patient list', () => {
+    expect(
+      notificationHref(
+        notification({ kind: 'professional', review: { decision: 'verified', note: null } }),
+      ),
+    ).toBe('/pro')
+    expect(
+      notificationHref(
+        notification({
+          kind: 'professional',
+          unavailableProfessional: { name: 'Helena Prado' },
+        }),
+      ),
+    ).toBe('/me/professionals')
   })
 
   it('opens the reading of the weekly summary on Padrões', () => {

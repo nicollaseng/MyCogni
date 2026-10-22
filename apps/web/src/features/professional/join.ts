@@ -1,33 +1,52 @@
 import type { RegisterProfessionalInput } from '@mycogni/contracts'
-import { requiresRegistration, type ConsentKind, type ProfessionalKind } from '@mycogni/domain'
+import {
+  councilOf,
+  institutionRegistrationLimits,
+  parseRegistration,
+  registrationIssues,
+  type ConsentKind,
+  type ProfessionalKind,
+} from '@mycogni/domain'
 import type { ActionResult } from '@/shared/lib/actions/result'
 
 export interface JoinValues {
   kind: ProfessionalKind | null
   fullName: string
-  registration: string
+  uf: string
+  number: string
+  institutionRegistration: string
   accepted: boolean
 }
 
 export type Join = (values: JoinValues) => Promise<ActionResult<null>>
 
-export type JoinField = 'kind' | 'fullName' | 'registration' | 'consent'
+export type JoinField = 'kind' | 'fullName' | 'uf' | 'number' | 'institution' | 'consent'
 
 export type JoinIssue =
   | 'kindRequired'
   | 'fullNameRequired'
   | 'fullNameTooLong'
-  | 'registrationRequired'
-  | 'registrationTooShort'
-  | 'registrationTooLong'
+  | 'ufRequired'
+  | 'numberRequired'
+  | 'numberInvalid'
+  | 'institutionTooShort'
+  | 'institutionTooLong'
   | 'consentRequired'
 
 export type JoinIssues = Partial<Record<JoinField, JoinIssue>>
 
 export const professionalConsentKinds: readonly ConsentKind[] = ['terms', 'privacy', 'adult']
 
+export const emptyJoinValues: JoinValues = {
+  kind: null,
+  fullName: '',
+  uf: '',
+  number: '',
+  institutionRegistration: '',
+  accepted: false,
+}
+
 const fullNameLimits = { min: 3, max: 120 }
-const registrationLimits = { min: 3, max: 40 }
 
 function fullNameIssue(fullName: string): JoinIssue | undefined {
   const length = fullName.trim().length
@@ -37,28 +56,33 @@ function fullNameIssue(fullName: string): JoinIssue | undefined {
   return length > fullNameLimits.max ? 'fullNameTooLong' : undefined
 }
 
-function registrationIssue(
-  kind: ProfessionalKind | null,
-  registration: string,
-): JoinIssue | undefined {
-  const length = registration.trim().length
-  if (length === 0) {
-    return kind !== null && requiresRegistration(kind) ? 'registrationRequired' : undefined
+function councilIssues({ kind, uf, number }: JoinValues): JoinIssues {
+  const issues: JoinIssues = {}
+  for (const issue of kind === null ? [] : registrationIssues(kind, { uf, number })) {
+    issues[issue === 'ufRequired' ? 'uf' : 'number'] = issue
   }
-  if (length < registrationLimits.min) {
-    return 'registrationTooShort'
+  return issues
+}
+
+function institutionIssue({ kind, institutionRegistration }: JoinValues): JoinIssue | undefined {
+  const length = institutionRegistration.trim().length
+  if (kind === null || councilOf(kind) !== null || length === 0) {
+    return undefined
   }
-  return length > registrationLimits.max ? 'registrationTooLong' : undefined
+  if (length < institutionRegistrationLimits.min) {
+    return 'institutionTooShort'
+  }
+  return length > institutionRegistrationLimits.max ? 'institutionTooLong' : undefined
 }
 
 export function joinIssues(values: JoinValues): JoinIssues {
   const found: readonly [JoinField, JoinIssue | undefined][] = [
     ['kind', values.kind === null ? 'kindRequired' : undefined],
     ['fullName', fullNameIssue(values.fullName)],
-    ['registration', registrationIssue(values.kind, values.registration)],
+    ['institution', institutionIssue(values)],
     ['consent', values.accepted ? undefined : 'consentRequired'],
   ]
-  const issues: JoinIssues = {}
+  const issues: JoinIssues = councilIssues(values)
   for (const [field, issue] of found) {
     if (issue !== undefined) {
       issues[field] = issue
@@ -71,10 +95,15 @@ export function registrationInput(
   kind: ProfessionalKind,
   values: JoinValues,
 ): RegisterProfessionalInput {
-  const registration = values.registration.trim()
+  const parsed = parseRegistration(kind, { uf: values.uf, number: values.number })
+  const institution = values.institutionRegistration.trim()
   return {
     kind,
     fullName: values.fullName.trim(),
-    registration: registration === '' ? null : registration,
+    registration:
+      parsed.ok && parsed.registration !== null
+        ? { uf: parsed.registration.uf, number: parsed.registration.number }
+        : null,
+    institutionRegistration: councilOf(kind) === null && institution !== '' ? institution : null,
   }
 }

@@ -1,8 +1,8 @@
 import type { ReactNode } from 'react'
 import { AdminShell } from '@/features/admin/components/admin-shell'
-import { requireUser } from '@/shared/lib/auth/session'
+import { requireAdmin } from '@/shared/lib/auth/admin'
 
 export default async function AdminLayout({ children }: Readonly<{ children: ReactNode }>) {
-  await requireUser()
+  await requireAdmin()
   return <AdminShell>{children}</AdminShell>
 }

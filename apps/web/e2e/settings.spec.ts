@@ -1,7 +1,7 @@
 import { readFile } from 'node:fs/promises'
 import { fileURLToPath } from 'node:url'
 import { expect, test, type Page } from '@playwright/test'
-import { finishOnboarding, setPhoto, verifiedProfessional } from './support/api'
+import { finishOnboarding, registeredProfessional, setPhoto } from './support/api'
 import { signedOut } from './support/session'
 import { createUser, uniqueEmail } from './support/supabase'
 
@@ -156,7 +156,7 @@ test.describe('the profile photo', () => {
 
   test('opens the same viewer from the professional settings', async ({ page }) => {
     const email = uniqueEmail('secoes-pro')
-    await verifiedProfessional(email, password, 'Helena Prado')
+    await registeredProfessional(email, password, 'Helena Prado')
     await signIn(page, email)
     await page.goto('/pro/settings')
 

@@ -12,12 +12,12 @@ export function photoStepDoneIn(metadata: Readonly<Record<string, unknown>> | un
 
 export function onboardingStepOf(
   professional: Pick<ProfessionalProfile, 'status' | 'document'>,
-  photoStepDone: boolean,
+  photo: { added: boolean; confirmed: boolean },
 ): OnboardingStep {
   if (professional.status === 'rejected' || professional.document === null) {
     return 'document'
   }
-  return photoStepDone ? 'review' : 'photo'
+  return photo.added && photo.confirmed ? 'review' : 'photo'
 }
 
 export function stepNumberOf(step: OnboardingStep): number {

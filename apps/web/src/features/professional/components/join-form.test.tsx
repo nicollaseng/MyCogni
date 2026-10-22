@@ -17,7 +17,7 @@ function renderForm(locale: Locale = 'pt-BR') {
 }
 
 describe('JoinForm', () => {
-  it('asks for the council registration of a psychologist', async () => {
+  it('asks a psychologist for the CRP state and number and shows how it will read', async () => {
     const { join, user } = renderForm()
 
     await user.click(screen.getByRole('radio', { name: 'Psicologia' }))
@@ -25,35 +25,68 @@ describe('JoinForm', () => {
     await user.click(screen.getByRole('checkbox'))
     await user.click(screen.getByRole('button', { name: 'Enviar para verificação' }))
 
-    expect(screen.getByText('Informe seu registro no conselho.')).toBeInTheDocument()
+    expect(screen.getByRole('group', { name: 'Registro no CRP' })).toBeInTheDocument()
+    expect(screen.getByText('Escolha o estado do seu conselho.')).toBeInTheDocument()
+    expect(screen.getByText('Informe o número do registro.')).toBeInTheDocument()
     expect(join).not.toHaveBeenCalled()
 
-    await user.type(screen.getByLabelText('Registro no conselho'), 'CRP 06/123456')
+    await user.selectOptions(screen.getByLabelText('Estado (UF)'), 'SP')
+    await user.type(screen.getByLabelText('Número'), '12.345-6')
+
+    expect(screen.getByLabelText('Número')).toHaveValue('123456')
+    expect(screen.getByText('Seu registro: CRP 06/123456')).toBeInTheDocument()
+
     await user.click(screen.getByRole('button', { name: 'Enviar para verificação' }))
 
     expect(join).toHaveBeenCalledWith({
       kind: 'psychologist',
       fullName: 'Helena Prado',
-      registration: 'CRP 06/123456',
+      uf: 'SP',
+      number: '123456',
+      institutionRegistration: '',
       accepted: true,
     })
   })
 
-  it('lets a psychoanalyst sign up without a registration', async () => {
+  it('formats a CRM with the state and refuses a short number', async () => {
+    const { join, user } = renderForm()
+
+    await user.click(screen.getByRole('radio', { name: 'Medicina' }))
+    await user.type(screen.getByLabelText('Nome completo'), 'Rafael Costa')
+    await user.selectOptions(screen.getByLabelText('Estado (UF)'), 'RJ')
+    await user.type(screen.getByLabelText('Número'), '123')
+    await user.click(screen.getByRole('checkbox'))
+    await user.click(screen.getByRole('button', { name: 'Enviar para verificação' }))
+
+    expect(screen.getByRole('group', { name: 'Registro no CRM' })).toBeInTheDocument()
+    expect(screen.getByText('Use de 4 a 8 números.')).toBeInTheDocument()
+    expect(join).not.toHaveBeenCalled()
+
+    await user.type(screen.getByLabelText('Número'), '4567')
+
+    expect(screen.getByText('Seu registro: CRM-RJ 1234567')).toBeInTheDocument()
+  })
+
+  it('lets a psychoanalyst sign up without a council, with an optional institution registration', async () => {
     const { join, user } = renderForm()
 
     await user.click(screen.getByRole('radio', { name: 'Psicanálise' }))
     await user.type(screen.getByLabelText('Nome completo'), 'Rafael Lima')
     await user.click(screen.getByRole('checkbox'))
 
-    expect(screen.getByLabelText('Registro profissional (opcional)')).toBeInTheDocument()
+    expect(screen.queryByLabelText('Estado (UF)')).not.toBeInTheDocument()
+    expect(
+      screen.getByLabelText('Registro da formação ou associação (opcional)'),
+    ).toBeInTheDocument()
 
     await user.click(screen.getByRole('button', { name: 'Enviar para verificação' }))
 
     expect(join).toHaveBeenCalledWith({
       kind: 'psychoanalyst',
       fullName: 'Rafael Lima',
-      registration: '',
+      uf: '',
+      number: '',
+      institutionRegistration: '',
       accepted: true,
     })
   })
@@ -63,7 +96,8 @@ describe('JoinForm', () => {
 
     await user.click(screen.getByRole('radio', { name: 'Psiquiatria' }))
     await user.type(screen.getByLabelText('Nome completo'), 'Marta Ribeiro')
-    await user.type(screen.getByLabelText('Registro no conselho'), 'CRM-SP 123456')
+    await user.selectOptions(screen.getByLabelText('Estado (UF)'), 'SP')
+    await user.type(screen.getByLabelText('Número'), '123456')
     await user.click(screen.getByRole('button', { name: 'Enviar para verificação' }))
 
     expect(
@@ -92,7 +126,8 @@ describe('JoinForm', () => {
 
     await user.click(screen.getByRole('radio', { name: 'Psychiatry' }))
 
-    expect(screen.getByText('Enter your license number.')).toBeInTheDocument()
+    expect(screen.getByText('Choose the state of your council.')).toBeInTheDocument()
+    expect(screen.getByText('Enter your registration number.')).toBeInTheDocument()
   })
 
   it('shows the error the server answers with', async () => {
@@ -104,7 +139,8 @@ describe('JoinForm', () => {
 
     await user.click(screen.getByRole('radio', { name: 'Medicina' }))
     await user.type(screen.getByLabelText('Nome completo'), 'Rafael Costa')
-    await user.type(screen.getByLabelText('Registro no conselho'), 'CRM-RJ 654321')
+    await user.selectOptions(screen.getByLabelText('Estado (UF)'), 'RJ')
+    await user.type(screen.getByLabelText('Número'), '654321')
     await user.click(screen.getByRole('checkbox'))
     await user.click(screen.getByRole('button', { name: 'Enviar para verificação' }))
 

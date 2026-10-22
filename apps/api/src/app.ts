@@ -120,7 +120,7 @@ function authenticatedRoutes(
     await api.register(assessmentModule(db, jobs))
     await api.register(checkInModule(db, jobs, api.log))
     await api.register(onboardingModule(db))
-    await api.register(professionalModule(db))
+    await api.register(professionalModule(db, profileFiles.documents))
     await api.register(
       accountModule(db, accountAdmin, [
         journalImages,
@@ -135,7 +135,15 @@ function authenticatedRoutes(
     )
     await api.register(careLinkModule(db, profileFiles.photos))
     await api.register(notificationModule(db))
-    await api.register(adminModule(db, profileFiles.documents))
+    await api.register(
+      adminModule({
+        db,
+        documents: profileFiles.documents,
+        photos: profileFiles.photos,
+        mailer,
+        webUrl: config.webUrl,
+      }),
+    )
     await api.register(journalModule({ db, images: journalImages, jobs, log: api.log }))
     await api.register(insightModule(db))
     await api.register(reportModule(db))

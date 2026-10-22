@@ -18,7 +18,7 @@ describe('OnboardingSteps', () => {
     expect(document).toHaveTextContent('Comprovante')
     expect(document).toHaveTextContent('Carteira do CRP')
     expect(photo).not.toHaveAttribute('aria-current')
-    expect(photo).toHaveTextContent('Opcional. Aparece para seus pacientes.')
+    expect(photo).toHaveTextContent('Obrigatória. A equipe compara com o documento.')
     expect(review).toHaveTextContent('Em análise')
   })
 

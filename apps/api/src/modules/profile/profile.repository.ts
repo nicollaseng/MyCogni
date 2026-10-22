@@ -6,6 +6,7 @@ import {
 } from '@mycogni/domain'
 import { and, eq, isNull, sql } from 'drizzle-orm'
 import type { Database, Transaction } from '../../db/client.ts'
+import { isPolicyViolation } from '../../db/errors.ts'
 import { withUser } from '../../db/rls.ts'
 import { profiles } from '../../db/schema/index.ts'
 
@@ -42,6 +43,14 @@ export interface ProfileRepository {
   update(userId: string, changes: ProfileChanges): Promise<ProfileRecord | undefined>
   completeOnboarding(userId: string): Promise<ProfileRecord | undefined>
   setAvatarIfEmpty(userId: string, avatarPath: string): Promise<boolean>
+  photoLocked(userId: string): Promise<boolean>
+}
+
+export class LockedPhotoError extends Error {
+  constructor() {
+    super('The photo of a verified professional is locked')
+    this.name = 'LockedPhotoError'
+  }
 }
 
 const legalKinds = sql.join(
@@ -119,21 +128,28 @@ export function createProfileRepository(db: Database): ProfileRepository {
         return result?.adopted === true ? findProfile(tx, userId) : undefined
       })
     },
-    update(userId, changes) {
-      return withUser(db, userId, async (tx) => {
-        const resumed =
-          changes.memoriesEnabled === true
-            ? {
-                memoriesReadUntil: sql`case when ${profiles.memoriesEnabled} then ${profiles.memoriesReadUntil} else now() end`,
-              }
-            : {}
-        const [row] = await tx
-          .update(profiles)
-          .set({ ...changes, ...resumed })
-          .where(eq(profiles.id, userId))
-          .returning(profileColumns)
-        return row
-      })
+    async update(userId, changes) {
+      try {
+        return await withUser(db, userId, async (tx) => {
+          const resumed =
+            changes.memoriesEnabled === true
+              ? {
+                  memoriesReadUntil: sql`case when ${profiles.memoriesEnabled} then ${profiles.memoriesReadUntil} else now() end`,
+                }
+              : {}
+          const [row] = await tx
+            .update(profiles)
+            .set({ ...changes, ...resumed })
+            .where(eq(profiles.id, userId))
+            .returning(profileColumns)
+          return row
+        })
+      } catch (error) {
+        if (isPolicyViolation(error)) {
+          throw new LockedPhotoError()
+        }
+        throw error
+      }
     },
     completeOnboarding(userId) {
       return withUser(db, userId, async (tx) => {
@@ -145,14 +161,29 @@ export function createProfileRepository(db: Database): ProfileRepository {
         return row
       })
     },
-    setAvatarIfEmpty(userId, avatarPath) {
+    async setAvatarIfEmpty(userId, avatarPath) {
+      try {
+        return await withUser(db, userId, async (tx) => {
+          const rows = await tx
+            .update(profiles)
+            .set({ avatarPath })
+            .where(and(eq(profiles.id, userId), isNull(profiles.avatarPath)))
+            .returning({ id: profiles.id })
+          return rows.length > 0
+        })
+      } catch (error) {
+        if (isPolicyViolation(error)) {
+          return false
+        }
+        throw error
+      }
+    },
+    photoLocked(userId) {
       return withUser(db, userId, async (tx) => {
-        const rows = await tx
-          .update(profiles)
-          .set({ avatarPath })
-          .where(and(eq(profiles.id, userId), isNull(profiles.avatarPath)))
-          .returning({ id: profiles.id })
-        return rows.length > 0
+        const rows = await tx.execute<{ locked: boolean }>(
+          sql`select exists (select 1 from public.locked_identity()) as locked`,
+        )
+        return Array.from(rows)[0]?.locked === true
       })
     },
   }

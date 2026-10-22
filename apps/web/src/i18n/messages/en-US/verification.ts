@@ -12,7 +12,7 @@ export const verification: VerificationMessages = {
       review: 'In review',
     },
     hints: {
-      photo: 'Optional. Shown to your patients.',
+      photo: 'Required. The team compares it with your document.',
       review: 'The MyCogniAI team checks everything before enabling invitations.',
     },
   },
@@ -21,14 +21,14 @@ export const verification: VerificationMessages = {
     lead: 'We check every professional before enabling invitations. Your sign-up goes to review as soon as the document arrives.',
   },
   photo: {
-    title: 'Add a photo to your profile.',
-    lead: 'It is optional. The photo appears next to your name on your invitation page and to the patients you follow.',
+    title: 'Add a photo of your face.',
+    lead: 'The photo is required: our team compares your face with the one on your document before approving. It also appears to your patients next to your name.',
     received: 'Document received. The review has started.',
     add: 'Add photo',
-    skip: 'Skip for now',
+    tips: 'Use a recent photo, facing the camera, in good light, with your whole face visible.',
     continue: 'Continue',
     saving: 'Saving…',
-    later: 'You can change or remove the photo anytime in Settings.',
+    later: 'After verification, your name and photo only change through support.',
     failed: 'We couldn’t continue right now. Please try again in a moment.',
   },
   review: {

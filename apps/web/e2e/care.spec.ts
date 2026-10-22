@@ -31,7 +31,7 @@ test('accepts an invitation by link, keeps one link per professional and ends it
   await page.getByRole('button', { name: 'Ver o convite' }).click()
 
   await expect(page).toHaveURL(/\/invites\/[0-9a-f-]{36}$/)
-  await expect(page.getByText('Psicologia · CRP 06/123456')).toBeVisible()
+  await expect(page.getByText(/^Psicologia · CRP 06\/\d{8}$/)).toBeVisible()
   const history = page.getByRole('switch', {
     name: 'Compartilhar também meus registros anteriores',
   })

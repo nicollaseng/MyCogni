@@ -15,7 +15,12 @@ import {
 } from '@mycogni/domain'
 import type { AuthenticatedUser } from '../../auth/token-verifier.ts'
 import type { Mailer } from '../../mail/mailer.ts'
-import { ConflictError, ForbiddenError, NotFoundError } from '../../shared/errors.ts'
+import {
+  ConflictError,
+  ForbiddenError,
+  NotFoundError,
+  ProfessionalUnavailableError,
+} from '../../shared/errors.ts'
 import type { BucketStore } from '../../storage/bucket-store.ts'
 import { signedUrlOf } from '../../storage/profile-files.ts'
 import { toCareLinks } from '../care-links/care-link.mapper.ts'
@@ -216,6 +221,8 @@ export function createInvitationService({
           throw new ConflictError('This invitation is no longer pending')
         case 'already_linked':
           throw new ConflictError('You already share your records with this professional')
+        case 'unavailable':
+          throw new ProfessionalUnavailableError()
         case 'accepted': {
           const link = await careLinks.findForPatient(user.id, outcome.linkId)
           const [careLink] = await toCareLinks(link === undefined ? [] : [link], photos)

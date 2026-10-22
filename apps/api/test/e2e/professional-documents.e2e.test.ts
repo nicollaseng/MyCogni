@@ -6,7 +6,7 @@ import { connectDatabase, type DatabaseConnection } from '../../src/db/client.ts
 import type { App } from '../../src/shared/http.ts'
 import { makeAdmin } from '../support/care.ts'
 import { testDatabaseUrl } from '../support/database.ts'
-import { sendRegistrationDocument } from '../support/documents.ts'
+import { addProfilePhoto, sendRegistrationDocument } from '../support/documents.ts'
 import { downloadAs, tinyPdf, uploadAs, uploadProfessionalDocument } from '../support/storage.ts'
 import {
   bearer,
@@ -143,6 +143,31 @@ describe('/v1/professional/documents', () => {
     expect(tooLarge.statusCode).toBe(400)
   })
 
+  it.each([
+    [
+      'a web page named as a PDF',
+      'pdf',
+      'application/pdf',
+      Buffer.from('<!doctype html><p>CRP</p>'),
+    ],
+    ['a PDF that says it is a PNG', 'png', 'image/png', tinyPdf],
+    ['an empty file', 'jpg', 'image/jpeg', Buffer.alloc(0)],
+  ])('refuses %s, whatever type it declares', async (_, extension, contentType, body) => {
+    const path = `${helena.id}/${randomUUID()}.${extension}`
+    const stored = await uploadAs(helena, professionalDocumentBucket, path, contentType, body)
+
+    const response = await submit(helena, {
+      path,
+      fileName: `CRP.${extension}`,
+      contentType,
+      sizeBytes: Math.max(body.length, 1),
+    })
+
+    expect(stored.ok).toBe(true)
+    expect(response.statusCode).toBe(415)
+    expect(response.json()).toEqual(expect.objectContaining({ code: 'UNSUPPORTED_TYPE' }))
+  })
+
   it('keeps the files away from patients and other professionals in storage', async () => {
     const own = await downloadAs(helena, professionalDocumentBucket, documentPath)
     const otherProfessional = await downloadAs(caio, professionalDocumentBucket, documentPath)
@@ -200,6 +225,7 @@ describe('/v1/professional/documents', () => {
   })
 
   it('takes no more documents once the registration is verified', async () => {
+    await addProfilePhoto(app, helena)
     await app.inject({
       method: 'POST',
       url: `/v1/admin/professionals/${helena.id}/review`,

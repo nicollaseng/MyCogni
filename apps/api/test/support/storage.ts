@@ -26,6 +26,7 @@ export function uploadAs(
   path: string,
   contentType: string,
   body: Buffer,
+  upsert = false,
 ): Promise<Response> {
   return fetch(objectUrl(bucket, path), {
     method: 'POST',
@@ -33,6 +34,7 @@ export function uploadAs(
       apikey: process.env.SUPABASE_ANON_KEY ?? '',
       authorization: `Bearer ${user.accessToken}`,
       'content-type': contentType,
+      'x-upsert': String(upsert),
     },
     body,
   })

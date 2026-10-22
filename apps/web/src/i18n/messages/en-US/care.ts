@@ -119,6 +119,12 @@ export const care: CareMessages = {
   },
   notifications: {
     questionnaireCompleted: '{name} answered a questionnaire.',
+    review: {
+      verified: 'Your registration is verified. You can now invite patients.',
+      rejected: 'Your registration was not approved.',
+      note: 'Reason: {note}',
+    },
+    unavailable: '{name} is no longer available on MyCogniAI.',
     meta: { title: 'Notifications' },
     title: 'Notifications',
     empty: 'Nothing here yet.',
@@ -132,6 +138,7 @@ export const care: CareMessages = {
       expired: 'Invitation expired',
     },
     open: {
+      review: 'Open the professional area',
       invitation: 'View invitation',
       professional: 'View professionals',
       insight: 'View summary',

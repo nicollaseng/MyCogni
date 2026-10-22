@@ -4,11 +4,13 @@ import {
   professionalDocumentExtension,
   professionalDocumentName,
   professionalDocumentProblem,
+  sniffDocumentType,
 } from '@mycogni/domain'
 import { NextResponse } from 'next/server'
 import { submitProfessionalDocument } from '@/shared/lib/api/care'
 import { currentUser } from '@/shared/lib/auth/session'
 import { createSupabaseServerClient } from '@/shared/lib/supabase/server'
+import { fileHead } from '@/shared/lib/file-head'
 import { refuse, refuseFile } from '@/shared/lib/upload-responses'
 
 export async function POST(request: Request) {
@@ -27,6 +29,9 @@ export async function POST(request: Request) {
   const problem = professionalDocumentProblem(file)
   if (problem !== null) {
     return refuseFile(problem)
+  }
+  if (sniffDocumentType(await fileHead(file)) !== file.type) {
+    return refuseFile('type')
   }
   const path = `${user.id}/${crypto.randomUUID()}.${professionalDocumentExtension(file.type)}`
   const storage = (await createSupabaseServerClient('read-write')).storage.from(

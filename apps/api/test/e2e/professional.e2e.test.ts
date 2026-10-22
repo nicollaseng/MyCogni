@@ -1,6 +1,9 @@
 import { afterAll, beforeAll, describe, expect, it } from '@jest/globals'
+import { eq } from 'drizzle-orm'
 import { connectDatabase, type DatabaseConnection } from '../../src/db/client.ts'
+import { professionalProfiles } from '../../src/db/schema/index.ts'
 import type { App } from '../../src/shared/http.ts'
+import { councilNumber } from '../support/care.ts'
 import { testDatabaseUrl } from '../support/database.ts'
 import {
   bearer,
@@ -17,6 +20,9 @@ describe('/v1/professional', () => {
   let helena: TestUser
   let rui: TestUser
   let lia: TestUser
+  let nina: TestUser
+  let otto: TestUser
+  const helenaNumber = councilNumber().slice(1)
 
   function register(user: TestUser, payload: Record<string, unknown>) {
     return app.inject({ method: 'POST', url: '/v1/professional', headers: bearer(user), payload })
@@ -42,12 +48,16 @@ describe('/v1/professional', () => {
     helena = await createTestUser(professionalAccount)
     rui = await createTestUser(professionalAccount)
     lia = await createTestUser(professionalAccount)
+    nina = await createTestUser(professionalAccount)
+    otto = await createTestUser(professionalAccount)
   })
 
   afterAll(async () => {
     await deleteTestUser(helena.id)
     await deleteTestUser(rui.id)
     await deleteTestUser(lia.id)
+    await deleteTestUser(nina.id)
+    await deleteTestUser(otto.id)
     await app.close()
     await connection.close()
   })
@@ -77,18 +87,46 @@ describe('/v1/professional', () => {
     expect(response.json()).toEqual(expect.objectContaining({ code: 'VALIDATION_ERROR' }))
   })
 
+  it.each([
+    ['a free-text registration', { registration: 'CRP 06/123456' }],
+    ['a state outside Brazil', { registration: { uf: 'XX', number: '123456' } }],
+    ['a number with letters', { registration: { uf: 'SP', number: '12a456' } }],
+    ['a number that is too short', { registration: { uf: 'SP', number: '123' } }],
+    ['a number that is too long', { registration: { uf: 'SP', number: '123456789' } }],
+    ['an institution registration', { institutionRegistration: 'Sociedade 1' }],
+  ])('refuses a psychologist with %s', async (_, payload) => {
+    const response = await register(helena, {
+      kind: 'psychologist',
+      fullName: 'Helena Prado',
+      registration: { uf: 'SP', number: helenaNumber },
+      ...payload,
+    })
+
+    expect(response.statusCode).toBe(400)
+  })
+
+  it('refuses a council registration from a psychoanalyst', async () => {
+    const response = await register(rui, {
+      kind: 'psychoanalyst',
+      fullName: 'Rui Andrade',
+      registration: { uf: 'SP', number: '123456' },
+    })
+
+    expect(response.statusCode).toBe(400)
+  })
+
   it('registers a professional waiting for verification', async () => {
     const response = await register(helena, {
       kind: 'psychologist',
       fullName: '  Helena Prado ',
-      registration: 'CRP 06/123456',
+      registration: { uf: 'SP', number: helenaNumber },
     })
 
     expect(response.statusCode).toBe(201)
     expect(response.json()).toEqual({
       kind: 'psychologist',
       fullName: 'Helena Prado',
-      registration: 'CRP 06/123456',
+      registration: `CRP 06/${helenaNumber}`,
       status: 'pending',
       reviewNote: null,
       createdAt: expect.any(String),
@@ -99,24 +137,64 @@ describe('/v1/professional', () => {
     })
   })
 
-  it('registers a psychoanalyst without a council registration', async () => {
+  it('registers a psychoanalyst with the optional registration of their institution', async () => {
     const response = await register(rui, {
       kind: 'psychoanalyst',
       fullName: 'Rui Andrade',
       registration: null,
+      institutionRegistration: '  Sociedade Psicanalítica 4521 ',
     })
 
     expect(response.statusCode).toBe(201)
+    expect(response.json()).toEqual(
+      expect.objectContaining({ registration: 'Sociedade Psicanalítica 4521' }),
+    )
   })
 
   it('refuses a second registration for the same account', async () => {
     const response = await register(helena, {
       kind: 'psychiatrist',
       fullName: 'Helena Prado',
-      registration: 'CRM-SP 99999',
+      registration: { uf: 'SP', number: councilNumber() },
     })
 
     expect(response.statusCode).toBe(409)
+    expect(response.json()).toEqual(expect.objectContaining({ code: 'CONFLICT' }))
+  })
+
+  it('keeps one council registration on one account, leading zeros included', async () => {
+    const taken = await register(lia, {
+      kind: 'psychologist',
+      fullName: 'Lia Campos',
+      registration: { uf: 'SP', number: `0${helenaNumber}` },
+    })
+
+    expect(taken.statusCode).toBe(409)
+    expect(taken.json()).toEqual(expect.objectContaining({ code: 'REGISTRATION_TAKEN' }))
+  })
+
+  it('treats states served by the same psychology council as one registry', async () => {
+    const number = councilNumber()
+    const para = await register(nina, {
+      kind: 'psychologist',
+      fullName: 'Nina Matos',
+      registration: { uf: 'PA', number },
+    })
+    const amapa = await register(otto, {
+      kind: 'psychologist',
+      fullName: 'Otto Matos',
+      registration: { uf: 'AP', number },
+    })
+    const doctor = await register(otto, {
+      kind: 'physician',
+      fullName: 'Otto Matos',
+      registration: { uf: 'PA', number },
+    })
+
+    expect(para.json()).toEqual(expect.objectContaining({ registration: `CRP 10/${number}` }))
+    expect(amapa.json()).toEqual(expect.objectContaining({ code: 'REGISTRATION_TAKEN' }))
+    expect(doctor.statusCode).toBe(201)
+    expect(doctor.json()).toEqual(expect.objectContaining({ registration: `CRM-PA ${number}` }))
   })
 
   it('returns the professional profile', async () => {
@@ -154,7 +232,7 @@ describe('/v1/professional', () => {
     expect(response.json()).toEqual({
       kind: 'psychologist',
       fullName: 'Dra. Helena Prado Lima',
-      registration: 'CRP 06/123456',
+      registration: `CRP 06/${helenaNumber}`,
       status: 'pending',
       reviewNote: null,
       createdAt: expect.any(String),
@@ -183,5 +261,34 @@ describe('/v1/professional', () => {
     expect(response.statusCode).toBe(400)
     expect(response.json()).toEqual(expect.objectContaining({ code: 'VALIDATION_ERROR' }))
     expect(await profileOf(helena)).toEqual(before)
+  })
+
+  it('locks the name once the registration is verified', async () => {
+    await connection.db
+      .update(professionalProfiles)
+      .set({ status: 'verified', verifiedAt: new Date() })
+      .where(eq(professionalProfiles.userId, helena.id))
+    const before = await profileOf(helena)
+
+    const response = await rename(helena, { fullName: 'Outra Pessoa' })
+
+    expect(response.statusCode).toBe(409)
+    expect(response.json()).toEqual(expect.objectContaining({ code: 'IDENTITY_LOCKED' }))
+    expect(await profileOf(helena)).toEqual(before)
+  })
+
+  it('frees the registration of a rejected professional for another account', async () => {
+    await connection.db
+      .update(professionalProfiles)
+      .set({ status: 'rejected', verifiedAt: null })
+      .where(eq(professionalProfiles.userId, helena.id))
+
+    const response = await register(lia, {
+      kind: 'psychologist',
+      fullName: 'Lia Campos',
+      registration: { uf: 'SP', number: helenaNumber },
+    })
+
+    expect(response.statusCode).toBe(201)
   })
 })

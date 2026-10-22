@@ -71,8 +71,8 @@ describe('profile photos', () => {
     helena = await createTestUser()
     ana = await createTestUser()
     bruno = await createTestUser()
-    await registerProfessional(connection.db, helena.id)
     helenaPhoto = await setPhoto(helena)
+    await registerProfessional(connection.db, helena.id)
     await setPhoto(ana)
     const [link] = await connection.db
       .insert(careLinks)

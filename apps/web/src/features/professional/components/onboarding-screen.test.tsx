@@ -69,20 +69,20 @@ describe('OnboardingScreen', () => {
     expect(screen.getByLabelText('Escolher arquivo')).toBeInTheDocument()
   })
 
-  it('offers the optional photo once the document arrived', async () => {
-    const { actions, user } = renderScreen(
+  it('requires a photo of the face once the document arrived', () => {
+    const { actions } = renderScreen(
       'photo',
       professionalProfile({ document: registrationDocument() }),
     )
 
     expect(screen.getByText('Passo 2 de 3')).toBeInTheDocument()
-    expect(title()).toHaveTextContent('Adicione uma foto ao seu perfil.')
+    expect(title()).toHaveTextContent('Adicione uma foto do seu rosto.')
+    expect(screen.getByText(/A foto é obrigatória/)).toBeInTheDocument()
     expect(screen.getByText('Comprovante recebido. A análise já começou.')).toBeInTheDocument()
     expect(screen.getByText('Psicologia')).toBeInTheDocument()
-
-    await user.click(screen.getByRole('button', { name: 'Pular por agora' }))
-
-    expect(actions.finishPhotoStep).toHaveBeenCalledTimes(1)
+    expect(screen.getByLabelText('Adicionar foto')).toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: 'Pular por agora' })).not.toBeInTheDocument()
+    expect(actions.finishPhotoStep).not.toHaveBeenCalled()
   })
 
   it('ends with the review: the document on file, its status and what comes next', () => {
@@ -96,7 +96,7 @@ describe('OnboardingScreen', () => {
     expect(screen.getByText('crp-frente.pdf')).toBeInTheDocument()
     expect(screen.getAllByText('Em análise')).toHaveLength(2)
     expect(
-      screen.getByText('Conferimos seu nome, seu registro e o comprovante enviado.'),
+      screen.getByText('Conferimos seu nome, seu registro, sua foto e o comprovante enviado.'),
     ).toBeInTheDocument()
     expect(screen.getByRole('link', { name: 'Configurações' })).toHaveAttribute(
       'href',

@@ -2,9 +2,11 @@ import { notificationKinds } from '@mycogni/domain'
 import { sql } from 'drizzle-orm'
 import { index, pgEnum, pgPolicy, pgTable, timestamp, uuid } from 'drizzle-orm/pg-core'
 import { authenticatedRole, authUid, authUsers } from 'drizzle-orm/supabase'
+import { careLinks } from './care-links.ts'
 import { insights } from './insights.ts'
 import { invitations } from './invitations.ts'
 import { questionnaireAssignments } from './questionnaires.ts'
+import { professionalReviews } from './professional-reviews.ts'
 import { supportTickets, supportTicketStatus } from './support-tickets.ts'
 
 export const notificationKind = pgEnum('notification_kind', notificationKinds)
@@ -27,6 +29,10 @@ export const notifications = pgTable(
       () => questionnaireAssignments.id,
       { onDelete: 'cascade' },
     ),
+    professionalReviewId: uuid('professional_review_id').references(() => professionalReviews.id, {
+      onDelete: 'cascade',
+    }),
+    careLinkId: uuid('care_link_id').references(() => careLinks.id, { onDelete: 'cascade' }),
     createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
     readAt: timestamp('read_at', { withTimezone: true }),
   },

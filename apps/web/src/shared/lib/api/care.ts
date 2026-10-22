@@ -10,6 +10,7 @@ import {
   patientSummaryListSchema,
   patientSummarySchema,
   professionalForReviewListSchema,
+  professionalReviewDetailSchema,
   professionalOverviewSchema,
   professionalInsightListSchema,
   professionalProfileSchema,
@@ -32,6 +33,7 @@ import {
   type NotificationList,
   type PatientSummary,
   type ProfessionalForReview,
+  type ProfessionalReviewDetail,
   type ProfessionalInsight,
   type ProfessionalOverview,
   type ProfessionalProfile,
@@ -297,6 +299,22 @@ export async function fetchProfessionalsForReview(
     })
   } catch (error) {
     if (error instanceof ApiError && error.status === 403) {
+      return null
+    }
+    throw error
+  }
+}
+
+export async function fetchProfessionalReview(
+  userId: string,
+): Promise<ProfessionalReviewDetail | null> {
+  try {
+    return await apiRequest({
+      path: `/v1/admin/professionals/${encodeURIComponent(userId)}`,
+      schema: professionalReviewDetailSchema,
+    })
+  } catch (error) {
+    if (error instanceof ApiError && (error.status === 403 || error.status === 404)) {
       return null
     }
     throw error

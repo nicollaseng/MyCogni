@@ -1,4 +1,6 @@
-import { randomUUID } from 'node:crypto'
+import { randomInt, randomUUID } from 'node:crypto'
+import { readFile } from 'node:fs/promises'
+import { fileURLToPath } from 'node:url'
 import { requiredConsentKinds, sharingConsentVersion, type MemoryKind } from '@mycogni/domain'
 import { z } from 'zod'
 import {
@@ -198,19 +200,32 @@ export async function addToCheckIn(
   await post(`/v1/check-ins/${checkInId}/addenda`, { text })
 }
 
+export function councilNumber(): string {
+  return String(randomInt(10_000_000, 100_000_000))
+}
+
+export const facePhoto = fileURLToPath(new URL('../fixtures/photo.png', import.meta.url))
+
 export async function registeredProfessional(
   email: string,
   password: string,
   fullName: string,
+  number: string = councilNumber(),
 ): Promise<string> {
   const userId = await createUser(email, password, { accountType: 'professional' })
+  await send(await signedSession(email, password), 'PATCH', '/v1/me', { locale: 'pt-BR' })
   const register = await poster(email, password)
   await register('/v1/professional', {
     kind: 'psychologist',
     fullName,
-    registration: 'CRP 06/123456',
+    registration: { uf: 'SP', number },
   })
   return userId
+}
+
+export async function readyForReview(email: string, password: string): Promise<void> {
+  await sendRegistrationDocument(email, password)
+  await setPhoto(email, password, await readFile(facePhoto))
 }
 
 export async function verifiedProfessional(
@@ -219,7 +234,7 @@ export async function verifiedProfessional(
   fullName: string,
 ): Promise<string> {
   const userId = await registeredProfessional(email, password, fullName)
-  await sendRegistrationDocument(email, password)
+  await readyForReview(email, password)
   const adminEmail = uniqueEmail('admin')
   const adminId = await createUser(adminEmail, password)
   await makeAdmin(adminId)

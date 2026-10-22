@@ -183,16 +183,19 @@ export const professional: ProfessionalMessages = {
     lead: 'Once you send them, our team checks your license before enabling invitations.',
     kind: 'Profession',
     fullName: 'Full name',
-    fullNameHint: 'This is how your patients will see you.',
-    registration: 'License number',
-    registrationOptional: 'Professional registration (optional)',
-    registrationHints: {
-      psychologist: 'E.g. PSY 12345 (CA)',
-      psychiatrist: 'E.g. MD 123456 (NY)',
-      physician: 'E.g. MD 123456 (NY)',
-      psychoanalyst:
-        'If you have one, enter the registration from your training institute or association.',
+    fullNameHint: 'Use the name on your document. This is how your patients will see you.',
+    councils: { crp: 'CRP registration (Brazil)', crm: 'CRM registration (Brazil)' },
+    uf: 'State',
+    ufPlaceholder: 'Choose',
+    number: 'Number',
+    councilHints: {
+      crp: 'Choose the state of your CRP and type only the digits. The region comes from the state.',
+      crm: 'Choose the state of your CRM and type only the digits.',
     },
+    preview: 'Your registration: {registration}',
+    institution: 'Training institute or association registration (optional)',
+    institutionHint:
+      'If you have one, enter the registration from your training institute or association.',
     consent:
       'I am 18 or older and I accept the <terms>terms of use</terms> and the <privacy>privacy policy</privacy>.',
     submit: 'Send for verification',
@@ -201,9 +204,13 @@ export const professional: ProfessionalMessages = {
       kindRequired: 'Choose your profession.',
       fullNameRequired: 'Enter your full name.',
       fullNameTooLong: 'Use 120 characters or fewer.',
-      registrationRequired: 'Enter your license number.',
-      registrationTooShort: 'Check the number: use at least 3 characters.',
-      registrationTooLong: 'Use 40 characters or fewer.',
+      ufRequired: 'Choose the state of your council.',
+      numberRequired: 'Enter your registration number.',
+      numberInvalid: 'Use 4 to 8 digits.',
+      institutionTooShort: 'Use at least 3 characters.',
+      institutionTooLong: 'Use 40 characters or fewer.',
+      registrationTaken:
+        'This registration already belongs to another account. If it is yours, contact support.',
       consentRequired: 'To continue, accept the terms of use and the privacy policy.',
       save: 'We could not send your details right now. Try again in a moment.',
     },
@@ -214,7 +221,7 @@ export const professional: ProfessionalMessages = {
       body: 'Our team checks your professional license by hand before enabling invitations.',
       next: 'What happens next',
       steps: {
-        review: 'We check your name, your license and the document you sent.',
+        review: 'We check your name, your registration, your photo and the document you sent.',
         approve: 'Once you are approved, this page shows your patients.',
         invite:
           'You invite patients by email or by link, and each of them decides whether to accept.',
@@ -271,14 +278,17 @@ export const professional: ProfessionalMessages = {
       photo: 'Photo',
       photoHint: 'Shown to your patients and on your invitation page.',
       kind: 'Profession',
-      registration: 'License number',
-      noRegistration: 'No license number',
+      registration: 'Council registration',
+      noRegistration: 'No registration',
       status: 'Verification',
       verified: 'Verified on {date}',
       pending: 'Being verified since {date}',
       rejected: 'Not verified',
       locked:
-        'Your profession and license are checked by the MyCogniAI team. To change them, write to <link>{email}</link>.',
+        'Your profession and registration are checked by the MyCogniAI team. To change them, <link>contact support</link>.',
+      lockedVerified:
+        'Your name, photo, profession and registration were checked during verification. To change them, <link>contact support</link>.',
+      photoLocked: 'Checked during verification.',
     },
     whatsapp: {
       label: 'Emergency WhatsApp',

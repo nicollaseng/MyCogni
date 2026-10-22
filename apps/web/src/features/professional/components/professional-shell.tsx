@@ -52,6 +52,7 @@ export function ProfessionalShell({
         name={professional.fullName}
         profession={profession}
         photoUrl={photoUrl}
+        bell={<Bell timeZone={timeZone} align="end" />}
         className={warnTokens}
       >
         {children}

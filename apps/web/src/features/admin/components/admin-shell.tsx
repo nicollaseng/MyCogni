@@ -1,13 +1,15 @@
 import { useTranslations } from 'next-intl'
 import type { ReactNode } from 'react'
+import { warnTokens } from '@/features/professional/components/workspace'
 import { Wordmark } from '@/shared/components/wordmark'
+import { cn } from '@/shared/lib/utils'
 import { AdminNavigation } from './admin-navigation'
 
 export function AdminShell({ children }: { children: ReactNode }) {
   const t = useTranslations('admin.shell')
 
   return (
-    <div className="flex min-h-dvh flex-col">
+    <div className={cn('flex min-h-dvh flex-col', warnTokens)}>
       <header className="border-b border-rule bg-surface">
         <div className="mx-auto flex h-14 w-full max-w-[1200px] items-center gap-3 px-4 sm:px-6 lg:px-10">
           <Wordmark className="text-[20px]" />

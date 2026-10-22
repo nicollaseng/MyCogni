@@ -13,7 +13,7 @@ import {
 import { authenticatedRole, authUid, authUsers } from 'drizzle-orm/supabase'
 import { invitations } from './invitations.ts'
 
-export const careLinkEndedBy = pgEnum('care_link_ended_by', ['patient', 'professional'])
+export const careLinkEndedBy = pgEnum('care_link_ended_by', ['patient', 'professional', 'team'])
 
 export const careLinks = pgTable(
   'care_links',
@@ -59,7 +59,8 @@ export const careLinks = pgTable(
             and i.patient_id = ${authUid}
             and i.professional_id = ${table.professionalId}
             and i.status = 'accepted'
-        )`,
+        )
+        and public.is_verified_professional_id(${table.professionalId})`,
     }),
     pgPolicy('care_links_end_by_participant', {
       for: 'update',
