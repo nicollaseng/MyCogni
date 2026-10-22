@@ -13,6 +13,7 @@ import {
   insightQueueName,
   maintenanceQueueName,
   memoryQueueName,
+  reminderQueueName,
 } from './jobs/redis.ts'
 import { createJobScheduler } from './jobs/scheduler.ts'
 import { createMailer } from './mail/mailer.ts'
@@ -25,6 +26,10 @@ import { createInsightJob } from './modules/insights/insight-job.ts'
 import { createInsightRepository } from './modules/insights/insight.repository.ts'
 import { createMemoryExtractionRepository } from './modules/memories/memory-extraction.repository.ts'
 import { createMemoryJob } from './modules/memories/memory-job.ts'
+import { createReminderJob } from './modules/reminders/reminder-job.ts'
+import { createReminderStore } from './modules/reminders/reminder-store.ts'
+import { createUnsubscribeTokens } from './modules/reminders/unsubscribe-token.ts'
+import { createWebPushSender } from './push/push-sender.ts'
 import type { ErrorLog } from './shared/log.ts'
 
 const config = loadConfig(process.env)
@@ -54,10 +59,11 @@ const insightJob =
         alerts: scheduler,
         now: () => new Date(),
       })
+const mailer = createMailer(config.mail, log)
 const alertJob = createAlertJob({
   store: createAlertStore(database.db),
   metrics: createPatientMetricsRepository(database.db),
-  mailer: createMailer(config.mail, log),
+  mailer,
   webUrl: config.webUrl,
   now: () => new Date(),
 })
@@ -78,11 +84,22 @@ const memoryJob = createMemoryJob({
   now: () => new Date(),
 })
 
+const reminderJob = createReminderJob({
+  store: createReminderStore(database.db),
+  push: config.push === null ? null : createWebPushSender(config.push),
+  mailer,
+  tokens: createUnsubscribeTokens(config.supabaseSecretKey),
+  webUrl: config.webUrl,
+  now: () => new Date(),
+})
+
 const insightPayload = z.object({ patientId: z.uuid() })
 
 const memoryPayload = z.object({ userId: z.uuid() })
 
 const connections = [
+  createRedis(redisUrl),
+  createRedis(redisUrl),
   createRedis(redisUrl),
   createRedis(redisUrl),
   createRedis(redisUrl),
@@ -132,7 +149,18 @@ const memoryWorker = new Worker(
   { connection: connections[5], concurrency: 2, prefix },
 )
 
-const workers = [insightWorker, maintenanceWorker, alertWorker, memoryWorker]
+const reminderQueue = new Queue(reminderQueueName, { connection: connections[6], prefix })
+await reminderQueue.upsertJobScheduler(
+  'practice-reminders',
+  { every: config.reminderEveryMs },
+  { name: 'practice-reminders' },
+)
+const reminderWorker = new Worker(reminderQueueName, () => reminderJob.run(), {
+  connection: connections[7],
+  prefix,
+})
+
+const workers = [insightWorker, maintenanceWorker, alertWorker, memoryWorker, reminderWorker]
 
 for (const worker of workers) {
   worker.on('failed', (job, error) => {
@@ -148,6 +176,7 @@ console.info(
     msg: 'Worker started',
     ai: writer === null ? 'disabled' : writer.model,
     memories: extractor === null ? 'disabled' : extractor.model,
+    push: config.push === null ? 'disabled' : 'enabled',
     prefix,
   }),
 )
@@ -157,6 +186,7 @@ async function shutdown(): Promise<void> {
     ...workers.map((worker) => worker.close()),
     maintenanceQueue.close(),
     alertQueue.close(),
+    reminderQueue.close(),
     scheduler.close(),
   ])
   await Promise.all(connections.map((connection) => connection.quit()))

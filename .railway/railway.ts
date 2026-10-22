@@ -35,6 +35,9 @@ export default defineRailway((ctx) => {
       REDIS_URL: cache.env.REDIS_URL,
       ANTHROPIC_API_KEY: preserve(),
       ELEVENLABS_API_KEY: preserve(),
+      VAPID_PUBLIC_KEY: preserve(),
+      VAPID_PRIVATE_KEY: preserve(),
+      VAPID_SUBJECT: preserve(),
     },
   })
 
@@ -53,6 +56,9 @@ export default defineRailway((ctx) => {
       WEB_URL: preserve(),
       REDIS_URL: cache.env.REDIS_URL,
       ANTHROPIC_API_KEY: preserve(),
+      VAPID_PUBLIC_KEY: preserve(),
+      VAPID_PRIVATE_KEY: preserve(),
+      VAPID_SUBJECT: preserve(),
     },
   })
 

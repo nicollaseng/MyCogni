@@ -7,6 +7,7 @@ export interface Email {
   html: string
   text: string
   replyTo?: string
+  headers?: Record<string, string>
 }
 
 export interface Mailer {
@@ -38,11 +39,11 @@ async function post(url: string, headers: Record<string, string>, body: unknown)
 
 function resendMailer(apiKey: string, from: string): Mailer {
   return {
-    async send({ to, subject, html, text, replyTo }) {
+    async send({ to, subject, html, text, replyTo, headers }) {
       await post(
         'https://api.resend.com/emails',
         { authorization: `Bearer ${apiKey}` },
-        { from, to: [to], subject, html, text, reply_to: replyTo },
+        { from, to: [to], subject, html, text, reply_to: replyTo, headers },
       )
       return true
     },
@@ -52,7 +53,7 @@ function resendMailer(apiKey: string, from: string): Mailer {
 function mailpitMailer(url: string, from: string): Mailer {
   const sender = parseSender(from)
   return {
-    async send({ to, subject, html, text, replyTo }) {
+    async send({ to, subject, html, text, replyTo, headers }) {
       await post(
         `${url}/api/v1/send`,
         {},
@@ -63,6 +64,7 @@ function mailpitMailer(url: string, from: string): Mailer {
           Subject: subject,
           HTML: html,
           Text: text,
+          Headers: headers,
         },
       )
       return true

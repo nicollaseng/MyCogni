@@ -47,6 +47,12 @@ export function createAccountService({
         })),
         checkIns: data.checkIns.map(toCheckIn),
         memories: data.memories.map(toMemory),
+        reminders: {
+          settings: data.reminders.settings,
+          devices: data.reminders.devices.map((device) => ({
+            createdAt: device.createdAt.toISOString(),
+          })),
+        },
       }
     },
     async delete(user) {
