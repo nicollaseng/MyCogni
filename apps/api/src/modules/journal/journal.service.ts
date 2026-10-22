@@ -11,6 +11,7 @@ import type {
 import { isOwnJournalPath, raisedRisk } from '@mycogni/domain'
 import type { FastifyBaseLogger } from 'fastify'
 import type { AuthenticatedUser } from '../../auth/token-verifier.ts'
+import type { JobScheduler } from '../../jobs/scheduler.ts'
 import { NotFoundError, UnprocessableError } from '../../shared/errors.ts'
 import type { JournalImageStore } from '../../storage/journal-images.ts'
 import type { NoteSafety } from '../safety/note-safety.ts'
@@ -37,6 +38,7 @@ export interface JournalDependencies {
   journal: JournalRepository
   images: JournalImageStore
   safety: NoteSafety
+  memories: Pick<JobScheduler, 'memorySourceSaved'>
   log: Pick<FastifyBaseLogger, 'error'>
   now: () => Date
 }
@@ -45,6 +47,7 @@ export function createJournalService({
   journal,
   images,
   safety,
+  memories,
   log,
   now,
 }: JournalDependencies): JournalService {
@@ -89,6 +92,9 @@ export function createJournalService({
         throw new NotFoundError('Journal entry not found')
       }
       await forget(outcome.removedImages)
+      if (outcome.previousText !== outcome.entry.plainText) {
+        await memories.memorySourceSaved(user.id)
+      }
       const support = await safety.review(
         { kind: 'journal', patientId: user.id, entryId: id },
         raisedRisk(outcome.previousText, outcome.entry.plainText),

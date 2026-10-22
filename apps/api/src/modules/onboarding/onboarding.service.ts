@@ -1,5 +1,5 @@
 import type { Profile } from '@mycogni/contracts'
-import { consentVersion, isOnboardingReady } from '@mycogni/domain'
+import { isOnboardingReady } from '@mycogni/domain'
 import type { AuthenticatedUser } from '../../auth/token-verifier.ts'
 import { NotFoundError, UnprocessableError } from '../../shared/errors.ts'
 import type { AssessmentRepository } from '../assessments/assessment.repository.ts'
@@ -25,7 +25,7 @@ export function createOnboardingService({
   return {
     async complete(user) {
       const [granted, completedInstruments] = await Promise.all([
-        consents.findGranted(user.id, consentVersion),
+        consents.findCurrent(user.id),
         assessments.completedInstruments(user.id),
       ])
       const grantedConsents = granted.map((consent) => consent.kind)

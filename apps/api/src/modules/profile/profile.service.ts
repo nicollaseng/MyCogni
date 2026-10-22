@@ -20,6 +20,8 @@ export function toProfile(record: ProfileRecord, user: AuthenticatedUser): Profi
     timezone: record.timezone,
     locale: isLocale(record.locale) ? record.locale : null,
     journalInInsights: record.journalInInsights,
+    memoriesEnabled: record.memoriesEnabled,
+    termsOutdated: record.termsOutdated,
     onboardingCompletedAt: record.onboardingCompletedAt?.toISOString() ?? null,
   }
 }
@@ -32,6 +34,7 @@ function toChanges(input: UpdateProfileInput): ProfileChanges {
     ...(input.journalInInsights === undefined
       ? {}
       : { journalInInsights: input.journalInInsights }),
+    ...(input.memoriesEnabled === undefined ? {} : { memoriesEnabled: input.memoriesEnabled }),
     ...(input.avatarPath === undefined ? {} : { avatarPath: input.avatarPath }),
   }
 }

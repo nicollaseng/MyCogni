@@ -1,5 +1,5 @@
 import type { Consent, GrantConsentsInput } from '@mycogni/contracts'
-import { consentVersion, isPatientConsent, isRevocable, type ConsentKind } from '@mycogni/domain'
+import { consentVersionOf, isPatientConsent, isRevocable, type ConsentKind } from '@mycogni/domain'
 import type { AccountTypeReader } from '../../auth/account-types.ts'
 import type { AuthenticatedUser } from '../../auth/token-verifier.ts'
 import { AccountTypeError, UnprocessableError } from '../../shared/errors.ts'
@@ -24,7 +24,7 @@ export function createConsentService(
   accountTypes: AccountTypeReader,
 ): ConsentService {
   async function list(user: AuthenticatedUser): Promise<Consent[]> {
-    const records = await repository.findGranted(user.id, consentVersion)
+    const records = await repository.findCurrent(user.id)
     return records.map(toConsent)
   }
 
@@ -37,7 +37,7 @@ export function createConsentService(
       ) {
         throw new AccountTypeError('patient')
       }
-      await repository.grant(user.id, [...new Set(input.kinds)], consentVersion)
+      await repository.grant(user.id, [...new Set(input.kinds)])
       return list(user)
     },
     async revoke(user, kind) {
@@ -46,7 +46,7 @@ export function createConsentService(
           'This consent is required to use the app; delete the account to withdraw it',
         )
       }
-      await repository.revoke(user.id, kind, consentVersion)
+      await repository.revoke(user.id, kind, consentVersionOf(kind))
     },
   }
 }

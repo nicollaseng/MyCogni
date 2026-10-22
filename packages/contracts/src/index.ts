@@ -9,6 +9,19 @@ export {
 } from './alerts.ts'
 export { accountExportSchema, exportedAssessmentSchema, type AccountExport } from './account.ts'
 export {
+  createMemorySchema,
+  memoryListSchema,
+  memoryOperationsSchema,
+  memorySchema,
+  memorySourceSchema,
+  updateMemorySchema,
+  type CreateMemoryInput,
+  type Memory,
+  type MemoryOperations,
+  type MemorySource,
+  type UpdateMemoryInput,
+} from './memories.ts'
+export {
   assessmentListSchema,
   assessmentSchema,
   instrumentIdSchema,

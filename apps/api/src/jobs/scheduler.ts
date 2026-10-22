@@ -1,13 +1,15 @@
 import { Queue, type JobsOptions } from 'bullmq'
 import type { ErrorLog } from '../shared/log.ts'
 import type { AlertTrigger, SavedNote } from './alert-trigger.ts'
-import { alertQueueName, createRedis, insightQueueName } from './redis.ts'
+import { alertQueueName, createRedis, insightQueueName, memoryQueueName } from './redis.ts'
 
 export interface JobScheduler {
   checkInRecorded(patientId: string): Promise<void>
   assessmentCompleted(patientId: string, assessmentId: string): Promise<void>
   summaryCreated(insightId: string): Promise<void>
   noteSaved(note: SavedNote): Promise<void>
+  memorySourceSaved(userId: string): Promise<void>
+  memoryBacklog(userId: string): Promise<void>
   close(): Promise<void>
 }
 
@@ -19,6 +21,10 @@ export interface QueueSettings {
 const insightBatchingMs = 60_000
 
 const alertBatchingMs = 30_000
+
+const memoryBatchingMs = 10 * 60_000
+
+const memoryBacklogMs = 60_000
 
 function noteJobId(note: SavedNote): string {
   switch (note.kind) {
@@ -38,6 +44,8 @@ const idleScheduler: JobScheduler = {
   assessmentCompleted: () => Promise.resolve(),
   summaryCreated: () => Promise.resolve(),
   noteSaved: () => Promise.resolve(),
+  memorySourceSaved: () => Promise.resolve(),
+  memoryBacklog: () => Promise.resolve(),
   close: () => Promise.resolve(),
 }
 
@@ -51,6 +59,7 @@ export function createJobScheduler(
   const redis = createRedis(redisUrl)
   const insights = new Queue(insightQueueName, { connection: redis, prefix })
   const alerts = new Queue(alertQueueName, { connection: redis, prefix })
+  const memories = new Queue(memoryQueueName, { connection: redis, prefix })
 
   async function enqueue(what: string, work: () => Promise<unknown>): Promise<void> {
     try {
@@ -68,6 +77,23 @@ export function createJobScheduler(
         delay,
         backoff: { type: 'exponential', delay: 5_000 },
       }),
+    )
+  }
+
+  function remember(name: string, userId: string, jobId: string, delay: number): Promise<void> {
+    return enqueue('Memory', () =>
+      memories.add(
+        name,
+        { userId },
+        {
+          jobId,
+          delay,
+          attempts: 3,
+          removeOnComplete: true,
+          removeOnFail: true,
+          backoff: { type: 'exponential', delay: 60_000 },
+        },
+      ),
     )
   }
 
@@ -99,8 +125,14 @@ export function createJobScheduler(
     noteSaved(note) {
       return alert({ kind: 'note', note }, noteJobId(note))
     },
+    memorySourceSaved(userId) {
+      return remember('source-saved', userId, `memories-${userId}`, memoryBatchingMs)
+    },
+    memoryBacklog(userId) {
+      return remember('backlog', userId, `memories-backlog-${userId}`, memoryBacklogMs)
+    },
     async close() {
-      await Promise.all([insights.close(), alerts.close()])
+      await Promise.all([insights.close(), alerts.close(), memories.close()])
       await redis.quit()
     },
   }

@@ -26,6 +26,8 @@ export const profiles = pgTable(
     timezone: text('timezone').notNull().default('America/Sao_Paulo'),
     locale: text('locale'),
     journalInInsights: boolean('journal_in_insights').notNull().default(false),
+    memoriesEnabled: boolean('memories_enabled').notNull().default(true),
+    memoriesReadUntil: timestamp('memories_read_until', { withTimezone: true }),
     onboardingCompletedAt: timestamp('onboarding_completed_at', { withTimezone: true }),
     createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
     updatedAt: timestamp('updated_at', { withTimezone: true })

@@ -25,6 +25,7 @@ import { healthRoutes } from './modules/health/health.routes.ts'
 import { insightModule } from './modules/insights/index.ts'
 import { invitationModule, invitationPublicModule } from './modules/invitations/index.ts'
 import { journalModule } from './modules/journal/index.ts'
+import { memoryModule } from './modules/memories/index.ts'
 import { notificationModule } from './modules/notifications/index.ts'
 import { onboardingModule } from './modules/onboarding/index.ts'
 import { professionalModule } from './modules/professionals/index.ts'
@@ -124,7 +125,8 @@ function authenticatedRoutes(
     await api.register(reportModule(db))
     await api.register(alertModule(db, profileFiles.photos))
     await api.register(zenModule(db))
-    await api.register(assistantModule({ db, model: assistantModel, limiter, log: api.log }))
+    await api.register(assistantModule({ db, model: assistantModel, limiter, log: api.log, jobs }))
+    await api.register(memoryModule(db))
     await api.register(
       supportModule({
         db,

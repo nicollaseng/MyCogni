@@ -1,6 +1,7 @@
 import type { FastifyPluginCallbackZod } from 'fastify-type-provider-zod'
 import type { AssistantModel } from '../../ai/assistant-model.ts'
 import type { Database } from '../../db/client.ts'
+import type { JobScheduler } from '../../jobs/scheduler.ts'
 import type { RateLimiter } from '../../shared/rate-limiter.ts'
 import { createAssessmentRepository } from '../assessments/assessment.repository.ts'
 import { createCareLinkRepository } from '../care-links/care-link.repository.ts'
@@ -8,6 +9,7 @@ import { createCheckInRepository } from '../check-ins/check-in.repository.ts'
 import { createConsentRepository } from '../consents/consent.repository.ts'
 import { createInsightRepository } from '../insights/insight.repository.ts'
 import { createJournalRepository } from '../journal/journal.repository.ts'
+import { rememberConversations } from '../memories/memory-triggers.ts'
 import { createProfessionalRepository } from '../professionals/professional.repository.ts'
 import { createAssistantToolbox } from './assistant-tools.ts'
 import { createAssistantRepository } from './assistant.repository.ts'
@@ -19,6 +21,7 @@ export interface AssistantModuleOptions {
   model: AssistantModel | null
   limiter: RateLimiter
   log: AssistantLog
+  jobs: JobScheduler
 }
 
 export function assistantModule({
@@ -26,29 +29,33 @@ export function assistantModule({
   model,
   limiter,
   log,
+  jobs,
 }: AssistantModuleOptions): FastifyPluginCallbackZod {
   const now = () => new Date()
   const assessments = createAssessmentRepository(db)
   const journal = createJournalRepository(db)
   return assistantRoutes(
-    createAssistantService({
-      conversations: createAssistantRepository(db),
-      toolbox: createAssistantToolbox({
-        checkIns: createCheckInRepository(db),
+    rememberConversations(
+      createAssistantService({
+        conversations: createAssistantRepository(db),
+        toolbox: createAssistantToolbox({
+          checkIns: createCheckInRepository(db),
+          assessments,
+          insights: createInsightRepository(db),
+          journal,
+          now,
+        }),
+        consents: createConsentRepository(db),
+        careLinks: createCareLinkRepository(db),
+        professionals: createProfessionalRepository(db),
         assessments,
-        insights: createInsightRepository(db),
         journal,
+        model,
+        limiter,
+        log,
         now,
       }),
-      consents: createConsentRepository(db),
-      careLinks: createCareLinkRepository(db),
-      professionals: createProfessionalRepository(db),
-      assessments,
-      journal,
-      model,
-      limiter,
-      log,
-      now,
-    }),
+      jobs,
+    ),
   )
 }

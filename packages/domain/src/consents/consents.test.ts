@@ -1,8 +1,12 @@
 import { describe, expect, it } from '@jest/globals'
 import {
   consentKinds,
+  consentVersion,
+  consentVersionOf,
+  isCurrentConsent,
   isPatientConsent,
   isRevocable,
+  legalVersion,
   missingConsents,
   requiredConsentKinds,
 } from './consents.ts'
@@ -39,5 +43,21 @@ describe('consents', () => {
       'privacy',
       'adult',
     ])
+  })
+
+  it('versions the terms and the privacy policy apart from the other permissions', () => {
+    expect(consentKinds.filter((kind) => consentVersionOf(kind) === legalVersion)).toEqual([
+      'terms',
+      'privacy',
+    ])
+    expect(consentVersionOf('assistant_data')).toBe(consentVersion)
+    expect(legalVersion).not.toBe(consentVersion)
+  })
+
+  it('tells whether a granted consent follows the current text', () => {
+    expect(isCurrentConsent({ kind: 'terms', version: legalVersion })).toBe(true)
+    expect(isCurrentConsent({ kind: 'terms', version: consentVersion })).toBe(false)
+    expect(isCurrentConsent({ kind: 'ai_processing', version: consentVersion })).toBe(true)
+    expect(isCurrentConsent({ kind: 'ai_processing', version: legalVersion })).toBe(false)
   })
 })

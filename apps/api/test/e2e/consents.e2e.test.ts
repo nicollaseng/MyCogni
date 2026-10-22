@@ -1,5 +1,8 @@
 import { afterAll, beforeAll, describe, expect, it } from '@jest/globals'
+import { consentVersion, legalVersion } from '@mycogni/domain'
+import { and, eq, inArray } from 'drizzle-orm'
 import { connectDatabase, type DatabaseConnection } from '../../src/db/client.ts'
+import { consents } from '../../src/db/schema/index.ts'
 import type { App } from '../../src/shared/http.ts'
 import { testDatabaseUrl } from '../support/database.ts'
 import { bearer, createTestUser, deleteTestUser, type TestUser } from '../support/supabase.ts'
@@ -59,8 +62,8 @@ describe('/v1/consents', () => {
 
     expect(response.statusCode).toBe(201)
     expect(response.json<ConsentBody[]>()).toEqual([
-      { kind: 'terms', version: '2026-10', grantedAt: expect.any(String) },
-      { kind: 'privacy', version: '2026-10', grantedAt: expect.any(String) },
+      { kind: 'terms', version: legalVersion, grantedAt: expect.any(String) },
+      { kind: 'privacy', version: legalVersion, grantedAt: expect.any(String) },
       { kind: 'health_data', version: '2026-10', grantedAt: expect.any(String) },
       { kind: 'adult', version: '2026-10', grantedAt: expect.any(String) },
     ])
@@ -164,5 +167,40 @@ describe('/v1/consents', () => {
       expect.any(String),
     )
     expect(consents.find((consent) => consent.kind === 'terms')?.revokedAt).toBeNull()
+  })
+
+  it('asks again for the terms after they change and keeps the other permissions', async () => {
+    const carla = await createTestUser()
+    try {
+      await grant(carla, ['terms', 'privacy', 'health_data', 'adult', 'assistant_data'])
+      await connection.db
+        .update(consents)
+        .set({ version: consentVersion })
+        .where(and(eq(consents.userId, carla.id), inArray(consents.kind, ['terms', 'privacy'])))
+      const me = () => app.inject({ method: 'GET', url: '/v1/me', headers: bearer(carla) })
+
+      expect((await me()).json()).toEqual(expect.objectContaining({ termsOutdated: true }))
+      const current = await app.inject({
+        method: 'GET',
+        url: '/v1/consents',
+        headers: bearer(carla),
+      })
+      expect(current.json<ConsentBody[]>().map((consent) => consent.kind)).toEqual([
+        'health_data',
+        'adult',
+        'assistant_data',
+      ])
+
+      await grant(carla, ['terms', 'privacy'])
+      expect((await me()).json()).toEqual(expect.objectContaining({ termsOutdated: false }))
+    } finally {
+      await deleteTestUser(carla.id)
+    }
+  })
+
+  it('does not ask a person who never accepted the terms', async () => {
+    const response = await app.inject({ method: 'GET', url: '/v1/me', headers: bearer(bruno) })
+
+    expect(response.json()).toEqual(expect.objectContaining({ termsOutdated: false }))
   })
 })

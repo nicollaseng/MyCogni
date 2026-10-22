@@ -2,6 +2,7 @@ import { z } from 'zod'
 import { assessmentSchema } from './assessments.ts'
 import { checkInListSchema } from './check-ins.ts'
 import { consentSchema } from './consents.ts'
+import { memorySchema } from './memories.ts'
 import { profileSchema } from './profile.ts'
 
 export const exportedAssessmentSchema = assessmentSchema.extend({
@@ -18,6 +19,7 @@ export const accountExportSchema = z.object({
   consents: z.array(exportedConsentSchema),
   assessments: z.array(exportedAssessmentSchema),
   checkIns: checkInListSchema,
+  memories: z.array(memorySchema),
 })
 
 export type AccountExport = z.infer<typeof accountExportSchema>
