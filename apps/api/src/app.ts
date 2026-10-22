@@ -6,6 +6,7 @@ import {
   type ZodTypeProvider,
 } from 'fastify-type-provider-zod'
 import type { AssistantModel } from './ai/assistant-model.ts'
+import type { Transcriber } from './ai/transcriber.ts'
 import type { AccountAdmin } from './auth/account-admin.ts'
 import { createAccountTypeReader } from './auth/account-types.ts'
 import type { TokenVerifier } from './auth/token-verifier.ts'
@@ -33,6 +34,7 @@ import { profileModule } from './modules/profile/index.ts'
 import type { Fetcher } from './modules/profile/photo-download.ts'
 import { reportModule } from './modules/reports/index.ts'
 import { supportModule } from './modules/support/index.ts'
+import { transcriptionModule } from './modules/transcription/index.ts'
 import { zenModule } from './modules/zen/index.ts'
 import { requireAccountType } from './plugins/account-type.ts'
 import { requireAuthentication } from './plugins/authentication.ts'
@@ -54,6 +56,7 @@ export interface AppDependencies {
   photoFetcher: Fetcher
   supportAttachments: BucketStore
   assistantModel: AssistantModel | null
+  transcriber: Transcriber | null
   logStream?: { write(line: string): void }
 }
 
@@ -85,6 +88,7 @@ function authenticatedRoutes(
     photoFetcher,
     supportAttachments,
     assistantModel,
+    transcriber,
   }: AppDependencies,
   { mailer, jobs, limiter }: Services,
 ): FastifyPluginAsyncZod {
@@ -125,8 +129,18 @@ function authenticatedRoutes(
     await api.register(reportModule(db))
     await api.register(alertModule(db, profileFiles.photos))
     await api.register(zenModule(db))
-    await api.register(assistantModule({ db, model: assistantModel, limiter, log: api.log, jobs }))
+    await api.register(
+      assistantModule({
+        db,
+        model: assistantModel,
+        voice: transcriber !== null,
+        limiter,
+        log: api.log,
+        jobs,
+      }),
+    )
     await api.register(memoryModule(db))
+    await api.register(transcriptionModule({ transcriber, limiter, log: api.log }))
     await api.register(
       supportModule({
         db,

@@ -22,6 +22,7 @@ import { screening } from './screening'
 import { support } from './support'
 import { today } from './today'
 import { verification } from './verification'
+import { voice } from './voice'
 import { zen } from './zen'
 import type { Messages } from '../pt-BR'
 
@@ -51,4 +52,5 @@ export const messages: Messages = {
   assistant,
   safety,
   memories,
+  voice,
 }

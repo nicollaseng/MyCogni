@@ -3,7 +3,10 @@ import {
   createClaudeAssistantModel,
   type AssistantModel,
 } from './ai/assistant-model.ts'
+import { createElevenLabsTranscriber } from './ai/elevenlabs-transcriber.ts'
 import { createScriptedAssistantModel } from './ai/scripted-assistant-model.ts'
+import { createScriptedTranscriber } from './ai/scripted-transcriber.ts'
+import type { Transcriber } from './ai/transcriber.ts'
 import { buildApp } from './app.ts'
 import { createSupabaseAccountAdmin } from './auth/account-admin.ts'
 import { createSupabaseTokenVerifier } from './auth/token-verifier.ts'
@@ -25,6 +28,18 @@ function assistantModel(): AssistantModel | null {
     : createClaudeAssistantModel(anthropicSender(config.anthropicApiKey))
 }
 
+function transcriber(): Transcriber | null {
+  if (config.assistantModel === 'scripted') {
+    return createScriptedTranscriber()
+  }
+  return config.elevenLabsApiKey === null
+    ? null
+    : createElevenLabsTranscriber({
+        apiKey: config.elevenLabsApiKey,
+        zeroRetention: config.zeroRetentionTranscription,
+      })
+}
+
 const app = await buildApp({
   config,
   db: database.db,
@@ -35,6 +50,7 @@ const app = await buildApp({
   photoFetcher: fetch,
   supportAttachments: createSupportAttachmentStore(config.supabaseUrl, config.supabaseSecretKey),
   assistantModel: assistantModel(),
+  transcriber: transcriber(),
 })
 
 app.addHook('onClose', () => database.close())

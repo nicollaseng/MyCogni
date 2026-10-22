@@ -28,6 +28,10 @@ export const legal: LegalMessages = {
         heading: 'Cogni’s memories',
         body: 'Cogni, the app’s virtual companion, keeps short notes about what you share in your check-in notes, in additions to them, in your conversations with it and, if you let it read MyBook, in your MyBook pages. They are used to personalise your conversations and to notice trends and risk signs, never to make a diagnosis. Memories are on by default and you can turn them off in Privacy and data. In Profile and settings → Memories you can see, edit, add and delete each one or all of them, and they are part of your data export. Deleting a record deletes what was learned only from it. Professionals will only see memories you choose to share.',
       },
+      voice: {
+        heading: 'Voice messages',
+        body: 'If you talk to Cogni by voice, the audio goes to a transcription provider only to turn it into text. We do not store the audio.',
+      },
       sharing: {
         heading: 'Who we share it with',
         body: 'Only with the providers that run the service, such as hosting, database, email delivery and, if you turn it on, AI, always under contract and only as far as needed. We never sell your data or use it for advertising.',

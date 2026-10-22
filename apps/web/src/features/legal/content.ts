@@ -15,6 +15,7 @@ export const privacySections = [
   'legalBasis',
   'ai',
   'memories',
+  'voice',
   'sharing',
   'rights',
 ] as const

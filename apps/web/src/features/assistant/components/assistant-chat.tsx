@@ -164,6 +164,7 @@ export function AssistantChat({
           <ChatComposer
             pending={chat.pending}
             onSend={chat.send}
+            voice={chat.state?.overview.voice === true}
             notes={[t('disclaimer.mistakes'), t(`disclaimer.${mode}`)]}
           />
         </div>

@@ -19,6 +19,7 @@ import { createAssistantService, type AssistantLog } from './assistant.service.t
 export interface AssistantModuleOptions {
   db: Database
   model: AssistantModel | null
+  voice: boolean
   limiter: RateLimiter
   log: AssistantLog
   jobs: JobScheduler
@@ -27,6 +28,7 @@ export interface AssistantModuleOptions {
 export function assistantModule({
   db,
   model,
+  voice,
   limiter,
   log,
   jobs,
@@ -51,6 +53,7 @@ export function assistantModule({
         assessments,
         journal,
         model,
+        voice,
         limiter,
         log,
         now,

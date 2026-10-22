@@ -28,6 +28,10 @@ export const legal: LegalMessages = {
         heading: 'Memórias do Cogni',
         body: 'O Cogni, o parceiro virtual da aplicação, guarda frases curtas sobre o que conta nas notas dos registos, nos complementos, nas conversas com ele e, se permitir que ele leia o MyBook, nas páginas do MyBook. Servem para personalizar as conversas e para perceber tendências e sinais de risco, nunca para fazer diagnósticos. As memórias estão ligadas por predefinição e pode desligá-las em Privacidade e dados. Em Perfil e definições → Memórias vê, edita, adiciona e apaga cada uma ou todas, e elas fazem parte da exportação dos seus dados. Apagar um registo apaga o que foi aprendido apenas com ele. Os profissionais só verão as memórias que escolher partilhar.',
       },
+      voice: {
+        heading: 'Mensagens de voz',
+        body: 'Se falar com o Cogni por voz, o áudio é enviado a um fornecedor de transcrição apenas para ser convertido em texto. Nós não guardamos o áudio.',
+      },
       sharing: {
         heading: 'Com quem partilhamos',
         body: 'Apenas com os fornecedores que operam o serviço, como alojamento, base de dados, envio de email e, se ativar essa funcionalidade, IA, sempre ao abrigo de contrato e apenas no que for necessário. Nunca vendemos os seus dados nem os usamos para publicidade.',
