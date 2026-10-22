@@ -22,6 +22,7 @@ import { screening } from './screening'
 import { support } from './support'
 import { today } from './today'
 import { verification } from './verification'
+import { voice } from './voice'
 import { zen } from './zen'
 
 export const messages = {
@@ -50,6 +51,7 @@ export const messages = {
   assistant,
   safety,
   memories,
+  voice,
 }
 
 export type Messages = typeof messages

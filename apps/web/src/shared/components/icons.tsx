@@ -189,3 +189,30 @@ export function MoreIcon({ className }: IconProps) {
     </svg>
   )
 }
+
+export function MicIcon({ className }: IconProps) {
+  return (
+    <svg aria-hidden viewBox="0 0 20 20" className={className}>
+      <path
+        d="M10 2.75a2.75 2.75 0 0 1 2.75 2.75v4a2.75 2.75 0 0 1-5.5 0v-4A2.75 2.75 0 0 1 10 2.75ZM5 9.25a5 5 0 0 0 10 0M10 14.25v3"
+        {...stroke}
+      />
+    </svg>
+  )
+}
+
+export function StopIcon({ className }: IconProps) {
+  return (
+    <svg aria-hidden viewBox="0 0 20 20" className={className}>
+      <rect x="5.5" y="5.5" width="9" height="9" rx="1.5" fill="currentColor" />
+    </svg>
+  )
+}
+
+export function ArrowUpIcon({ className }: IconProps) {
+  return (
+    <svg aria-hidden viewBox="0 0 20 20" className={className}>
+      <path d="M10 16V4.5M5 9.25L10 4.25l5 5" {...stroke} strokeWidth={1.9} />
+    </svg>
+  )
+}

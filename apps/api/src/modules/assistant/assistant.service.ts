@@ -66,6 +66,7 @@ export interface AssistantDependencies {
   assessments: AssessmentRepository
   journal: Pick<JournalRepository, 'find'>
   model: AssistantModel | null
+  voice: boolean
   limiter: RateLimiter
   log: AssistantLog
   now: () => Date
@@ -157,6 +158,7 @@ export function createAssistantService({
   assessments,
   journal,
   model,
+  voice,
   limiter,
   log,
   now,
@@ -338,7 +340,7 @@ export function createAssistantService({
         accessOf(user, scope),
         conversations.list(user.id, scope, assistantLimits.conversations),
       ])
-      return { access, conversations: list.map(toSummary) }
+      return { access, conversations: list.map(toSummary), voice }
     },
     async conversation(user, id) {
       const found = await conversations.find(user.id, id)

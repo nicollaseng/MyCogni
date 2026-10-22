@@ -35,6 +35,11 @@ const envSchema = z.object({
     .default('bull'),
   ANTHROPIC_API_KEY: z.string().min(1).optional(),
   ASSISTANT_MODEL: z.enum(['claude', 'scripted']).default('claude'),
+  ELEVENLABS_API_KEY: z.string().min(1).optional(),
+  ELEVENLABS_ZERO_RETENTION: z
+    .enum(['true', 'false'])
+    .default('false')
+    .transform((value) => value === 'true'),
 })
 
 export interface AppConfig {
@@ -53,6 +58,8 @@ export interface AppConfig {
   queuePrefix: string
   anthropicApiKey: string | null
   assistantModel: 'claude' | 'scripted'
+  elevenLabsApiKey: string | null
+  zeroRetentionTranscription: boolean
 }
 
 export type MailConfig =
@@ -92,6 +99,8 @@ export function loadConfig(source: Record<string, string | undefined>): AppConfi
     queuePrefix: env.QUEUE_PREFIX,
     anthropicApiKey: env.ANTHROPIC_API_KEY ?? null,
     assistantModel: env.ASSISTANT_MODEL,
+    elevenLabsApiKey: env.ELEVENLABS_API_KEY ?? null,
+    zeroRetentionTranscription: env.ELEVENLABS_ZERO_RETENTION,
   }
 }
 

@@ -26,6 +26,8 @@ describe('loadConfig', () => {
       queuePrefix: 'bull',
       anthropicApiKey: null,
       assistantModel: 'claude',
+      elevenLabsApiKey: null,
+      zeroRetentionTranscription: false,
     })
   })
 

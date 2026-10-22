@@ -334,6 +334,7 @@ const service = createAssistantService({
   assessments: assessmentRepository,
   journal: journalRepository,
   model: recording(createClaudeAssistantModel(anthropicSender(apiKey))),
+  voice: false,
   limiter: createRateLimiter(null, console),
   log: {
     info: () => undefined,

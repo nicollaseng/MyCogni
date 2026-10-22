@@ -87,3 +87,24 @@ export async function apiFile(path: `/v1/${string}`): Promise<ApiFile> {
     disposition: response.headers.get('content-disposition') ?? 'attachment',
   }
 }
+
+interface ApiUpload<T> {
+  path: `/v1/${string}`
+  schema: z.ZodType<T>
+  body: ArrayBuffer
+  contentType: string
+}
+
+export async function apiUpload<T>({ path, schema, body, contentType }: ApiUpload<T>): Promise<T> {
+  const response = await fetch(`${serverEnv().apiUrl}${path}`, {
+    method: 'POST',
+    headers: { authorization: `Bearer ${await accessToken()}`, 'content-type': contentType },
+    body,
+    cache: 'no-store',
+  })
+  const payload: unknown = await response.json().catch(() => null)
+  if (!response.ok) {
+    throw errorOf(response.status, payload)
+  }
+  return schema.parse(payload)
+}

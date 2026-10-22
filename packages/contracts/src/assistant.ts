@@ -73,6 +73,7 @@ export type AssistantAccess = z.infer<typeof assistantAccessSchema>
 export const assistantOverviewSchema = z.object({
   access: assistantAccessSchema,
   conversations: z.array(assistantConversationSummarySchema),
+  voice: z.boolean().optional(),
 })
 
 export type AssistantOverview = z.infer<typeof assistantOverviewSchema>
@@ -84,3 +85,9 @@ export const assistantExchangeSchema = z.object({
 })
 
 export type AssistantExchange = z.infer<typeof assistantExchangeSchema>
+
+export const transcriptionSchema = z.object({
+  text: z.string().max(assistantLimits.messageLength),
+})
+
+export type Transcription = z.infer<typeof transcriptionSchema>

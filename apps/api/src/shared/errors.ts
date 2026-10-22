@@ -64,3 +64,27 @@ export class TooManyRequestsError extends AppError {
     super(429, code, message)
   }
 }
+
+export class PayloadTooLargeError extends AppError {
+  constructor(code: string, message: string) {
+    super(413, code, message)
+  }
+}
+
+export class UnsupportedMediaTypeError extends AppError {
+  constructor(code: string, message: string) {
+    super(415, code, message)
+  }
+}
+
+export class BadGatewayError extends AppError {
+  constructor(code: string, message: string) {
+    super(502, code, message)
+  }
+}
+
+export class ServiceUnavailableError extends AppError {
+  constructor(code: string, message: string) {
+    super(503, code, message)
+  }
+}

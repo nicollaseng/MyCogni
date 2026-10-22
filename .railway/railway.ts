@@ -34,6 +34,7 @@ export default defineRailway((ctx) => {
       WEB_URL: preserve(),
       REDIS_URL: cache.env.REDIS_URL,
       ANTHROPIC_API_KEY: preserve(),
+      ELEVENLABS_API_KEY: preserve(),
     },
   })
 
