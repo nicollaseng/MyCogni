@@ -92,16 +92,16 @@ describe('AssistantChat', () => {
   it('keeps a calm note under the message and counts characters only near the limit', async () => {
     const { user } = renderChat({ overview: overview(true), contacts })
 
-    const first = await screen.findByText('IA pode cometer erros.')
+    const first = await screen.findByText('IA pode cometer erros')
     const second = screen.getByText(
-      'Essa conversa não substitui um aconselhamento de saúde profissional.',
+      'MyCogniAI não substitui um aconselhamento de saúde profissional.',
     )
     const note = first.closest('p')
     expect(note).toHaveClass('text-center')
     expect(note?.children).toHaveLength(2)
     expect(second.parentElement).toBe(note)
     expect(input()).toHaveAccessibleDescription(
-      'IA pode cometer erros. Essa conversa não substitui um aconselhamento de saúde profissional.',
+      'IA pode cometer erros MyCogniAI não substitui um aconselhamento de saúde profissional.',
     )
     expect(screen.queryByText('Não substitui um profissional.')).toBeNull()
     expect(screen.queryByRole('button', { name: 'Ajuda agora' })).toBeNull()
@@ -276,8 +276,10 @@ describe('AssistantChat', () => {
         'Este paciente não autorizou o uso de IA nos registros dele. As respostas são gerais.',
       ),
     ).toBeInTheDocument()
-    expect(screen.getByText('IA pode cometer erros.')).toBeInTheDocument()
-    expect(screen.getByText('Não substitui o seu julgamento clínico.')).toBeInTheDocument()
+    expect(screen.getByText('IA pode cometer erros')).toBeInTheDocument()
+    expect(
+      screen.getByText('MyCogniAI não substitui o seu julgamento clínico.'),
+    ).toBeInTheDocument()
     expect(screen.queryByRole('button', { name: 'Ajuda agora' })).toBeNull()
     expect(screen.queryByRole('region', { name: 'Posso ler os seus registros?' })).toBeNull()
 

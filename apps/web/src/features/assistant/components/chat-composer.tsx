@@ -66,7 +66,10 @@ export function ChatComposer({ pending, onSend, notes }: ChatComposerProps) {
           {t('count', { count: text.length, max })}
         </p>
       )}
-      <p id={`${id}-note`} className="text-center text-xs text-pretty text-muted-foreground">
+      <p
+        id={`${id}-note`}
+        className="text-center text-[9px] leading-snug text-pretty text-muted-foreground"
+      >
         {notes.map((line, index) => (
           <span key={line} className="block">
             {index > 0 ? ` ${line}` : line}

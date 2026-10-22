@@ -61,8 +61,8 @@ test('asks about the records after allowing it and gets an answer', async ({ pag
   await page.goto('/patterns')
   const chat = await openChat(page)
   await expectDisclaimer(chat, [
-    'IA pode cometer erros.',
-    'Essa conversa não substitui um aconselhamento de saúde profissional.',
+    'IA pode cometer erros',
+    'MyCogniAI não substitui um aconselhamento de saúde profissional.',
   ])
   await expect(chat.getByRole('button', { name: 'Ajuda agora' })).toHaveCount(0)
   const consent = chat.getByRole('region', { name: 'Posso ler os seus registros?' })
@@ -135,8 +135,8 @@ test('lets a professional ask about a linked patient', async ({ page }) => {
   await page.getByRole('button', { name: 'Perguntar sobre este paciente' }).click()
   const chat = page.getByRole('dialog', { name: /^Perguntar sobre / })
   await expectDisclaimer(chat, [
-    'IA pode cometer erros.',
-    'Não substitui o seu julgamento clínico.',
+    'IA pode cometer erros',
+    'MyCogniAI não substitui o seu julgamento clínico.',
   ])
   await chat.getByRole('button', { name: 'Como o humor mudou nas últimas semanas?' }).click()
 
