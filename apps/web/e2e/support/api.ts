@@ -287,3 +287,14 @@ export async function acceptInvitation(
     consentVersion: sharingConsentVersion,
   })
 }
+
+export async function addMemories(
+  email: string,
+  password: string,
+  contents: readonly string[],
+): Promise<void> {
+  const post = await poster(email, password)
+  for (const content of contents) {
+    await post('/v1/memories', { content })
+  }
+}
