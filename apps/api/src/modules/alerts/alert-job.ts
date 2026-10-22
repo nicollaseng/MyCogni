@@ -40,6 +40,8 @@ interface Evaluation {
 
 type NoteTrigger = Extract<AlertTrigger, { kind: 'note' }>
 
+type QuestionnaireTrigger = Extract<AlertTrigger, { kind: 'questionnaire' }>
+
 const fallbackLocale: Locale = 'pt-BR'
 
 const nothing: AlertOutcome = { raised: 0, emailed: 0 }
@@ -141,6 +143,20 @@ export function createAlertJob({
     return evaluations
   }
 
+  async function questionnaire({
+    patientId,
+    responseId,
+  }: QuestionnaireTrigger): Promise<Evaluation[]> {
+    const evaluations: Evaluation[] = []
+    for (const link of await store.activeLinks({ patientId })) {
+      const result = await store.visibleQuestionnaire(link, responseId)
+      if (result !== undefined) {
+        evaluations.push({ link, alerts: alertsFor({ kind: 'questionnaire', ...result }) })
+      }
+    }
+    return evaluations
+  }
+
   async function summary(insightId: string): Promise<Evaluation[]> {
     const record = await store.professionalSummary(insightId)
     const content = professionalInsightContentSchema.safeParse(record?.content)
@@ -184,6 +200,8 @@ export function createAlertJob({
         return daily(at)
       case 'note':
         return note(trigger)
+      case 'questionnaire':
+        return questionnaire(trigger)
     }
   }
 

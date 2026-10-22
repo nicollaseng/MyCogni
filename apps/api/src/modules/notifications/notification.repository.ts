@@ -11,6 +11,8 @@ import {
   invitations,
   notifications,
   professionalProfiles,
+  profiles,
+  questionnaireAssignments,
   supportTickets,
 } from '../../db/schema/index.ts'
 
@@ -28,6 +30,7 @@ export interface NotificationRecord {
     professionalName: string
     professionalKind: ProfessionalKind
   } | null
+  questionnaire: { assignmentId: string; patientId: string; patientName: string | null } | null
 }
 
 export interface NotificationRepository {
@@ -55,6 +58,9 @@ export function createNotificationRepository(db: Database): NotificationReposito
             invitationExpiresAt: invitations.expiresAt,
             professionalName: professionalProfiles.fullName,
             professionalKind: professionalProfiles.kind,
+            questionnaireId: questionnaireAssignments.id,
+            questionnairePatientId: questionnaireAssignments.patientId,
+            questionnairePatientName: profiles.displayName,
           })
           .from(notifications)
           .leftJoin(invitations, eq(invitations.id, notifications.invitationId))
@@ -63,6 +69,11 @@ export function createNotificationRepository(db: Database): NotificationReposito
             professionalProfiles,
             eq(professionalProfiles.userId, invitations.professionalId),
           )
+          .leftJoin(
+            questionnaireAssignments,
+            eq(questionnaireAssignments.id, notifications.questionnaireAssignmentId),
+          )
+          .leftJoin(profiles, eq(profiles.id, questionnaireAssignments.patientId))
           .where(eq(notifications.userId, userId))
           .orderBy(desc(notifications.createdAt))
           .limit(limit),
@@ -90,6 +101,14 @@ export function createNotificationRepository(db: Database): NotificationReposito
                 expiresAt: row.invitationExpiresAt,
                 professionalName: row.professionalName,
                 professionalKind: row.professionalKind,
+              },
+        questionnaire:
+          row.questionnaireId === null || row.questionnairePatientId === null
+            ? null
+            : {
+                assignmentId: row.questionnaireId,
+                patientId: row.questionnairePatientId,
+                patientName: row.questionnairePatientName,
               },
       }))
     },

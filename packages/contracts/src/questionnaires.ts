@@ -66,7 +66,7 @@ export const createAssignmentSchema = z.object({
   repeatEveryDays: repeatIntervalSchema.nullable().default(null),
 })
 
-export type CreateAssignmentInput = z.input<typeof createAssignmentSchema>
+export type CreateAssignmentInput = z.infer<typeof createAssignmentSchema>
 
 export const questionnaireScoreSchema = z.object({
   total: z.int(),

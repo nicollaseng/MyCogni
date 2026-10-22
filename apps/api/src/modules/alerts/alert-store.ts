@@ -13,6 +13,7 @@ import {
   professionalAlerts,
   professionalProfiles,
   profiles,
+  questionnaireResponses,
 } from '../../db/schema/index.ts'
 import type { SavedNote } from '../../jobs/alert-trigger.ts'
 
@@ -56,6 +57,10 @@ export interface AlertStore {
   activeLinks(filter: { patientId?: string; professionalId?: string }): Promise<AlertLink[]>
   visibleScreening(link: AlertLink, assessmentId: string): Promise<ScreeningResult | undefined>
   visibleNote(link: AlertLink, note: SavedNote): Promise<boolean>
+  visibleQuestionnaire(
+    link: AlertLink,
+    responseId: string,
+  ): Promise<{ hasRiskFlag: boolean } | undefined>
   professionalSummary(insightId: string): Promise<ProfessionalSummaryRecord | undefined>
   raise(alert: NewAlert, cooldownSince: Date | null): Promise<string | null>
   claimEmail(alertId: string, link: AlertLink, window: EmailWindow): Promise<boolean>
@@ -127,6 +132,20 @@ export function createAlertStore(db: Database): AlertStore {
           .from(assessments)
           .where(and(eq(assessments.id, assessmentId), eq(assessments.userId, link.patientId)))
         return row
+      })
+    },
+    visibleQuestionnaire(link, responseId) {
+      return withUser(db, link.professionalId, async (tx) => {
+        const [row] = await tx
+          .select({ flags: questionnaireResponses.flags })
+          .from(questionnaireResponses)
+          .where(
+            and(
+              eq(questionnaireResponses.id, responseId),
+              eq(questionnaireResponses.patientId, link.patientId),
+            ),
+          )
+        return row === undefined ? undefined : { hasRiskFlag: row.flags.includes('risk_item') }
       })
     },
     visibleNote(link, note) {

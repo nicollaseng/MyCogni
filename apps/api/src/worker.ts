@@ -31,6 +31,7 @@ import { createInsightJob } from './modules/insights/insight-job.ts'
 import { createInsightRepository } from './modules/insights/insight.repository.ts'
 import { createMemoryExtractionRepository } from './modules/memories/memory-extraction.repository.ts'
 import { createMemoryJob } from './modules/memories/memory-job.ts'
+import { createQuestionnaireNotifier } from './modules/questionnaires/questionnaire-notifier.ts'
 import { createReminderJob } from './modules/reminders/reminder-job.ts'
 import { createReminderStore } from './modules/reminders/reminder-store.ts'
 import { createUnsubscribeTokens } from './modules/reminders/unsubscribe-token.ts'
@@ -118,6 +119,12 @@ const exportJob = createDataExportJob({
   now: () => new Date(),
 })
 
+const questionnaires = createQuestionnaireNotifier({
+  db: database.db,
+  mailer,
+  webUrl: config.webUrl,
+})
+
 const insightPayload = z.object({ patientId: z.uuid() })
 
 const exportPayload = z.object({ exportId: z.uuid() })
@@ -158,12 +165,23 @@ await maintenanceQueue.upsertJobScheduler(
   { every: 60 * 60 * 1000 },
   { name: 'sweep-exports' },
 )
+await maintenanceQueue.upsertJobScheduler(
+  'sweep-questionnaires',
+  { every: config.questionnaireSweepEveryMs },
+  { name: 'sweep-questionnaires' },
+)
 const maintenanceWorker = new Worker(
   maintenanceQueueName,
-  async (job) =>
-    job.name === 'sweep-exports'
-      ? exportJob.sweep()
-      : { expired: await expireInvitations(database.db) },
+  async (job) => {
+    switch (job.name) {
+      case 'sweep-exports':
+        return exportJob.sweep()
+      case 'sweep-questionnaires':
+        return questionnaires.sweep()
+      default:
+        return { expired: await expireInvitations(database.db) }
+    }
+  },
   { connection: connections[2], prefix },
 )
 

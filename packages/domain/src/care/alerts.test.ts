@@ -98,6 +98,13 @@ describe('alertsFor', () => {
     expect(alertsFor({ kind: 'note' })).toEqual([{ reason: 'note_risk', level: 'urgent' }])
   })
 
+  it('raises the urgent item 9 alert only when an assigned PHQ-9 has it above zero', () => {
+    expect(alertsFor({ kind: 'questionnaire', hasRiskFlag: true })).toEqual([
+      { reason: 'risk_item', level: 'urgent' },
+    ])
+    expect(alertsFor({ kind: 'questionnaire', hasRiskFlag: false })).toEqual([])
+  })
+
   it('alerts professionals only about urgent notes', () => {
     expect(raisesNoteAlert('urgent')).toBe(true)
     expect(raisesNoteAlert('watch')).toBe(false)

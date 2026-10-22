@@ -12,6 +12,7 @@ import {
 export interface JobScheduler {
   checkInRecorded(patientId: string): Promise<void>
   assessmentCompleted(patientId: string, assessmentId: string): Promise<void>
+  questionnaireCompleted(patientId: string, responseId: string): Promise<void>
   summaryCreated(insightId: string): Promise<void>
   noteSaved(note: SavedNote): Promise<void>
   memorySourceSaved(userId: string): Promise<void>
@@ -49,6 +50,7 @@ const cleanup: JobsOptions = { removeOnComplete: true, removeOnFail: 100, attemp
 const idleScheduler: JobScheduler = {
   checkInRecorded: () => Promise.resolve(),
   assessmentCompleted: () => Promise.resolve(),
+  questionnaireCompleted: () => Promise.resolve(),
   summaryCreated: () => Promise.resolve(),
   noteSaved: () => Promise.resolve(),
   memorySourceSaved: () => Promise.resolve(),
@@ -126,6 +128,12 @@ export function createJobScheduler(
       return alert(
         { kind: 'assessment', patientId, assessmentId },
         `alert-assessment-${assessmentId}`,
+      )
+    },
+    questionnaireCompleted(patientId, responseId) {
+      return alert(
+        { kind: 'questionnaire', patientId, responseId },
+        `alert-questionnaire-${responseId}`,
       )
     },
     summaryCreated(insightId) {

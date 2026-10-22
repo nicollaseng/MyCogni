@@ -32,6 +32,7 @@ import { notificationModule } from './modules/notifications/index.ts'
 import { onboardingModule } from './modules/onboarding/index.ts'
 import { professionalModule } from './modules/professionals/index.ts'
 import { profileModule } from './modules/profile/index.ts'
+import { questionnaireModule } from './modules/questionnaires/index.ts'
 import { reminderModule, reminderPublicModule } from './modules/reminders/index.ts'
 import type { Fetcher } from './modules/profile/photo-download.ts'
 import { reportModule } from './modules/reports/index.ts'
@@ -152,6 +153,9 @@ function authenticatedRoutes(
       }),
     )
     await api.register(memoryModule(db))
+    await api.register(
+      questionnaireModule({ db, mailer, jobs, limiter, webUrl: config.webUrl, log: api.log }),
+    )
     await api.register(transcriptionModule({ transcriber, limiter, log: api.log }))
     await api.register(dataExportModule({ db, store: exportFiles, jobs, limiter }))
     await api.register(reminderModule(reminderOptions(config, db)))

@@ -54,6 +54,7 @@ function dataDocument(
     consents: rest.consents,
     checkIns: rest.checkIns,
     assessments: rest.assessments,
+    questionnaires: rest.questionnaires,
     mybook: {
       pages: plan.pages.map(({ page, file }) => {
         const captions = photoCaptions(page.body)
