@@ -32,7 +32,7 @@ export function TextStyleOptions({ editor, current, layout, onChosen }: TextStyl
       aria-label={t('styles')}
       className={cn(
         layout === 'row'
-          ? 'flex gap-1 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden'
+          ? 'flex touch-pan-x gap-1 overflow-x-auto overflow-y-hidden overscroll-x-contain [scrollbar-width:none] [&::-webkit-scrollbar]:hidden'
           : 'flex flex-col gap-0.5',
       )}
     >

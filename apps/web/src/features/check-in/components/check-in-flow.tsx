@@ -11,6 +11,7 @@ import {
   valenceOf,
   type MoodLevel,
 } from '@/features/mood/mood-levels'
+import { useAutoGrow } from '@/shared/hooks/use-auto-grow'
 import { useSubmit } from '@/shared/hooks/use-submit'
 import type { ActionResult } from '@/shared/lib/actions/result'
 import { formatTime } from '@/shared/lib/time'
@@ -48,6 +49,7 @@ export function CheckInFlow({ today, timeZone, save }: CheckInFlowProps) {
   const [emotions, setEmotions] = useState<string[]>([])
   const [contexts, setContexts] = useState<string[]>([])
   const [note, setNote] = useState('')
+  const noteField = useAutoGrow(note)
   const [recordedAt, setRecordedAt] = useState('')
   const [safety, setSafety] = useState<SafetyPrompt | null>(null)
   const valence = valenceOf(level)
@@ -156,14 +158,15 @@ export function CheckInFlow({ today, timeZone, save }: CheckInFlowProps) {
             error={error}
           >
             <textarea
+              ref={noteField}
               value={note}
               onChange={(event) => {
                 setNote(event.currentTarget.value)
               }}
               aria-label={t('contextStep.noteLabel')}
               placeholder={t('contextStep.notePlaceholder')}
-              rows={2}
-              className="mt-2 w-full resize-none bg-transparent font-serif text-[17px] leading-normal outline-none placeholder:text-muted-foreground placeholder:italic"
+              rows={3}
+              className="mt-2 max-h-[50dvh] min-h-[4.75rem] w-full resize-none overflow-y-auto bg-transparent font-serif text-[17px] leading-normal outline-none placeholder:text-muted-foreground placeholder:italic"
             />
           </PickerStep>
         )}

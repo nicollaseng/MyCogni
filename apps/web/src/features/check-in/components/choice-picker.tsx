@@ -56,7 +56,7 @@ export function ChoicePicker({ tabs, selected, onToggle, searchLabel }: ChoicePi
     <div className="flex flex-col">
       <div
         role="tablist"
-        className="mt-5 flex gap-5 overflow-x-auto border-b border-rule [scrollbar-width:none] [mask-image:linear-gradient(to_right,#000_85%,transparent)]"
+        className="mt-5 flex touch-pan-x gap-5 overflow-x-auto overflow-y-hidden overscroll-x-contain shadow-[inset_0_-1px_0_var(--color-rule)] [scrollbar-width:none] [mask-image:linear-gradient(to_right,#000_85%,transparent)] [&::-webkit-scrollbar]:hidden"
       >
         {tabs.map((tab, index) => {
           const active = !searching && index === activeIndex
@@ -73,7 +73,7 @@ export function ChoicePicker({ tabs, selected, onToggle, searchLabel }: ChoicePi
                 setQuery('')
               }}
               className={cn(
-                '-mb-px h-10 shrink-0 border-b-2 text-[15px] transition-colors',
+                'h-10 shrink-0 border-b-2 text-[15px] transition-colors',
                 active
                   ? 'border-foreground font-medium text-foreground'
                   : 'border-transparent text-muted-foreground hover:text-foreground',

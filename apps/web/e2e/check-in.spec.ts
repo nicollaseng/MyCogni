@@ -46,6 +46,36 @@ test('records mood, emotions from different groups and context', async ({ page }
   await expect(page.getByText('mal · ansiedade · solidão · sono')).toBeVisible()
 })
 
+test('scrolls the emotion groups sideways only', async ({ page }) => {
+  await page.goto('/check-in')
+
+  await moodSlider(page).fill('3')
+  await page.getByRole('button', { name: 'Continuar' }).click()
+  const groups = page.getByRole('tablist')
+  await groups.getByRole('tab', { name: 'tristeza' }).click()
+
+  expect(await groups.evaluate((element) => element.scrollHeight - element.clientHeight)).toBe(0)
+  await expect(groups).toHaveCSS('overflow-y', 'hidden')
+})
+
+test('grows the note with what the person writes instead of scrolling it', async ({ page }) => {
+  await page.goto('/check-in')
+
+  await moodSlider(page).fill('3')
+  await page.getByRole('button', { name: 'Continuar' }).click()
+  await page.getByRole('button', { name: 'Continuar', exact: true }).click()
+  const note = page.getByRole('textbox', { name: /nota/i })
+  const empty = await note.evaluate((element) => element.clientHeight)
+  await note.fill('Primeira linha\nSegunda linha\nTerceira linha\nQuarta linha\nQuinta linha')
+
+  const grown = await note.evaluate((element) => ({
+    height: element.clientHeight,
+    hidden: element.scrollHeight - element.clientHeight,
+  }))
+  expect(grown.height).toBeGreaterThan(empty)
+  expect(grown.hidden).toBeLessThanOrEqual(1)
+})
+
 test('records only the mood in one tap', async ({ page }) => {
   await page.goto('/check-in')
 
