@@ -68,6 +68,12 @@ function dismiss(): void {
   }
 }
 
+export function useReminderOfferAvailable(): boolean {
+  const context = use(ReminderOfferContext)
+  const dismissed = useSyncExternalStore(subscribe, wasDismissed, () => true)
+  return context !== null && !dismissed
+}
+
 export function ReminderOffer() {
   const context = use(ReminderOfferContext)
   const dismissed = useSyncExternalStore(subscribe, wasDismissed, () => true)

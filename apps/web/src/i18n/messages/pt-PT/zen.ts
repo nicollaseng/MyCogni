@@ -162,6 +162,7 @@ export const zen: ZenMessages = {
     close: 'Fechar',
   },
   feeling: {
+    skip: 'Saltar',
     saved: 'Registado: {mood}.',
   },
   practice: {

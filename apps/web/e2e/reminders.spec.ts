@@ -120,6 +120,11 @@ test('offers a daily reminder at the end of a breathing practice', async ({ page
   await page.clock.fastForward('01:20')
 
   const offer = mode.getByRole('region', { name: 'Quer um lembrete diário para praticar?' })
+  const feeling = mode.getByRole('group', { name: 'Como você está agora?' })
+  await expect(feeling).toBeVisible()
+  await expect(offer).toHaveCount(0)
+  await feeling.getByRole('button', { name: 'Bem', exact: true }).click()
+  await expect(feeling).toHaveCount(0)
   await expect(offer).toBeVisible()
   await offer.getByLabel('Horário do lembrete').fill('08:10')
   await offer.getByRole('button', { name: 'Lembrar todo dia' }).click()

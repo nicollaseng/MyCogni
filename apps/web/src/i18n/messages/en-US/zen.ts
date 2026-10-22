@@ -160,6 +160,7 @@ export const zen: ZenMessages = {
     close: 'Close',
   },
   feeling: {
+    skip: 'Skip',
     saved: 'Noted: {mood}.',
   },
   practice: {

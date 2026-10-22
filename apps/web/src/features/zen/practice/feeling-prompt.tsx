@@ -10,9 +10,10 @@ const levels: readonly MoodLevel[] = [0, 1, 2, 3, 4, 5, 6]
 interface FeelingPromptProps {
   question: string
   onFeel: (level: MoodLevel) => Promise<boolean>
+  onSkip?: () => void
 }
 
-export function FeelingPrompt({ question, onFeel }: FeelingPromptProps) {
+export function FeelingPrompt({ question, onFeel, onSkip }: FeelingPromptProps) {
   const mood = useTranslations('common.mood')
   const t = useTranslations('zen.feeling')
   const [chosen, setChosen] = useState<MoodLevel | null>(null)
@@ -48,6 +49,15 @@ export function FeelingPrompt({ question, onFeel }: FeelingPromptProps) {
       <p aria-live="polite" className="min-h-5 text-sm text-zen-foreground/75">
         {chosen === null ? '' : saved ? t('saved', { mood: mood(moodKeyOf(chosen)) }) : ''}
       </p>
+      {onSkip !== undefined && chosen === null && (
+        <button
+          type="button"
+          onClick={onSkip}
+          className="-mt-2 min-h-10 px-2 text-sm text-zen-foreground/70 underline decoration-1 underline-offset-4 hover:text-zen-foreground"
+        >
+          {t('skip')}
+        </button>
+      )}
     </div>
   )
 }

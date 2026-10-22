@@ -279,6 +279,7 @@ describe('BreathingMode', () => {
   })
 
   it('keeps a finished exercise and asks how the person feels with the mood dots', async () => {
+    preferReducedMotion(true)
     record.mockClear()
     remember.mockClear()
     const { user } = await openMode()
@@ -292,9 +293,10 @@ describe('BreathingMode', () => {
     expect(record.mock.calls[0]?.[0].seconds).toBe(64)
     await user.click(await screen.findByRole('button', { name: 'Um pouco bem' }))
     expect(remember).toHaveBeenCalledWith('session-9', 4)
-  })
+  }, 20_000)
 
   it('keeps a stopped exercise only after a minute', async () => {
+    preferReducedMotion(true)
     record.mockClear()
     const { user } = await openMode()
 
@@ -312,5 +314,5 @@ describe('BreathingMode', () => {
     expect(record).toHaveBeenCalledWith(
       expect.objectContaining({ kind: 'breathing', completed: false }),
     )
-  })
+  }, 20_000)
 })

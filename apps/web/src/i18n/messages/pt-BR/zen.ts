@@ -159,6 +159,7 @@ export const zen = {
     close: 'Fechar',
   },
   feeling: {
+    skip: 'Pular',
     saved: 'Anotado: {mood}.',
   },
   practice: {

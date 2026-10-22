@@ -10,7 +10,7 @@ import { BackIcon, ForwardIcon } from '@/shared/components/icons'
 import { cn } from '@/shared/lib/utils'
 import { Button, buttonVariants } from '@/shared/ui/button'
 import { ZenContour } from '../components/zen-contour'
-import { FeelingPrompt } from '../practice/feeling-prompt'
+import { AfterPractice } from '../practice/after-practice'
 import type { RecordPractice, RememberFeeling } from '../practice/record'
 import type { MeditationOption } from './options'
 import { buildTimeline } from './timeline'
@@ -33,7 +33,7 @@ export function MeditationPlayer({ option, onClose, record, remember }: Meditati
   const language = contentLanguageOf(useLocale())
   const { voice } = useAudioPreferences()
   const [length, setLength] = useState<MeditationLength>('short')
-  const [sessionId, setSessionId] = useState<string | null>(null)
+  const [sessionId, setSessionId] = useState<string | null | undefined>(undefined)
   const element = useRef<HTMLAudioElement>(null)
   const startedAt = useRef<Date | null>(null)
   const chosen = voiceFor(language, voice)
@@ -120,9 +120,12 @@ export function MeditationPlayer({ option, onClose, record, remember }: Meditati
       </p>
       {ended ? (
         <div className="flex flex-col items-center gap-6">
-          {sessionId !== null && (
-            <FeelingPrompt question={t('howNow')} onFeel={(level) => remember(sessionId, level)} />
-          )}
+          <AfterPractice
+            question={t('howNow')}
+            sessionId={sessionId}
+            remember={remember}
+            offer={false}
+          />
           <div className="flex w-full max-w-[22rem] gap-3">
             <Link
               href="/mybook"

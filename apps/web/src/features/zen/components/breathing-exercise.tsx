@@ -4,7 +4,6 @@ import { breathingContentId } from '@mycogni/domain'
 import { useTranslations } from 'next-intl'
 import { useEffect, useReducer, useRef, useState } from 'react'
 import { usePrefersReducedMotion } from '@/shared/hooks/use-prefers-reduced-motion'
-import { ReminderOffer } from '@/features/reminders/components/reminder-offer'
 import { Button } from '@/shared/ui/button'
 import {
   advance,
@@ -14,7 +13,7 @@ import {
   type BreathingAction,
   type BreathingStatus,
 } from '../breathing'
-import { FeelingPrompt } from '../practice/feeling-prompt'
+import { AfterPractice } from '../practice/after-practice'
 import {
   recordPractice,
   rememberFeeling,
@@ -48,7 +47,7 @@ export function BreathingExercise({
   const t = useTranslations('zen.breathing')
   const reducedMotion = usePrefersReducedMotion()
   const [run, dispatch] = useReducer(advance, idleRun)
-  const [sessionId, setSessionId] = useState<string | null>(null)
+  const [sessionId, setSessionId] = useState<string | null | undefined>(undefined)
   const startedAt = useRef<Date | null>(null)
   const recordedMs = useRef(0)
   const latest = useRef({ run, record })
@@ -135,8 +134,14 @@ export function BreathingExercise({
         {active ? word : finished ? `${t('done')} ${t('howNow')}` : ''}
       </p>
       <div className="flex min-h-[3.25rem] items-start justify-center">
-        {finished && sessionId !== null ? (
-          <FeelingPrompt question={t('howNow')} onFeel={(level) => remember(sessionId, level)} />
+        {finished ? (
+          <AfterPractice
+            key={run.run}
+            question={t('howNow')}
+            sessionId={sessionId}
+            remember={remember}
+            offer
+          />
         ) : (
           <p
             className={
@@ -159,7 +164,7 @@ export function BreathingExercise({
               startedAt.current = new Date()
             }
             if (status === 'finished') {
-              setSessionId(null)
+              setSessionId(undefined)
             }
             dispatch({ type: primaryAction[status], now: Date.now() })
           }}
@@ -177,7 +182,6 @@ export function BreathingExercise({
           </Button>
         )}
       </div>
-      {finished && <ReminderOffer />}
     </div>
   )
 }
