@@ -263,7 +263,7 @@ export {
   type AssistantActionType,
   type ProposedAction,
 } from './assistant/actions.ts'
-export { bannedPhrasesIn, cogniBannedPhrases } from './assistant/persona.ts'
+export { bannedPhrasesIn, cogniBannedPhrases, mentionsContactCard } from './assistant/persona.ts'
 export { filterReply, repeatsPassage, type ReplyFilterOptions } from './assistant/reply-filter.ts'
 export { consistencyOf, type Consistency } from './patterns/consistency.ts'
 export { averageOf, moodDays, weekdayOf, type MoodDay } from './patterns/days.ts'

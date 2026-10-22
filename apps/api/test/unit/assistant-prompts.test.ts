@@ -42,6 +42,24 @@ describe('personal assistant prompt', () => {
     expect(personalAssistantPrompt).toContain('No long paragraphs.')
   })
 
+  it('mentions the contacts below only on urgent replies, when the card shows', () => {
+    expect(personalAssistantPrompt).toContain(
+      'Only when "risk" is "urgent", refer to "the contacts below"',
+    )
+    expect(personalAssistantPrompt).toContain(
+      'When "risk" is "none" or "watch", never mention contacts, numbers or anything below your reply.',
+    )
+    expect(assistantNotes(context).at(-1)).toContain('the crisis services of their country')
+    expect(assistantNotes(context).join(' ')).not.toContain('shown in the app')
+  })
+
+  it('writes Portuguese without gendered endings in brackets', () => {
+    expect(personalAssistantPrompt).toContain(
+      'never write gendered endings in brackets, such as "sozinho(a)" or "cansado(a)"',
+    )
+    expect(personalAssistantPrompt).toContain('"se sentir só" or "estar sem companhia"')
+  })
+
   it('points to the contacts below instead of numbers, in each variant', () => {
     expect(personalAssistantPrompt).toContain('"os contatos abaixo"')
     expect(personalAssistantPrompt).toContain('"os contactos abaixo"')

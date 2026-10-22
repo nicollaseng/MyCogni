@@ -30,7 +30,17 @@ function wordsOf(text: string): string {
     .join(' ')} `
 }
 
+const bracketedGender = /\p{L}+\((?:a|o|as|os)\)/giu
+
+const contactCard =
+  / (contatos|contactos|contacts|numeros|numbers|servicos|services) (\p{L}+ ){0,2}(abaixo|below) /u
+
 export function bannedPhrasesIn(text: string): string[] {
   const words = wordsOf(text)
-  return cogniBannedPhrases.filter((phrase) => words.includes(wordsOf(phrase)))
+  const phrases = cogniBannedPhrases.filter((phrase) => words.includes(wordsOf(phrase)))
+  return [...phrases, ...(text.match(bracketedGender) ?? [])]
+}
+
+export function mentionsContactCard(text: string): boolean {
+  return contactCard.test(wordsOf(text))
 }
