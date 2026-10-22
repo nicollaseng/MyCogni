@@ -226,6 +226,7 @@ export {
 } from './support.ts'
 export {
   assistantAccessSchema,
+  assistantActionSchema,
   assistantConversationSchema,
   assistantConversationSummarySchema,
   assistantExchangeSchema,
