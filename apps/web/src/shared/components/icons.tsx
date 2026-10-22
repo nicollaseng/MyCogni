@@ -67,10 +67,13 @@ export function ForwardIcon({ className }: IconProps) {
   )
 }
 
-export function WaveIcon({ className }: IconProps) {
+export function LotusIcon({ className }: IconProps) {
   return (
-    <svg aria-hidden viewBox="0 0 20 20" className={className}>
-      <path d="M2.5 11c2.5-3 5-3 7.5 0s5 3 7.5 0M2.5 7c2.5-3 5-3 7.5 0s5 3 7.5 0" {...stroke} />
+    <svg aria-hidden viewBox="0 0 20 20" data-icon="lotus" className={className}>
+      <path
+        d="M10 4c1.9 1.7 2.8 3.7 2.8 5.9S11.9 14 10 15.2C8.1 14 7.2 12.1 7.2 9.9S8.1 5.7 10 4ZM7.3 8.4C5.6 7.8 3.8 7.9 2.5 8.7c.3 3.7 3.3 6.3 7.5 6.5M12.7 8.4c1.7-.6 3.5-.5 4.8.3-.3 3.7-3.3 6.3-7.5 6.5"
+        {...stroke}
+      />
     </svg>
   )
 }

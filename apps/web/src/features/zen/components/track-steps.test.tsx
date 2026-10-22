@@ -199,7 +199,7 @@ describe('TrackSteps', () => {
 
     const dialog = screen.getByRole('dialog', { name: 'Respirar em quadrado' })
     expect(dialog.className).toMatch(/fixed inset-0/)
-    expect(within(dialog).getByTestId('breathing-square')).toBeInTheDocument()
+    expect(within(dialog).getByTestId('breathing-relief')).toBeInTheDocument()
     expect(within(dialog).getByRole('button', { name: 'Começar' })).toBeInTheDocument()
   })
 

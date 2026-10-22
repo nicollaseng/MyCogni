@@ -164,6 +164,11 @@ test('opens Zen on the green card and breathes in the full-screen breathing mode
   const card = page.getByTestId('zen-card')
   await expect(card.getByRole('heading', { level: 1, name: 'Zen Space' })).toBeVisible()
   await expect(card.getByRole('button', { name: 'Pausar o som de fundo: Mar' })).toBeVisible()
+  await expect(
+    card
+      .getByRole('button', { name: 'Pausar o som de fundo: Mar' })
+      .locator('svg[data-sound="sea"]'),
+  ).toBeVisible()
   await expect(card.getByRole('heading', { level: 3, name: 'Sono e humor' })).toBeVisible()
   await expect(page.locator('main svg[viewBox="0 0 300 300"]')).toHaveCount(1)
   await expect(card.locator('svg[viewBox="0 0 300 300"]')).toHaveCount(1)
@@ -171,7 +176,10 @@ test('opens Zen on the green card and breathes in the full-screen breathing mode
 
   await page.getByRole('button', { name: 'Respirar 1 min' }).click()
   const mode = page.getByRole('dialog', { name: 'Respirar em quadrado' })
-  await expect(mode.getByTestId('breathing-square')).toBeVisible()
+  await expect(mode.getByTestId('breathing-relief')).toBeVisible()
+  await expect(mode.getByTestId('relief-rings').locator('path')).toHaveCount(7)
+  await expect(mode.getByTestId('breathing-square')).toHaveCount(0)
+  await expect(mode.getByTestId('breathing-dot')).toHaveCount(0)
   const viewport = page.viewportSize()
   const box = await mode.boundingBox()
   expect(box?.width).toBe(viewport?.width)
@@ -181,6 +189,7 @@ test('opens Zen on the green card and breathes in the full-screen breathing mode
   await expect(mode.getByRole('status')).toHaveText('Inspire')
   await expect(mode.getByText('Inspire', { exact: true }).first()).toBeVisible()
   await expect(mode.getByText('Volta 1 de 4')).toBeVisible()
+  await expect(mode.getByTestId('relief-sweep')).toHaveCount(1)
   await mode.getByRole('button', { name: 'Pausar' }).click()
   await expect(mode.getByRole('button', { name: 'Continuar' })).toBeVisible()
   await mode.getByRole('button', { name: 'Fechar' }).click()
@@ -265,6 +274,7 @@ test('plays the background sound on arrival in Zen and follows the sound chosen 
   await page.getByRole('link', { name: 'Ansiedade', exact: true }).click()
   await expect(page).toHaveURL('/zen/topics/anxiety')
   await expect(headerSound(page, 'Mar')).toHaveAttribute('aria-pressed', 'true')
+  await expect(headerSound(page, 'Mar').locator('svg[data-sound="sea"]')).toBeVisible()
 
   await page.goto('/me/sound')
   const settings = page.getByRole('region', { name: 'Som e voz' })
@@ -274,6 +284,7 @@ test('plays the background sound on arrival in Zen and follows the sound chosen 
 
   await mainNavigation(page).getByRole('link', { name: 'Hoje' }).click()
   await expect(headerSound(page, 'Chuva')).toHaveAttribute('aria-pressed', 'true')
+  await expect(headerSound(page, 'Chuva').locator('svg[data-sound="rain"]')).toBeVisible()
   await mainNavigation(page).getByRole('link', { name: 'Zen' }).click()
   await expect(page.getByRole('button', { name: 'Pausar o som de fundo: Chuva' })).toBeVisible()
   await expect(headerSound(page, 'Chuva')).toHaveCount(0)

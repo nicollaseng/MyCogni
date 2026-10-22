@@ -92,8 +92,11 @@ describe('BreathingMode', () => {
       within(dialog).getByText(/Inspire, segure, solte e espere, contando até quatro/),
     ).toBeVisible()
     expect(within(dialog).getByRole('button', { name: 'Começar' })).toBeVisible()
-    expect(screen.getByTestId('breathing-square')).toHaveAttribute('data-status', 'idle')
-    expect(screen.getByTestId('breathing-fill').className).toMatch(/animate-box-idle/)
+    expect(screen.getByTestId('breathing-relief')).toHaveAttribute('data-status', 'idle')
+    expect(screen.getByTestId('relief-rings')).toHaveClass('animate-relief-idle')
+    expect(screen.getByTestId('relief-rings').querySelectorAll('path')).toHaveLength(7)
+    expect(screen.queryByTestId('breathing-square')).not.toBeInTheDocument()
+    expect(screen.queryByTestId('breathing-dot')).not.toBeInTheDocument()
     expect(status()).toHaveTextContent('')
   })
 
@@ -141,44 +144,57 @@ describe('BreathingMode', () => {
     await user.click(screen.getByRole('button', { name: 'Começar' }))
     advance(5000)
     await user.click(screen.getByRole('button', { name: 'Pausar' }))
-    expect(screen.getByTestId('breathing-square')).toHaveAttribute('data-status', 'paused')
-    expect(screen.getByTestId('breathing-dot')).toHaveStyle({ animationPlayState: 'paused' })
+    expect(screen.getByTestId('breathing-relief')).toHaveAttribute('data-status', 'paused')
+    expect(screen.getByTestId('relief-rings')).toHaveStyle({ animationPlayState: 'paused' })
+    expect(screen.getByTestId('relief-sweep')).toHaveStyle({ animationPlayState: 'paused' })
     advance(20_000)
 
     expect(status()).toHaveTextContent('Segure')
     expect(count()).toHaveTextContent('3')
     await user.click(screen.getByRole('button', { name: 'Continuar' }))
-    expect(screen.getByTestId('breathing-dot')).toHaveStyle({ animationPlayState: 'running' })
+    expect(screen.getByTestId('relief-rings')).toHaveStyle({ animationPlayState: 'running' })
     advance(3000)
     expect(status()).toHaveTextContent('Solte')
   })
 
-  it('moves a dot, draws the edge and breathes the inner square while running', async () => {
+  it('breathes the relief, brightens its centre and sweeps one contour each phase', async () => {
     const { user } = await openMode()
 
     await user.click(screen.getByRole('button', { name: 'Começar' }))
 
-    expect(screen.getByTestId('breathing-dot').className).toMatch(/animate-box-dot/)
-    expect(screen.getByTestId('breathing-trail')).toHaveAttribute('pathLength', '4')
-    expect(screen.getByTestId('breathing-fill').className).toMatch(/animate-box-fill/)
-    expect(screen.getByTestId('breathing-dot')).toHaveStyle({ animationDuration: '16000ms' })
+    const rings = screen.getByTestId('relief-rings')
+    expect(rings).toHaveClass('animate-relief-breath')
+    expect(rings).toHaveStyle({ animationDuration: '16000ms' })
+    expect(screen.getByTestId('relief-centre')).toHaveClass('animate-relief-fill')
+    const sweep = screen.getByTestId('relief-sweep')
+    expect(sweep).toHaveClass('animate-relief-sweep')
+    expect(sweep).toHaveAttribute('pathLength', '1')
+    expect(sweep).toHaveStyle({ animationDuration: '4000ms' })
+
+    const before = screen.getByTestId('relief-centre').getAttribute('d')
+    advance(1000)
+    expect(screen.getByTestId('relief-centre').getAttribute('d')).not.toBe(before)
   })
 
   it('only changes the word and the countdown when the person prefers less motion', async () => {
     preferReducedMotion(true)
     const { user } = await openMode()
 
-    expect(screen.getByTestId('breathing-fill').className).not.toMatch(/animate-box/)
+    expect(screen.getByTestId('relief-rings').getAttribute('class')).not.toMatch(/animate-relief/)
     await user.click(screen.getByRole('button', { name: 'Começar' }))
 
-    expect(screen.queryByTestId('breathing-dot')).not.toBeInTheDocument()
-    expect(screen.queryByTestId('breathing-trail')).not.toBeInTheDocument()
-    expect(screen.getByTestId('breathing-fill').className).not.toMatch(/animate-box/)
+    expect(screen.queryByTestId('relief-sweep')).not.toBeInTheDocument()
+    expect(screen.getByTestId('relief-rings').getAttribute('class')).not.toMatch(/animate-relief/)
+    expect(screen.getByTestId('relief-centre').getAttribute('class') ?? '').not.toMatch(
+      /animate-relief/,
+    )
+    const still = screen.getByTestId('relief-centre').getAttribute('d')
     expect(status()).toHaveTextContent('Inspire')
     advance(2000)
     expect(count()).toHaveTextContent('2')
     advance(2000)
     expect(status()).toHaveTextContent('Segure')
+    expect(screen.getByTestId('relief-centre').getAttribute('d')).toBe(still)
   })
 
   it('closes with Escape and gives the focus back', async () => {

@@ -2,6 +2,7 @@
 
 import { useTranslations } from 'next-intl'
 import { useAmbient } from '@/features/audio/ambient-provider'
+import { SoundIcon } from '@/features/audio/components/sound-icon'
 import { PauseIcon, PlayIcon } from '@/shared/components/icons'
 
 export function SoundNow() {
@@ -22,12 +23,17 @@ export function SoundNow() {
       className="inline-flex h-10 items-center gap-2.5 rounded-md border border-zen-foreground/30 px-3 text-sm text-zen-foreground transition-colors duration-150 hover:bg-zen-foreground/10 motion-reduce:transition-none"
     >
       <span className="flex size-6 items-center justify-center rounded-sm bg-zen-foreground text-zen">
-        {playing ? <PauseIcon className="size-3.5" /> : <PlayIcon className="size-3.5" />}
+        <SoundIcon sound={loop} className="size-4" />
       </span>
       <span>
         <span className="font-medium">{sound}</span>
         <span className="text-zen-foreground/70"> · {playing ? t('playing') : t('paused')}</span>
       </span>
+      {playing ? (
+        <PauseIcon className="size-3.5 text-zen-foreground/70" />
+      ) : (
+        <PlayIcon className="size-3.5 text-zen-foreground/70" />
+      )}
     </button>
   )
 }

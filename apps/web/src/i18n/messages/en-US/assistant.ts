@@ -7,9 +7,9 @@ export const assistant: AssistantMessages = {
   professionalAction: 'Ask about this patient',
   close: 'Close',
   disclaimer: {
-    mistakes: 'AI can make mistakes.',
-    personal: 'This conversation is not a substitute for professional health advice.',
-    professional: 'It does not replace your clinical judgment.',
+    mistakes: 'AI can make mistakes',
+    personal: 'MyCogniAI is not a substitute for professional health advice.',
+    professional: 'MyCogniAI does not replace your clinical judgment.',
   },
   toolbar: {
     new: 'New conversation',

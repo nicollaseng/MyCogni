@@ -108,6 +108,31 @@ describe('AmbientControl', () => {
     })
   })
 
+  it.each([
+    ['sea', 'Mar'],
+    ['rain', 'Chuva'],
+    ['forest', 'Floresta'],
+    ['night-forest', 'Floresta à noite'],
+    ['birdsong', 'Pássaros'],
+    ['meadow', 'Campo'],
+    ['campfire', 'Fogueira'],
+    ['mountain-wind', 'Montanha'],
+    ['snow', 'Neve'],
+    ['owl', 'Coruja'],
+    ['brown-noise', 'Ruído marrom'],
+  ] as const)('shows the %s sound with its own icon and name', async (sound, name) => {
+    saveAudioPreferences({ sound })
+    renderAt('/zen/topics/anxiety')
+
+    await waitFor(() => {
+      expect(control(name)).toHaveAttribute('aria-pressed', 'true')
+    })
+    const icons = control(name).querySelectorAll('svg[aria-hidden]')
+    expect(icons).toHaveLength(1)
+    expect(icons[0]).toHaveAttribute('data-sound', sound)
+    expect(control(name)).toHaveTextContent(name)
+  })
+
   it('remembers a pause on this device and plays again only when asked', async () => {
     const user = userEvent.setup()
     const { engine, unmount } = renderAt('/zen/topics/anxiety')

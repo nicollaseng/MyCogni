@@ -187,6 +187,7 @@ describe('the green card at the top', () => {
 
     const sound = await inCard.findByRole('button', { name: 'Pausar o som de fundo: Mar' })
     expect(sound).toHaveTextContent('Mar · tocando')
+    expect(sound.querySelector('svg[data-sound]')).toHaveAttribute('data-sound', 'sea')
     await user.click(sound)
     expect(inCard.getByRole('button', { name: 'Tocar o som de fundo: Mar' })).toHaveTextContent(
       'Mar · pausado',
@@ -215,7 +216,7 @@ describe('BreatheRing', () => {
     const mode = screen.getByRole('dialog', { name: 'Respirar em quadrado' })
     expect(mode).toBeVisible()
     expect(mode.className).toMatch(/fixed inset-0/)
-    expect(within(mode).getByTestId('breathing-square')).toBeVisible()
+    expect(within(mode).getByTestId('breathing-relief')).toBeVisible()
   })
 })
 
