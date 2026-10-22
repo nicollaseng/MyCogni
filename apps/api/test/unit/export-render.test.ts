@@ -88,6 +88,7 @@ function data(overrides: Partial<ExportData> = {}): ExportData {
       { id: 'c2', journalEntryId: null, createdAt: day, updatedAt: day, messages: [] },
     ],
     zen: [],
+    zenSessions: [],
     reminders: { settings: null, devices: [] },
     support: [],
     notifications: [],

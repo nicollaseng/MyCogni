@@ -11,6 +11,7 @@ import {
   journalEntries,
   notifications,
   profiles,
+  zenSessions,
 } from '../../src/db/schema/index.ts'
 import type { Email, Mailer } from '../../src/mail/mailer.ts'
 import { createExportCollector } from '../../src/modules/exports/export-collector.ts'
@@ -145,6 +146,15 @@ describe('data export job', () => {
       imagePaths: [pagePhoto()],
       createdAt: new Date('2026-10-19T12:00:00Z'),
     })
+    await connection.db.insert(zenSessions).values({
+      userId: marina.id,
+      kind: 'meditation',
+      contentId: 'body-scan',
+      startedAt: new Date('2026-10-20T22:00:00Z'),
+      secondsCompleted: 300,
+      completed: true,
+      feelingAfter: 5,
+    })
     const [conversation] = await connection.db
       .insert(assistantConversations)
       .values({
@@ -215,6 +225,7 @@ describe('data export job', () => {
       mybook: { pages: { file: string; photos: { file: string }[] }[] }
       conversations: { messages: unknown[] }[]
       profile: { photo: string }
+      zen: { sessions: { kind: string; contentId: string; completed: boolean }[] }
     }
     expect(data.schemaVersion).toBe(1)
     expect(data.account.email).toBe(marina.email)
@@ -222,6 +233,9 @@ describe('data export job', () => {
     expect(data.mybook.pages[0]?.photos[0]?.file).toBe('fotos/2026-10-19-domingo-calmo-1.png')
     expect(data.conversations[0]?.messages).toHaveLength(2)
     expect(data.profile.photo).toBe('perfil/foto.png')
+    expect(data.zen.sessions).toEqual([
+      expect.objectContaining({ kind: 'meditation', contentId: 'body-scan', completed: true }),
+    ])
     expect(entries.get('fotos/2026-10-19-domingo-calmo-1.png')?.equals(tinyPng)).toBe(true)
     const page = entries.get('mybook/2026-10-19-domingo-calmo.html')?.toString('utf8') ?? ''
     expect(page).toContain('&lt;script&gt;alert(1)&lt;/script&gt;')

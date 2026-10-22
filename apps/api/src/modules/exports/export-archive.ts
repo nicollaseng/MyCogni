@@ -67,7 +67,7 @@ function dataDocument(
     insights: rest.insights,
     memories: rest.memories,
     conversations: plan.conversations.map(({ conversation, file }) => ({ ...conversation, file })),
-    zen: { steps: rest.zen },
+    zen: { steps: rest.zen, sessions: rest.zenSessions },
     reminders: rest.reminders,
     support: rest.support,
     notifications: rest.notifications,

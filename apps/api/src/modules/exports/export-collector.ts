@@ -23,6 +23,7 @@ import {
   pushSubscriptions,
   reminderSettings,
   supportTickets,
+  zenSessions,
   zenStepProgress,
 } from '../../db/schema/index.ts'
 import { memoriesOf, type MemoryRecord } from '../memories/memory.repository.ts'
@@ -83,6 +84,7 @@ export interface ExportData {
   memories: MemoryRecord[]
   conversations: ExportConversation[]
   zen: Record<string, unknown>[]
+  zenSessions: Record<string, unknown>[]
   reminders: { settings: Record<string, unknown> | null; devices: Record<string, unknown>[] }
   support: Record<string, unknown>[]
   notifications: Record<string, unknown>[]
@@ -323,6 +325,20 @@ async function ownRows(tx: Transaction, userId: string) {
       .from(zenStepProgress)
       .where(eq(zenStepProgress.userId, userId))
       .orderBy(asc(zenStepProgress.completedAt)),
+    zenSessions: await tx
+      .select({
+        id: zenSessions.id,
+        kind: zenSessions.kind,
+        contentId: zenSessions.contentId,
+        startedAt: zenSessions.startedAt,
+        secondsCompleted: zenSessions.secondsCompleted,
+        completed: zenSessions.completed,
+        feelingAfter: zenSessions.feelingAfter,
+        createdAt: zenSessions.createdAt,
+      })
+      .from(zenSessions)
+      .where(eq(zenSessions.userId, userId))
+      .orderBy(asc(zenSessions.startedAt)),
     support: await tx
       .select({
         number: supportTickets.number,
