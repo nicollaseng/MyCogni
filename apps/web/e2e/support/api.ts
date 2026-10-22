@@ -370,3 +370,23 @@ export async function sharePage(email: string, password: string, entryId: string
     expiresAt: null,
   })
 }
+
+const releasedSchema = z.object({ id: z.uuid() })
+
+export interface ReleaseSeed {
+  variant: string
+  note?: string
+  repeatEveryDays?: 7 | 14 | 28
+}
+
+export async function releaseQuestionnaire(
+  email: string,
+  password: string,
+  patientId: string,
+  seed: ReleaseSeed,
+): Promise<string> {
+  const post = await poster(email, password)
+  return releasedSchema.parse(
+    await post(`/v1/professional/patients/${patientId}/questionnaires`, seed),
+  ).id
+}
