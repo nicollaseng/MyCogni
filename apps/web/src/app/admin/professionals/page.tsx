@@ -1,10 +1,9 @@
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { getTranslations } from 'next-intl/server'
-import { reviewAs } from '@/features/admin/actions'
 import { ProfessionalReviewList } from '@/features/admin/components/professional-review-list'
 import { ReviewTabs } from '@/features/admin/components/review-tabs'
-import { statusOf } from '@/features/admin/review'
+import { professionalsInView, statusOfView, viewOf } from '@/features/admin/review'
 import { WorkspaceHeader } from '@/features/professional/components/workspace'
 import { fetchProfessionalsForReview } from '@/shared/lib/api/care'
 import { requireProfile } from '@/shared/lib/auth/session'
@@ -17,9 +16,9 @@ export async function generateMetadata(): Promise<Metadata> {
 export default async function AdminProfessionalsPage({
   searchParams,
 }: PageProps<'/admin/professionals'>) {
-  const status = statusOf((await searchParams).status)
+  const view = viewOf((await searchParams).status)
   const [professionals, { timezone }, t] = await Promise.all([
-    fetchProfessionalsForReview(status),
+    fetchProfessionalsForReview(statusOfView(view)),
     requireProfile(),
     getTranslations('admin.professionals'),
   ])
@@ -30,13 +29,15 @@ export default async function AdminProfessionalsPage({
   return (
     <>
       <WorkspaceHeader title={t('title')} description={t('description')} />
-      <ReviewTabs current={status} />
+      <ReviewTabs current={view} />
+      {view === 'revalidate' && (
+        <p className="max-w-[44rem] text-sm text-muted-foreground">{t('revalidateHint')}</p>
+      )}
       <ProfessionalReviewList
-        key={status}
-        professionals={professionals}
-        status={status}
+        key={view}
+        professionals={professionalsInView(professionals, view, new Date())}
+        view={view}
         timeZone={timezone}
-        review={reviewAs}
       />
     </>
   )

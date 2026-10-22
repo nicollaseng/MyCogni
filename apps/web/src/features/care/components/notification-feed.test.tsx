@@ -17,6 +17,8 @@ const notifications: Notification[] = [
     readAt: null,
     insightId: null,
     questionnaire: null,
+    review: null,
+    unavailableProfessional: null,
     supportTicket: null,
     invitation: {
       id: invitationId,
@@ -31,6 +33,8 @@ const notifications: Notification[] = [
     readAt: '2026-10-02T15:00:00.000Z',
     insightId: null,
     questionnaire: null,
+    review: null,
+    unavailableProfessional: null,
     supportTicket: null,
     invitation: null,
   },
@@ -74,6 +78,8 @@ describe('NotificationFeed', () => {
       readAt: null,
       insightId: null,
       questionnaire: null,
+      review: null,
+      unavailableProfessional: null,
       supportTicket: { id: ticketId, number: 1042, status },
       invitation: null,
     })
@@ -97,6 +103,60 @@ describe('NotificationFeed', () => {
     )
   })
 
+  it('tells the professional about the verification and the patient about a departure', () => {
+    const base = {
+      kind: 'professional' as const,
+      createdAt: '2026-10-14T16:00:00.000Z',
+      readAt: null,
+      insightId: null,
+      questionnaire: null,
+      supportTicket: null,
+      invitation: null,
+    }
+    renderWithIntl(
+      <NotificationFeed
+        notifications={[
+          {
+            ...base,
+            id: '7a1c2b3d-0000-4000-8000-000000000006',
+            review: { decision: 'verified', note: null },
+            unavailableProfessional: null,
+          },
+          {
+            ...base,
+            id: '7a1c2b3d-0000-4000-8000-000000000007',
+            review: { decision: 'rejected', note: 'Envie a carteira do conselho.' },
+            unavailableProfessional: null,
+          },
+          {
+            ...base,
+            id: '7a1c2b3d-0000-4000-8000-000000000008',
+            review: null,
+            unavailableProfessional: { name: 'Helena Prado' },
+          },
+        ]}
+        timeZone="America/Sao_Paulo"
+        markRead={markRead}
+      />,
+    )
+
+    const [verified, rejected, departed] = screen.getAllByRole('listitem')
+    expect(verified).toHaveTextContent(
+      'Seu cadastro foi verificado. Você já pode convidar pacientes.',
+    )
+    expect(rejected).toHaveTextContent('Seu cadastro não foi aprovado.')
+    expect(rejected).toHaveTextContent('Motivo: Envie a carteira do conselho.')
+    expect(departed).toHaveTextContent('Helena Prado não está mais disponível no MyCogniAI.')
+    expect(screen.getAllByRole('link', { name: 'Abrir área profissional' })[0]).toHaveAttribute(
+      'href',
+      '/pro',
+    )
+    expect(screen.getByRole('link', { name: 'Ver profissionais' })).toHaveAttribute(
+      'href',
+      '/me/professionals',
+    )
+  })
+
   it('links each notification to where it leads and leaves notices without a link', () => {
     const insightId = '7a1c2b3d-0000-4000-8000-000000000020'
     renderWithIntl(
@@ -110,6 +170,8 @@ describe('NotificationFeed', () => {
             readAt: '2026-10-13T16:00:00.000Z',
             insightId,
             questionnaire: null,
+            review: null,
+            unavailableProfessional: null,
             supportTicket: null,
             invitation: null,
           },

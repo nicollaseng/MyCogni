@@ -25,7 +25,7 @@ export async function reviewAs(userId: string, input: unknown): Promise<ActionRe
   }
   return attempt(async () => {
     await reviewProfessional(id.data, review.data)
-    revalidatePath('/admin/professionals')
+    revalidatePath('/admin/professionals', 'layout')
     return null
   }, t('error'))
 }

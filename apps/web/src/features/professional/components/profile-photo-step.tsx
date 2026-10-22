@@ -80,30 +80,20 @@ export function ProfilePhotoStep({
           notice={feedback?.kind === 'notice' ? feedback.text : null}
         />
       </div>
+      {url === null && <p className="text-sm text-pretty">{t('tips')}</p>}
       <div className="flex flex-wrap items-center gap-3">
         {url === null ? (
-          <>
-            <label
-              className={cn(
-                buttonVariants({ size: 'sm' }),
-                action,
-                'cursor-pointer has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-focus-visible:outline-foreground',
-                !idle && 'pointer-events-none opacity-50',
-              )}
-            >
-              {picker}
-              {busy === 'uploading' ? account('uploading') : t('add')}
-            </label>
-            <Button
-              variant="outline"
-              size="sm"
-              className={action}
-              disabled={!idle}
-              onClick={moveOn}
-            >
-              {finishing ? t('saving') : t('skip')}
-            </Button>
-          </>
+          <label
+            className={cn(
+              buttonVariants({ size: 'sm' }),
+              action,
+              'cursor-pointer has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-focus-visible:outline-foreground',
+              !idle && 'pointer-events-none opacity-50',
+            )}
+          >
+            {picker}
+            {busy === 'uploading' ? account('uploading') : t('add')}
+          </label>
         ) : (
           <Button size="sm" className={action} disabled={!idle} onClick={moveOn}>
             {finishing ? t('saving') : t('continue')}

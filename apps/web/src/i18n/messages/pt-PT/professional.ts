@@ -184,15 +184,19 @@ export const professional: ProfessionalMessages = {
     lead: 'Depois de enviar, a nossa equipa confirma a sua inscrição antes de disponibilizar os convites.',
     kind: 'Profissão',
     fullName: 'Nome completo',
-    fullNameHint: 'É este o nome que os seus pacientes vão ver.',
-    registration: 'Número de inscrição na ordem',
-    registrationOptional: 'Inscrição profissional (opcional)',
-    registrationHints: {
-      psychologist: 'Ex.: OPP 012345',
-      psychiatrist: 'Ex.: OM 12345',
-      physician: 'Ex.: OM 12345',
-      psychoanalyst: 'Se tiver, indique a inscrição da sua formação ou associação.',
+    fullNameHint:
+      'Use o nome que aparece no seu comprovativo. É este o nome que os seus pacientes vão ver.',
+    councils: { crp: 'Inscrição no CRP (Brasil)', crm: 'Inscrição no CRM (Brasil)' },
+    uf: 'Estado (UF)',
+    ufPlaceholder: 'Escolha',
+    number: 'Número',
+    councilHints: {
+      crp: 'Escolha o estado do seu CRP e escreva só os algarismos. A região vem do estado.',
+      crm: 'Escolha o estado do seu CRM e escreva só os algarismos.',
     },
+    preview: 'A sua inscrição: {registration}',
+    institution: 'Inscrição da formação ou associação (opcional)',
+    institutionHint: 'Se tiver, indique a inscrição da sua formação ou associação.',
     consent:
       'Tenho 18 anos ou mais e aceito os <terms>termos de utilização</terms> e a <privacy>política de privacidade</privacy>.',
     submit: 'Enviar para verificação',
@@ -201,9 +205,13 @@ export const professional: ProfessionalMessages = {
       kindRequired: 'Escolha a sua profissão.',
       fullNameRequired: 'Escreva o seu nome completo.',
       fullNameTooLong: 'Use no máximo 120 caracteres.',
-      registrationRequired: 'Indique o seu número de inscrição na ordem.',
-      registrationTooShort: 'Confirme a inscrição: use pelo menos 3 caracteres.',
-      registrationTooLong: 'Use no máximo 40 caracteres.',
+      ufRequired: 'Escolha o estado do seu conselho.',
+      numberRequired: 'Indique o número da inscrição.',
+      numberInvalid: 'Use de 4 a 8 algarismos.',
+      institutionTooShort: 'Use pelo menos 3 caracteres.',
+      institutionTooLong: 'Use no máximo 40 caracteres.',
+      registrationTaken:
+        'Esta inscrição já está associada a outra conta. Se for sua, fale com o suporte.',
       consentRequired:
         'Para continuar, aceite os termos de utilização e a política de privacidade.',
       save: 'Não foi possível enviar o seu registo agora. Tente novamente dentro de instantes.',
@@ -215,7 +223,7 @@ export const professional: ProfessionalMessages = {
       body: 'A nossa equipa confirma manualmente a sua inscrição profissional antes de disponibilizar os convites.',
       next: 'O que acontece agora',
       steps: {
-        review: 'Confirmamos o seu nome, a sua inscrição e o comprovativo enviado.',
+        review: 'Confirmamos o seu nome, a sua inscrição, a sua foto e o comprovativo enviado.',
         approve: 'Com o registo aprovado, esta página passa a mostrar os seus pacientes.',
         invite: 'Convida pacientes por email ou por ligação, e cada pessoa decide se aceita.',
       },
@@ -278,7 +286,10 @@ export const professional: ProfessionalMessages = {
       pending: 'Em verificação desde {date}',
       rejected: 'Não verificado',
       locked:
-        'A profissão e a inscrição são confirmadas pela equipa MyCogniAI. Para as alterar, escreva para <link>{email}</link>.',
+        'A profissão e a inscrição são confirmadas pela equipa MyCogniAI. Para alterar, <link>fale com o suporte</link>.',
+      lockedVerified:
+        'O nome, a foto, a profissão e a inscrição foram confirmados na verificação. Para alterar, <link>fale com o suporte</link>.',
+      photoLocked: 'Confirmada na verificação.',
     },
     whatsapp: {
       label: 'WhatsApp para emergências',

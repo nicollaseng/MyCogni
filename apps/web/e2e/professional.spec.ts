@@ -2,7 +2,13 @@ import { randomUUID } from 'node:crypto'
 import { sharingConsentVersion } from '@mycogni/domain'
 import { expect, test, type Page } from '@playwright/test'
 import { z } from 'zod'
-import { apiUrl, finishOnboarding, inviteByLink, verifiedProfessional } from './support/api'
+import {
+  apiUrl,
+  councilNumber,
+  finishOnboarding,
+  inviteByLink,
+  verifiedProfessional,
+} from './support/api'
 import { signedOut } from './support/session'
 import { createUser, localSupabase, supabaseUrl, uniqueEmail } from './support/supabase'
 
@@ -137,12 +143,11 @@ test('a verified professional finds a linked patient in the table and opens the 
   await expect(page.getByRole('heading', { name: 'Esta página não existe.' })).toBeVisible()
 })
 
-test('a verified professional renames the profile from the account menu and signs out', async ({
+test('a verified professional opens the locked profile from the account menu and signs out', async ({
   page,
 }) => {
   const email = uniqueEmail('pro')
   const name = uniqueName('Helena Prado')
-  const renamed = uniqueName('Dra. Helena Prado')
   await verifiedProfessional(email, password, name)
 
   await page.goto('/sign-in')
@@ -175,13 +180,12 @@ test('a verified professional renames the profile from the account menu and sign
   await expect(page.getByRole('heading', { level: 1, name: 'Configurações' })).toBeVisible()
   const settings = page.getByRole('main')
   await expect(settings.getByText('Psicologia')).toBeVisible()
-  await expect(settings.getByText('CRP 06/123456')).toBeVisible()
-
-  await page.getByRole('button', { name: 'Alterar nome exibido aos pacientes' }).click()
-  await page.getByLabel('Nome exibido aos pacientes', { exact: true }).fill(renamed)
-  await page.getByRole('button', { name: 'Salvar nome' }).click()
-  await expect(page.getByLabel('Nome exibido aos pacientes', { exact: true })).toHaveCount(0)
-  await expect(settings.getByText(renamed)).toBeVisible()
+  await expect(settings.getByText(/^CRP 06\/\d{8}$/)).toBeVisible()
+  await expect(settings.getByText(name, { exact: true })).toBeVisible()
+  await expect(
+    page.getByRole('button', { name: 'Alterar nome exibido aos pacientes' }),
+  ).toHaveCount(0)
+  await expect(settings.getByRole('link', { name: 'fale com o suporte' })).toBeVisible()
 
   await page.getByRole('button', { name: 'Sair da conta' }).click()
   await expect(page).toHaveURL('/')
@@ -219,9 +223,11 @@ test('a new professional signs in from the professional page and is asked for th
   await page.getByText('Psicologia', { exact: true }).click()
   await page.getByLabel('Nome completo').fill(uniqueName('Marta Ribeiro'))
   await page.getByRole('button', { name: 'Enviar para verificação' }).click()
-  await expect(page.getByText('Informe seu registro no conselho.')).toBeVisible()
+  await expect(page.getByText('Escolha o estado do seu conselho.')).toBeVisible()
+  await expect(page.getByText('Informe o número do registro.')).toBeVisible()
 
-  await page.getByLabel('Registro no conselho').fill('CRP 06/654321')
+  await page.getByLabel('Estado (UF)').selectOption('SP')
+  await page.getByLabel('Número').fill(councilNumber())
   await page.getByRole('checkbox').check()
   await page.getByRole('button', { name: 'Enviar para verificação' }).click()
 

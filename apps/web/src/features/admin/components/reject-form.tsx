@@ -29,11 +29,7 @@ export function RejectForm({ name, pending, onReject, onCancel }: RejectFormProp
   }
 
   return (
-    <form
-      noValidate
-      onSubmit={submit}
-      className="sticky left-4 w-[min(36rem,calc(100vw-4.5rem))] space-y-3 py-1"
-    >
+    <form noValidate onSubmit={submit} className="max-w-xl space-y-3">
       <div className="space-y-1.5">
         <label htmlFor={`${ids}-note`} className="block text-sm font-medium">
           {t('label', { name })}
@@ -61,13 +57,13 @@ export function RejectForm({ name, pending, onReject, onCancel }: RejectFormProp
         </p>
       </div>
       <div className="flex gap-2">
-        <Button type="submit" size="sm" className="h-8 px-3 text-sm" disabled={pending}>
+        <Button type="submit" size="sm" className="h-9 px-3.5 text-sm" disabled={pending}>
           {t('confirm')}
         </Button>
         <Button
           variant="outline"
           size="sm"
-          className="h-8 px-3 text-sm hover:bg-background"
+          className="h-9 px-3.5 text-sm hover:bg-background"
           onClick={onCancel}
         >
           {t('cancel')}

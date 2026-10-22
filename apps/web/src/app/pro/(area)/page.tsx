@@ -54,7 +54,10 @@ export default async function ProfessionalHomePage() {
     return (
       <OnboardingScreen
         professional={professional}
-        step={onboardingStepOf(professional, photoStepDone)}
+        step={onboardingStepOf(professional, {
+          added: photoUrl !== null,
+          confirmed: photoStepDone,
+        })}
         timeZone={timezone}
         photoUrl={photoUrl}
         actions={{ refresh: refreshAfterUpload, finishPhotoStep }}

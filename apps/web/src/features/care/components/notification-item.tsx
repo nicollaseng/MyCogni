@@ -7,10 +7,17 @@ import { notificationHref } from '../notification-href'
 
 export function NotificationMessage({ notification }: { notification: Notification }) {
   const t = useTranslations('care.notifications')
-  const { invitation, kind, supportTicket, questionnaire } = notification
+  const { invitation, kind, supportTicket, questionnaire, review, unavailableProfessional } =
+    notification
 
   if (invitation !== null) {
     return t('invitation', { name: invitation.professional.name })
+  }
+  if (review !== null) {
+    return t(`review.${review.decision}`)
+  }
+  if (unavailableProfessional !== null) {
+    return t('unavailable', { name: unavailableProfessional.name })
   }
   if (kind === 'questionnaire_completed' && questionnaire?.patientName != null) {
     return t('questionnaireCompleted', { name: questionnaire.patientName })
@@ -33,7 +40,7 @@ export function NotificationItem({ notification, fresh, timeZone }: Notification
   const t = useTranslations('care.notifications')
   const kinds = useTranslations('common.professionalKinds')
   const locale = useLocale()
-  const { invitation, kind } = notification
+  const { invitation, kind, review } = notification
   const href = notificationHref(notification)
 
   return (
@@ -52,12 +59,17 @@ export function NotificationItem({ notification, fresh, timeZone }: Notification
           {kinds(invitation.professional.kind)} · {t(`invitationStatus.${invitation.status}`)}
         </p>
       )}
+      {review?.note != null && (
+        <p className="text-sm text-pretty text-muted-foreground">
+          {t('review.note', { note: review.note })}
+        </p>
+      )}
       {kind !== 'system' && kind !== 'marketing' && href !== '/notifications' && (
         <Link
           href={href}
           className="inline-block pt-1 text-sm underline decoration-1 underline-offset-4"
         >
-          {t(`open.${kind}`)}
+          {t(review === null ? `open.${kind}` : 'open.review')}
         </Link>
       )}
     </li>

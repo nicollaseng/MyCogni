@@ -52,16 +52,17 @@ describe('ProfilePhotoStep', () => {
     jest.restoreAllMocks()
   })
 
-  it('lets the professional skip the photo for now', async () => {
-    const { finish, transport, user } = renderStep(null)
+  it('requires a photo, with no way to skip it', () => {
+    const { finish, transport } = renderStep(null)
 
     expect(screen.getByText('Helena Prado')).toBeInTheDocument()
     expect(screen.getByLabelText('Adicionar foto')).toBeInTheDocument()
+    expect(
+      screen.getByText('Use uma foto recente, de frente, com boa luz e o rosto inteiro à mostra.'),
+    ).toBeInTheDocument()
     expect(screen.queryByRole('button', { name: 'Continuar' })).not.toBeInTheDocument()
-
-    await user.click(screen.getByRole('button', { name: 'Pular por agora' }))
-
-    expect(finish).toHaveBeenCalledTimes(1)
+    expect(screen.queryByRole('button', { name: 'Pular por agora' })).not.toBeInTheDocument()
+    expect(finish).not.toHaveBeenCalled()
     expect(transport.send).not.toHaveBeenCalled()
   })
 
@@ -78,7 +79,6 @@ describe('ProfilePhotoStep', () => {
       'https://exemplo.com/helena.jpg',
     )
     expect(onSaved).toHaveBeenCalled()
-    expect(screen.queryByRole('button', { name: 'Pular por agora' })).not.toBeInTheDocument()
     expect(screen.getByLabelText('Trocar foto')).toBeInTheDocument()
 
     await user.click(screen.getByRole('button', { name: 'Continuar' }))
@@ -96,17 +96,21 @@ describe('ProfilePhotoStep', () => {
     await user.click(screen.getByRole('button', { name: 'Remover foto' }))
 
     expect(transport.remove).toHaveBeenCalled()
-    expect(await screen.findByRole('button', { name: 'Pular por agora' })).toBeInTheDocument()
+    expect(await screen.findByLabelText('Adicionar foto')).toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: 'Continuar' })).not.toBeInTheDocument()
   })
 
   it('says when it could not move on', async () => {
-    const { user } = renderStep(null, { ok: false, error: 'Não conseguimos seguir agora.' })
+    const { user } = renderStep('https://exemplo.com/helena.jpg', {
+      ok: false,
+      error: 'Não conseguimos seguir agora.',
+    })
 
-    await user.click(screen.getByRole('button', { name: 'Pular por agora' }))
+    await user.click(screen.getByRole('button', { name: 'Continuar' }))
 
     await waitFor(() => {
       expect(screen.getByRole('alert')).toHaveTextContent('Não conseguimos seguir agora.')
     })
-    expect(screen.getByRole('button', { name: 'Pular por agora' })).toBeEnabled()
+    expect(screen.getByRole('button', { name: 'Continuar' })).toBeEnabled()
   })
 })

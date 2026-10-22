@@ -32,6 +32,7 @@ import {
 import { teamEmail } from '@/features/professional/contact'
 import { formatDate } from '@/features/professional/dates'
 import { TicketTable } from '@/features/support/components/ticket-table'
+import { Avatar } from '@/shared/components/avatar'
 import { initialsOf } from '@/shared/lib/initials'
 import { fetchLatestExport } from '@/shared/lib/api/exports'
 import { fetchSupportTickets } from '@/shared/lib/api/support'
@@ -88,6 +89,15 @@ export default async function ProfessionalSettingsPage() {
       {chunks}
     </a>
   )
+  const verified = professional.status === 'verified'
+  const supportLink = (chunks: ReactNode) => (
+    <Link
+      href="/pro/support/new"
+      className="text-foreground underline decoration-1 underline-offset-4"
+    >
+      {chunks}
+    </Link>
+  )
   const statusText =
     professional.status === 'verified' && professional.verifiedAt !== null
       ? t('profile.verified', {
@@ -119,20 +129,42 @@ export default async function ProfessionalSettingsPage() {
       <WorkspaceSection title={t('profile.title')}>
         <Surface className="max-w-3xl px-4 py-1 sm:px-5">
           <div className="py-4">
-            <ProfilePhoto
-              photoUrl={photoUrl}
-              initials={initialsOf(professional.fullName)}
-              alt={common('photoOf', { name: professional.fullName })}
-              size="lg"
-              onSaved={refreshAfterUpload}
-            >
-              <p className="text-sm text-muted-foreground">{t('profile.photo')}</p>
-              <p className="text-sm text-pretty">{t('profile.photoHint')}</p>
-            </ProfilePhoto>
+            {verified ? (
+              <div className="flex items-center gap-5">
+                <Avatar
+                  src={photoUrl}
+                  initials={initialsOf(professional.fullName)}
+                  alt={common('photoOf', { name: professional.fullName })}
+                  size="lg"
+                />
+                <div className="min-w-0 space-y-1">
+                  <p className="text-sm text-muted-foreground">{t('profile.photo')}</p>
+                  <p className="text-sm text-pretty">{t('profile.photoLocked')}</p>
+                </div>
+              </div>
+            ) : (
+              <ProfilePhoto
+                photoUrl={photoUrl}
+                initials={initialsOf(professional.fullName)}
+                alt={common('photoOf', { name: professional.fullName })}
+                size="lg"
+                onSaved={refreshAfterUpload}
+              >
+                <p className="text-sm text-muted-foreground">{t('profile.photo')}</p>
+                <p className="text-sm text-pretty">{t('profile.photoHint')}</p>
+              </ProfilePhoto>
+            )}
           </div>
-          <SettingsRow label={t('profile.name')} value={professional.fullName}>
-            <ProfessionalNameForm initialName={professional.fullName} rename={renameProfessional} />
-          </SettingsRow>
+          {verified ? (
+            <ReadOnlyRow label={t('profile.name')} value={professional.fullName} />
+          ) : (
+            <SettingsRow label={t('profile.name')} value={professional.fullName}>
+              <ProfessionalNameForm
+                initialName={professional.fullName}
+                rename={renameProfessional}
+              />
+            </SettingsRow>
+          )}
           <SettingsRow
             label={t('whatsapp.label')}
             value={professional.emergencyWhatsapp ?? t('whatsapp.empty')}
@@ -153,7 +185,7 @@ export default async function ProfessionalSettingsPage() {
           <ReadOnlyRow label={t('profile.status')} value={statusText} />
         </Surface>
         <p className="max-w-3xl text-sm leading-relaxed text-muted-foreground">
-          {t.rich('profile.locked', { email: teamEmail, link: mailLink })}
+          {t.rich(verified ? 'profile.lockedVerified' : 'profile.locked', { link: supportLink })}
         </p>
       </WorkspaceSection>
       <WorkspaceSection title={verification('title')}>

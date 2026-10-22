@@ -1,6 +1,11 @@
 'use client'
 
-import { professionalKinds, requiresRegistration, type ProfessionalKind } from '@mycogni/domain'
+import {
+  councilOf,
+  institutionRegistrationLimits,
+  professionalKinds,
+  type ProfessionalKind,
+} from '@mycogni/domain'
 import Link from 'next/link'
 import { useTranslations } from 'next-intl'
 import { useId, useState, type SubmitEvent } from 'react'
@@ -9,11 +14,10 @@ import { useSubmit } from '@/shared/hooks/use-submit'
 import { cn } from '@/shared/lib/utils'
 import { Button } from '@/shared/ui/button'
 import { TextField } from '@/shared/ui/text-field'
-import { joinIssues, type Join, type JoinIssue, type JoinValues } from '../join'
+import { emptyJoinValues, joinIssues, type Join, type JoinIssue, type JoinValues } from '../join'
+import { RegistrationFields } from './registration-fields'
 
 const documentLink = 'underline decoration-1 underline-offset-4'
-
-const emptyValues: JoinValues = { kind: null, fullName: '', registration: '', accepted: false }
 
 function FieldError({ id, message }: { id: string; message: string | undefined }) {
   if (message === undefined) {
@@ -61,11 +65,11 @@ function KindOption({
 export function JoinForm({ join }: { join: Join }) {
   const t = useTranslations('professional.form')
   const ids = useId()
-  const [values, setValues] = useState<JoinValues>(emptyValues)
+  const [values, setValues] = useState<JoinValues>(emptyJoinValues)
   const [attempted, setAttempted] = useState(false)
   const { submit, pending, error } = useSubmit(join, () => undefined)
   const issues = attempted ? joinIssues(values) : {}
-  const registrationRequired = values.kind === null || requiresRegistration(values.kind)
+  const council = values.kind === null ? null : councilOf(values.kind)
 
   function message(issue: JoinIssue | undefined): string | undefined {
     return issue === undefined ? undefined : t(`errors.${issue}`)
@@ -117,17 +121,30 @@ export function JoinForm({ join }: { join: Join }) {
         }}
       />
 
-      <TextField
-        label={registrationRequired ? t('registration') : t('registrationOptional')}
-        hint={t(`registrationHints.${values.kind ?? 'psychologist'}`)}
-        error={message(issues.registration)}
-        autoComplete="off"
-        maxLength={40}
-        value={values.registration}
-        onChange={(event) => {
-          update({ registration: event.currentTarget.value })
-        }}
-      />
+      {council !== null && (
+        <RegistrationFields
+          council={council}
+          uf={values.uf}
+          number={values.number}
+          ufError={message(issues.uf)}
+          numberError={message(issues.number)}
+          onChange={update}
+        />
+      )}
+
+      {values.kind !== null && council === null && (
+        <TextField
+          label={t('institution')}
+          hint={t('institutionHint')}
+          error={message(issues.institution)}
+          autoComplete="off"
+          maxLength={institutionRegistrationLimits.max}
+          value={values.institutionRegistration}
+          onChange={(event) => {
+            update({ institutionRegistration: event.currentTarget.value })
+          }}
+        />
+      )}
 
       <div className="space-y-2">
         <label className="flex cursor-pointer gap-3.5 text-[15px] leading-snug">

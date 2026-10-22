@@ -1,6 +1,6 @@
 import { randomUUID } from 'node:crypto'
 import { expect, test, type Page } from '@playwright/test'
-import { finishOnboarding, registeredProfessional } from './support/api'
+import { councilNumber, finishOnboarding, registeredProfessional } from './support/api'
 import { latestCode } from './support/mailpit'
 import { signedOut } from './support/session'
 import { createUser, uniqueEmail } from './support/supabase'
@@ -88,7 +88,8 @@ test('a professional signs up from the professional page and starts the verifica
   await expect(page).toHaveURL('/pro/join')
   await page.getByText('Psicologia', { exact: true }).click()
   await page.getByLabel('Nome completo').fill(`Clara Nunes ${randomUUID().slice(0, 6)}`)
-  await page.getByLabel('Registro no conselho').fill('CRP 06/112233')
+  await page.getByLabel('Estado (UF)').selectOption('SP')
+  await page.getByLabel('Número').fill(councilNumber())
   await page.getByRole('checkbox').check()
   await page.getByRole('button', { name: 'Enviar para verificação' }).click()
 
