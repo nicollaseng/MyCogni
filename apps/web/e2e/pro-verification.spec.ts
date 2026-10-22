@@ -47,7 +47,7 @@ async function openReview(team: Page, name: string) {
 
 async function join(page: Page, profession: string, name: string) {
   await page.goto('/pro/join')
-  await page.getByText(profession, { exact: true }).click()
+  await page.getByLabel('Profissão').selectOption({ label: profession })
   await page.getByLabel('Nome completo').fill(name)
 }
 

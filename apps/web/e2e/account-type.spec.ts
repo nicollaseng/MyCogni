@@ -86,7 +86,7 @@ test('a professional signs up from the professional page and starts the verifica
   await page.getByRole('button', { name: 'Confirmar email' }).click()
 
   await expect(page).toHaveURL('/pro/join')
-  await page.getByText('Psicologia', { exact: true }).click()
+  await page.getByLabel('Profissão').selectOption({ label: 'Psicologia' })
   await page.getByLabel('Nome completo').fill(`Clara Nunes ${randomUUID().slice(0, 6)}`)
   await page.getByLabel('Estado (UF)').selectOption('SP')
   await page.getByLabel('Número').fill(councilNumber())

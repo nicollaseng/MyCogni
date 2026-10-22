@@ -74,7 +74,7 @@ test('a professional sends the document, the team opens and approves it, and a l
   await signIn(page, email)
 
   await page.goto('/pro/join')
-  await page.getByText('Psicologia', { exact: true }).click()
+  await page.getByLabel('Profissão').selectOption({ label: 'Psicologia' })
   await page.getByLabel('Nome completo').fill(name)
   await page.getByLabel('Estado (UF)').selectOption('SP')
   await page.getByLabel('Número').fill(councilNumber())
@@ -161,7 +161,7 @@ test('the team rejects with a reason that the professional reads before sending 
   await createUser(email, password, { accountType: 'professional' })
   await signIn(page, email)
   await page.goto('/pro/join')
-  await page.getByText('Psicanálise', { exact: true }).click()
+  await page.getByLabel('Profissão').selectOption({ label: 'Psicanálise' })
   await page.getByLabel('Nome completo').fill(name)
   await page.getByRole('checkbox').check()
   await page.getByRole('button', { name: 'Enviar para verificação' }).click()

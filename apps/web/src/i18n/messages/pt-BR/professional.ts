@@ -181,6 +181,7 @@ export const professional = {
     title: 'Seu cadastro profissional',
     lead: 'Depois de enviar, nossa equipe confere seu registro antes de liberar os convites.',
     kind: 'Profissão',
+    kindPlaceholder: 'Escolha sua profissão',
     fullName: 'Nome completo',
     fullNameHint:
       'Use o nome que aparece no seu comprovante. É assim que seus pacientes vão ver você.',

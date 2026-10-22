@@ -20,7 +20,7 @@ describe('JoinForm', () => {
   it('asks a psychologist for the CRP state and number and shows how it will read', async () => {
     const { join, user } = renderForm()
 
-    await user.click(screen.getByRole('radio', { name: 'Psicologia' }))
+    await user.selectOptions(screen.getByRole('combobox', { name: 'Profissão' }), 'Psicologia')
     await user.type(screen.getByLabelText('Nome completo'), 'Helena Prado')
     await user.click(screen.getByRole('checkbox'))
     await user.click(screen.getByRole('button', { name: 'Enviar para verificação' }))
@@ -51,7 +51,7 @@ describe('JoinForm', () => {
   it('formats a CRM with the state and refuses a short number', async () => {
     const { join, user } = renderForm()
 
-    await user.click(screen.getByRole('radio', { name: 'Medicina' }))
+    await user.selectOptions(screen.getByRole('combobox', { name: 'Profissão' }), 'Medicina')
     await user.type(screen.getByLabelText('Nome completo'), 'Rafael Costa')
     await user.selectOptions(screen.getByLabelText('Estado (UF)'), 'RJ')
     await user.type(screen.getByLabelText('Número'), '123')
@@ -70,7 +70,7 @@ describe('JoinForm', () => {
   it('lets a psychoanalyst sign up without a council, with an optional institution registration', async () => {
     const { join, user } = renderForm()
 
-    await user.click(screen.getByRole('radio', { name: 'Psicanálise' }))
+    await user.selectOptions(screen.getByRole('combobox', { name: 'Profissão' }), 'Psicanálise')
     await user.type(screen.getByLabelText('Nome completo'), 'Rafael Lima')
     await user.click(screen.getByRole('checkbox'))
 
@@ -94,7 +94,7 @@ describe('JoinForm', () => {
   it('waits for the terms and the privacy policy to be accepted', async () => {
     const { join, user } = renderForm()
 
-    await user.click(screen.getByRole('radio', { name: 'Psiquiatria' }))
+    await user.selectOptions(screen.getByRole('combobox', { name: 'Profissão' }), 'Psiquiatria')
     await user.type(screen.getByLabelText('Nome completo'), 'Marta Ribeiro')
     await user.selectOptions(screen.getByLabelText('Estado (UF)'), 'SP')
     await user.type(screen.getByLabelText('Número'), '123456')
@@ -124,7 +124,7 @@ describe('JoinForm', () => {
       screen.getByText('To continue, accept the terms of use and the privacy policy.'),
     ).toBeInTheDocument()
 
-    await user.click(screen.getByRole('radio', { name: 'Psychiatry' }))
+    await user.selectOptions(screen.getByRole('combobox', { name: 'Profession' }), 'Psychiatry')
 
     expect(screen.getByText('Choose the state of your council.')).toBeInTheDocument()
     expect(screen.getByText('Enter your registration number.')).toBeInTheDocument()
@@ -137,7 +137,7 @@ describe('JoinForm', () => {
     const user = userEvent.setup()
     renderWithIntl(<JoinForm join={join} />)
 
-    await user.click(screen.getByRole('radio', { name: 'Medicina' }))
+    await user.selectOptions(screen.getByRole('combobox', { name: 'Profissão' }), 'Medicina')
     await user.type(screen.getByLabelText('Nome completo'), 'Rafael Costa')
     await user.selectOptions(screen.getByLabelText('Estado (UF)'), 'RJ')
     await user.type(screen.getByLabelText('Número'), '654321')
