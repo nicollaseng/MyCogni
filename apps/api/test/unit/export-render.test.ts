@@ -7,6 +7,7 @@ import {
   conversationMarkdown,
   memoriesCsv,
   pageHtml,
+  photoCaptions,
 } from '../../src/modules/exports/export-render.ts'
 
 const copy = exportCopies['pt-BR']
@@ -156,6 +157,45 @@ describe('page html', () => {
     expect(html).toContain('resto')
     expect(html).toContain('<hr>')
     expect(html).toContain("default-src 'none'")
+  })
+
+  it('writes each photo caption under the photo and as its description', () => {
+    const captioned = page({
+      body: {
+        type: 'doc',
+        content: [
+          { type: 'image', attrs: { path: 'u/p/a.webp', caption: 'Mar & sol > nuvens' } },
+          {
+            type: 'bulletList',
+            content: [
+              { type: 'listItem', content: [{ type: 'image', attrs: { path: 'u/p/b.webp' } }] },
+            ],
+          },
+        ],
+      },
+    })
+    const html = pageHtml(
+      captioned,
+      new Map([
+        ['u/p/a.webp', 'fotos/a.webp'],
+        ['u/p/b.webp', 'fotos/b.webp'],
+      ]),
+      copy,
+      'pt-BR',
+      zone,
+    )
+
+    expect(html).toContain(
+      '<figure><img src="../fotos/a.webp" alt="Mar &amp; sol &gt; nuvens"><figcaption>Mar &amp; sol &gt; nuvens</figcaption></figure>',
+    )
+    expect(html).toContain('<figure><img src="../fotos/b.webp" alt="Foto"></figure>')
+    expect(photoCaptions(captioned.body)).toEqual(
+      new Map([
+        ['u/p/a.webp', 'Mar & sol > nuvens'],
+        ['u/p/b.webp', ''],
+      ]),
+    )
+    expect(photoCaptions({ nope: true })).toEqual(new Map())
   })
 
   it('falls back to the plain text when the document cannot be read', () => {

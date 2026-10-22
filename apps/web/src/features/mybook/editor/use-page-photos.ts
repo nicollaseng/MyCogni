@@ -1,15 +1,14 @@
 import type { JournalPhotoSize } from '@mycogni/domain'
-import type { Node as DocumentNode } from '@tiptap/pm/model'
 import type { Editor } from '@tiptap/react'
 import { useState } from 'react'
-import { imageNodeName } from '../document'
-import { insertPhoto } from './commands'
+import { insertPhotos, photoCountOf } from '../gallery/photo-commands'
 import type { PhotoTools } from './photo-canvas'
 import {
   fitsInPage,
   photoProblem,
   preparePhoto,
   uploadPhoto,
+  type ComposedPhoto,
   type PhotoProblem,
   type ReadyPhoto,
 } from './photos'
@@ -33,17 +32,7 @@ export interface PagePhotos {
   choosing: readonly ChosenPhoto[] | null
   choose: (files: File[]) => void
   closeChooser: () => void
-  add: (photos: readonly ReadyPhoto[], size: JournalPhotoSize) => void
-}
-
-function imagesIn(doc: DocumentNode): number {
-  let count = 0
-  doc.descendants((node) => {
-    if (node.type.name === imageNodeName) {
-      count += 1
-    }
-  })
-  return count
+  add: (photos: readonly ComposedPhoto[], size: JournalPhotoSize) => void
 }
 
 export function usePagePhotos({
@@ -61,7 +50,7 @@ export function usePagePhotos({
       return
     }
     setNotice(null)
-    if (!fitsInPage(imagesIn(editor.state.doc), files.length)) {
+    if (!fitsInPage(photoCountOf(editor.state.doc), files.length)) {
       setNotice('tooMany')
       return
     }
@@ -92,7 +81,7 @@ export function usePagePhotos({
     }
   }
 
-  async function addAll(photos: readonly ReadyPhoto[], size: JournalPhotoSize) {
+  async function addAll(photos: readonly ComposedPhoto[], size: JournalPhotoSize) {
     for (const photo of photos) {
       setUploads((count) => count + 1)
       const sent = await send(photo, size)
@@ -102,12 +91,15 @@ export function usePagePhotos({
         continue
       }
       onUploaded(sent.path, sent.url)
-      insertPhoto(editor, {
-        path: sent.path,
-        src: sent.url,
-        width: sent.width,
-        height: sent.height,
-      })
+      insertPhotos(editor, [
+        {
+          path: sent.path,
+          src: sent.url,
+          width: sent.width,
+          height: sent.height,
+          caption: photo.caption,
+        },
+      ])
     }
   }
 

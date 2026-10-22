@@ -5,6 +5,7 @@ export const journalLimits = {
   imageBytes: 10 * 1024 * 1024,
   imagesPerEntry: 30,
   excerpt: 160,
+  caption: 500,
 } as const
 
 export const journalBucket = 'journal'

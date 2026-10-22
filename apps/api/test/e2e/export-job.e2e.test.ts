@@ -139,7 +139,7 @@ describe('data export job', () => {
         type: 'doc',
         content: [
           { type: 'paragraph', content: [{ type: 'text', text: '<script>alert(1)</script>' }] },
-          { type: 'image', attrs: { path: pagePhoto() } },
+          { type: 'image', attrs: { path: pagePhoto(), caption: 'Praia & sol > chuva' } },
         ],
       },
       plainText: '<script>alert(1)</script>',
@@ -222,7 +222,7 @@ describe('data export job', () => {
       schemaVersion: number
       account: { email: string }
       checkIns: unknown[]
-      mybook: { pages: { file: string; photos: { file: string }[] }[] }
+      mybook: { pages: { file: string; photos: { file: string; caption: string }[] }[] }
       conversations: { messages: unknown[] }[]
       profile: { photo: string }
       zen: { sessions: { kind: string; contentId: string; completed: boolean }[] }
@@ -230,7 +230,11 @@ describe('data export job', () => {
     expect(data.schemaVersion).toBe(1)
     expect(data.account.email).toBe(marina.email)
     expect(data.checkIns).toHaveLength(1)
-    expect(data.mybook.pages[0]?.photos[0]?.file).toBe('fotos/2026-10-19-domingo-calmo-1.png')
+    expect(data.mybook.pages[0]?.photos[0]).toEqual({
+      path: pagePhoto(),
+      file: 'fotos/2026-10-19-domingo-calmo-1.png',
+      caption: 'Praia & sol > chuva',
+    })
     expect(data.conversations[0]?.messages).toHaveLength(2)
     expect(data.profile.photo).toBe('perfil/foto.png')
     expect(data.zen.sessions).toEqual([
@@ -241,6 +245,8 @@ describe('data export job', () => {
     expect(page).toContain('&lt;script&gt;alert(1)&lt;/script&gt;')
     expect(page).not.toContain('<script>')
     expect(page).toContain('src="../fotos/2026-10-19-domingo-calmo-1.png"')
+    expect(page).toContain('alt="Praia &amp; sol &gt; chuva"')
+    expect(page).toContain('<figcaption>Praia &amp; sol &gt; chuva</figcaption>')
     expect(entries.get('registros.csv')?.toString('utf8')).toContain(
       '"\'=HYPERLINK(""x""), dormi bem"',
     )

@@ -353,3 +353,20 @@ export async function recordPractice(
     await post('/v1/zen/sessions', { startedAt: new Date().toISOString(), ...session })
   }
 }
+
+export async function sharePage(email: string, password: string, entryId: string): Promise<void> {
+  const session = await signedSession(email, password)
+  const response = await fetch(`${apiUrl}/v1/care-links`, {
+    headers: { authorization: `Bearer ${session.token}` },
+  })
+  const [link] = careLinksSchema.parse(await response.json())
+  if (link === undefined) {
+    throw new Error('No professional follows this person')
+  }
+  await send(session, 'POST', '/v1/journal/shares', {
+    careLinkId: link.id,
+    scope: 'entries',
+    entryIds: [entryId],
+    expiresAt: null,
+  })
+}

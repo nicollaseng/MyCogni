@@ -8,6 +8,8 @@ export type IconName =
   | 'chevron'
   | 'close'
   | 'dashes'
+  | 'download'
+  | 'edit'
   | 'forward'
   | 'image'
   | 'indent'
@@ -18,6 +20,8 @@ export type IconName =
   | 'photo'
   | 'plus'
   | 'search'
+  | 'send'
+  | 'trash'
 
 const dot = { fill: 'currentColor', stroke: 'none' } as const
 
@@ -42,6 +46,13 @@ const shapes: Readonly<Record<IconName, ReactNode>> = {
   chevron: <path d="m7 10 5 5 5-5" />,
   close: <path d="M6.5 6.5l11 11M17.5 6.5l-11 11" />,
   dashes: <path d="M2.5 7h4.5M2.5 12h4.5M2.5 17h4.5M10 7h10M10 12h10M10 17h10" />,
+  download: <path d="M12 4.5v10.5M7.5 10.5 12 15l4.5-4.5M5 19.5h14" />,
+  edit: (
+    <>
+      <path d="M14.5 6 18 9.5" />
+      <path d="M5 19l.9-3.6L15.8 5.5a1.8 1.8 0 0 1 2.6 0l.1.1a1.8 1.8 0 0 1 0 2.6L8.6 18.1z" />
+    </>
+  ),
   forward: <path d="m9.5 5.5 6.5 6.5-6.5 6.5" />,
   image: (
     <>
@@ -77,6 +88,13 @@ const shapes: Readonly<Record<IconName, ReactNode>> = {
     </>
   ),
   plus: <path d="M12 5v14M5 12h14" />,
+  send: <path d="M12 19V5.5M6.5 11 12 5.5l5.5 5.5" />,
+  trash: (
+    <>
+      <path d="M4.5 7h15M9.5 7V5.2c0-.4.3-.7.7-.7h3.6c.4 0 .7.3.7.7V7" />
+      <path d="m6.5 7 .8 11.2c.1.7.6 1.3 1.4 1.3h6.6c.8 0 1.3-.6 1.4-1.3L17.5 7M10.2 10.5v5.5M13.8 10.5v5.5" />
+    </>
+  ),
   search: (
     <>
       <circle cx="11" cy="11" r="6.5" />

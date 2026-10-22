@@ -117,6 +117,34 @@ describe('/v1/journal', () => {
     expect((await call('GET', `/v1/journal/${entry.id}`, helena)).statusCode).toBe(403)
   })
 
+  it('keeps a plain caption on a photo and refuses markup or long captions', async () => {
+    const entry = (await call('POST', '/v1/journal', ana)).json<Entry>()
+    const path = await uploadJournalImage(ana, entry.id)
+    function save(caption: string) {
+      return call('PUT', `/v1/journal/${entry.id}`, ana, {
+        title: 'Praia',
+        body: {
+          type: 'doc',
+          content: [{ type: 'image', attrs: { path, width: 800, height: 600, caption } }],
+        },
+        plainText: caption,
+        imagePaths: [path],
+      })
+    }
+
+    const saved = await save('Fim de tarde com a minha irmã')
+    const stored = (await call('GET', `/v1/journal/${entry.id}`, ana)).json<{
+      body: { content: { attrs: Record<string, unknown> }[] }
+    }>()
+
+    expect(saved.statusCode).toBe(200)
+    expect(stored.body.content[0]?.attrs.caption).toBe('Fim de tarde com a minha irmã')
+    expect((await save('<img src=x onerror=alert(1)>')).statusCode).toBe(400)
+    expect((await save('<b>praia</b>')).statusCode).toBe(400)
+    expect((await save('a'.repeat(501))).statusCode).toBe(400)
+    expect((await save('a'.repeat(500))).statusCode).toBe(200)
+  })
+
   it('refuses images stored outside the folder of the page', async () => {
     const entry = (await call('POST', '/v1/journal', ana)).json<Entry>()
     const foreign = await uploadJournalImage(bruno, entry.id)

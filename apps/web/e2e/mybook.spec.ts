@@ -1,7 +1,7 @@
 import { fileURLToPath } from 'node:url'
 import { expect, test, type Page } from '@playwright/test'
 import { finishOnboarding, inviteByLink, verifiedProfessional } from './support/api'
-import { choosePhotos, pageBody, saveStatus, startPage, unique } from './support/mybook'
+import { choosePhotos, pageBody, photoTiles, saveStatus, startPage, unique } from './support/mybook'
 import { signedOut } from './support/session'
 import { createUser, uniqueEmail } from './support/supabase'
 
@@ -40,9 +40,9 @@ test('writes a page with formatting, a checklist and a photo, finds it and delet
   await page.keyboard.type('Ligar para a minha irmã')
 
   const sheet = await choosePhotos(page, photo)
-  await expect(sheet.getByRole('radio', { name: /^Média/ })).toBeChecked()
+  await expect(sheet.getByRole('button', { name: 'Qualidade: Média' })).toBeVisible()
   await sheet.getByRole('button', { name: 'Adicionar', exact: true }).click()
-  await expect(pageBody(page).locator('img[data-path]')).toBeVisible()
+  await expect(photoTiles(page)).toHaveCount(1)
   await expect(saveStatus(page)).toHaveText('Salvo')
 
   await page.reload()
@@ -54,7 +54,7 @@ test('writes a page with formatting, a checklist and a photo, finds it and delet
   await expect(
     pageBody(page).getByRole('checkbox', { name: 'Tarefa: Ligar para a minha irmã' }),
   ).not.toBeChecked()
-  const image = pageBody(page).locator('img[data-path]')
+  const image = photoTiles(page).locator('img')
   await expect(image).toBeVisible()
   await expect
     .poll(() => image.evaluate((element: HTMLImageElement) => element.naturalWidth))

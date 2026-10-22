@@ -40,3 +40,50 @@ export async function draftsKept(page: Page): Promise<number> {
         .length,
   )
 }
+
+export interface PhotoPayload {
+  name: string
+  mimeType: string
+  buffer: Buffer
+}
+
+export async function paintedPhotos(page: Page, hues: readonly number[]): Promise<PhotoPayload[]> {
+  const encoded = await page.evaluate(
+    (list) =>
+      Promise.all(
+        list.map(async (hue) => {
+          const canvas = new OffscreenCanvas(1200, 1500)
+          const context = canvas.getContext('2d')
+          if (context === null) {
+            throw new Error('No canvas')
+          }
+          const light = context.createLinearGradient(0, 0, 1200, 1500)
+          light.addColorStop(0, `hsl(${String(hue)} 45% 72%)`)
+          light.addColorStop(1, `hsl(${String(hue + 40)} 40% 32%)`)
+          context.fillStyle = light
+          context.fillRect(0, 0, 1200, 1500)
+          context.fillStyle = `hsl(${String(hue + 180)} 30% 85% / 0.55)`
+          context.beginPath()
+          context.arc(820, 520, 260, 0, Math.PI * 2)
+          context.fill()
+          const blob = await canvas.convertToBlob({ type: 'image/jpeg', quality: 0.85 })
+          const bytes = new Uint8Array(await blob.arrayBuffer())
+          let binary = ''
+          for (let start = 0; start < bytes.length; start += 0x8000) {
+            binary += String.fromCharCode(...bytes.subarray(start, start + 0x8000))
+          }
+          return btoa(binary)
+        }),
+      ),
+    hues,
+  )
+  return encoded.map((data, index) => ({
+    name: `foto-${String(index + 1)}.jpg`,
+    mimeType: 'image/jpeg',
+    buffer: Buffer.from(data, 'base64'),
+  }))
+}
+
+export function photoTiles(page: Page): Locator {
+  return pageBody(page).locator('[data-photo-tile]')
+}

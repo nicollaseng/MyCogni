@@ -1,5 +1,4 @@
 import type { JournalNode } from '@mycogni/contracts'
-import Image from '@tiptap/extension-image'
 import { BulletList, TaskItem, TaskList } from '@tiptap/extension-list'
 import { Placeholder } from '@tiptap/extensions'
 import {
@@ -9,7 +8,8 @@ import {
   type JSONContent,
 } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
-import { imageNodeName, imageSizeOf } from '../document'
+import { groupGalleries } from '../document'
+import { Gallery } from '../gallery/gallery'
 
 export const dashListName = 'dashList'
 
@@ -42,68 +42,12 @@ const DashList = BulletList.extend({
   },
 })
 
-function pixelsOf(element: HTMLElement, name: 'width' | 'height'): number | null {
-  const value = Number(element.getAttribute(name))
-  return Number.isInteger(value) && value > 0 ? value : null
-}
-
-function sizingOf(attrs: Record<string, unknown>): Record<string, string> {
-  const size = imageSizeOf(attrs)
-  if (size === null) {
-    return {}
-  }
-  return {
-    width: String(size.width),
-    height: String(size.height),
-    style: `--photo-width: ${String(size.width)}px; --photo-ratio: ${String(size.width / size.height)}`,
-  }
-}
-
-const JournalImage = Image.extend({
-  name: imageNodeName,
-  addAttributes() {
-    return {
-      src: { default: null },
-      path: {
-        default: null,
-        parseHTML: (element) => element.getAttribute('data-path'),
-        renderHTML: (attributes) => {
-          const path: unknown = attributes.path
-          return typeof path === 'string' ? { 'data-path': path } : {}
-        },
-      },
-      width: { default: null, rendered: false, parseHTML: (element) => pixelsOf(element, 'width') },
-      height: {
-        default: null,
-        rendered: false,
-        parseHTML: (element) => pixelsOf(element, 'height'),
-      },
-    }
-  },
-  parseHTML() {
-    return [{ tag: 'img[data-path]' }]
-  },
-  renderHTML({ node, HTMLAttributes }) {
-    return [
-      'img',
-      mergeAttributes(this.options.HTMLAttributes, HTMLAttributes, sizingOf(node.attrs), {
-        loading: 'lazy',
-        decoding: 'async',
-      }),
-    ]
-  },
-  addInputRules() {
-    return []
-  },
-})
-
 interface JournalLabels {
   placeholder: string
-  photo: string
   task: (text: string) => string
 }
 
-export function journalExtensions({ placeholder, photo, task }: JournalLabels): Extensions {
+export function journalExtensions({ placeholder, task }: JournalLabels): Extensions {
   return [
     StarterKit.configure({
       bulletList: false,
@@ -125,13 +69,13 @@ export function journalExtensions({ placeholder, photo, task }: JournalLabels): 
       nested: true,
       a11y: { checkboxLabel: (node) => task(node.textContent) },
     }),
-    JournalImage.configure({ HTMLAttributes: { alt: photo, loading: 'lazy', decoding: 'async' } }),
+    Gallery,
     Placeholder.configure({ placeholder }),
   ]
 }
 
-export function editorContentOf(node: JournalNode): JSONContent {
-  const content = node.content?.map(editorContentOf)
+function contentOf(node: JournalNode): JSONContent {
+  const content = node.content?.map(contentOf)
   return {
     type: node.type,
     attrs: node.attrs,
@@ -140,4 +84,8 @@ export function editorContentOf(node: JournalNode): JSONContent {
     marks: node.marks,
     text: node.text,
   }
+}
+
+export function editorContentOf(node: JournalNode): JSONContent {
+  return contentOf(groupGalleries(node))
 }
