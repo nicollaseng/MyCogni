@@ -214,11 +214,24 @@ export {
   type MoodReportQuery,
 } from './reports.ts'
 export {
+  practiceKindSchema,
+  recordZenSessionSchema,
   stepProgressListSchema,
   stepProgressSchema,
   trackIdSchema,
+  zenContentStatsSchema,
+  zenSessionFeelingSchema,
+  zenSessionListSchema,
+  zenSessionQuerySchema,
+  zenSessionSchema,
+  zenStatsSchema,
   zenStepParamsSchema,
+  type RecordZenSessionInput,
   type StepProgress,
+  type ZenContentStats,
+  type ZenSession,
+  type ZenSessionFeeling,
+  type ZenStats,
   type ZenStepParams,
 } from './zen.ts'
 export {

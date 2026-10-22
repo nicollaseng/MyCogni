@@ -9,6 +9,7 @@ import {
 } from '@mycogni/domain'
 import Link from 'next/link'
 import { useLocale, useTranslations } from 'next-intl'
+import type { ReactNode } from 'react'
 import { NarrationPlayer } from '@/features/audio/components/narration-player'
 import type { NarrationSource } from '@/features/audio/narration'
 import { firstSentence } from '@/features/insights/readings'
@@ -27,9 +28,16 @@ interface ArticleViewProps {
   narration?: readonly NarrationSource[]
   shareUrl?: string
   showTracks?: boolean
+  ending?: ReactNode
 }
 
-export function ArticleView({ id, narration = [], shareUrl, showTracks = true }: ArticleViewProps) {
+export function ArticleView({
+  id,
+  narration = [],
+  shareUrl,
+  showTracks = true,
+  ending,
+}: ArticleViewProps) {
   const t = useTranslations('zen')
   const locale = useLocale()
   const language = contentLanguageOf(locale)
@@ -83,6 +91,7 @@ export function ArticleView({ id, narration = [], shareUrl, showTracks = true }:
             ))}
           </section>
         ))}
+        {ending}
       </div>
 
       {id === 'when-to-seek-help' && (

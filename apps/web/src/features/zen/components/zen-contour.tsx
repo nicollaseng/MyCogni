@@ -9,14 +9,27 @@ interface ZenContourProps {
   rings?: number
   calm?: number
   drift?: boolean
+  base?: number
+  gap?: number
   className?: string
 }
 
 const driftSpeed = 0.18
 
-export function ZenContour({ rings = 9, calm = 0.82, drift = true, className }: ZenContourProps) {
+export function ZenContour({
+  rings = 9,
+  calm = 0.82,
+  drift = true,
+  base,
+  gap,
+  className,
+}: ZenContourProps) {
   const reducedMotion = usePrefersReducedMotion()
-  const track = useContourDrift({ rings, valence: calm }, drift && !reducedMotion, driftSpeed)
+  const track = useContourDrift(
+    { rings, valence: calm, base, gap },
+    drift && !reducedMotion,
+    driftSpeed,
+  )
 
   return (
     <svg
@@ -28,7 +41,7 @@ export function ZenContour({ rings = 9, calm = 0.82, drift = true, className }: 
         <path
           key={ring}
           ref={track(ring)}
-          d={contourPath(ring, { rings, valence: calm, time: 0 })}
+          d={contourPath(ring, { rings, valence: calm, time: 0, base, gap })}
           fill="none"
           stroke="currentColor"
           strokeOpacity={ringOpacity(ring, rings)}

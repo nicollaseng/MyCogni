@@ -1,9 +1,9 @@
 'use client'
 
+import { breathingContentId } from '@mycogni/domain'
 import { useTranslations } from 'next-intl'
-import { useEffect, useReducer } from 'react'
+import { useEffect, useReducer, useRef, useState } from 'react'
 import { usePrefersReducedMotion } from '@/shared/hooks/use-prefers-reduced-motion'
-import { ReminderOffer } from '@/features/reminders/components/reminder-offer'
 import { Button } from '@/shared/ui/button'
 import {
   advance,
@@ -13,6 +13,13 @@ import {
   type BreathingAction,
   type BreathingStatus,
 } from '../breathing'
+import { AfterPractice } from '../practice/after-practice'
+import {
+  recordPractice,
+  rememberFeeling,
+  type RecordPractice,
+  type RememberFeeling,
+} from '../practice/record'
 import { BreathingRelief } from './breathing-relief'
 
 export const breathingTick = 100
@@ -24,14 +31,70 @@ const primaryAction: Record<BreathingStatus, BreathingAction['type']> = {
   finished: 'more',
 }
 
-export function BreathingExercise({ onClose }: { onClose: () => void }) {
+interface BreathingExerciseProps {
+  onClose: () => void
+  record?: RecordPractice
+  remember?: RememberFeeling
+}
+
+const minimumUnfinishedMs = 60_000
+
+export function BreathingExercise({
+  onClose,
+  record = recordPractice,
+  remember = rememberFeeling,
+}: BreathingExerciseProps) {
   const t = useTranslations('zen.breathing')
   const reducedMotion = usePrefersReducedMotion()
   const [run, dispatch] = useReducer(advance, idleRun)
+  const [sessionId, setSessionId] = useState<string | null | undefined>(undefined)
+  const startedAt = useRef<Date | null>(null)
+  const recordedMs = useRef(0)
+  const latest = useRef({ run, record })
   const { status } = run
   const moment = momentAt(elapsedOf(run), run.rounds)
   const active = status === 'running' || status === 'paused'
   const finished = status === 'finished'
+
+  useEffect(() => {
+    latest.current = { run, record }
+  })
+
+  useEffect(() => {
+    if (status !== 'finished') {
+      return
+    }
+    const { run: done, record: save } = latest.current
+    const seconds = (done.base - recordedMs.current) / 1000
+    recordedMs.current = done.base
+    void save({
+      kind: 'breathing',
+      contentId: breathingContentId,
+      startedAt: startedAt.current ?? new Date(),
+      seconds,
+      completed: true,
+    }).then(setSessionId)
+  }, [status])
+
+  useEffect(
+    () => () => {
+      const { run: current, record: save } = latest.current
+      const unrecorded = elapsedOf(current) - recordedMs.current
+      if (
+        (current.status === 'running' || current.status === 'paused') &&
+        unrecorded >= minimumUnfinishedMs
+      ) {
+        void save({
+          kind: 'breathing',
+          contentId: breathingContentId,
+          startedAt: startedAt.current ?? new Date(),
+          seconds: unrecorded / 1000,
+          completed: false,
+        })
+      }
+    },
+    [],
+  )
 
   useEffect(() => {
     if (status !== 'running') {
@@ -71,15 +134,25 @@ export function BreathingExercise({ onClose }: { onClose: () => void }) {
         {active ? word : finished ? `${t('done')} ${t('howNow')}` : ''}
       </p>
       <div className="flex min-h-[3.25rem] items-start justify-center">
-        <p
-          className={
-            active
-              ? 'text-sm text-zen-foreground/75 tabular-nums'
-              : 'max-w-[22rem] text-center text-[15px] leading-relaxed text-pretty text-zen-foreground/85'
-          }
-        >
-          {below}
-        </p>
+        {finished ? (
+          <AfterPractice
+            key={run.run}
+            question={t('howNow')}
+            sessionId={sessionId}
+            remember={remember}
+            offer
+          />
+        ) : (
+          <p
+            className={
+              active
+                ? 'text-sm text-zen-foreground/75 tabular-nums'
+                : 'max-w-[22rem] text-center text-[15px] leading-relaxed text-pretty text-zen-foreground/85'
+            }
+          >
+            {below}
+          </p>
+        )}
       </div>
       <div className="flex w-full max-w-[22rem] gap-3 sm:justify-center">
         <Button
@@ -87,6 +160,12 @@ export function BreathingExercise({ onClose }: { onClose: () => void }) {
           variant={status === 'running' ? 'inverseOutline' : 'inverse'}
           className="flex-1 sm:max-w-48"
           onClick={() => {
+            if (status === 'idle') {
+              startedAt.current = new Date()
+            }
+            if (status === 'finished') {
+              setSessionId(undefined)
+            }
             dispatch({ type: primaryAction[status], now: Date.now() })
           }}
         >
@@ -103,7 +182,6 @@ export function BreathingExercise({ onClose }: { onClose: () => void }) {
           </Button>
         )}
       </div>
-      {finished && <ReminderOffer />}
     </div>
   )
 }

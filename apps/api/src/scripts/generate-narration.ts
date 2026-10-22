@@ -7,8 +7,10 @@ import { z } from 'zod'
 import { createElevenLabsProvider } from '../narration/elevenlabs.ts'
 import {
   charactersOf,
+  narrationContents,
   planNarration,
   renderNarration,
+  type NarrationContent,
   type VoiceSelection,
 } from '../narration/generate.ts'
 import { createNarrationStore } from '../narration/narration-store.ts'
@@ -21,8 +23,17 @@ const { values } = parseArgs({
     'dry-run': { type: 'boolean', default: false },
     languages: { type: 'string', default: contentLanguages.join(',') },
     voices: { type: 'string', default: 'default' },
+    content: { type: 'string', default: 'all' },
   },
 })
+
+function contentOf(value: string): NarrationContent {
+  const content = narrationContents.find((candidate) => candidate === value.trim())
+  if (content === undefined) {
+    throw new Error(`Unknown content "${value}". Use ${narrationContents.join(', ')}.`)
+  }
+  return content
+}
 
 function languagesOf(list: string): ContentLanguage[] {
   return list.split(',').map((value) => {
@@ -58,6 +69,7 @@ async function readKey(): Promise<string | null> {
 
 const languages = languagesOf(values.languages)
 const selection = selectionOf(values.voices)
+const content = contentOf(values.content)
 const dryRun = values['dry-run']
 const apiKey = dryRun ? null : await readKey()
 
@@ -80,7 +92,7 @@ const store = createNarrationStore({
   secretKey: env.SUPABASE_SECRET_KEY,
 })
 const manifest = await store.readManifest()
-const jobs = planNarration(manifest, languages, selection)
+const jobs = planNarration(manifest, languages, selection, content)
 
 console.info(
   `${String(jobs.length)} narrations to render (${String(charactersOf(jobs))} characters), ${String(Object.keys(manifest.files).length)} already stored.`,

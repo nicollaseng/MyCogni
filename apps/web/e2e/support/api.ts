@@ -328,3 +328,23 @@ export async function setReminders(
 ): Promise<void> {
   await send(await signedSession(email, password), 'PUT', '/v1/reminders', settings)
 }
+
+export interface PracticeSeed {
+  kind: 'meditation' | 'breathing' | 'sound' | 'reading'
+  contentId: string
+  seconds: number
+  completed: boolean
+  feelingAfter?: number | null
+  startedAt?: string
+}
+
+export async function recordPractice(
+  email: string,
+  password: string,
+  sessions: readonly PracticeSeed[],
+): Promise<void> {
+  const post = await poster(email, password)
+  for (const session of sessions) {
+    await post('/v1/zen/sessions', { startedAt: new Date().toISOString(), ...session })
+  }
+}

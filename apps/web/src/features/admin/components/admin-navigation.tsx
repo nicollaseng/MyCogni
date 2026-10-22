@@ -6,9 +6,10 @@ import { usePathname } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { cn } from '@/shared/lib/utils'
 
-const areas: readonly { key: 'professionals' | 'support'; href: Route }[] = [
+const areas: readonly { key: 'professionals' | 'support' | 'zen'; href: Route }[] = [
   { key: 'professionals', href: '/admin/professionals' },
   { key: 'support', href: '/admin/support' },
+  { key: 'zen', href: '/admin/zen' },
 ]
 
 export function AdminNavigation() {

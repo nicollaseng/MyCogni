@@ -22,6 +22,7 @@ interface AmbientControls {
   pause: () => void
   preview: (sound: AmbientSoundId) => void
   duck: (ducked: boolean) => void
+  hold: (held: boolean) => void
 }
 
 export interface AmbientState {
@@ -32,6 +33,7 @@ export interface AmbientState {
   preview: (sound: AmbientSoundId) => void
   previewing: AmbientSoundId | null
   duck: (ducked: boolean) => void
+  hold: (held: boolean) => void
 }
 
 function controlsFor(session: AmbientSession, ambient: AmbientEngine): AmbientControls {
@@ -62,6 +64,9 @@ function controlsFor(session: AmbientSession, ambient: AmbientEngine): AmbientCo
     },
     duck(ducked) {
       session.update({ ducks: Math.max(0, session.snapshot().ducks + (ducked ? 1 : -1)) })
+    },
+    hold(held) {
+      session.update({ holds: Math.max(0, session.snapshot().holds + (held ? 1 : -1)) })
     },
   }
 }
@@ -115,6 +120,7 @@ export function useAmbient(): AmbientState {
     preview: controls.preview,
     previewing,
     duck: controls.duck,
+    hold: controls.hold,
   }
 }
 
@@ -151,7 +157,7 @@ export function AmbientRoot({
   const [ambient] = useState(engine)
   const [controls] = useState(() => controlsFor(createAmbientSession(pathname), ambient))
   const { session } = controls
-  const { running, previewing, ducks } = useSession(session)
+  const { running, previewing, ducks, holds } = useSession(session)
   const preferences = useAudioPreferences()
   const hidden = useHidden()
   const loop = ambientLoopAt({
@@ -160,7 +166,7 @@ export function AmbientRoot({
     onZen: isZenPath(pathname),
   })
   const previewLoop = previewing === null || previewing === 'none' ? null : previewing
-  const target = hidden ? null : (previewLoop ?? (preferences.paused ? null : loop))
+  const target = hidden || holds > 0 ? null : (previewLoop ?? (preferences.paused ? null : loop))
 
   useEffect(() => {
     session.update({ pathname })

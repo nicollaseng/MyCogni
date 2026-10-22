@@ -9,6 +9,9 @@ export function trackStatusOf({ started, complete }: TrackProgress): TrackStatus
   return started ? 'started' : 'new'
 }
 
-export function hasStepAction(step: TrackStep): boolean {
+export function hasStepAction(step: TrackStep, meditation = false): boolean {
+  if (step.kind === 'meditate') {
+    return meditation
+  }
   return step.kind !== 'reflect' && step.kind !== 'support'
 }

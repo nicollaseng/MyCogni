@@ -3,12 +3,14 @@ import { narrationManifestSchema } from '@mycogni/contracts'
 import {
   articleKey,
   articleNarration,
+  meditationNarrationItems,
   narrationBucket,
   narrationFingerprint,
   narrationManifestPath,
   narrationPath,
   zenArticles,
   type ArticleId,
+  type MeditationId,
   type NarrationKey,
   type NarrationManifest,
 } from '@mycogni/domain'
@@ -78,4 +80,13 @@ export function publishArticleNarration(id: ArticleId, audioFile: string): Promi
     articleNarration(zenArticles[id].text['pt-BR']),
     audioFile,
   )
+}
+
+export async function publishMeditationNarration(
+  id: MeditationId,
+  audioFile: string,
+): Promise<void> {
+  for (const item of meditationNarrationItems(id, 'pt-BR')) {
+    await publishNarration(item.key, item.text, audioFile)
+  }
 }

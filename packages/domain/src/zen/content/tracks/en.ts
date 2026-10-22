@@ -14,6 +14,10 @@ export const englishTracks: TrackTexts = {
         title: 'Box breathing',
         body: 'Four rounds of 4-4-4-4 breathing, about a minute. Sit down and take your time.',
       },
+      'meditate-anxiety': {
+        title: 'Meditate: when anxiety tightens',
+        body: 'Five guided minutes to feel your feet on the ground, slow your breathing and let thoughts pass.',
+      },
       'read-worry-time': {
         title: 'Read: worry time',
         body: 'How to give your worries a set time and take the rest of the day back.',
@@ -75,6 +79,10 @@ export const englishTracks: TrackTexts = {
       'write-activities': {
         title: 'Write in MyBook',
         body: 'List three small activities that used to do you good or that matter to you. Which one could you do tomorrow, and at what time?',
+      },
+      'meditate-heavy-days': {
+        title: 'Meditate: for heavy days',
+        body: 'Five guided minutes to meet what you feel with kindness and choose one small, good step for today.',
       },
       'check-in': {
         title: 'Check in',

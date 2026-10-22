@@ -36,6 +36,7 @@ import type { Fetcher } from './modules/profile/photo-download.ts'
 import { reportModule } from './modules/reports/index.ts'
 import { supportModule } from './modules/support/index.ts'
 import { transcriptionModule } from './modules/transcription/index.ts'
+import { zenStatsModule } from './modules/zen-stats/index.ts'
 import { zenModule } from './modules/zen/index.ts'
 import { requireAccountType } from './plugins/account-type.ts'
 import { requireAuthentication } from './plugins/authentication.ts'
@@ -135,6 +136,7 @@ function authenticatedRoutes(
     await api.register(reportModule(db))
     await api.register(alertModule(db, profileFiles.photos))
     await api.register(zenModule(db))
+    await api.register(zenStatsModule(db))
     await api.register(
       assistantModule({
         db,

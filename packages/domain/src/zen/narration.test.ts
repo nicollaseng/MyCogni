@@ -1,10 +1,14 @@
 import { describe, expect, it } from '@jest/globals'
 import { articleIds, trackIds, tracks } from './catalog.ts'
 import { articles } from './content/articles/articles.ts'
+import { meditations as zenMeditations } from './content/meditations/meditations.ts'
+import { meditationIds } from './meditation-ids.ts'
 import {
   articleKey,
   articleNarration,
   articleNarrationItem,
+  meditationKey,
+  meditationNarrationItems,
   narrationItems,
   previewNarrationItem,
   spokenText,
@@ -71,7 +75,11 @@ describe('narration items', () => {
     for (const language of ['pt-BR', 'pt-PT', 'en'] as const) {
       const items = narrationItems(language)
       const steps = trackIds.reduce((total, id) => total + tracks[id].steps.length, 0)
-      expect(items).toHaveLength(1 + articleIds.length + steps)
+      const segments = meditationIds.reduce(
+        (total, id) => total + zenMeditations[id].plan.length,
+        0,
+      )
+      expect(items).toHaveLength(1 + articleIds.length + steps + segments)
       expect(new Set(items.map((item) => item.key)).size).toBe(items.length)
       expect(items[0]).toEqual(previewNarrationItem(language))
       expect(items.every((item) => item.text.trim() !== '' && item.title !== '')).toBe(true)
@@ -79,6 +87,16 @@ describe('narration items', () => {
     expect(stepNarrationItems('seeking-help', 'pt-BR').map((item) => item.key)).toEqual(
       tracks['seeking-help'].steps.map((step) => stepKey('seeking-help', step.id)),
     )
+  })
+
+  it('narrates every meditation line on its own, so pauses can sit between them', () => {
+    const items = meditationNarrationItems('grief', 'en')
+
+    expect(items).toHaveLength(zenMeditations.grief.plan.length)
+    expect(items[0]?.key).toBe(meditationKey('grief', 0))
+    expect(items[0]?.key).toBe('meditation/grief/0')
+    expect(items[1]?.title).toBe('When you are grieving · 2')
+    expect(items.every((item) => !item.text.includes('<break'))).toBe(true)
   })
 
   it('writes a short voice sample in each language', () => {

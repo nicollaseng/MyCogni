@@ -14,6 +14,10 @@ export const europeanTracks: TrackTexts = {
         title: 'Respirar em quadrado',
         body: 'Quatro ciclos de respiração 4-4-4-4, cerca de um minuto. Faça-o sentado/a, sem pressa.',
       },
+      'meditate-anxiety': {
+        title: 'Meditar: quando a ansiedade aperta',
+        body: 'Cinco minutos guiados para assentar os pés no chão, respirar mais devagar e deixar os pensamentos passar.',
+      },
       'read-worry-time': {
         title: 'Ler: a hora da preocupação',
         body: 'Como marcar um horário para as preocupações e devolver o resto do dia a si próprio/a.',
@@ -75,6 +79,10 @@ export const europeanTracks: TrackTexts = {
       'write-activities': {
         title: 'Escrever no MyBook',
         body: 'Escreva três atividades pequenas que lhe costumavam fazer bem ou que são importantes para si. Qual delas consegue fazer amanhã, e a que horas?',
+      },
+      'meditate-heavy-days': {
+        title: 'Meditar: para dias pesados',
+        body: 'Cinco minutos guiados para acolher o que sente e escolher um passo pequeno e bom para hoje.',
       },
       'check-in': {
         title: 'Registar como está',

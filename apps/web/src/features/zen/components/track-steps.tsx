@@ -9,6 +9,7 @@ import { Chevron, DisclosurePanel } from '@/shared/components/disclosure'
 import { useLocationHash } from '@/shared/hooks/use-location-hash'
 import { cn } from '@/shared/lib/utils'
 import { Button } from '@/shared/ui/button'
+import type { MeditationOption } from '../meditation/options'
 import { hasStepAction } from '../model'
 import { StepAction, type PromptPages } from './step-action'
 import { StepToggle, type SaveStep } from './step-toggle'
@@ -22,6 +23,7 @@ export interface StepView {
   done: boolean
   minutes: number
   narration: readonly NarrationSource[]
+  meditation?: MeditationOption | null
 }
 
 interface TrackStepsProps {
@@ -92,7 +94,13 @@ function StepRow({ trackId, view, open, onToggle, support, save, pages }: StepRo
         {step.kind === 'support' && support}
         {narration.length > 0 && <NarrationPlayer sources={narration} title={text.title} compact />}
         <div className="flex flex-wrap items-start justify-between gap-3">
-          <StepAction step={step} text={text} primary={false} pages={pages} />
+          <StepAction
+            step={step}
+            text={text}
+            primary={false}
+            pages={pages}
+            meditation={view.meditation ?? null}
+          />
           <StepToggle
             step={{ trackId, stepId: step.id }}
             done={done}
@@ -133,13 +141,14 @@ export function TrackSteps({
           <p className="text-sm text-muted-foreground">
             {t('track.next', { title: next.title, minutes: next.minutes })}
           </p>
-          {hasStepAction(next.step) ? (
+          {hasStepAction(next.step, (next.meditation ?? null) !== null) ? (
             <StepAction
               step={next.step}
               text={next.text}
               primary
               label={started ? t('today.continue') : t('today.start')}
               pages={pages}
+              meditation={next.meditation ?? null}
             />
           ) : (
             <Button
