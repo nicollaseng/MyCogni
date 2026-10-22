@@ -134,6 +134,8 @@ export const care = {
       insight: 'Ver resumo',
       support: 'Ver chamado',
       reminder: 'Abrir o Zen',
+      export_ready: 'Baixar dados',
+      export_failed: 'Tentar de novo',
     },
     kinds: {
       invitation: 'Convite de um profissional',
@@ -143,6 +145,8 @@ export const care = {
       insight: 'Seu resumo da semana está pronto.',
       support: 'Atualização do suporte',
       reminder: 'Hora da sua pausa. Que tal alguns minutos para você?',
+      export_ready: 'Seus dados estão prontos para baixar.',
+      export_failed: 'Não conseguimos preparar seus dados. Tente de novo.',
     },
     support:
       '{status, select, in_progress {Seu chamado {ticket} está em andamento.} closed {Seu chamado {ticket} foi fechado.} other {Seu chamado {ticket} foi atualizado.}}',

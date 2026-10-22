@@ -104,10 +104,6 @@ export const account: AccountMessages = {
     label: 'Include MyBook in my summaries',
     hint: 'When on, the text of MyBook pages written during the period is also read to write your summary; summaries for your professional never use MyBook.',
   },
-  data: {
-    export: 'Download my data',
-    fileName: 'mycogniai-my-data-{day}.json',
-  },
   delete: {
     open: 'Delete my account',
     warning:

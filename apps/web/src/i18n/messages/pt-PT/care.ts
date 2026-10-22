@@ -134,6 +134,8 @@ export const care: CareMessages = {
       insight: 'Ver resumo',
       support: 'Ver pedido',
       reminder: 'Abrir o Zen',
+      export_ready: 'Descarregar dados',
+      export_failed: 'Tentar novamente',
     },
     kinds: {
       invitation: 'Convite de um profissional',
@@ -143,6 +145,8 @@ export const care: CareMessages = {
       insight: 'O seu resumo da semana está pronto.',
       support: 'Atualização do apoio',
       reminder: 'Hora da sua pausa. Que tal alguns minutos para si?',
+      export_ready: 'Os seus dados estão prontos para descarregar.',
+      export_failed: 'Não foi possível preparar os seus dados. Tente novamente.',
     },
     support:
       '{status, select, in_progress {O seu pedido {ticket} está em curso.} closed {O seu pedido {ticket} foi fechado.} other {O seu pedido {ticket} foi atualizado.}}',

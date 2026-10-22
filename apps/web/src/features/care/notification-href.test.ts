@@ -38,6 +38,8 @@ describe('notificationHref', () => {
   it('opens the professionals of the person for link events', () => {
     expect(notificationHref(notification({ kind: 'professional' }))).toBe('/me/professionals')
     expect(notificationHref(notification({ kind: 'reminder' }))).toBe('/zen')
+    expect(notificationHref(notification({ kind: 'export_ready' }))).toBe('/me/privacy#data')
+    expect(notificationHref(notification({ kind: 'export_failed' }))).toBe('/me/privacy#data')
   })
 
   it('opens the reading of the weekly summary on Padrões', () => {

@@ -42,7 +42,7 @@ export const legal: LegalMessages = {
       },
       rights: {
         heading: 'Os seus direitos',
-        body: 'Pode aceder aos seus dados, corrigi-los, exportá-los e eliminá-los, bem como revogar consentimentos, diretamente na aplicação. Eliminar a conta remove todos os seus registos.',
+        body: 'Pode aceder aos seus dados, corrigi-los, exportá-los e eliminá-los, bem como revogar consentimentos, diretamente na aplicação. Para exportar, peça os seus dados em Privacidade e dados: preparamos um ficheiro ZIP com tudo o que guardamos, em formato estruturado e em cópias fáceis de ler, com as suas fotografias. Avisamos por email e na aplicação quando estiver pronto; o ficheiro fica disponível durante 7 dias e só pode ser descarregado por si, dentro da aplicação. Eliminar a conta remove todos os seus registos e ficheiros.',
       },
     },
   },

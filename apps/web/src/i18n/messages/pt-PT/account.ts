@@ -104,10 +104,6 @@ export const account: AccountMessages = {
     label: 'Incluir o MyBook nos meus resumos',
     hint: 'Se estiver ativo, o texto das páginas do MyBook escritas no período também é lido para escrever o seu resumo; os resumos para o profissional nunca usam o MyBook.',
   },
-  data: {
-    export: 'Transferir os meus dados',
-    fileName: 'mycogniai-os-meus-dados-{day}.json',
-  },
   delete: {
     open: 'Eliminar a minha conta',
     warning:

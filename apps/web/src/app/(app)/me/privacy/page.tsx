@@ -4,9 +4,12 @@ import { setConsent, setJournalInInsights } from '@/features/account/actions'
 import { ConsentList } from '@/features/account/components/consent-list'
 import { JournalInsightsSwitch } from '@/features/account/components/journal-insights-switch'
 import { SettingsPage } from '@/features/account/components/settings-page'
+import { downloadDataExport, latestDataExport, prepareDataExport } from '@/features/exports/actions'
+import { DataExportPanel } from '@/features/exports/components/data-export-panel'
 import { setMemoriesEnabled } from '@/features/memories/actions'
 import { MemoriesSwitch } from '@/features/memories/components/memories-switch'
 import { Panel, Section } from '@/shared/components/section'
+import { fetchLatestExport } from '@/shared/lib/api/exports'
 import { fetchConsents } from '@/shared/lib/api/resources'
 import { requireOnboardedProfile } from '@/shared/lib/auth/session'
 import { guarded } from '@/shared/lib/settled'
@@ -17,9 +20,9 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function PrivacyPage() {
-  const [profile, [consents, t]] = await guarded(
+  const [profile, [consents, t, latestExport]] = await guarded(
     requireOnboardedProfile(),
-    Promise.all([fetchConsents(), getTranslations('account')]),
+    Promise.all([fetchConsents(), getTranslations('account'), fetchLatestExport()]),
   )
 
   return (
@@ -38,17 +41,20 @@ export default async function PrivacyPage() {
         </Panel>
         <p className="text-sm text-pretty text-muted-foreground">{t('consents.note')}</p>
       </div>
-      <Section title={t('sections.data')}>
-        <Panel>
-          <a
-            href="/me/export"
-            download
-            className="block py-3.5 underline decoration-1 underline-offset-4"
-          >
-            {t('data.export')}
-          </a>
-        </Panel>
-      </Section>
+      <div id="data" className="scroll-mt-24">
+        <Section title={t('sections.data')}>
+          <DataExportPanel
+            initial={latestExport}
+            timeZone={profile.timezone}
+            now={new Date().toISOString()}
+            actions={{
+              prepare: prepareDataExport,
+              latest: latestDataExport,
+              download: downloadDataExport,
+            }}
+          />
+        </Section>
+      </div>
     </SettingsPage>
   )
 }

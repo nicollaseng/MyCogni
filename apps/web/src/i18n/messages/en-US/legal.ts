@@ -42,7 +42,7 @@ export const legal: LegalMessages = {
       },
       rights: {
         heading: 'Your rights',
-        body: 'You can access, correct, export and delete your data, and withdraw consent, right in the app. Deleting your account removes all your check-ins.',
+        body: 'You can access, correct, export and delete your data, and withdraw consent, right in the app. To export, ask for your data in Privacy and data: we prepare a ZIP file with everything we keep, in a structured format and in easy-to-read copies, with your photos. We let you know by email and in the app when it is ready; the file stays available for 7 days and only you can download it, inside the app. Deleting your account removes all your records and files.',
       },
     },
   },

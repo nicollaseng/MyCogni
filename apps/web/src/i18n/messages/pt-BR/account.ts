@@ -102,10 +102,6 @@ export const account = {
     label: 'Incluir o MyBook nos meus resumos',
     hint: 'Ligado, o texto das páginas do MyBook escritas no período também é lido para escrever o seu resumo; os resumos para o profissional nunca usam o MyBook.',
   },
-  data: {
-    export: 'Baixar meus dados',
-    fileName: 'mycogniai-meus-dados-{day}.json',
-  },
   delete: {
     open: 'Excluir minha conta',
     warning:
