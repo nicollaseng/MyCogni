@@ -32,6 +32,17 @@ describe('contour map', () => {
     expect(outerRing(1)).toBeGreaterThan(outerRing(0))
   })
 
+  it('can start from a wider centre with an even gap between rings', () => {
+    const wide = { rings: 7, valence: 0.8, time: 0, base: 66, gap: 12 }
+    const meanRadius = (ring: number) =>
+      Array.from({ length: 64 }, (_, index) =>
+        ringRadius(ring, (index / 64) * Math.PI * 2, wide),
+      ).reduce((total, radius) => total + radius, 0) / 64
+
+    expect(meanRadius(0)).toBeCloseTo(66, 6)
+    expect(meanRadius(2) - meanRadius(1)).toBeCloseTo(12, 6)
+  })
+
   it('fades the rings from the center outwards', () => {
     expect(ringOpacity(0, 11)).toBeGreaterThan(ringOpacity(10, 11))
   })

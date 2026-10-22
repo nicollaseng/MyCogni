@@ -12,7 +12,7 @@ import {
   type BreathingAction,
   type BreathingStatus,
 } from '../breathing'
-import { BreathingSquare } from './breathing-square'
+import { BreathingRelief } from './breathing-relief'
 
 export const breathingTick = 100
 
@@ -59,7 +59,7 @@ export function BreathingExercise({ onClose }: { onClose: () => void }) {
 
   return (
     <div className="flex w-full flex-col items-center gap-8 sm:gap-10">
-      <BreathingSquare
+      <BreathingRelief
         status={status}
         run={run.run}
         word={word}

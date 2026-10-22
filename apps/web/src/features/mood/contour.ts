@@ -2,6 +2,8 @@ export interface ContourOptions {
   rings: number
   valence: number
   time: number
+  base?: number
+  gap?: number
 }
 
 const center = 150
@@ -13,10 +15,10 @@ function mix(from: number, to: number, amount: number): number {
 }
 
 export function ringRadius(ring: number, angle: number, options: ContourOptions): number {
-  const { rings, valence, time } = options
+  const { rings, valence, time, base = 20, gap } = options
   const tension = 1 - valence
   const amplitude = mix(0.03, 0.17, tension ** 1.4)
-  const spacing = mix(13.5, 8.5, tension) * (referenceRings / rings)
+  const spacing = gap ?? mix(13.5, 8.5, tension) * (referenceRings / rings)
   const breathing = 1 + Math.sin(time * 0.7) * mix(0.025, 0.008, tension)
   const calm =
     0.6 * Math.sin(3 * angle + ring * 0.7 + time * 0.5) +
@@ -25,7 +27,7 @@ export function ringRadius(ring: number, angle: number, options: ContourOptions)
     0.55 * Math.sin(7 * angle + ring * 0.9 + time * 1.6) +
     0.45 * Math.sin(5 * angle - ring * 1.3 - time * 1.2)
   const wobble = amplitude * (valence * calm + tension * tense) * (0.55 + ring / rings)
-  return (20 + ring * spacing) * breathing * (1 + wobble)
+  return (base + ring * spacing) * breathing * (1 + wobble)
 }
 
 export function contourPath(ring: number, options: ContourOptions): string {

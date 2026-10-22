@@ -7,7 +7,6 @@ import { CloseIcon } from '@/shared/components/icons'
 import { useModalPanel } from '@/shared/hooks/use-modal-panel'
 import { cn } from '@/shared/lib/utils'
 import { BreathingExercise } from './breathing-exercise'
-import { ZenContour } from './zen-contour'
 
 export const breathingModeDuration = 320
 
@@ -36,13 +35,6 @@ function BreathingLayer({ onClose }: BreathingModeProps) {
         closing && 'opacity-0',
       )}
     >
-      <div aria-hidden className="pointer-events-none fixed inset-0 overflow-hidden">
-        <ZenContour
-          rings={9}
-          calm={0.92}
-          className="absolute -right-60 -bottom-72 size-[640px] text-zen-line opacity-25 sm:-right-48 sm:-bottom-80 sm:size-[860px]"
-        />
-      </div>
       <div className="relative flex items-center justify-between gap-4 px-5 pt-4 sm:px-8 sm:pt-6">
         <h2 id={titleId} className="text-[15px] text-zen-foreground/75">
           {t('title')}

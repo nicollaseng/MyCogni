@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import { useTranslations } from 'next-intl'
-import { WaveIcon } from '@/shared/components/icons'
+import { LotusIcon } from '@/shared/components/icons'
 import { cn } from '@/shared/lib/utils'
 import { isActivePath, navigationItems, type NavigationItem } from '../navigation'
 
@@ -49,7 +49,7 @@ function ZenLink({
             active && 'outline-2 outline-offset-2 outline-zen',
           )}
         >
-          <WaveIcon className="size-5" />
+          <LotusIcon className="size-5" />
           <span
             className={cn('text-[13px] leading-none', active ? 'font-semibold' : 'font-medium')}
           >
@@ -71,7 +71,7 @@ function ZenLink({
         active && 'font-medium underline decoration-2 underline-offset-[10px]',
       )}
     >
-      <WaveIcon className="size-4" />
+      <LotusIcon className="size-4" />
       {t('zen')}
     </Link>
   )
