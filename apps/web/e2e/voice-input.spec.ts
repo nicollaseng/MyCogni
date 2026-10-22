@@ -27,8 +27,9 @@ test('speaks to Cogni: reviews a transcription, sends one directly and cancels o
 }) => {
   await signInAsReadyPerson(page)
   await page.goto('/patterns')
-  await page.getByRole('button', { name: 'Perguntar', exact: true }).click()
-  const chat = page.getByRole('dialog', { name: 'Perguntar' })
+  await page.getByRole('button', { name: 'Conversar com o Cogni' }).click()
+  const chat = page.getByRole('dialog')
+  await expect(chat.getByRole('heading', { level: 2 })).toHaveText('Cogni')
   const field = chat.getByRole('textbox', { name: 'Mensagem' })
   const log = chat.getByRole('log')
 
@@ -37,6 +38,7 @@ test('speaks to Cogni: reviews a transcription, sends one directly and cancels o
   await expect(recording.getByTestId('voice-waveform')).toBeVisible()
   await expect(recording.getByRole('button', { name: 'Cancelar gravação' })).toBeVisible()
   await expect(recording.locator('[data-active="true"]').first()).toBeAttached({ timeout: 10_000 })
+  await page.waitForTimeout(800)
   await recording.getByRole('button', { name: 'Parar e revisar' }).click()
   await expect(field).toHaveValue(spoken)
   await expect(field).toBeFocused()
