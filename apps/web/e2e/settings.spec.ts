@@ -140,6 +140,7 @@ test.describe('the profile photo', () => {
 
     await viewer.getByRole('button', { name: 'Remover' }).click()
     await confirm.getByRole('button', { name: 'Remover' }).click()
+    await expect(confirm).toHaveCount(0)
     await expect(viewer).toContainText('Foto removida.')
     await expect(viewer.getByRole('img')).toHaveCount(0)
     await expect(viewer.getByText('Adicionar foto')).toBeVisible()

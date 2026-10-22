@@ -111,6 +111,7 @@ test('adds a photo through the viewer, edits it and removes it', async ({ page }
   await viewer.getByRole('button', { name: 'Remover' }).click()
   const confirm = page.getByRole('alertdialog', { name: 'Remover a foto do perfil?' })
   await confirm.getByRole('button', { name: 'Remover' }).click()
+  await expect(confirm).toHaveCount(0)
   await expect(viewer.getByRole('img')).toHaveCount(0)
   await expect(viewer.getByLabel('Adicionar foto')).toBeAttached()
   await page.keyboard.press('Escape')

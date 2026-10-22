@@ -90,6 +90,21 @@ describe('ProfilePhoto', () => {
     expect(avatar).toHaveFocus()
   })
 
+  it('still closes with Escape when the focus has left the viewer', async () => {
+    const { user } = renderPhoto(current)
+
+    await user.click(screen.getByRole('button', { name: 'Foto do perfil' }))
+    expect(screen.getByRole('dialog', { name: 'Foto do perfil' })).toBeInTheDocument()
+    if (document.activeElement instanceof HTMLElement) {
+      document.activeElement.blur()
+    }
+    await user.keyboard('{Escape}')
+
+    await waitFor(() => {
+      expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+    })
+  })
+
   it('keeps the focus inside the viewer', async () => {
     const { user } = renderPhoto(current)
 

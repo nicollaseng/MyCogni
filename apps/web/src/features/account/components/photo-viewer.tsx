@@ -106,6 +106,22 @@ export function PhotoViewer({
     }
   })
 
+  useEffect(() => {
+    if (confirming) {
+      return
+    }
+    function closeOnEscape(event: globalThis.KeyboardEvent) {
+      const inside = event.target instanceof Node && panel.current?.contains(event.target)
+      if (event.key === 'Escape' && inside !== true) {
+        close()
+      }
+    }
+    document.addEventListener('keydown', closeOnEscape)
+    return () => {
+      document.removeEventListener('keydown', closeOnEscape)
+    }
+  }, [confirming, close, panel])
+
   const status =
     busy === 'uploading'
       ? t('avatar.uploading')
