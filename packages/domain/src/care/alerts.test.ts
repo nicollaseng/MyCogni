@@ -14,8 +14,8 @@ import type { AttentionSignals } from './attention.ts'
 const now = new Date('2026-10-15T12:00:00Z')
 
 const steady: AttentionSignals = {
-  latestPhq9: { severity: 'severe', hasRiskFlag: true },
-  latestGad7: { severity: 'severe' },
+  latestDepression: { severity: 'severe', hasRiskFlag: true },
+  latestAnxiety: { severity: 'severe' },
   moodAverage: 4,
   previousMoodAverage: 4,
   lastCheckInAt: new Date('2026-10-14T20:00:00Z'),
@@ -34,6 +34,17 @@ describe('alertsFor', () => {
       { reason: 'risk_item', level: 'urgent' },
       { reason: 'severe_screening', level: 'watch' },
     ])
+  })
+
+  it('stays quiet for negative short screens', () => {
+    for (const instrument of ['phq2', 'gad2'] as const) {
+      expect(
+        alertsFor({
+          kind: 'screening',
+          result: { instrument, severity: 'minimal', hasRiskFlag: false },
+        }),
+      ).toEqual([])
+    }
   })
 
   it('asks to watch a severe GAD-7 and stays quiet for milder answers', () => {

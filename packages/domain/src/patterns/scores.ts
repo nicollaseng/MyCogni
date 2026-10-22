@@ -1,5 +1,10 @@
-import type { Instrument, InstrumentId, Severity } from '../assessments/instrument.ts'
-import { maxScoreOf } from '../assessments/scoring.ts'
+import type {
+  Instrument,
+  InstrumentId,
+  ScreeningDomain,
+  Severity,
+} from '../assessments/instrument.ts'
+import { domainOf, maxScoreOf } from '../assessments/scoring.ts'
 
 export interface SeverityRange {
   severity: Severity
@@ -23,9 +28,9 @@ export function severityRanges(instrument: Instrument): SeverityRange[] {
 
 export function scoreTimeline<Score extends DatedScore>(
   scores: readonly Score[],
-  instrument: InstrumentId,
+  domain: ScreeningDomain,
 ): Score[] {
   return scores
-    .filter((score) => score.instrument === instrument)
+    .filter((score) => domainOf(score.instrument) === domain)
     .sort((first, second) => first.completedAt.getTime() - second.completedAt.getTime())
 }

@@ -82,6 +82,43 @@ describe('/v1/assessments', () => {
     )
   })
 
+  it('stores a negative mood screen with the safety question as a low result', async () => {
+    const calm = await submit(ana, { instrument: 'phq2', answers: [1, 1, 0] })
+    const flagged = await submit(bruno, { instrument: 'phq2', answers: [0, 1, 2] })
+
+    expect(calm.statusCode).toBe(201)
+    expect(calm.json()).toEqual(
+      expect.objectContaining({
+        instrument: 'phq2',
+        totalScore: 2,
+        maxScore: 6,
+        severity: 'minimal',
+        hasRiskFlag: false,
+      }),
+    )
+    expect(flagged.json()).toEqual(
+      expect.objectContaining({ instrument: 'phq2', totalScore: 1, hasRiskFlag: true }),
+    )
+  })
+
+  it('stores a negative anxiety screen as a low result', async () => {
+    const response = await submit(bruno, { instrument: 'gad2', answers: [2, 0] })
+
+    expect(response.json()).toEqual(
+      expect.objectContaining({ instrument: 'gad2', totalScore: 2, maxScore: 6 }),
+    )
+  })
+
+  it.each([
+    ['a positive mood screen', { instrument: 'phq2', answers: [2, 1, 0] }],
+    ['a positive anxiety screen', { instrument: 'gad2', answers: [3, 0] }],
+    ['a mood screen without the safety question', { instrument: 'phq2', answers: [0, 0] }],
+  ])('rejects %s, which needs the full form', async (_, payload) => {
+    const response = await submit(ana, payload)
+
+    expect(response.statusCode).toBe(400)
+  })
+
   it.each([
     ['too few answers for the form', { instrument: 'phq9', answers: [0, 0, 0, 0, 0, 0, 0] }],
     ['an answer above 3', { instrument: 'gad7', answers: [0, 0, 0, 4, 0, 0, 0] }],
@@ -105,7 +142,7 @@ describe('/v1/assessments', () => {
     expect(response.statusCode).toBe(200)
     expect(
       results.map(({ instrument, totalScore }) => `${instrument} ${String(totalScore)}`),
-    ).toEqual(['gad7 15', 'phq9 1', 'phq9 12'])
+    ).toEqual(['phq2 2', 'gad7 15', 'phq9 1', 'phq9 12'])
   })
 
   it('keeps each person to their own results', async () => {
@@ -115,6 +152,9 @@ describe('/v1/assessments', () => {
       headers: bearer(bruno),
     })
 
-    expect(response.json()).toEqual([])
+    expect(response.json<{ instrument: string }[]>().map((result) => result.instrument)).toEqual([
+      'gad2',
+      'phq2',
+    ])
   })
 })

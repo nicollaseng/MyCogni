@@ -1,14 +1,15 @@
 import type { Assessment } from '@mycogni/contracts'
 import {
-  instrumentIds,
+  domainOf,
   patternRules,
   plainLevelOf,
   plainLevelRank,
   plainLevels,
   plainTrendOf,
   scoreTimeline,
-  type InstrumentId,
+  screeningDomains,
   type PlainLevel,
+  type ScreeningDomain,
 } from '@mycogni/domain'
 import { useLocale, useTranslations } from 'next-intl'
 import { Section } from '@/shared/components/section'
@@ -21,12 +22,12 @@ function topOf(level: PlainLevel): number {
 }
 
 interface LevelChartProps {
-  instrument: InstrumentId
+  domain: ScreeningDomain
   assessments: readonly Assessment[]
   timeZone: string
 }
 
-function LevelChart({ instrument: id, assessments, timeZone }: LevelChartProps) {
+function LevelChart({ domain, assessments, timeZone }: LevelChartProps) {
   const t = useTranslations('patterns.scores')
   const plain = useTranslations('screening.plain')
   const locale = useLocale()
@@ -36,7 +37,7 @@ function LevelChart({ instrument: id, assessments, timeZone }: LevelChartProps) 
       completedAt: new Date(assessment.completedAt),
       level: plainLevelOf(assessment.severity),
     })),
-    id,
+    domain,
   )
   const latest = timeline.at(-1)
   const previous = timeline.at(-2)
@@ -58,7 +59,7 @@ function LevelChart({ instrument: id, assessments, timeZone }: LevelChartProps) 
   return (
     <figure className="space-y-3">
       <figcaption className="space-y-0.5">
-        <span className="block font-medium">{plain(`names.${id}`)}</span>
+        <span className="block font-medium">{plain(`names.${domain}`)}</span>
         {latest !== undefined && (
           <span className="block text-sm text-muted-foreground">
             {plain(`levels.${latest.level}`)}
@@ -148,17 +149,17 @@ export function ScoreHistory({
   timeZone: string
 }) {
   const t = useTranslations('patterns.scores')
-  const shown = instrumentIds.filter(
-    (id) =>
-      assessments.filter((assessment) => assessment.instrument === id).length >=
+  const shown = screeningDomains.filter(
+    (domain) =>
+      assessments.filter((assessment) => domainOf(assessment.instrument) === domain).length >=
       patternRules.minScoreSessions,
   )
 
   return (
     <Section title={t('title')}>
       <div className="grid gap-8 pt-1 md:grid-cols-2 md:gap-10">
-        {shown.map((id) => (
-          <LevelChart key={id} instrument={id} assessments={assessments} timeZone={timeZone} />
+        {shown.map((domain) => (
+          <LevelChart key={domain} domain={domain} assessments={assessments} timeZone={timeZone} />
         ))}
       </div>
     </Section>

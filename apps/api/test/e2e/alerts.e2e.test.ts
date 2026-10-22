@@ -231,4 +231,23 @@ describe('professional alerts', () => {
     expect(await alertsOf(carla)).toEqual([])
     expect((await alertsOf()).map((alert) => alert.patientId)).not.toContain(carla.id)
   })
+
+  it('raises an urgent alert for the safety question asked after a negative mood screen', async () => {
+    const fabi = await createTestUser({ full_name: 'Fabi Souza' })
+    await linkPatient(app, helena, fabi, false)
+
+    const calm = await answer(app, fabi, 'phq2', [0, 1, 0])
+    expect(await job.run({ kind: 'assessment', patientId: fabi.id, assessmentId: calm })).toEqual({
+      raised: 0,
+      emailed: 0,
+    })
+    const flagged = await answer(app, fabi, 'phq2', [0, 1, 1])
+    expect(
+      await job.run({ kind: 'assessment', patientId: fabi.id, assessmentId: flagged }),
+    ).toEqual({ raised: 1, emailed: 1 })
+    expect(summaryOf(await alertsOf(fabi))).toEqual([
+      { reason: 'risk_item', level: 'urgent', status: 'open' },
+    ])
+    await deleteTestUser(fabi.id)
+  })
 })

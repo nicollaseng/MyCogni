@@ -13,6 +13,14 @@ const screening: Omit<typeof assessments.$inferInsert, 'userId'> = {
   hasRiskFlag: false,
 }
 
+const shortScreen: Omit<typeof assessments.$inferInsert, 'userId'> = {
+  instrument: 'phq2',
+  answers: [0, 1, 1],
+  totalScore: 1,
+  severity: 'minimal',
+  hasRiskFlag: true,
+}
+
 describe('consents and assessments', () => {
   let connection: DatabaseConnection
   let alice: string
@@ -29,6 +37,8 @@ describe('consents and assessments', () => {
     await connection.db.insert(assessments).values([
       { ...screening, userId: alice },
       { ...screening, userId: bob },
+      { ...shortScreen, userId: alice },
+      { ...shortScreen, userId: bob },
     ])
   })
 
@@ -43,7 +53,10 @@ describe('consents and assessments', () => {
     )
 
     expect(ownConsents.map((row) => row.userId)).toEqual([alice])
-    expect(ownResults.map((row) => row.userId)).toEqual([alice])
+    expect(ownResults.map((row) => `${row.userId} ${row.instrument}`)).toEqual([
+      `${alice} gad7`,
+      `${alice} phq2`,
+    ])
   })
 
   it('does not let a user record a consent for someone else', async () => {

@@ -40,7 +40,7 @@ export const onboarding: OnboardingMessages = {
     title: 'Two short questionnaires',
     lead: 'These questions are used around the world to follow signs of low mood and anxiety. They become your starting point.',
     facts: {
-      questions: 'questions, one per screen',
+      questions: 'questions to start, one per screen',
       minutes: 'minutes, more or less',
       weeks: 'weeks: the period the questions cover',
     },

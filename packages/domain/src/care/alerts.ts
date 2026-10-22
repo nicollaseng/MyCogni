@@ -1,4 +1,5 @@
 import type { InstrumentId, Severity } from '../assessments/instrument.ts'
+import { domainOf } from '../assessments/scoring.ts'
 import type { InsightAttention } from '../insights/insights.ts'
 import type { RiskLevel } from '../safety/risk.ts'
 import {
@@ -95,9 +96,10 @@ function screeningSignals({
   hasRiskFlag,
 }: ScreeningResult): AttentionSignals {
   const moment = new Date(0)
+  const domain = domainOf(instrument)
   return {
-    latestPhq9: instrument === 'phq9' ? { severity, hasRiskFlag } : null,
-    latestGad7: instrument === 'gad7' ? { severity } : null,
+    latestDepression: domain === 'depression' ? { severity, hasRiskFlag } : null,
+    latestAnxiety: domain === 'anxiety' ? { severity } : null,
     moodAverage: null,
     previousMoodAverage: null,
     lastCheckInAt: moment,

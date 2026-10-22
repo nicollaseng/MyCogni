@@ -16,6 +16,17 @@ describe('instrumentText', () => {
     }
   })
 
+  it.each(locales)('reuses the items of each full form for its %s screen', (locale) => {
+    const full = instrumentText(locale, 'phq9').items
+    expect(instrumentText(locale, 'phq2')).toEqual({
+      ...instrumentText(locale, 'phq9'),
+      items: [full[0], full[1], full[8]],
+    })
+    expect(instrumentText(locale, 'gad2').items).toEqual(
+      instrumentText(locale, 'gad7').items.slice(0, 2),
+    )
+  })
+
   it('keeps the official wording of the self-harm item in each language', () => {
     const riskItem = phq9.riskItemIndex ?? -1
 
@@ -33,7 +44,7 @@ describe('instrumentText', () => {
   it('uses the answer labels of each official translation', () => {
     expect(instrumentText('pt-BR', 'gad7').options[2]).toBe('Mais da metade dos dias')
     expect(instrumentText('pt-PT', 'gad7').options[2]).toBe('Em mais de metade do número de dias')
-    expect(instrumentText('en-GB', 'gad7')).toBe(instrumentText('en-US', 'gad7'))
+    expect(instrumentText('en-GB', 'gad7')).toEqual(instrumentText('en-US', 'gad7'))
     expect(instrumentText('en-US', gad7.id).options[0]).toBe('Not at all')
   })
 })

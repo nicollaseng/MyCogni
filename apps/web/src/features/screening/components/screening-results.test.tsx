@@ -24,8 +24,8 @@ describe('ScreeningResults', () => {
         depression={depression}
         anxiety={anxiety}
         previous={{
-          phq9: assessmentOf({ totalScore: 12, severity: 'moderate', completedAt: before }),
-          gad7: assessmentOf({
+          depression: assessmentOf({ totalScore: 12, severity: 'moderate', completedAt: before }),
+          anxiety: assessmentOf({
             instrument: 'gad7',
             totalScore: 3,
             severity: 'minimal',
@@ -52,7 +52,7 @@ describe('ScreeningResults', () => {
         depression={assessmentOf({ totalScore: 6, severity: 'mild' })}
         anxiety={anxiety}
         previous={{
-          phq9: assessmentOf({ totalScore: 12, severity: 'moderate', completedAt: before }),
+          depression: assessmentOf({ totalScore: 12, severity: 'moderate', completedAt: before }),
         }}
       />,
     )
@@ -75,5 +75,30 @@ describe('ScreeningResults', () => {
     expect(screen.getByText('If you think about hurting yourself again, call:')).toBeInTheDocument()
     expect(screen.getByRole('link', { name: '988' })).toHaveAttribute('href', 'tel:988')
     expect(screen.queryByRole('link', { name: '188' })).not.toBeInTheDocument()
+  })
+
+  it('reads a calm short screen as low and keeps the help close when the safety answer is above zero', () => {
+    const { container } = renderWithIntl(
+      <ScreeningResults
+        depression={assessmentOf({
+          instrument: 'phq2',
+          totalScore: 1,
+          maxScore: 6,
+          severity: 'minimal',
+          hasRiskFlag: true,
+        })}
+        anxiety={assessmentOf({
+          instrument: 'gad2',
+          totalScore: 2,
+          maxScore: 6,
+          severity: 'minimal',
+        })}
+      />,
+    )
+
+    expect(screen.getByRole('region', { name: 'Desânimo' })).toHaveTextContent('DesânimoBaixo')
+    expect(screen.getByRole('region', { name: 'Ansiedade' })).toHaveTextContent('AnsiedadeBaixo')
+    expect(screen.getByRole('link', { name: '188' })).toHaveAttribute('href', 'tel:188')
+    expect(container).not.toHaveTextContent(/PHQ|GAD|de 6/)
   })
 })

@@ -36,6 +36,12 @@ describe('zenSuggestion', () => {
     expect(zenSuggestion(signals([]))).toEqual(starting)
   })
 
+  it('reads a negative short screen as the latest answer of its area', () => {
+    expect(
+      zenSuggestion(signals([result('phq2', 'minimal'), result('gad2', 'minimal')], 4)),
+    ).toEqual(starting)
+  })
+
   it('suggests the anxiety track for a moderate GAD-7', () => {
     expect(zenSuggestion(signals([result('gad7', 'moderate')]))).toEqual({
       reasons: ['anxiety'],

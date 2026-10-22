@@ -1,5 +1,11 @@
 import type { Assessment } from '@mycogni/contracts'
-import { dayKey, instrumentIds, plainLevelOf, type InstrumentId } from '@mycogni/domain'
+import {
+  dayKey,
+  domainOf,
+  plainLevelOf,
+  screeningDomains,
+  type ScreeningDomain,
+} from '@mycogni/domain'
 import { useLocale, useTranslations } from 'next-intl'
 import { useId } from 'react'
 import { formatDayMonth } from '@/shared/lib/time'
@@ -7,7 +13,7 @@ import { formatDayMonth } from '@/shared/lib/time'
 interface Session {
   key: string
   date: string
-  answers: Partial<Record<InstrumentId, Assessment>>
+  answers: Partial<Record<ScreeningDomain, Assessment>>
 }
 
 function sessionsOf(assessments: readonly Assessment[], timeZone: string): Session[] {
@@ -18,14 +24,11 @@ function sessionsOf(assessments: readonly Assessment[], timeZone: string): Sessi
   for (const assessment of newestFirst) {
     const key = dayKey(new Date(assessment.completedAt), timeZone)
     const last = sessions.at(-1)
+    const domain = domainOf(assessment.instrument)
     if (last?.key === key) {
-      last.answers[assessment.instrument] ??= assessment
+      last.answers[domain] ??= assessment
     } else {
-      sessions.push({
-        key,
-        date: assessment.completedAt,
-        answers: { [assessment.instrument]: assessment },
-      })
+      sessions.push({ key, date: assessment.completedAt, answers: { [domain]: assessment } })
     }
   }
   return sessions
@@ -57,9 +60,9 @@ export function ScreeningHistory({
             <th scope="col" className="sr-only">
               {t('day')}
             </th>
-            {instrumentIds.map((id) => (
-              <th key={id} scope="col" className="pb-1 font-normal">
-                {plain(`names.${id}`)}
+            {screeningDomains.map((domain) => (
+              <th key={domain} scope="col" className="pb-1 font-normal">
+                {plain(`names.${domain}`)}
               </th>
             ))}
           </tr>
@@ -70,10 +73,10 @@ export function ScreeningHistory({
               <th scope="row" className="py-1.5 pr-4 font-normal">
                 {formatDayMonth(new Date(session.date), timeZone, locale)}
               </th>
-              {instrumentIds.map((id) => {
-                const answer = session.answers[id]
+              {screeningDomains.map((domain) => {
+                const answer = session.answers[domain]
                 return (
-                  <td key={id} className="py-1.5 text-sm text-muted-foreground">
+                  <td key={domain} className="py-1.5 text-sm text-muted-foreground">
                     {answer === undefined ? '–' : plain(`levels.${plainLevelOf(answer.severity)}`)}
                   </td>
                 )

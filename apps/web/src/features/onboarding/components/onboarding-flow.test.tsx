@@ -1,12 +1,13 @@
-import { describe, expect, it, jest } from '@jest/globals'
+import { afterEach, describe, expect, it, jest } from '@jest/globals'
 import { instrumentText, type Locale } from '@mycogni/domain'
-import { screen } from '@testing-library/react'
+import { cleanup, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import type { RenderPhoto } from '@/features/account/photo-canvas'
 import type { UploadResult } from '@/shared/lib/uploads'
 import { renderWithIntl } from '@/test/render'
 import type { OnboardingStart } from '../model'
-import { assessmentOf, fakeActions } from '../test/fixtures'
+import type { Assessment } from '@mycogni/contracts'
+import { assessmentOf, fakeActions, fakeSubmit } from '../test/fixtures'
 import { OnboardingFlow } from './onboarding-flow'
 
 const signOut = jest.fn(() => Promise.resolve())
@@ -44,18 +45,30 @@ function renderFlow(
   return actions
 }
 
-async function answerAll(total: number, name: string, last = 'Nenhuma vez') {
-  for (let index = 1; index <= total; index++) {
-    await screen.findByText(`${name} · ${String(index)} de ${String(total)}`)
-    await userEvent.click(
-      screen.getByRole('button', { name: index === total ? last : 'Nenhuma vez' }),
-    )
+const userId = '6f1c4a52-61f7-4c1b-9d3c-1b0d2a4f2a10'
+
+function startAt(
+  step: OnboardingStart['step'],
+  results: OnboardingStart['results'] = {},
+  assessments: readonly Assessment[] = [],
+): OnboardingStart {
+  return { step, userId, displayName: 'Ana', results, assessments }
+}
+
+async function answer(choices: readonly string[], total: number, from = 1) {
+  for (const [offset, choice] of choices.entries()) {
+    await screen.findByText(`Pergunta ${String(from + offset)} de ${String(total)}`)
+    await userEvent.click(screen.getByRole('button', { name: choice }))
   }
 }
 
+afterEach(() => {
+  window.localStorage.clear()
+})
+
 describe('OnboardingFlow', () => {
   it('goes from the name to the first question', async () => {
-    const actions = renderFlow({ step: 'name', displayName: 'Ana', results: {} })
+    const actions = renderFlow(startAt('name'))
 
     expect(screen.getByLabelText('Nome')).toHaveValue('Ana')
     await userEvent.click(screen.getByRole('button', { name: 'Continuar' }))
@@ -68,8 +81,10 @@ describe('OnboardingFlow', () => {
     await userEvent.click(await screen.findByRole('button', { name: 'Começar' }))
 
     expect(
-      screen.getByRole('heading', { name: instrumentText('pt-BR', 'phq9').items[0] }),
+      await screen.findByRole('heading', { name: instrumentText('pt-BR', 'phq9').items[0] }),
     ).toBeInTheDocument()
+    expect(screen.getByText('Nas últimas 2 semanas')).toBeInTheDocument()
+    expect(screen.getByText('Pergunta 1 de 5')).toBeInTheDocument()
   })
 
   it('offers an optional photo after the name, cropped before it is sent', async () => {
@@ -77,7 +92,7 @@ describe('OnboardingFlow', () => {
     URL.revokeObjectURL = jest.fn()
     const transport = photoTransport()
     const actions = renderFlow(
-      { step: 'name', displayName: 'Ana Lima', results: {} },
+      { ...startAt('name'), displayName: 'Ana Lima' },
       fakeActions(),
       'pt-BR',
       transport,
@@ -103,50 +118,96 @@ describe('OnboardingFlow', () => {
     expect(await screen.findByRole('button', { name: 'Começar' })).toBeInTheDocument()
   })
 
-  it('stops for support when PHQ-9 item 9 is above zero, then moves on to GAD-7', async () => {
-    renderFlow({ step: 'phq9', displayName: 'Ana', results: {} })
+  it('ends after five questions when nothing calls for more and saves the short answers', async () => {
+    const submit = fakeSubmit()
+    renderFlow(startAt('screening'), fakeActions({ submitScreening: submit }))
 
-    await answerAll(9, 'Desânimo', 'Vários dias')
-
-    expect(await screen.findByRole('heading', { name: 'Obrigado por contar.' })).toBeInTheDocument()
-    expect(screen.getByRole('link', { name: 'Ligar para o CVV' })).toHaveAttribute(
-      'href',
-      'tel:188',
-    )
-
-    await userEvent.click(screen.getByRole('button', { name: 'Continuar o questionário' }))
-
-    expect(screen.getByText('Ansiedade · 1 de 7')).toBeInTheDocument()
-  })
-
-  it('goes straight to GAD-7 without the flag and ends on the results', async () => {
-    renderFlow({ step: 'phq9', displayName: 'Ana', results: {} })
-
-    await answerAll(9, 'Desânimo')
-    await answerAll(7, 'Ansiedade')
+    await answer(['Nenhuma vez', 'Vários dias', 'Vários dias', 'Nenhuma vez', 'Nenhuma vez'], 5)
 
     expect(
       await screen.findByRole('heading', { name: 'Seu ponto de partida.' }),
     ).toBeInTheDocument()
-    expect(screen.queryByText('Obrigado por contar.')).not.toBeInTheDocument()
+    expect(submit.mock.calls.map(([input]) => input)).toEqual([
+      { instrument: 'gad2', answers: [1, 0] },
+      { instrument: 'phq2', answers: [0, 1, 0] },
+    ])
+    expect(screen.getByRole('region', { name: 'Desânimo' })).toHaveTextContent('DesânimoBaixo')
+    expect(screen.queryByText(/PHQ|GAD|de 6/)).not.toBeInTheDocument()
+  })
+
+  it('stops for support when the safety question is above zero on a calm screen', async () => {
+    renderFlow(startAt('screening'))
+
+    await answer(['Nenhuma vez', 'Nenhuma vez', 'Nenhuma vez', 'Nenhuma vez', 'Vários dias'], 5)
+
+    expect(await screen.findByRole('heading', { name: 'Obrigado por contar.' })).toBeInTheDocument()
+    await userEvent.click(screen.getByRole('button', { name: 'Continuar o questionário' }))
+    expect(
+      await screen.findByRole('heading', { name: 'Seu ponto de partida.' }),
+    ).toBeInTheDocument()
+  })
+
+  it('announces more mood questions when the mood screen is positive and keeps the count honest', async () => {
+    const submit = fakeSubmit()
+    renderFlow(startAt('screening'), fakeActions({ submitScreening: submit }))
+
+    await answer(['Mais da metade dos dias', 'Vários dias', 'Nenhuma vez', 'Nenhuma vez'], 5)
+
+    expect(
+      await screen.findByRole('heading', { name: 'Mais algumas perguntas sobre ânimo' }),
+    ).toBeInTheDocument()
+    expect(screen.getByText(/Mais 7 perguntas, uma por tela/)).toBeInTheDocument()
+    await userEvent.click(screen.getByRole('button', { name: 'Continuar' }))
+
+    await answer(
+      Array.from({ length: 7 }, () => 'Nenhuma vez'),
+      11,
+      5,
+    )
+
+    expect(
+      await screen.findByRole('heading', { name: 'Seu ponto de partida.' }),
+    ).toBeInTheDocument()
+    expect(submit.mock.calls.map(([input]) => input.instrument)).toEqual(['gad2', 'phq9'])
+    expect(submit.mock.calls[1]?.[0].answers).toEqual([2, 1, 0, 0, 0, 0, 0, 0, 0])
+  })
+
+  it('picks up at the next unanswered question after a pause', async () => {
+    renderFlow(startAt('screening'))
+    await answer(['Nenhuma vez', 'Vários dias', 'Nenhuma vez'], 5)
+    await screen.findByText('Pergunta 4 de 5')
+    cleanup()
+
+    renderFlow(startAt('name'))
+
+    expect(await screen.findByText('Pergunta 4 de 5')).toBeInTheDocument()
+    await userEvent.click(screen.getByRole('button', { name: 'Voltar' }))
+    expect(screen.getByText('Pergunta 3 de 5')).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Nenhuma vez' })).toHaveAttribute(
+      'aria-pressed',
+      'true',
+    )
   })
 
   it('resumes on the results with what was already answered', () => {
-    renderFlow({
-      step: 'results',
-      displayName: 'Ana',
-      results: {
-        phq9: assessmentOf(),
-        gad7: assessmentOf({ instrument: 'gad7', totalScore: 6, maxScore: 21, severity: 'mild' }),
-      },
-    })
+    renderFlow(
+      startAt('results', {
+        depression: assessmentOf(),
+        anxiety: assessmentOf({
+          instrument: 'gad7',
+          totalScore: 6,
+          maxScore: 21,
+          severity: 'mild',
+        }),
+      }),
+    )
 
     expect(screen.getByRole('region', { name: 'Ansiedade' })).toHaveTextContent('AnsiedadeLeve')
     expect(screen.getByText('Etapa 4 de 4')).toBeInTheDocument()
   })
 
   it('guides an English speaker from the name and the photo to the questionnaires', async () => {
-    renderFlow({ step: 'name', displayName: 'Ana', results: {} }, fakeActions(), 'en-US')
+    renderFlow(startAt('name'), fakeActions(), 'en-US')
 
     expect(screen.getByText('Step 2 of 4')).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'Sign out' })).toBeInTheDocument()
@@ -161,7 +222,7 @@ describe('OnboardingFlow', () => {
     expect(
       await screen.findByRole('heading', { name: 'Two short questionnaires' }),
     ).toBeInTheDocument()
-    expect(screen.getByText('questions, one per screen')).toBeInTheDocument()
+    expect(screen.getByText('questions to start, one per screen')).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'Start' })).toBeInTheDocument()
   })
 })

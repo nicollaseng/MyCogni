@@ -410,8 +410,7 @@ export const professional: ProfessionalMessages = {
       noPrevious: 'No entries in the previous 7 days',
       checkIns: 'Entries in 30 days',
       week: '{count, plural, =0 {None in the last 7 days} other {# in the last 7 days}}',
-      phq9: 'Latest PHQ-9',
-      gad7: 'Latest GAD-7',
+      latest: 'Latest {name}',
       screening: '{severity} · {date}',
     },
     mood: {

@@ -8,7 +8,7 @@ const options = [
 ] as const
 
 export const brazilianPortuguese: InstrumentTexts = {
-  phq9: {
+  depression: {
     prompt:
       'Durante as últimas 2 semanas, com que frequência você foi incomodado/a por qualquer um dos problemas abaixo?',
     items: [
@@ -24,7 +24,7 @@ export const brazilianPortuguese: InstrumentTexts = {
     ],
     options,
   },
-  gad7: {
+  anxiety: {
     prompt:
       'Durante as últimas 2 semanas, com que frequência você foi incomodado/a pelos problemas abaixo?',
     items: [

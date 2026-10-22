@@ -1,4 +1,4 @@
-import { instrumentIds, instruments, severities } from '@mycogni/domain'
+import { instrumentIds, instruments, isStorable, severities } from '@mycogni/domain'
 import { z } from 'zod'
 
 export const instrumentIdSchema = z.enum(instrumentIds)
@@ -10,6 +10,10 @@ export const submitAssessmentSchema = z
   })
   .refine(({ instrument, answers }) => answers.length === instruments[instrument].itemCount, {
     message: 'Answer every item of the form',
+    path: ['answers'],
+  })
+  .refine(({ instrument, answers }) => isStorable(instruments[instrument], answers), {
+    message: 'A positive short screen continues with the full form',
     path: ['answers'],
   })
 

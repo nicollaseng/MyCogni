@@ -1,4 +1,5 @@
-import type { InstrumentId, Severity } from '../assessments/instrument.ts'
+import type { InstrumentId, ScreeningDomain, Severity } from '../assessments/instrument.ts'
+import { domainOf } from '../assessments/scoring.ts'
 import { lowMoodAverage } from '../care/attention.ts'
 import { stepOf, tracks, type ArticleId, type TrackId } from './catalog.ts'
 import type { DoneStep } from './progress.ts'
@@ -61,8 +62,8 @@ interface Rule {
   applies: (signals: ZenSignals) => boolean
 }
 
-function severityOf(signals: ZenSignals, instrument: InstrumentId): Severity | undefined {
-  return signals.latest.find((signal) => signal.instrument === instrument)?.severity
+function severityOf(signals: ZenSignals, domain: ScreeningDomain): Severity | undefined {
+  return signals.latest.find((signal) => domainOf(signal.instrument) === domain)?.severity
 }
 
 function isAmong(severity: Severity | undefined, accepted: readonly Severity[]): boolean {
@@ -83,19 +84,19 @@ const rules: readonly Rule[] = [
     reason: 'severe_result',
     track: 'seeking-help',
     applies: (signals) =>
-      isAmong(severityOf(signals, 'phq9'), ['moderately_severe', 'severe']) ||
-      isAmong(severityOf(signals, 'gad7'), ['severe']),
+      isAmong(severityOf(signals, 'depression'), ['moderately_severe', 'severe']) ||
+      isAmong(severityOf(signals, 'anxiety'), ['severe']),
   },
   {
     reason: 'anxiety',
     track: 'everyday-anxiety',
-    applies: (signals) => isAmong(severityOf(signals, 'gad7'), ['moderate', 'severe']),
+    applies: (signals) => isAmong(severityOf(signals, 'anxiety'), ['moderate', 'severe']),
   },
   {
     reason: 'depression',
     track: 'low-mood',
     applies: (signals) =>
-      isAmong(severityOf(signals, 'phq9'), ['moderate', 'moderately_severe', 'severe']),
+      isAmong(severityOf(signals, 'depression'), ['moderate', 'moderately_severe', 'severe']),
   },
   {
     reason: 'low_mood',

@@ -150,10 +150,10 @@ function PatientRow({
         <MoodAverage average={patient.moodAverage} previous={patient.previousMoodAverage} />
       </Cell>
       <Cell className="whitespace-nowrap">
-        <ScreeningScore screening={latest.phq9} />
+        <ScreeningScore screening={latest.depression} />
       </Cell>
       <Cell className="whitespace-nowrap">
-        <ScreeningScore screening={latest.gad7} />
+        <ScreeningScore screening={latest.anxiety} />
       </Cell>
       <Cell>
         <AttentionReasons reasons={patient.attention} />

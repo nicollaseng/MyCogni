@@ -1,24 +1,17 @@
 'use client'
 
-import type { Assessment } from '@mycogni/contracts'
-import { gad7, phq9 } from '@mycogni/domain'
-import { useState } from 'react'
-import {
-  phaseOf,
-  type OnboardingActions,
-  type OnboardingStart,
-  type Results,
-  type Step,
-} from '../model'
-import { ConsentStep } from './consent-step'
+import { useState, useSyncExternalStore } from 'react'
 import type { PhotoTransport } from '@/features/account/components/photo-field'
+import { ScreeningFlow } from '@/features/screening/components/screening-flow'
+import { hasScreeningDraft } from '@/features/screening/draft'
+import type { ScreeningResults } from '@/features/screening/model'
+import { phaseOf, type OnboardingActions, type OnboardingStart, type Step } from '../model'
+import { ConsentStep } from './consent-step'
 import { NameStep } from './name-step'
 import { OnboardingHeader } from './onboarding-header'
 import { PhotoStep, type OnboardingPhoto } from './photo-step'
-import { Questionnaire } from '@/features/screening/components/questionnaire'
 import { ResultsStep } from './results-step'
 import { ScreeningIntroStep } from './screening-intro-step'
-import { SupportStep } from '@/features/screening/components/support-step'
 
 interface OnboardingFlowProps {
   start: OnboardingStart
@@ -28,6 +21,10 @@ interface OnboardingFlowProps {
   signOut: () => Promise<void>
 }
 
+function subscribeToNothing(): () => void {
+  return () => undefined
+}
+
 export function OnboardingFlow({
   start,
   actions,
@@ -35,14 +32,18 @@ export function OnboardingFlow({
   photoTransport,
   signOut,
 }: OnboardingFlowProps) {
-  const [step, setStep] = useState<Step>(start.step)
-  const [results, setResults] = useState<Results>(start.results)
+  const resumable = useSyncExternalStore(
+    subscribeToNothing,
+    () => hasScreeningDraft(start.userId),
+    () => false,
+  )
+  const [chosen, setChosen] = useState<Step | null>(null)
+  const [results, setResults] = useState<ScreeningResults | null>(() => {
+    const { depression, anxiety } = start.results
+    return depression === undefined || anxiety === undefined ? null : { depression, anxiety }
+  })
   const [name, setName] = useState(start.displayName)
-
-  function record(assessment: Assessment, next: Step) {
-    setResults((current) => ({ ...current, [assessment.instrument]: assessment }))
-    setStep(next)
-  }
+  const step = chosen ?? (resumable && start.step === 'name' ? 'screening' : start.step)
 
   return (
     <div className="flex h-dvh flex-col">
@@ -56,7 +57,7 @@ export function OnboardingFlow({
             <ConsentStep
               accept={actions.acceptConsents}
               onDone={() => {
-                setStep('name')
+                setChosen('name')
               }}
             />
           )}
@@ -66,7 +67,7 @@ export function OnboardingFlow({
               save={actions.saveName}
               onDone={(displayName) => {
                 setName(displayName)
-                setStep('photo')
+                setChosen('photo')
               }}
             />
           )}
@@ -77,46 +78,33 @@ export function OnboardingFlow({
               saved={actions.photoSaved}
               transport={photoTransport}
               onDone={() => {
-                setStep('intro')
+                setChosen('intro')
               }}
             />
           )}
           {step === 'intro' && (
             <ScreeningIntroStep
               onStart={() => {
-                setStep('phq9')
+                setChosen('screening')
               }}
             />
           )}
-          {step === 'phq9' && (
-            <Questionnaire
-              instrument={phq9}
+          {step === 'screening' && (
+            <ScreeningFlow
+              userId={start.userId}
+              scope="onboarding"
+              assessments={start.assessments}
               send={actions.submitScreening}
-              onDone={(assessment) => {
-                record(assessment, assessment.hasRiskFlag ? 'support' : 'gad7')
+              onComplete={(done) => {
+                setResults(done)
+                setChosen('results')
               }}
             />
           )}
-          {step === 'support' && (
-            <SupportStep
-              onContinue={() => {
-                setStep('gad7')
-              }}
-            />
-          )}
-          {step === 'gad7' && (
-            <Questionnaire
-              instrument={gad7}
-              send={actions.submitScreening}
-              onDone={(assessment) => {
-                record(assessment, 'results')
-              }}
-            />
-          )}
-          {step === 'results' && results.phq9 !== undefined && results.gad7 !== undefined && (
+          {step === 'results' && results !== null && (
             <ResultsStep
-              depression={results.phq9}
-              anxiety={results.gad7}
+              depression={results.depression}
+              anxiety={results.anxiety}
               finish={actions.finishOnboarding}
             />
           )}

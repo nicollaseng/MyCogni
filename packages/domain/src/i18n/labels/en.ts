@@ -94,9 +94,9 @@ export const americanEnglish: LabelSet = {
     faith: 'faith',
     therapy: 'therapy',
   },
-  instruments: {
-    phq9: 'Signs of depression',
-    gad7: 'Signs of anxiety',
+  topics: {
+    depression: 'Signs of depression',
+    anxiety: 'Signs of anxiety',
   },
   severities: {
     minimal: 'Minimal',
@@ -106,8 +106,8 @@ export const americanEnglish: LabelSet = {
     severe: 'Severe',
   },
   plainNames: {
-    phq9: 'Feeling down',
-    gad7: 'Anxiety',
+    depression: 'Feeling down',
+    anxiety: 'Anxiety',
   },
   plainLevels: {
     low: 'Low',

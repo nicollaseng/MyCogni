@@ -38,7 +38,7 @@ export const onboarding = {
     title: 'Dois questionários curtos',
     lead: 'São perguntas usadas no mundo todo para acompanhar sinais de ânimo e ansiedade. Elas viram o seu ponto de partida.',
     facts: {
-      questions: 'perguntas, uma por tela',
+      questions: 'perguntas para começar, uma por tela',
       minutes: 'minutos, mais ou menos',
       weeks: 'semanas: o período que as perguntas cobrem',
     },

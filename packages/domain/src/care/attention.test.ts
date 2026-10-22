@@ -4,8 +4,8 @@ import { attentionReasonsOf, type AttentionSignals } from './attention.ts'
 const now = new Date('2026-10-15T12:00:00Z')
 
 const calm: AttentionSignals = {
-  latestPhq9: { severity: 'mild', hasRiskFlag: false },
-  latestGad7: { severity: 'minimal' },
+  latestDepression: { severity: 'mild', hasRiskFlag: false },
+  latestAnxiety: { severity: 'minimal' },
   moodAverage: 4,
   previousMoodAverage: 4,
   lastCheckInAt: new Date('2026-10-14T20:00:00Z'),
@@ -22,7 +22,7 @@ describe('attentionReasonsOf', () => {
     expect(
       attentionReasonsOf({
         ...calm,
-        latestPhq9: { severity: 'severe', hasRiskFlag: true },
+        latestDepression: { severity: 'severe', hasRiskFlag: true },
         moodAverage: 1,
       }),
     ).toEqual(['risk_item', 'severe_screening', 'low_mood', 'mood_drop'])
@@ -32,13 +32,13 @@ describe('attentionReasonsOf', () => {
     expect(
       attentionReasonsOf({
         ...calm,
-        latestPhq9: { severity: 'moderately_severe', hasRiskFlag: false },
+        latestDepression: { severity: 'moderately_severe', hasRiskFlag: false },
       }),
     ).toEqual(['severe_screening'])
-    expect(attentionReasonsOf({ ...calm, latestGad7: { severity: 'severe' } })).toEqual([
+    expect(attentionReasonsOf({ ...calm, latestAnxiety: { severity: 'severe' } })).toEqual([
       'severe_screening',
     ])
-    expect(attentionReasonsOf({ ...calm, latestGad7: { severity: 'moderate' } })).toEqual([])
+    expect(attentionReasonsOf({ ...calm, latestAnxiety: { severity: 'moderate' } })).toEqual([])
   })
 
   it('flags a low week and a drop of a whole point from the week before', () => {
@@ -71,8 +71,8 @@ describe('attentionReasonsOf', () => {
     expect(
       attentionReasonsOf({
         ...calm,
-        latestPhq9: null,
-        latestGad7: null,
+        latestDepression: null,
+        latestAnxiety: null,
         lastCheckInAt: null,
         moodAverage: null,
         linkedAt: new Date('2026-10-01T12:00:00Z'),

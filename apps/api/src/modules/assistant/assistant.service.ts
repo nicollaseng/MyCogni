@@ -200,10 +200,7 @@ export function createAssistantService({
     }
     const since = now().getTime() - assistantLimits.screeningRiskDays * dayInMilliseconds
     const records = await assessments.list(user.id, ownerOf(user, scope))
-    return records.some(
-      (record) =>
-        record.instrument === 'phq9' && record.hasRiskFlag && record.completedAt.getTime() >= since,
-    )
+    return records.some((record) => record.hasRiskFlag && record.completedAt.getTime() >= since)
   }
 
   async function existingConversation(

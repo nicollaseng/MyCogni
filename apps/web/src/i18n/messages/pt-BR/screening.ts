@@ -4,7 +4,7 @@ const labels = labelsFor('pt-BR')
 
 export const screening = {
   title: 'Questionários',
-  topics: labels.instruments,
+  topics: labels.topics,
   severity: labels.severities,
   guidance: {
     minimal: 'Nada que peça atenção agora. Continue observando seus dias.',
@@ -26,9 +26,18 @@ export const screening = {
   },
   questionnaire: {
     back: 'Voltar',
-    progress: '{name} · {current} de {total}',
+    progress: 'Pergunta {current} de {total}',
+    reminder: 'Nas últimas 2 semanas',
     saving: 'Salvando suas respostas…',
     retry: 'Tentar de novo',
+  },
+  more: {
+    title: {
+      depression: 'Mais algumas perguntas sobre ânimo',
+      anxiety: 'Mais algumas perguntas sobre ansiedade',
+    },
+    body: '{count, plural, =0 {Nenhuma pergunta a mais.} one {Mais # pergunta, uma por tela. Elas ajudam a entender melhor como você está.} other {Mais # perguntas, uma por tela. Elas ajudam a entender melhor como você está.}}',
+    continue: 'Continuar',
   },
   results: {
     risk: 'Se pensar em se ferir de novo, ligue:',
@@ -43,7 +52,8 @@ export const screening = {
   retake: {
     close: 'Fechar',
     title: 'Como foram as últimas duas semanas?',
-    firstTime: 'São 16 perguntas sobre ânimo e ansiedade, uma por tela.',
+    firstTime:
+      'Começa com 5 perguntas sobre ânimo e ansiedade, uma por tela. Às vezes vêm mais algumas.',
     since: 'Da última vez você respondeu em {date}. No fim, você vê o que mudou desde então.',
     honest: 'Não existe resposta certa. Responda pensando em como as coisas foram de verdade.',
     start: 'Começar',

@@ -8,7 +8,7 @@ const options = [
 ] as const
 
 export const europeanPortuguese: InstrumentTexts = {
-  phq9: {
+  depression: {
     prompt:
       'Durante os últimos 14 dias, em quantos foi afectado/a por algum dos seguintes problemas?',
     items: [
@@ -24,7 +24,7 @@ export const europeanPortuguese: InstrumentTexts = {
     ],
     options,
   },
-  gad7: {
+  anxiety: {
     prompt: 'Durante os últimos 14 dias, em quantos foi afectado/a pelos seguintes problemas?',
     items: [
       'Senti-me nervoso/a, ansioso/a ou irritado/a',
