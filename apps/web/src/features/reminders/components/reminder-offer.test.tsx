@@ -63,4 +63,26 @@ describe('ReminderOffer', () => {
 
     expect(screen.queryByText('Quer um lembrete diário para praticar?')).not.toBeInTheDocument()
   })
+
+  it('keeps the confirmation after the page stops offering', async () => {
+    const accept = jest
+      .fn<(time: string) => Promise<ActionResult<string>>>()
+      .mockImplementation((time) => Promise.resolve({ ok: true, value: time }))
+    const user = userEvent.setup()
+    const { rerender } = renderWithIntl(
+      <ReminderOfferProvider offer time="20:00" accept={accept}>
+        <ReminderOffer />
+      </ReminderOfferProvider>,
+    )
+
+    await user.click(screen.getByRole('button', { name: 'Lembrar todo dia' }))
+    await screen.findByRole('status')
+    rerender(
+      <ReminderOfferProvider offer={false} time="20:00" accept={accept}>
+        <ReminderOffer />
+      </ReminderOfferProvider>,
+    )
+
+    expect(screen.getByRole('status')).toHaveTextContent('Combinado. Lembramos você às 20:00.')
+  })
 })

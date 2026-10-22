@@ -72,41 +72,45 @@ export function ReminderOffer() {
   const context = use(ReminderOfferContext)
   const dismissed = useSyncExternalStore(subscribe, wasDismissed, () => true)
   const [done, setDone] = useState<string | null>(null)
-  if (context === null || (dismissed && done === null)) {
+  if (done !== null) {
+    return <OfferDone time={done} />
+  }
+  if (context === null || dismissed) {
     return null
   }
-  return <OfferPanel context={context} done={done} onDone={setDone} />
+  return <OfferPanel context={context} onDone={setDone} />
+}
+
+function OfferDone({ time }: { time: string }) {
+  const t = useTranslations('reminders.offer')
+  const titleId = useId()
+  return (
+    <section aria-labelledby={titleId} className="w-full max-w-[22rem] space-y-2 text-center">
+      <p id={titleId} role="status" className="text-[15px] text-zen-foreground/90">
+        {t('done', { time })}
+      </p>
+      <Link
+        href="/me/reminders"
+        className="text-sm text-zen-foreground/75 underline decoration-1 underline-offset-4"
+      >
+        {t('settings')}
+      </Link>
+    </section>
+  )
 }
 
 interface OfferPanelProps {
   context: OfferContext
-  done: string | null
   onDone: (time: string) => void
 }
 
-function OfferPanel({ context, done, onDone }: OfferPanelProps) {
+function OfferPanel({ context, onDone }: OfferPanelProps) {
   const t = useTranslations('reminders.offer')
   const titleId = useId()
   const timeId = useId()
   const [time, setTime] = useState(context.time)
   const [error, setError] = useState<string | null>(null)
   const [pending, startTransition] = useTransition()
-
-  if (done !== null) {
-    return (
-      <section aria-labelledby={titleId} className="w-full max-w-[22rem] space-y-2 text-center">
-        <p id={titleId} role="status" className="text-[15px] text-zen-foreground/90">
-          {t('done', { time: done })}
-        </p>
-        <Link
-          href="/me/reminders"
-          className="text-sm text-zen-foreground/75 underline decoration-1 underline-offset-4"
-        >
-          {t('settings')}
-        </Link>
-      </section>
-    )
-  }
 
   return (
     <section
