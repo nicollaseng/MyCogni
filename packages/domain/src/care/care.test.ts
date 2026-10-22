@@ -10,7 +10,7 @@ import {
   sharingConsentVersion,
 } from './invitations.ts'
 import { notificationKinds } from './notifications.ts'
-import { professionalKinds, requiresRegistration } from './professionals.ts'
+import { isReviewDue, professionalKinds, requiresRegistration } from './professionals.ts'
 
 describe('professionals', () => {
   it('asks for a council registration from everyone except psychoanalysts', () => {
@@ -19,6 +19,13 @@ describe('professionals', () => {
       'psychiatrist',
       'physician',
     ])
+  })
+
+  it('asks for a new review once a verification is twelve months old', () => {
+    const verifiedAt = new Date('2025-10-22T12:00:00Z')
+
+    expect(isReviewDue(verifiedAt, new Date('2026-10-22T11:59:59Z'))).toBe(false)
+    expect(isReviewDue(verifiedAt, new Date('2026-10-22T12:00:00Z'))).toBe(true)
   })
 })
 

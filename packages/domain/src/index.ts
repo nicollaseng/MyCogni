@@ -102,13 +102,8 @@ export {
 } from './care/invitations.ts'
 export { notificationKinds, type NotificationKind } from './care/notifications.ts'
 export * from './questionnaires/index.ts'
-export {
-  professionalKinds,
-  professionalStatuses,
-  requiresRegistration,
-  type ProfessionalKind,
-  type ProfessionalStatus,
-} from './care/professionals.ts'
+export * from './care/professionals.ts'
+export * from './care/registrations.ts'
 export {
   contextGroups,
   contextIds,
@@ -367,20 +362,7 @@ export {
   type WeekSummary,
 } from './patterns/week.ts'
 export { moodByWeekday, type WeekdayMood } from './patterns/weekdays.ts'
-export {
-  isOwnProfessionalDocumentPath,
-  isProfessionalDocumentType,
-  professionalDocumentBucket,
-  professionalDocumentExtension,
-  professionalDocumentLimits,
-  professionalDocumentName,
-  professionalDocumentProblem,
-  professionalDocumentTypes,
-  registrationProofOf,
-  registrationProofs,
-  type ProfessionalDocumentType,
-  type RegistrationProof,
-} from './care/documents.ts'
+export * from './care/documents.ts'
 export {
   createSignedLinkCache,
   signedLinkWindow,
@@ -388,6 +370,7 @@ export {
   type SignedLinkCache,
   type SignedLinkWindow,
 } from './files/signed-links.ts'
+export * from './files/signatures.ts'
 export {
   cleanFileName,
   uploadProblem,
