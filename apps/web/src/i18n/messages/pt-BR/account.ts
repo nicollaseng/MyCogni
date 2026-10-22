@@ -6,6 +6,17 @@ export const account = {
     privacy: 'Privacidade',
     data: 'Seus dados',
   },
+  nav: {
+    label: 'Seções de perfil e configurações',
+    back: 'Configurações',
+    profile: 'Perfil',
+    wellbeing: 'Ânimo e ansiedade',
+    professionals: 'Profissionais',
+    sound: 'Som e voz',
+    privacy: 'Privacidade e dados',
+    account: 'Conta',
+    support: 'Suporte',
+  },
   profile: {
     photo: 'Sua foto',
     fallbackName: 'Você',

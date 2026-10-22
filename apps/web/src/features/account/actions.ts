@@ -135,7 +135,7 @@ export async function setConsent(
     return enabled ? t('consentOn') : t('consentOff')
   }, t('saveError'))
   if (result.ok) {
-    revalidatePath('/me')
+    revalidatePath('/me', 'layout')
     revalidatePath('/patterns')
   }
   return result
@@ -148,7 +148,7 @@ export async function setJournalInInsights(enabled: boolean): Promise<ActionResu
     return enabled ? t('journalOn') : t('journalOff')
   }, t('saveError'))
   if (result.ok) {
-    revalidatePath('/me')
+    revalidatePath('/me', 'layout')
   }
   return result
 }

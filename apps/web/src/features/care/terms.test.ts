@@ -31,6 +31,6 @@ describe('termsNoticeHref', () => {
   })
 
   it('opens the professionals list when several links wait for the new terms', () => {
-    expect(termsNoticeHref([link('a', true), link('b', true)])).toBe('/me#professionals')
+    expect(termsNoticeHref([link('a', true), link('b', true)])).toBe('/me/professionals')
   })
 })

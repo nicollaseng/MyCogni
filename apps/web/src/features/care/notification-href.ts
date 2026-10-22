@@ -15,7 +15,7 @@ export function notificationHref({
     case 'invitation':
       return invitation === null ? feed : `/invites/${invitation.id}`
     case 'professional':
-      return '/me#professionals'
+      return '/me/professionals'
     case 'insight':
       return insightId === null ? feed : `/patterns#reading-${insightId}`
     case 'support':

@@ -31,7 +31,7 @@ export default async function SupportTicketPage({ params }: PageProps<'/support/
     <>
       <div className="space-y-4">
         <Link
-          href="/me#support"
+          href="/me/support"
           className="inline-block text-sm text-muted-foreground underline decoration-1 underline-offset-4 hover:text-foreground"
         >
           {t('back')}

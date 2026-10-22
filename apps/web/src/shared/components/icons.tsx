@@ -119,3 +119,11 @@ export function ChatIcon({ className }: IconProps) {
     </svg>
   )
 }
+
+export function ChevronRightIcon({ className }: IconProps) {
+  return (
+    <svg aria-hidden viewBox="0 0 20 20" className={className}>
+      <path d="M8 5l5 5-5 5" {...stroke} />
+    </svg>
+  )
+}

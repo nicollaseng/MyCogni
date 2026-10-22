@@ -15,7 +15,7 @@ export async function submitScreening(input: ScreeningInput): Promise<ActionResu
   }
   const result = await attempt(() => submitAssessment(parsed.data), t('save'))
   if (result.ok) {
-    revalidatePath('/me')
+    revalidatePath('/me', 'layout')
     revalidatePath('/today')
     revalidatePath('/patterns')
     revalidatePath('/zen')

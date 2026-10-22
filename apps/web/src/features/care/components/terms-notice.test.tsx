@@ -47,7 +47,7 @@ describe('TermsNotice', () => {
 
     expect(screen.getByRole('link', { name: 'Review and confirm' })).toHaveAttribute(
       'href',
-      '/me#professionals',
+      '/me/professionals',
     )
   })
 })

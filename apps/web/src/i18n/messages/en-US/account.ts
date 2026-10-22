@@ -8,6 +8,17 @@ export const account: AccountMessages = {
     privacy: 'Privacy',
     data: 'Your data',
   },
+  nav: {
+    label: 'Profile and settings sections',
+    back: 'Settings',
+    profile: 'Profile',
+    wellbeing: 'Mood and anxiety',
+    professionals: 'Professionals',
+    sound: 'Sound and voice',
+    privacy: 'Privacy and data',
+    account: 'Account',
+    support: 'Support',
+  },
   profile: {
     photo: 'Your photo',
     fallbackName: 'You',

@@ -138,7 +138,7 @@ describe('TicketForm', () => {
       'href',
       `/support/${sentTicket.id}`,
     )
-    expect(screen.getByRole('link', { name: 'Voltar' })).toHaveAttribute('href', '/me#support')
+    expect(screen.getByRole('link', { name: 'Voltar' })).toHaveAttribute('href', '/me/support')
     expect(onSent).toHaveBeenCalledTimes(1)
   })
 

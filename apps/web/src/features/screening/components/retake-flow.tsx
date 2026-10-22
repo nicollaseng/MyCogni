@@ -38,7 +38,7 @@ export function RetakeFlow({ previous: initial, timeZone, send }: RetakeFlowProp
       <div className="mx-auto flex min-h-0 w-full max-w-[460px] flex-1 flex-col px-6 pt-5">
         <header className="flex h-11 shrink-0 items-center justify-between text-sm">
           <span className="text-muted-foreground">{t('title')}</span>
-          <Link href="/me">{t('retake.close')}</Link>
+          <Link href="/me/wellbeing">{t('retake.close')}</Link>
         </header>
         <main
           key={step}
@@ -104,7 +104,7 @@ export function RetakeFlow({ previous: initial, timeZone, send }: RetakeFlowProp
                 <p className="mb-3 text-center text-sm text-balance text-muted-foreground">
                   {t('retake.disclaimer')}
                 </p>
-                <Link href="/me" className={cn(buttonVariants({ size: 'lg' }), 'w-full')}>
+                <Link href="/me/wellbeing" className={cn(buttonVariants({ size: 'lg' }), 'w-full')}>
                   {t('retake.back')}
                 </Link>
                 <Link
