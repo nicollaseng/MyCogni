@@ -1,7 +1,7 @@
 'use client'
 
 import type { ProfessionalAssignment } from '@mycogni/contracts'
-import { catalogEntryOf } from '@mycogni/domain'
+import { catalogEntryOf, isOpenAssignment } from '@mycogni/domain'
 import Link from 'next/link'
 import { useLocale, useTranslations } from 'next-intl'
 import { useState, useTransition } from 'react'
@@ -190,8 +190,7 @@ export function AssignmentsTable({
                 {current.items.map((assignment) => {
                   const entry = catalogEntryOf(assignment.variant)
                   const name = assignment.variant === 'asrs6' ? t('names.asrs6') : entry.name
-                  const open =
-                    assignment.status === 'assigned' || assignment.status === 'in_progress'
+                  const open = isOpenAssignment(assignment.status)
                   return (
                     <tr key={assignment.id} className={table.row}>
                       <td className={cn(table.cell, table.first)}>

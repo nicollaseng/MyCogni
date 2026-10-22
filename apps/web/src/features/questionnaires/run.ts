@@ -1,4 +1,5 @@
 import type { PatientAssignment, QuestionnaireRun } from '@mycogni/contracts'
+import { nextUnanswered } from '@mycogni/domain'
 
 export type RunStep = 'intro' | 'questions' | 'support' | 'summary' | 'closed'
 
@@ -13,8 +14,7 @@ export function initialStep(run: QuestionnaireRun): RunStep {
 }
 
 export function resumeIndex(answers: readonly (number | null)[]): number {
-  const next = answers.indexOf(null)
-  return next === -1 ? Math.max(0, answers.length - 1) : next
+  return Math.max(0, Math.min(nextUnanswered(answers), answers.length - 1))
 }
 
 export function afterFinish(run: QuestionnaireRun): RunStep {
