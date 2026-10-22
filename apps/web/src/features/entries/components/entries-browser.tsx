@@ -1,5 +1,6 @@
 'use client'
 
+import type { PageSize } from '@mycogni/domain'
 import { useRouter } from 'next/navigation'
 import { useOptimistic, useTransition, type ReactNode } from 'react'
 import { cn } from '@/shared/lib/utils'
@@ -11,6 +12,7 @@ interface EntriesBrowserProps {
   customEmotions: readonly string[]
   customContexts: readonly string[]
   total: number
+  size: PageSize
   children: ReactNode
 }
 
@@ -19,6 +21,7 @@ export function EntriesBrowser({
   customEmotions,
   customContexts,
   total,
+  size,
   children,
 }: EntriesBrowserProps) {
   const router = useRouter()
@@ -35,10 +38,11 @@ export function EntriesBrowser({
         onChange={(next, change) => {
           startTransition(() => {
             showFilters(next)
+            const href = entriesHref(next, { page: 1, size })
             if (change === 'push') {
-              router.push(entriesHref(next), { scroll: false })
+              router.push(href, { scroll: false })
             } else {
-              router.replace(entriesHref(next), { scroll: false })
+              router.replace(href, { scroll: false })
             }
           })
         }}

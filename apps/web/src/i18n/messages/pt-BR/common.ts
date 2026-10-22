@@ -59,6 +59,16 @@ export const common = {
     message: 'O app foi atualizado. Recarregue para continuar.',
     reload: 'Recarregar',
   },
+  pager: {
+    label: 'Paginação',
+    range: '{from}–{to} de {total}',
+    single: '{position} de {total}',
+    page: '{page} / {count}',
+    current: 'Página {page} de {count}',
+    previous: 'Página anterior',
+    next: 'Próxima página',
+    size: 'Por página',
+  },
 }
 
 export type CommonMessages = typeof common

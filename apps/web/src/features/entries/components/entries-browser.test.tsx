@@ -1,4 +1,5 @@
 import { describe, expect, it } from '@jest/globals'
+import type { PageSize } from '@mycogni/domain'
 import { act, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { renderWithIntl } from '@/test/render'
@@ -6,10 +7,20 @@ import { fakeRouter, WithRouter } from '@/test/router'
 import { noFilters, type EntryFilters } from '../filters'
 import { EntriesBrowser } from './entries-browser'
 
-function browserWith(filters: EntryFilters, router: ReturnType<typeof fakeRouter>) {
+function browserWith(
+  filters: EntryFilters,
+  router: ReturnType<typeof fakeRouter>,
+  size: PageSize = 10,
+) {
   return (
     <WithRouter router={router}>
-      <EntriesBrowser filters={filters} customEmotions={[]} customContexts={[]} total={4}>
+      <EntriesBrowser
+        filters={filters}
+        customEmotions={[]}
+        customContexts={[]}
+        total={4}
+        size={size}
+      >
         <p>lista</p>
       </EntriesBrowser>
     </WithRouter>
@@ -51,5 +62,17 @@ describe('EntriesBrowser', () => {
 
     expect(router.push.mock.lastCall?.[0]).toBe('/entries?q=chuva&note=1')
     expect(screen.getByText('lista')).toBeVisible()
+  })
+
+  it('goes back to the first page and keeps the chosen size when the filters change', async () => {
+    const router = fakeRouter()
+    const user = userEvent.setup()
+    renderWithIntl(browserWith(noFilters, router, 25))
+
+    await act(async () => {
+      await user.type(screen.getByRole('searchbox'), 'chuva{Enter}')
+    })
+
+    expect(router.push.mock.lastCall?.[0]).toBe('/entries?q=chuva&size=25')
   })
 })

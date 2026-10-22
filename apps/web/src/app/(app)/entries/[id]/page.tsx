@@ -7,6 +7,7 @@ import { EntryDetail } from '@/features/entries/components/entry-detail'
 import { entriesHref, parseEntryFilters } from '@/features/entries/filters'
 import { fetchCheckIn } from '@/shared/lib/api/resources'
 import { requireOnboardedProfile } from '@/shared/lib/auth/session'
+import { listPageOf } from '@/shared/lib/list-page'
 import { guarded } from '@/shared/lib/settled'
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -36,7 +37,7 @@ export default async function EntryPage(props: PageProps<'/entries/[id]'>) {
     <EntryDetail
       checkIn={checkIn}
       timeZone={timezone}
-      back={{ href: entriesHref(parseEntryFilters(query)), label: t('back') }}
+      back={{ href: entriesHref(parseEntryFilters(query), listPageOf(query)), label: t('back') }}
     >
       <EntryAddenda
         addenda={checkIn.addenda}

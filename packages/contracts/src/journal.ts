@@ -1,5 +1,6 @@
 import { journalLimits } from '@mycogni/domain'
 import { z } from 'zod'
+import { pageQueryFields, pageSchemaOf } from './pagination.ts'
 import { professionalKindSchema } from './professionals.ts'
 import { supportSignalSchema } from './safety.ts'
 
@@ -43,7 +44,9 @@ export const journalEntrySummarySchema = z.object({
 
 export type JournalEntrySummary = z.infer<typeof journalEntrySummarySchema>
 
-export const journalEntrySummaryListSchema = z.array(journalEntrySummarySchema)
+export const journalEntryPageSchema = pageSchemaOf(journalEntrySummarySchema)
+
+export type JournalEntryPage = z.infer<typeof journalEntryPageSchema>
 
 export const journalEntrySchema = z.object({
   id: z.uuid(),
@@ -73,8 +76,7 @@ export type UpdateJournalEntryInput = z.infer<typeof updateJournalEntrySchema>
 
 export const journalQuerySchema = z.object({
   q: z.string().trim().max(100).optional(),
-  before: timestamp.optional(),
-  limit: z.coerce.number().int().min(1).max(100).default(50),
+  ...pageQueryFields,
 })
 
 export type JournalQuery = z.infer<typeof journalQuerySchema>

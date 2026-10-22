@@ -60,4 +60,14 @@ export const common: CommonMessages = {
     message: 'The app was updated. Reload to continue.',
     reload: 'Reload',
   },
+  pager: {
+    label: 'Pagination',
+    range: '{from}–{to} of {total}',
+    single: '{position} of {total}',
+    page: '{page} / {count}',
+    current: 'Page {page} of {count}',
+    previous: 'Previous page',
+    next: 'Next page',
+    size: 'Per page',
+  },
 }

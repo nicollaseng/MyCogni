@@ -3,6 +3,8 @@ import {
   checkInDetailSchema,
   checkInFilterSchema,
   checkInListSchema,
+  checkInPageQuerySchema,
+  checkInPageSchema,
   checkInSearchSchema,
   createCheckInAddendumSchema,
   createCheckInSchema,
@@ -34,6 +36,14 @@ export function checkInRoutes(service: CheckInService): FastifyPluginCallbackZod
         schema: { querystring: checkInFilterSchema, response: { 200: checkInCountSchema } },
       },
       (request) => service.count(currentUser(request), request.query),
+    )
+    app.get(
+      '/check-ins/page',
+      {
+        config: forPatients,
+        schema: { querystring: checkInPageQuerySchema, response: { 200: checkInPageSchema } },
+      },
+      (request) => service.page(currentUser(request), request.query),
     )
     app.post(
       '/check-ins',

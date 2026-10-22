@@ -1,5 +1,6 @@
 import { checkInLimits, checkInSearchLength, maxMoodLevel } from '@mycogni/domain'
 import { z } from 'zod'
+import { pageQueryFields, pageSchemaOf } from './pagination.ts'
 import { supportSignalSchema } from './safety.ts'
 
 const tagsSchema = z
@@ -75,6 +76,14 @@ export type CheckInFilter = z.infer<typeof checkInFilterSchema>
 export const checkInSearchSchema = checkInQuerySchema.extend(filterFields)
 
 export type CheckInSearch = z.infer<typeof checkInSearchSchema>
+
+export const checkInPageQuerySchema = checkInFilterSchema.extend(pageQueryFields)
+
+export type CheckInPageQuery = z.infer<typeof checkInPageQuerySchema>
+
+export const checkInPageSchema = pageSchemaOf(checkInSchema)
+
+export type CheckInPage = z.infer<typeof checkInPageSchema>
 
 export const checkInCountSchema = z.object({ count: z.int().min(0) })
 

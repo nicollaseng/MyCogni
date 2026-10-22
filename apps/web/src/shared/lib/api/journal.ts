@@ -1,14 +1,14 @@
 import {
   journalAccessListSchema,
+  journalEntryPageSchema,
   journalEntrySchema,
-  journalEntrySummaryListSchema,
   journalShareListSchema,
   journalShareSchema,
   savedJournalEntrySchema,
   type CreateJournalShareInput,
   type JournalAccess,
   type JournalEntry,
-  type JournalEntrySummary,
+  type JournalEntryPage,
   type JournalShare,
   type SavedJournalEntry,
   type UpdateJournalEntryInput,
@@ -18,20 +18,20 @@ import { ApiError, apiRequest } from './client'
 
 export interface JournalFilter {
   q?: string
-  before?: string
-  limit?: number
+  page?: number
+  size?: number
 }
 
-function journalQuery({ q, before, limit }: JournalFilter): string {
+function journalQuery({ q, page, size }: JournalFilter): string {
   const query = new URLSearchParams()
   if (q !== undefined && q !== '') {
     query.set('q', q)
   }
-  if (before !== undefined) {
-    query.set('before', before)
+  if (page !== undefined) {
+    query.set('page', String(page))
   }
-  if (limit !== undefined) {
-    query.set('limit', String(limit))
+  if (size !== undefined) {
+    query.set('size', String(size))
   }
   return query.toString()
 }
@@ -47,10 +47,10 @@ async function orNull<T>(request: Promise<T>): Promise<T | null> {
   }
 }
 
-export function fetchJournal(filter: JournalFilter): Promise<JournalEntrySummary[]> {
+export function fetchJournal(filter: JournalFilter): Promise<JournalEntryPage> {
   return apiRequest({
     path: `/v1/journal?${journalQuery(filter)}`,
-    schema: journalEntrySummaryListSchema,
+    schema: journalEntryPageSchema,
   })
 }
 
@@ -115,11 +115,11 @@ export function fetchJournalAccess(shareId: string): Promise<JournalAccess[]> {
 export async function fetchSharedJournal(
   patientId: string,
   filter: JournalFilter,
-): Promise<JournalEntrySummary[] | null> {
+): Promise<JournalEntryPage | null> {
   return orNull(
     apiRequest({
       path: `/v1/professional/patients/${encodeURIComponent(patientId)}/journal?${journalQuery(filter)}`,
-      schema: journalEntrySummaryListSchema,
+      schema: journalEntryPageSchema,
     }),
   )
 }

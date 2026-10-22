@@ -91,3 +91,66 @@ export function emailedTokenHash(email: string, type: 'signup' | 'recovery'): Pr
     return token
   })
 }
+
+const hourInMs = 60 * 60 * 1000
+
+function seededMoments(count: number, now: number): Date[] {
+  return Array.from({ length: count }, (_, index) => new Date(now - (index + 1) * 20 * hourInMs))
+}
+
+export function seedJournalPages(
+  userId: string,
+  titles: readonly string[],
+  now: Date = new Date(),
+): Promise<void> {
+  const moments = seededMoments(titles.length, now.getTime())
+  return withDatabase(async (sql) => {
+    await sql`
+      insert into public.journal_entries ${sql(
+        titles.map((title, index) => ({
+          user_id: userId,
+          title,
+          plain_text: `${title}. Escrevi um pouco sobre o dia.`,
+          body: sql.json({
+            type: 'doc',
+            content: [
+              {
+                type: 'paragraph',
+                content: [{ type: 'text', text: `${title}. Escrevi um pouco sobre o dia.` }],
+              },
+            ],
+          }),
+          created_at: moments[index],
+          updated_at: moments[index],
+        })),
+      )}`
+  })
+}
+
+export interface SeededCheckIn {
+  moodLevel: number
+  emotions: string[]
+  contexts: string[]
+  note: string | null
+}
+
+export function seedCheckIns(
+  userId: string,
+  checkIns: readonly SeededCheckIn[],
+  now: Date = new Date(),
+): Promise<void> {
+  const moments = seededMoments(checkIns.length, now.getTime())
+  return withDatabase(async (sql) => {
+    await sql`
+      insert into public.check_ins ${sql(
+        checkIns.map((checkIn, index) => ({
+          user_id: userId,
+          mood_level: checkIn.moodLevel,
+          emotions: checkIn.emotions,
+          contexts: checkIn.contexts,
+          note: checkIn.note,
+          recorded_at: moments[index],
+        })),
+      )}`
+  })
+}

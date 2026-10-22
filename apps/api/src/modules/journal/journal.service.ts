@@ -2,7 +2,7 @@ import type {
   CreateJournalShareInput,
   JournalAccess,
   JournalEntry,
-  JournalEntrySummary,
+  JournalEntryPage,
   JournalQuery,
   JournalShare,
   SavedJournalEntry,
@@ -15,11 +15,11 @@ import type { JobScheduler } from '../../jobs/scheduler.ts'
 import { NotFoundError, UnprocessableError } from '../../shared/errors.ts'
 import type { JournalImageStore } from '../../storage/journal-images.ts'
 import type { NoteSafety } from '../safety/note-safety.ts'
-import { toEntry, toShare, toSummary } from './journal.mapper.ts'
+import { toEntry, toShare, toSummaryPage } from './journal.mapper.ts'
 import { UnknownJournalEntryError, type JournalRepository } from './journal.repository.ts'
 
 export interface JournalService {
-  list(user: AuthenticatedUser, query: JournalQuery): Promise<JournalEntrySummary[]>
+  list(user: AuthenticatedUser, query: JournalQuery): Promise<JournalEntryPage>
   create(user: AuthenticatedUser): Promise<JournalEntry>
   get(user: AuthenticatedUser, id: string): Promise<JournalEntry>
   update(
@@ -61,12 +61,7 @@ export function createJournalService({
 
   return {
     async list(user, query) {
-      const records = await journal.list(user.id, user.id, {
-        q: query.q,
-        before: query.before === undefined ? undefined : new Date(query.before),
-        limit: query.limit,
-      })
-      return records.map(toSummary)
+      return toSummaryPage(await journal.page(user.id, user.id, query), query.size)
     },
     async create(user) {
       return toEntry(await journal.create(user.id), images)

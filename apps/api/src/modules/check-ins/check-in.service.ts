@@ -3,6 +3,8 @@ import type {
   CheckInCount,
   CheckInDetail,
   CheckInFilter,
+  CheckInPage,
+  CheckInPageQuery,
   CheckInSearch,
   CreateCheckInAddendumInput,
   CreateCheckInInput,
@@ -26,6 +28,7 @@ export interface CheckInService {
   record(user: AuthenticatedUser, input: CreateCheckInInput): Promise<RecordedCheckIn>
   list(user: AuthenticatedUser, search: CheckInSearch): Promise<CheckIn[]>
   count(user: AuthenticatedUser, filter: CheckInFilter): Promise<CheckInCount>
+  page(user: AuthenticatedUser, query: CheckInPageQuery): Promise<CheckInPage>
   detail(user: AuthenticatedUser, id: string): Promise<CheckInDetail>
   append(
     user: AuthenticatedUser,
@@ -88,6 +91,10 @@ export function createCheckInService({
     },
     async count(user, filter) {
       return { count: await repository.count(user.id, recordFilterOf(filter)) }
+    },
+    async page(user, { page, size, ...filter }) {
+      const found = await repository.page(user.id, { ...recordFilterOf(filter), page, size })
+      return { items: found.records.map(toCheckIn), total: found.total, page: found.page, size }
     },
     detail(user, id) {
       return loadCheckInDetail(

@@ -1,18 +1,14 @@
-import type { JournalEntry, JournalEntrySummary, JournalQuery } from '@mycogni/contracts'
+import type { JournalEntry, JournalEntryPage, JournalQuery } from '@mycogni/contracts'
 import type { AuthenticatedUser } from '../../auth/token-verifier.ts'
 import { ForbiddenError, NotFoundError } from '../../shared/errors.ts'
 import type { JournalImageStore } from '../../storage/journal-images.ts'
 import type { CareLinkRepository } from '../care-links/care-link.repository.ts'
 import type { ProfessionalRepository } from '../professionals/professional.repository.ts'
-import { toEntry, toSummary } from './journal.mapper.ts'
+import { toEntry, toSummaryPage } from './journal.mapper.ts'
 import type { JournalRepository } from './journal.repository.ts'
 
 export interface SharedJournalService {
-  list(
-    user: AuthenticatedUser,
-    patientId: string,
-    query: JournalQuery,
-  ): Promise<JournalEntrySummary[]>
+  list(user: AuthenticatedUser, patientId: string, query: JournalQuery): Promise<JournalEntryPage>
   get(user: AuthenticatedUser, patientId: string, entryId: string): Promise<JournalEntry>
 }
 
@@ -45,12 +41,7 @@ export function createSharedJournalService({
   return {
     async list(user, patientId, query) {
       await requireLinked(user, patientId)
-      const records = await journal.list(user.id, patientId, {
-        q: query.q,
-        before: query.before === undefined ? undefined : new Date(query.before),
-        limit: query.limit,
-      })
-      return records.map(toSummary)
+      return toSummaryPage(await journal.page(user.id, patientId, query), query.size)
     },
     async get(user, patientId, entryId) {
       await requireLinked(user, patientId)

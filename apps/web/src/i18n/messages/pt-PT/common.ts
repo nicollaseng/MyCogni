@@ -60,4 +60,14 @@ export const common: CommonMessages = {
     message: 'A aplicação foi atualizada. Recarregue para continuar.',
     reload: 'Recarregar',
   },
+  pager: {
+    label: 'Paginação',
+    range: '{from}–{to} de {total}',
+    single: '{position} de {total}',
+    page: '{page} / {count}',
+    current: 'Página {page} de {count}',
+    previous: 'Página anterior',
+    next: 'Página seguinte',
+    size: 'Por página',
+  },
 }

@@ -1,10 +1,12 @@
 'use client'
 
+import type { PageSize } from '@mycogni/domain'
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
+import { bookHref } from '../book-href'
 import { SearchField } from './search-field'
 
-export function PageSearch({ query }: { query: string }) {
+export function PageSearch({ query, size }: { query: string; size: PageSize }) {
   const t = useTranslations('mybook.list')
   const router = useRouter()
 
@@ -14,9 +16,7 @@ export function PageSearch({ query }: { query: string }) {
       placeholder={t('searchPlaceholder')}
       initial={query}
       onSearch={(value) => {
-        router.replace(value === '' ? '/mybook' : `/mybook?q=${encodeURIComponent(value)}`, {
-          scroll: false,
-        })
+        router.replace(bookHref(value, { page: 1, size }), { scroll: false })
       }}
     />
   )

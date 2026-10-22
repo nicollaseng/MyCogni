@@ -7,7 +7,6 @@ export const entries = {
   description: 'Cada check-in fica guardado aqui, com a data, o humor e o que você quiser anotar.',
   empty: 'Seu primeiro registro aparece aqui.',
   emptyAction: 'Fazer o primeiro check-in',
-  older: 'Registros anteriores',
   days: {
     today: 'Hoje',
     yesterday: 'Ontem',

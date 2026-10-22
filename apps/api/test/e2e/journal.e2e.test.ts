@@ -18,6 +18,16 @@ interface Entry {
   imageUrls: Record<string, string>
 }
 
+interface Summary {
+  title: string | null
+  excerpt: string
+}
+
+interface SummaryPage {
+  items: Summary[]
+  total: number
+}
+
 function documentWith(text: string, imagePath?: string) {
   return {
     type: 'doc',
@@ -125,13 +135,12 @@ describe('/v1/journal', () => {
     await page(ana, 'Reunião difícil')
     await page(ana, 'Jantar com amigas')
 
-    const found = (await call('GET', '/v1/journal?q=DIF%C3%8DCIL', ana)).json<Entry[]>()
-    const all = (await call('GET', '/v1/journal', ana)).json<
-      { title: string | null; excerpt: string }[]
-    >()
+    const found = (await call('GET', '/v1/journal?q=DIF%C3%8DCIL', ana)).json<SummaryPage>()
+    const all = (await call('GET', '/v1/journal', ana)).json<SummaryPage>()
 
-    expect(found.map((entry) => entry.title)).toEqual(['Reunião difícil'])
-    expect(all[0]).toEqual(
+    expect(found.items.map((entry) => entry.title)).toEqual(['Reunião difícil'])
+    expect(found.total).toBe(1)
+    expect(all.items[0]).toEqual(
       expect.objectContaining({
         title: 'Jantar com amigas',
         excerpt: 'Jantar com amigas Jantar com amigas',
@@ -149,9 +158,9 @@ describe('/v1/journal', () => {
     })
     const shareId = share.json<{ id: string }>().id
 
-    const visible = (await call('GET', `/v1/professional/patients/${ana.id}/journal`, helena)).json<
-      Entry[]
-    >()
+    const visible = (
+      await call('GET', `/v1/professional/patients/${ana.id}/journal`, helena)
+    ).json<SummaryPage>().items
     const read = await call(
       'GET',
       `/v1/professional/patients/${ana.id}/journal/${chosen.id}`,
@@ -181,7 +190,7 @@ describe('/v1/journal', () => {
     ).toBe(204)
     expect(
       (await call('GET', `/v1/professional/patients/${ana.id}/journal`, helena)).json(),
-    ).toEqual([])
+    ).toEqual({ items: [], total: 0, page: 1, size: 10 })
     expect(
       (await call('POST', `/v1/journal/shares/${share?.id ?? ''}/revoke`, ana)).statusCode,
     ).toBe(404)
@@ -200,9 +209,9 @@ describe('/v1/journal', () => {
       scope: 'all',
       expiresAt: null,
     })
-    const titles = (await call('GET', `/v1/professional/patients/${ana.id}/journal`, helena)).json<
-      Entry[]
-    >()
+    const titles = (
+      await call('GET', `/v1/professional/patients/${ana.id}/journal`, helena)
+    ).json<SummaryPage>().items
 
     expect(whole.statusCode).toBe(201)
     expect(foreign.statusCode).toBe(404)

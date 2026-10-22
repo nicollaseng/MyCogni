@@ -26,6 +26,15 @@ export {
   type PlainTrend,
 } from './assessments/plain.ts'
 export { plainWordsOf, type PlainWords } from './i18n/plain-words.ts'
+export {
+  clampPage,
+  defaultPageSize,
+  isPageSize,
+  maxPageSize,
+  pageCountOf,
+  pageSizes,
+  type PageSize,
+} from './pagination/pagination.ts'
 export { phq9 } from './assessments/phq9.ts'
 export type { InstrumentText } from './assessments/texts/instrument-text.ts'
 export { instrumentText } from './assessments/texts/texts.ts'

@@ -1,6 +1,7 @@
 'use client'
 
 import { useTranslations } from 'next-intl'
+import { pagerStep } from '@/shared/ui/pager'
 import type { Page } from '../pagination'
 import { BackIcon } from './icons'
 
@@ -9,9 +10,6 @@ interface PagerProps<T> {
   page: Page<T>
   onPage: (page: number) => void
 }
-
-const pagerButton =
-  'grid size-9 place-items-center rounded-[6px] text-foreground transition-colors hover:bg-foreground/[0.06] disabled:pointer-events-none disabled:opacity-35'
 
 export function Pager<T>({ label, page, onPage }: PagerProps<T>) {
   const t = useTranslations('professional.pager')
@@ -31,7 +29,7 @@ export function Pager<T>({ label, page, onPage }: PagerProps<T>) {
           onClick={() => {
             onPage(page.page - 1)
           }}
-          className={pagerButton}
+          className={pagerStep}
         >
           <BackIcon className="size-4" />
         </button>
@@ -45,7 +43,7 @@ export function Pager<T>({ label, page, onPage }: PagerProps<T>) {
           onClick={() => {
             onPage(page.page + 1)
           }}
-          className={pagerButton}
+          className={pagerStep}
         >
           <BackIcon className="size-4 rotate-180" />
         </button>

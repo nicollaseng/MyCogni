@@ -1,8 +1,8 @@
 import {
   createJournalShareSchema,
   journalAccessListSchema,
+  journalEntryPageSchema,
   journalEntrySchema,
-  journalEntrySummaryListSchema,
   journalQuerySchema,
   journalShareListSchema,
   journalShareSchema,
@@ -31,7 +31,7 @@ export function journalRoutes(
         config: forPatients,
         schema: {
           querystring: journalQuerySchema,
-          response: { 200: journalEntrySummaryListSchema },
+          response: { 200: journalEntryPageSchema },
         },
       },
       (request) => journal.list(currentUser(request), request.query),
@@ -101,7 +101,7 @@ export function journalRoutes(
         schema: {
           params: byPatient,
           querystring: journalQuerySchema,
-          response: { 200: journalEntrySummaryListSchema },
+          response: { 200: journalEntryPageSchema },
         },
       },
       (request) => shared.list(currentUser(request), request.params.patientId, request.query),

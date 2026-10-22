@@ -1,5 +1,20 @@
-import { and, count, desc, eq, gte, ilike, isNotNull, isNull, lt, lte, or, sql } from 'drizzle-orm'
-import type { Database } from '../../db/client.ts'
+import {
+  and,
+  count,
+  desc,
+  eq,
+  gte,
+  ilike,
+  isNotNull,
+  isNull,
+  lt,
+  lte,
+  or,
+  sql,
+  type SQL,
+} from 'drizzle-orm'
+import type { Database, Transaction } from '../../db/client.ts'
+import { pageOf, type PageWindow, type RecordPage } from '../../db/paging.ts'
 import { withUser } from '../../db/rls.ts'
 import { checkIns } from '../../db/schema/index.ts'
 
@@ -34,10 +49,13 @@ export interface CheckInWindow extends CheckInFilter {
   limit: number
 }
 
+export interface CheckInPageSearch extends CheckInFilter, PageWindow {}
+
 export interface CheckInRepository {
   create(userId: string, checkIn: NewCheckIn): Promise<CheckInRecord>
   list(viewerId: string, ownerId: string, window: CheckInWindow): Promise<CheckInRecord[]>
   count(userId: string, filter: CheckInFilter): Promise<number>
+  page(userId: string, search: CheckInPageSearch): Promise<RecordPage<CheckInRecord>>
   find(viewerId: string, id: string): Promise<OwnedCheckInRecord | null>
 }
 
@@ -101,6 +119,13 @@ function conditionsOf(ownerId: string, filter: Omit<CheckInWindow, 'limit'>) {
   )
 }
 
+const newestFirst = [desc(checkIns.recordedAt), desc(checkIns.id)]
+
+async function countWhere(tx: Transaction, condition: SQL | undefined): Promise<number> {
+  const [row] = await tx.select({ total: count() }).from(checkIns).where(condition)
+  return row?.total ?? 0
+}
+
 export function createCheckInRepository(db: Database): CheckInRepository {
   return {
     create(userId, checkIn) {
@@ -121,18 +146,26 @@ export function createCheckInRepository(db: Database): CheckInRepository {
           .select(columns)
           .from(checkIns)
           .where(conditionsOf(ownerId, filter))
-          .orderBy(desc(checkIns.recordedAt))
+          .orderBy(...newestFirst)
           .limit(limit),
       )
     },
     count(userId, filter) {
-      return withUser(db, userId, async (tx) => {
-        const [row] = await tx
-          .select({ total: count() })
-          .from(checkIns)
-          .where(conditionsOf(userId, filter))
-        return row?.total ?? 0
-      })
+      return withUser(db, userId, (tx) => countWhere(tx, conditionsOf(userId, filter)))
+    },
+    page(userId, { page, size, ...filter }) {
+      const matching = conditionsOf(userId, filter)
+      return withUser(db, userId, async (tx) =>
+        pageOf({ page, size }, await countWhere(tx, matching), (offset) =>
+          tx
+            .select(columns)
+            .from(checkIns)
+            .where(matching)
+            .orderBy(...newestFirst)
+            .limit(size)
+            .offset(offset),
+        ),
+      )
     },
     find(viewerId, id) {
       return withUser(db, viewerId, async (tx) => {

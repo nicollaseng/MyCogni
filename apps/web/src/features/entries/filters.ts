@@ -8,6 +8,7 @@ import {
   type MoodRange,
 } from '@mycogni/domain'
 import type { CheckInFilter } from '@/shared/lib/api/resources'
+import { listPageQuery, withQuery, type ListPage } from '@/shared/lib/list-page'
 
 export const periods = ['7', '30', '90'] as const
 
@@ -83,7 +84,7 @@ function listParam(tags: readonly string[]): string | null {
   return tags.length === 0 ? null : tags.join(',')
 }
 
-export function entryQuery(filters: EntryFilters, before?: string): Record<string, string> {
+export function entryQuery(filters: EntryFilters, listPage?: ListPage): Record<string, string> {
   const entries: [string, string | null][] = [
     ['q', filters.q === '' ? null : filters.q],
     ['period', filters.period],
@@ -91,27 +92,25 @@ export function entryQuery(filters: EntryFilters, before?: string): Record<strin
     ['emotion', listParam(filters.emotions)],
     ['context', listParam(filters.contexts)],
     ['note', filters.withNote ? '1' : null],
-    ['before', before ?? null],
   ]
-  return Object.fromEntries(
-    entries.flatMap(([key, value]) => (value === null ? [] : [[key, value]])),
-  )
+  return {
+    ...Object.fromEntries(
+      entries.flatMap(([key, value]) => (value === null ? [] : [[key, value]])),
+    ),
+    ...(listPage === undefined ? {} : listPageQuery(listPage)),
+  }
 }
 
-function withQuery<Path extends string>(
-  path: Path,
+export function entriesHref(filters: EntryFilters, listPage?: ListPage): EntriesHref {
+  return withQuery('/entries', entryQuery(filters, listPage))
+}
+
+export function entryHref(
+  id: string,
   filters: EntryFilters,
-): Path | `${Path}?${string}` {
-  const query = new URLSearchParams(entryQuery(filters)).toString()
-  return query === '' ? path : `${path}?${query}`
-}
-
-export function entriesHref(filters: EntryFilters): EntriesHref {
-  return withQuery('/entries', filters)
-}
-
-export function entryHref(id: string, filters: EntryFilters): `/entries/${string}` {
-  return withQuery(`/entries/${id}`, filters)
+  listPage?: ListPage,
+): `/entries/${string}` {
+  return withQuery(`/entries/${id}`, entryQuery(filters, listPage))
 }
 
 export function checkInFilterOf(

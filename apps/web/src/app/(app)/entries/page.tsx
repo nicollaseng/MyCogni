@@ -6,19 +6,20 @@ import { EntriesBrowser } from '@/features/entries/components/entries-browser'
 import { EntryList } from '@/features/entries/components/entry-list'
 import {
   checkInFilterOf,
-  entryQuery,
-  firstParam,
+  entriesHref,
   isFiltered,
+  noFilters,
   parseEntryFilters,
 } from '@/features/entries/filters'
 import { groupByDay } from '@/features/entries/group-by-day'
 import { matchingTags } from '@/features/entries/search'
 import { ReportExport } from '@/features/reports/components/report-export'
+import { ListPager } from '@/shared/components/list-pager'
 import { PageTitle } from '@/shared/components/page-title'
-import { countCheckIns, fetchCheckIns, fetchInsights } from '@/shared/lib/api/resources'
+import { fetchCheckInPage, fetchCheckIns, fetchInsights } from '@/shared/lib/api/resources'
 import { requireOnboardedProfile } from '@/shared/lib/auth/session'
+import { listPageOf } from '@/shared/lib/list-page'
 import { guarded } from '@/shared/lib/settled'
-import { cn } from '@/shared/lib/utils'
 import { buttonVariants } from '@/shared/ui/button'
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -26,7 +27,6 @@ export async function generateMetadata(): Promise<Metadata> {
   return { title: t('title') }
 }
 
-const pageSize = 50
 const recentForTags = 200
 const usedTags = 12
 
@@ -44,22 +44,22 @@ async function entriesOf(searchParams: PageProps<'/entries'>['searchParams']) {
     ...contextIds.map((id) => ({ id, label: catalog(`contexts.${id}`) })),
   ])
   const filter = checkInFilterOf(filters, { now: new Date(), qTags })
-  const [checkIns, total, recent, readings] = await Promise.all([
-    fetchCheckIns({ ...filter, before: firstParam(params.before), limit: pageSize }),
-    countCheckIns(filter),
+  const { size, page } = listPageOf(params)
+  const [found, recent, readings] = await Promise.all([
+    fetchCheckInPage({ ...filter, page, size }),
     fetchCheckIns({ limit: recentForTags }),
     fetchInsights(),
   ])
-  return { t, filters, checkIns, total, recent, readings }
+  return { t, filters, found, size, recent, readings }
 }
 
 export default async function EntriesPage({ searchParams }: PageProps<'/entries'>) {
-  const [{ timezone }, { t, filters, checkIns, total, recent, readings }] = await guarded(
+  const [{ timezone }, { t, filters, found, size, recent, readings }] = await guarded(
     requireOnboardedProfile(),
     entriesOf(searchParams),
   )
   const filtered = isFiltered(filters)
-  const oldest = checkIns.at(-1)
+  const { items: checkIns, total, page } = found
 
   return (
     <>
@@ -87,6 +87,7 @@ export default async function EntriesPage({ searchParams }: PageProps<'/entries'
         <EntriesBrowser
           filters={filters}
           total={total}
+          size={size}
           customEmotions={frequentTags(
             recent.map((checkIn) => checkIn.emotions),
             usedTags,
@@ -108,7 +109,7 @@ export default async function EntriesPage({ searchParams }: PageProps<'/entries'
           {checkIns.length === 0 ? (
             <div className="space-y-3">
               <p className="max-w-md text-pretty text-muted-foreground">{t('results.none')}</p>
-              <Link href="/entries" className={footLink}>
+              <Link href={entriesHref(noFilters, { page: 1, size })} className={footLink}>
                 {t('results.reset')}
               </Link>
             </div>
@@ -117,16 +118,15 @@ export default async function EntriesPage({ searchParams }: PageProps<'/entries'
               groups={groupByDay(checkIns, { timeZone: timezone, now: new Date() })}
               timeZone={timezone}
               filters={filters}
+              listPage={{ page, size }}
             />
           )}
-          {checkIns.length === pageSize && oldest !== undefined && (
-            <Link
-              href={{ pathname: '/entries', query: entryQuery(filters, oldest.recordedAt) }}
-              className={cn(buttonVariants({ variant: 'outline' }), 'w-full')}
-            >
-              {t('older')}
-            </Link>
-          )}
+          <ListPager
+            page={page}
+            size={size}
+            total={total}
+            hrefOf={(target) => entriesHref(filters, target)}
+          />
         </EntriesBrowser>
       )}
     </>
