@@ -9,6 +9,7 @@ import {
   isRegistrationNumber,
   needsRegistrationReview,
   parseRegistration,
+  registrationIssues,
   registrationDigits,
   registrationLabel,
   storedCouncilRegistration,
@@ -111,6 +112,19 @@ describe('council registrations', () => {
       ok: false,
       issue: 'numberInvalid',
     })
+  })
+
+  it('lists every problem of a council registration at once', () => {
+    expect(registrationIssues('psychologist', { uf: '', number: '' })).toEqual([
+      'ufRequired',
+      'numberRequired',
+    ])
+    expect(registrationIssues('physician', { uf: 'XX', number: '12' })).toEqual([
+      'ufRequired',
+      'numberInvalid',
+    ])
+    expect(registrationIssues('physician', { uf: 'SP', number: '1234' })).toEqual([])
+    expect(registrationIssues('psychoanalyst', { uf: '', number: '' })).toEqual([])
   })
 
   it('asks psychoanalysts for no council registration', () => {

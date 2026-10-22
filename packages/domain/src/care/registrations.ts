@@ -126,25 +126,35 @@ export function formatRegistration({ council, uf, number }: CouncilRegistration)
   return council === 'crp' ? `CRP ${crpRegionOf(uf)}/${number}` : `CRM-${uf} ${number}`
 }
 
-export function parseRegistration(
+export function registrationIssues(
   kind: ProfessionalKind,
   { uf, number }: RegistrationInput,
-): RegistrationParse {
-  const council = councilOf(kind)
-  if (council === null) {
-    return { ok: true, registration: null }
-  }
-  if (!isBrazilianState(uf)) {
-    return { ok: false, issue: 'ufRequired' }
+): RegistrationIssue[] {
+  if (councilOf(kind) === null) {
+    return []
   }
   const digits = number.trim()
+  const issues: RegistrationIssue[] = isBrazilianState(uf) ? [] : ['ufRequired']
   if (digits === '') {
-    return { ok: false, issue: 'numberRequired' }
+    issues.push('numberRequired')
+  } else if (!isRegistrationNumber(digits)) {
+    issues.push('numberInvalid')
   }
-  if (!isRegistrationNumber(digits)) {
-    return { ok: false, issue: 'numberInvalid' }
+  return issues
+}
+
+export function parseRegistration(
+  kind: ProfessionalKind,
+  input: RegistrationInput,
+): RegistrationParse {
+  const council = councilOf(kind)
+  const [issue] = registrationIssues(kind, input)
+  if (issue !== undefined) {
+    return { ok: false, issue }
   }
-  return { ok: true, registration: { council, uf, number: digits } }
+  return council !== null && isBrazilianState(input.uf)
+    ? { ok: true, registration: { council, uf: input.uf, number: input.number.trim() } }
+    : { ok: true, registration: null }
 }
 
 export function storedCouncilRegistration({
