@@ -9,6 +9,7 @@ import {
 } from '../../db/schema/index.ts'
 import {
   assignmentColumns,
+  isPolicyViolation,
   isUniqueViolation,
   responseColumns,
   withResponse,
@@ -40,6 +41,13 @@ export class OpenAssignmentError extends Error {
   constructor() {
     super('This questionnaire is already open for this patient')
     this.name = 'OpenAssignmentError'
+  }
+}
+
+export class ReleaseRefusedError extends Error {
+  constructor() {
+    super('Only a verified professional with an active link can release questionnaires')
+    this.name = 'ReleaseRefusedError'
   }
 }
 
@@ -112,6 +120,9 @@ export function createProfessionalQuestionnaireRepository(
       } catch (error) {
         if (isUniqueViolation(error)) {
           throw new OpenAssignmentError()
+        }
+        if (isPolicyViolation(error)) {
+          throw new ReleaseRefusedError()
         }
         throw error
       }

@@ -29,6 +29,7 @@ import type { RateLimit, RateLimiter } from '../../shared/rate-limiter.ts'
 import type { ProfessionalRepository } from '../professionals/professional.repository.ts'
 import {
   OpenAssignmentError,
+  ReleaseRefusedError,
   type PatientLink,
   type ProfessionalQuestionnaireRepository,
 } from './professional-questionnaire.repository.ts'
@@ -167,6 +168,9 @@ export function createProfessionalQuestionnaireService({
       } catch (error) {
         if (error instanceof OpenAssignmentError) {
           throw new AppError(409, 'QUESTIONNAIRE_ALREADY_OPEN', error.message)
+        }
+        if (error instanceof ReleaseRefusedError) {
+          throw new ForbiddenError(error.message)
         }
         throw error
       }

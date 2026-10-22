@@ -68,7 +68,7 @@ describe('/v1 questionnaires', () => {
     await linkPatient(app, helena, ana, false)
     await linkPatient(app, rui, ana, false)
     await linkPatient(app, rui, joana, false)
-  })
+  }, 30_000)
 
   afterAll(async () => {
     for (const user of [helena, rui, ana, joana, bruno]) {

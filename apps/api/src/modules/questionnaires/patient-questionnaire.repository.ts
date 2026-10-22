@@ -9,6 +9,7 @@ import {
 } from '../../db/schema/index.ts'
 import {
   assignmentColumns,
+  isPolicyViolation,
   isUniqueViolation,
   responseColumns,
   withResponse,
@@ -107,7 +108,7 @@ export function createPatientQuestionnaireRepository(db: Database): PatientQuest
         )
         return true
       } catch (error) {
-        if (isUniqueViolation(error)) {
+        if (isUniqueViolation(error) || isPolicyViolation(error)) {
           return false
         }
         throw error

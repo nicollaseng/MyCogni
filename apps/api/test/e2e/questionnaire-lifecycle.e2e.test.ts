@@ -17,7 +17,7 @@ import type { App } from '../../src/shared/http.ts'
 import { linkPatient, testAlertJob } from '../support/alerts.ts'
 import { registerProfessional } from '../support/care.ts'
 import { testDatabaseUrl } from '../support/database.ts'
-import { phq9Calm, phq9WithRisk } from '../support/questionnaires.ts'
+import { phq9Calm, phq9WithRisk, seedLink } from '../support/questionnaires.ts'
 import {
   bearer,
   createTestUser,
@@ -95,7 +95,7 @@ describe('questionnaire lifecycle', () => {
     anaLink = await linkPatient(app, helena, ana, false)
     await linkPatient(app, rui, ana, false)
     await linkPatient(app, helena, carla, false)
-  })
+  }, 30_000)
 
   afterAll(async () => {
     for (const user of [helena, rui, ana, carla]) {
@@ -257,6 +257,24 @@ describe('questionnaire lifecycle', () => {
     expect(statuses.slice(1, 30).every((status) => status === 409)).toBe(true)
     expect(statuses[30]).toBe(429)
     expect(blocked.json<{ code: string }>().code).toBe('QUESTIONNAIRE_LIMIT')
+  })
+
+  it('refuses releases from a professional who is not verified', async () => {
+    const pending = await createTestUser(professionalAccount)
+    await registerProfessional(connection.db, pending.id, {
+      fullName: 'Dora Lins',
+      status: 'pending',
+    })
+    await seedLink(connection.db, pending.id, carla.id)
+    const response = await call(
+      'POST',
+      `/professional/patients/${carla.id}/questionnaires`,
+      pending,
+      { variant: 'phq9' },
+    )
+    await deleteTestUser(pending.id)
+
+    expect(response.statusCode).toBe(403)
   })
 
   it('deletes every questionnaire row with the patient account', async () => {
