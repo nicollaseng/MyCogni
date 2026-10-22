@@ -126,7 +126,7 @@ test.describe('sharing', () => {
     await page.getByRole('button', { name: 'Ver o convite' }).click()
     await expect(page).toHaveURL(/\/invites\/[0-9a-f-]{36}$/)
     await page.getByRole('button', { name: 'Aceitar', exact: true }).click()
-    await expect(page).toHaveURL('/me#professionals')
+    await expect(page).toHaveURL('/me/professionals')
 
     const title = unique('Conversa difícil')
     const entryId = await startPage(page, title, 'Consegui dizer o que sentia.')
