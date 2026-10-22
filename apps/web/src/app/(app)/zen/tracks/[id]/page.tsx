@@ -16,6 +16,7 @@ import { SafetyPanel } from '@/features/safety/components/safety-panel'
 import { setStepDone } from '@/features/zen/actions'
 import { ProgressLine } from '@/features/zen/components/progress-line'
 import { TrackSteps } from '@/features/zen/components/track-steps'
+import { meditationOptions } from '@/features/zen/meditation/options'
 import { ZenTopBar } from '@/features/zen/components/zen-top-bar'
 import { stepTitle } from '@/features/zen/titles'
 import { fetchCareLinks } from '@/shared/lib/api/care'
@@ -49,6 +50,7 @@ export default async function ZenTrackPage({ params }: PageProps<'/zen/tracks/[i
   const text = trackText(language, id)
   const progress = progressOf(id, doneSteps)
   const professionals = linkedProfessionalsOf(careLinks)
+  const meditations = meditationOptions(manifest, language)
 
   return (
     <>
@@ -83,7 +85,14 @@ export default async function ZenTrackPage({ params }: PageProps<'/zen/tracks/[i
             text: stepText,
             done: progress.done.includes(step.id),
             minutes: stepMinutes(step, language),
-            narration: narrationSources(manifest, language, stepNarration(stepText)),
+            narration:
+              step.kind === 'meditate'
+                ? []
+                : narrationSources(manifest, language, stepNarration(stepText)),
+            meditation:
+              step.kind === 'meditate'
+                ? (meditations.find((option) => option.id === step.meditation) ?? null)
+                : null,
           }
         })}
         nextId={progress.next?.id ?? null}

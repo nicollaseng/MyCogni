@@ -10,6 +10,8 @@ import { useSubmit } from '@/shared/hooks/use-submit'
 import { reportOutdatedApp } from '@/shared/lib/actions/outdated'
 import { failure, type ActionResult } from '@/shared/lib/actions/result'
 import { Button, buttonVariants } from '@/shared/ui/button'
+import { MeditationButton } from '../meditation/meditation-button'
+import type { MeditationOption } from '../meditation/options'
 import { promptPage } from '../prompt-page'
 import { BreatheButton } from './breathe-button'
 
@@ -24,6 +26,7 @@ interface StepActionProps {
   label?: string
   pages?: PromptPages
   inverse?: boolean
+  meditation?: MeditationOption | null
 }
 
 function outcomeOf(kind: 'failed' | 'outdated', error: string): ActionResult<never> | null {
@@ -87,6 +90,7 @@ export function StepAction({
   label,
   pages = browserPageClient,
   inverse = false,
+  meditation = null,
 }: StepActionProps) {
   const t = useTranslations('zen.track')
   const size = primary ? 'default' : 'sm'
@@ -122,6 +126,15 @@ export function StepAction({
         <Link href="/questionnaires" className={linkAction}>
           {label ?? t('actions.questionnaire')}
         </Link>
+      )
+    case 'meditate':
+      return meditation === null ? null : (
+        <MeditationButton
+          option={meditation}
+          label={label ?? t('actions.meditate')}
+          variant={variant}
+          size={size}
+        />
       )
     case 'reflect':
     case 'support':

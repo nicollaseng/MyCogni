@@ -1,10 +1,9 @@
 import { fileURLToPath } from 'node:url'
 import { test as setup } from '@playwright/test'
-import { publishArticleNarration } from './support/narration'
+import { publishArticleNarration, publishMeditationNarration } from './support/narration'
 
-setup('publishes a narration fixture for the sleep and mood article', async () => {
-  await publishArticleNarration(
-    'sleep-and-mood',
-    fileURLToPath(new URL('./fixtures/narration.mp3', import.meta.url)),
-  )
+setup('publishes narration fixtures for the sleep article and the anxiety meditation', async () => {
+  const fixture = fileURLToPath(new URL('./fixtures/narration.mp3', import.meta.url))
+  await publishArticleNarration('sleep-and-mood', fixture)
+  await publishMeditationNarration('anxiety', fixture)
 })

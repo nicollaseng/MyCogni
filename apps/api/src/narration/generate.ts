@@ -16,6 +16,20 @@ import type { SpeechProvider } from './provider.ts'
 
 export type VoiceSelection = 'default' | 'all' | readonly NarrationVoiceId[]
 
+export const narrationContents = ['all', 'articles', 'steps', 'meditations'] as const
+
+export type NarrationContent = (typeof narrationContents)[number]
+
+const contentPrefixes: Readonly<Record<Exclude<NarrationContent, 'all'>, string>> = {
+  articles: 'article/',
+  steps: 'step/',
+  meditations: 'meditation/',
+}
+
+export function includesContent(content: NarrationContent, item: NarrationItem): boolean {
+  return content === 'all' || item.key.startsWith(contentPrefixes[content])
+}
+
 export interface NarrationJob {
   language: ContentLanguage
   voice: NarrationVoiceId
@@ -43,10 +57,13 @@ export function planNarration(
   manifest: NarrationManifest,
   languages: readonly ContentLanguage[],
   selection: VoiceSelection,
+  content: NarrationContent = 'all',
 ): NarrationJob[] {
   const jobs = new Map<string, NarrationJob>()
   for (const language of languages) {
-    for (const item of narrationItems(language)) {
+    for (const item of narrationItems(language).filter((entry) =>
+      includesContent(content, entry),
+    )) {
       for (const voice of voicesToRender(language, item, selection)) {
         const fingerprint = narrationFingerprint({ language, voice, text: item.text })
         if (manifest.files[fingerprint] === undefined && !jobs.has(fingerprint)) {

@@ -12,12 +12,12 @@ import {
 import { progressOf } from './progress.ts'
 
 describe('tracks', () => {
-  it.each(trackIds)('gives %s between four and six steps with distinct ids', (id) => {
+  it.each(trackIds)('gives %s between four and seven steps with distinct ids', (id) => {
     const { steps } = tracks[id]
 
     expect(tracks[id].id).toBe(id)
     expect(steps.length).toBeGreaterThanOrEqual(4)
-    expect(steps.length).toBeLessThanOrEqual(6)
+    expect(steps.length).toBeLessThanOrEqual(7)
     expect(new Set(steps.map((step) => step.id)).size).toBe(steps.length)
   })
 

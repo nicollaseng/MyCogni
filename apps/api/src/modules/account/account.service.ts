@@ -9,6 +9,7 @@ import { toConsent } from '../consents/consent.service.ts'
 import { toMemory } from '../memories/memory.service.ts'
 import { toProfile } from '../profile/profile.service.ts'
 import type { AccountRepository } from './account.repository.ts'
+import { toZenSession } from '../zen/zen-sessions.service.ts'
 
 export interface AccountService {
   export(user: AuthenticatedUser): Promise<AccountExport>
@@ -53,6 +54,7 @@ export function createAccountService({
             createdAt: device.createdAt.toISOString(),
           })),
         },
+        zenSessions: data.zenSessions.map(toZenSession),
       }
     },
     async delete(user) {

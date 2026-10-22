@@ -5,6 +5,7 @@ import { getLocale } from 'next-intl/server'
 import { fetchNarrationManifest, narrationSources } from '@/features/audio/narration'
 import { ArticleView } from '@/features/zen/components/article-view'
 import { ZenTopBar } from '@/features/zen/components/zen-top-bar'
+import { ReadingTracker } from '@/features/zen/practice/reading-tracker'
 import { articlePath } from '@/features/zen/share'
 import { requireOnboardedProfile } from '@/shared/lib/auth/session'
 import { guarded } from '@/shared/lib/settled'
@@ -43,6 +44,7 @@ export default async function ZenArticlePage({ params }: PageProps<'/zen/article
           articleNarration(zenArticles[id].text[language]),
         )}
         shareUrl={siteUrlOf(articlePath(id)).toString()}
+        ending={<ReadingTracker article={id} />}
       />
     </>
   )

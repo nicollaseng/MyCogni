@@ -32,6 +32,10 @@ export const legal: LegalMessages = {
         heading: 'Voice messages',
         body: 'If you talk to Cogni by voice, the audio goes to a transcription provider only to turn it into text. We do not store the audio.',
       },
+      zenStats: {
+        heading: 'Aggregated use of Zen',
+        body: 'To improve Zen, we look at aggregated, de-identified numbers, such as how many people finish a meditation and how they feel afterwards. We never look at one person’s sessions, and groups smaller than five people are left out.',
+      },
       sharing: {
         heading: 'Who we share it with',
         body: 'Only with the providers that run the service, such as hosting, database, email delivery and, if you turn it on, AI, always under contract and only as far as needed. We never sell your data or use it for advertising.',

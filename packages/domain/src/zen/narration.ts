@@ -2,8 +2,14 @@ import { articleIds, trackIds, type ArticleId, type TrackId } from './catalog.ts
 import { articles } from './content/articles/articles.ts'
 import { trackText } from './content/tracks/tracks.ts'
 import type { ArticleText, ContentLanguage, StepText } from './content/types.ts'
+import { meditationIds, type MeditationId } from './meditation-ids.ts'
+import { meditationText } from './meditations.ts'
 
-export type NarrationKey = `article/${ArticleId}` | `step/${TrackId}/${string}` | 'preview'
+export type NarrationKey =
+  | `article/${ArticleId}`
+  | `step/${TrackId}/${string}`
+  | `meditation/${MeditationId}/${string}`
+  | 'preview'
 
 export interface NarrationItem {
   key: NarrationKey
@@ -29,6 +35,10 @@ export function articleKey(id: ArticleId): NarrationKey {
 
 export function stepKey(trackId: TrackId, stepId: string): NarrationKey {
   return `step/${trackId}/${stepId}`
+}
+
+export function meditationKey(id: MeditationId, index: number): NarrationKey {
+  return `meditation/${id}/${String(index)}`
 }
 
 export function spokenText(text: string): string {
@@ -72,6 +82,18 @@ export function stepNarrationItems(trackId: TrackId, language: ContentLanguage):
   }))
 }
 
+export function meditationNarrationItems(
+  id: MeditationId,
+  language: ContentLanguage,
+): NarrationItem[] {
+  const text = meditationText(id, language)
+  return text.lines.map((line, index) => ({
+    key: meditationKey(id, index),
+    title: `${text.title} · ${String(index + 1)}`,
+    text: spokenText(line),
+  }))
+}
+
 export function previewNarrationItem(language: ContentLanguage): NarrationItem {
   return { key: 'preview', title: previewTitles[language], text: previewTexts[language] }
 }
@@ -81,5 +103,6 @@ export function narrationItems(language: ContentLanguage): NarrationItem[] {
     previewNarrationItem(language),
     ...articleIds.map((id) => articleNarrationItem(id, language)),
     ...trackIds.flatMap((trackId) => stepNarrationItems(trackId, language)),
+    ...meditationIds.flatMap((id) => meditationNarrationItems(id, language)),
   ]
 }

@@ -37,7 +37,7 @@ describe('TodayCard', () => {
 
     const today = screen.getByRole('region', { name: 'Para hoje' })
     expect(within(today).getByRole('heading', { name: 'Respirar em quadrado' })).toBeVisible()
-    expect(within(today).getByText('Ansiedade no dia a dia · passo 2 de 6')).toBeVisible()
+    expect(within(today).getByText('Ansiedade no dia a dia · passo 2 de 7')).toBeVisible()
     expect(within(today).getByText('Respiração · 1 min')).toBeVisible()
     expect(within(today).getByRole('button', { name: 'Continuar' })).toBeVisible()
     expect(within(today).getByRole('button', { name: 'Respirar 1 min' })).toBeVisible()
@@ -119,7 +119,7 @@ describe('library', () => {
 
     const rows = within(screen.getByRole('region', { name: 'Trilhas' })).getAllByRole('link')
     expect(rows).toHaveLength(5)
-    expect(screen.getByRole('link', { name: /Humor para baixo/ })).toHaveTextContent('2 de 5')
+    expect(screen.getByRole('link', { name: /Humor para baixo/ })).toHaveTextContent('2 de 6')
     expect(
       screen.getByRole('link', { name: /Humor para baixo/ }).querySelector('circle + circle'),
     ).not.toBeNull()

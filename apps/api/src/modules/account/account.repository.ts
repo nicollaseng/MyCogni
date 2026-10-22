@@ -1,13 +1,14 @@
 import { asc, desc, eq } from 'drizzle-orm'
 import type { Database } from '../../db/client.ts'
 import { withUser } from '../../db/rls.ts'
-import { assessments, checkIns, consents, profiles } from '../../db/schema/index.ts'
+import { assessments, checkIns, consents, profiles, zenSessions } from '../../db/schema/index.ts'
 import type { AssessmentRecord } from '../assessments/assessment.repository.ts'
 import type { CheckInRecord } from '../check-ins/check-in.repository.ts'
 import type { ConsentRecord } from '../consents/consent.repository.ts'
 import { memoriesOf, type MemoryRecord } from '../memories/memory.repository.ts'
 import { reminderExportOf, type ReminderExport } from '../reminders/reminder.repository.ts'
 import { profileColumns, type ProfileRecord } from '../profile/profile.repository.ts'
+import { sessionColumns, type SessionRecord } from '../zen/zen-sessions.repository.ts'
 
 export interface AccountData {
   profile: ProfileRecord | undefined
@@ -16,6 +17,7 @@ export interface AccountData {
   checkIns: CheckInRecord[]
   memories: MemoryRecord[]
   reminders: ReminderExport
+  zenSessions: SessionRecord[]
 }
 
 export interface AccountRepository {
@@ -69,6 +71,11 @@ export function createAccountRepository(db: Database): AccountRepository {
             .orderBy(desc(checkIns.recordedAt)),
           memories: await memoriesOf(tx, userId),
           reminders: await reminderExportOf(tx, userId),
+          zenSessions: await tx
+            .select(sessionColumns)
+            .from(zenSessions)
+            .where(eq(zenSessions.userId, userId))
+            .orderBy(desc(zenSessions.startedAt)),
         }
       })
     },

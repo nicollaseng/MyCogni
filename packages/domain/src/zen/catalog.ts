@@ -1,3 +1,5 @@
+import type { MeditationId } from './meditation-ids.ts'
+
 export const articleIds = [
   'anxiety-basics',
   'worry-time',
@@ -29,12 +31,15 @@ export const stepKinds = [
   'reflect',
   'questionnaire',
   'support',
+  'meditate',
 ] as const
 
 export type StepKind = (typeof stepKinds)[number]
 
 export type TrackStep =
-  { id: string; kind: 'read'; article: ArticleId } | { id: string; kind: Exclude<StepKind, 'read'> }
+  | { id: string; kind: 'read'; article: ArticleId }
+  | { id: string; kind: 'meditate'; meditation: MeditationId }
+  | { id: string; kind: Exclude<StepKind, 'read' | 'meditate'> }
 
 export interface Track {
   id: TrackId
@@ -47,6 +52,7 @@ export const tracks: Readonly<Record<TrackId, Track>> = {
     steps: [
       { id: 'read-anxiety-basics', kind: 'read', article: 'anxiety-basics' },
       { id: 'breathe', kind: 'breathe' },
+      { id: 'meditate-anxiety', kind: 'meditate', meditation: 'anxiety' },
       { id: 'read-worry-time', kind: 'read', article: 'worry-time' },
       { id: 'write-worry', kind: 'write' },
       { id: 'check-in', kind: 'check_in' },
@@ -69,6 +75,7 @@ export const tracks: Readonly<Record<TrackId, Track>> = {
     steps: [
       { id: 'read-behavioural-activation', kind: 'read', article: 'behavioural-activation' },
       { id: 'write-activities', kind: 'write' },
+      { id: 'meditate-heavy-days', kind: 'meditate', meditation: 'heavy-days' },
       { id: 'check-in', kind: 'check_in' },
       { id: 'reflect', kind: 'reflect' },
       { id: 'questionnaires', kind: 'questionnaire' },

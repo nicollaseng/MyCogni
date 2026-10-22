@@ -5,6 +5,7 @@ import { useState } from 'react'
 import { AmbientRoot } from '@/features/audio/ambient-provider'
 import { fakeEngine } from '@/test/ambient'
 import { renderWithIntl } from '@/test/render'
+import type { RecordPractice, RememberFeeling } from '../practice/record'
 import { breathingModeDuration, BreathingMode } from './breathing-mode'
 
 function preferReducedMotion(reduce: boolean) {
@@ -29,6 +30,10 @@ function advance(ms: number) {
   })
 }
 
+const record = jest.fn<RecordPractice>(() => Promise.resolve('session-9'))
+
+const remember = jest.fn<RememberFeeling>(() => Promise.resolve(true))
+
 function Opener() {
   const [open, setOpen] = useState(false)
   return (
@@ -43,6 +48,8 @@ function Opener() {
       </button>
       {open && (
         <BreathingMode
+          record={record}
+          remember={remember}
           onClose={() => {
             setOpen(false)
           }}
@@ -269,5 +276,41 @@ describe('BreathingMode', () => {
 
     expect(engine.stop).not.toHaveBeenCalled()
     expect(engine.play).toHaveBeenCalledTimes(played)
+  })
+
+  it('keeps a finished exercise and asks how the person feels with the mood dots', async () => {
+    record.mockClear()
+    remember.mockClear()
+    const { user } = await openMode()
+
+    await user.click(screen.getByRole('button', { name: 'Começar' }))
+    advance(64_000)
+
+    expect(record).toHaveBeenCalledWith(
+      expect.objectContaining({ kind: 'breathing', contentId: 'box-breathing', completed: true }),
+    )
+    expect(record.mock.calls[0]?.[0].seconds).toBe(64)
+    await user.click(await screen.findByRole('button', { name: 'Um pouco bem' }))
+    expect(remember).toHaveBeenCalledWith('session-9', 4)
+  })
+
+  it('keeps a stopped exercise only after a minute', async () => {
+    record.mockClear()
+    const { user } = await openMode()
+
+    await user.click(screen.getByRole('button', { name: 'Começar' }))
+    advance(30_000)
+    await user.keyboard('{Escape}')
+    advance(breathingModeDuration)
+    expect(record).not.toHaveBeenCalled()
+
+    await user.click(screen.getByRole('button', { name: 'Respirar' }))
+    await user.click(screen.getByRole('button', { name: 'Começar' }))
+    advance(61_000)
+    await user.keyboard('{Escape}')
+    advance(breathingModeDuration)
+    expect(record).toHaveBeenCalledWith(
+      expect.objectContaining({ kind: 'breathing', completed: false }),
+    )
   })
 })

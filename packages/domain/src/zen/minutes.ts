@@ -1,9 +1,10 @@
 import { tracks, type StepKind, type TrackId, type TrackStep } from './catalog.ts'
 import { articles } from './content/articles/articles.ts'
 import type { ContentLanguage } from './content/types.ts'
+import { meditationMinutes } from './meditations.ts'
 import { readingMinutes } from './reading.ts'
 
-const minutesByKind: Readonly<Record<Exclude<StepKind, 'read'>, number>> = {
+const minutesByKind: Readonly<Record<Exclude<StepKind, 'read' | 'meditate'>, number>> = {
   breathe: 1,
   write: 5,
   check_in: 1,
@@ -13,9 +14,14 @@ const minutesByKind: Readonly<Record<Exclude<StepKind, 'read'>, number>> = {
 }
 
 export function stepMinutes(step: TrackStep, language: ContentLanguage): number {
-  return step.kind === 'read'
-    ? readingMinutes(articles[step.article].text[language])
-    : minutesByKind[step.kind]
+  switch (step.kind) {
+    case 'read':
+      return readingMinutes(articles[step.article].text[language])
+    case 'meditate':
+      return meditationMinutes(step.meditation, language, 'short')
+    default:
+      return minutesByKind[step.kind]
+  }
 }
 
 export function trackMinutes(trackId: TrackId, language: ContentLanguage): number {

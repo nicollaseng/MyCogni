@@ -76,7 +76,7 @@ describe('TrackSteps', () => {
   it('lists every step as a short row with its kind, duration and done state', () => {
     renderTrack({ done: ['read-anxiety-basics'] })
 
-    expect(screen.getAllByRole('listitem')).toHaveLength(6)
+    expect(screen.getAllByRole('listitem')).toHaveLength(7)
     expect(stepNamed('Ler: o que é ansiedade, e o que não é')).toHaveTextContent(
       /Leitura · \d min · Feito/,
     )

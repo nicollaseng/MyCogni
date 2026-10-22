@@ -9,7 +9,12 @@ import {
   type NarrationManifest,
 } from '@mycogni/domain'
 import { createElevenLabsProvider } from '../../src/narration/elevenlabs.ts'
-import { charactersOf, planNarration, renderNarration } from '../../src/narration/generate.ts'
+import {
+  charactersOf,
+  includesContent,
+  planNarration,
+  renderNarration,
+} from '../../src/narration/generate.ts'
 import { createNarrationStore, type NarrationStore } from '../../src/narration/narration-store.ts'
 import type { SpeechProvider } from '../../src/narration/provider.ts'
 
@@ -182,6 +187,19 @@ describe('planNarration', () => {
       narrationItems('en').length * narrationVoiceIds.length,
     )
     expect(defaultVoiceFor('en')).toBe('jessica')
+  })
+})
+
+describe('planNarration for meditations', () => {
+  it('can render only the meditations, one file per line', () => {
+    const jobs = planNarration(emptyNarrationManifest, ['pt-BR'], 'default', 'meditations')
+
+    expect(jobs.length).toBeGreaterThan(70)
+    expect(jobs.every((job) => job.item.key.startsWith('meditation/'))).toBe(true)
+    expect(jobs[0]?.path).toMatch(/^pt-BR\/jessica\/meditation--anxiety--0-[0-9a-f]{16}\.mp3$/)
+    expect(charactersOf(jobs)).toBeGreaterThan(7000)
+    expect(jobs.some((job) => includesContent('articles', job.item))).toBe(false)
+    expect(jobs.every((job) => includesContent('all', job.item))).toBe(true)
   })
 })
 

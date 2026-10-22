@@ -5,6 +5,7 @@ export interface AmbientSnapshot {
   running: boolean
   previewing: AmbientSoundId | null
   ducks: number
+  holds: number
 }
 
 export interface AmbientSession {
@@ -15,7 +16,13 @@ export interface AmbientSession {
 }
 
 export function createAmbientSession(pathname: string): AmbientSession {
-  const initial: AmbientSnapshot = { pathname, running: false, previewing: null, ducks: 0 }
+  const initial: AmbientSnapshot = {
+    pathname,
+    running: false,
+    previewing: null,
+    ducks: 0,
+    holds: 0,
+  }
   let state = initial
   const listeners = new Set<() => void>()
 

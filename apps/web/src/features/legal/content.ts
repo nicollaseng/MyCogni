@@ -16,6 +16,7 @@ export const privacySections = [
   'ai',
   'memories',
   'voice',
+  'zenStats',
   'sharing',
   'rights',
 ] as const

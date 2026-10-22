@@ -6,6 +6,7 @@ export const admin: AdminMessages = {
     navigation: 'Team areas',
     professionals: 'Professionals',
     support: 'Support',
+    zen: 'Zen',
   },
   professionals: {
     title: 'Professionals',
@@ -118,6 +119,30 @@ export const admin: AdminMessages = {
       closed: 'Ticket {ticket} closed. The person was told.',
       final: 'This ticket is closed.',
       error: 'We could not update the ticket now. Try again in a moment.',
+    },
+  },
+  zen: {
+    title: 'Zen',
+    description:
+      'Aggregated, de-identified numbers per content item. Groups smaller than {minimum} people show as —.',
+    note: 'Starts count sessions from 60 seconds (10 for reads). Better, same and worse compare how people felt afterwards with their check-in that day.',
+    columns: {
+      content: 'Content',
+      people: 'People',
+      starts: 'Starts',
+      completions: 'Completions',
+      rate: 'Rate',
+      median: 'Median (min)',
+      better: 'Better',
+      same: 'Same',
+      worse: 'Worse',
+    },
+    kinds: {
+      meditation: 'Meditation',
+      sound: 'Sound',
+      breathing: 'Breathing',
+      reading: 'Read',
+      track: 'Track',
     },
   },
 }

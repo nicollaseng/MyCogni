@@ -4,6 +4,7 @@ export const admin = {
     navigation: 'Áreas da equipe',
     professionals: 'Profissionais',
     support: 'Suporte',
+    zen: 'Zen',
   },
   professionals: {
     title: 'Profissionais',
@@ -116,6 +117,30 @@ export const admin = {
       closed: 'Chamado {ticket} fechado. A pessoa foi avisada.',
       final: 'Este chamado está fechado.',
       error: 'Não conseguimos atualizar o chamado agora. Tente de novo em instantes.',
+    },
+  },
+  zen: {
+    title: 'Zen',
+    description:
+      'Números agregados e sem identificação, por conteúdo. Grupos com menos de {minimum} pessoas aparecem como —.',
+    note: 'Inícios contam sessões a partir de 60 segundos (10 nas leituras). Melhor, igual e pior comparam como a pessoa se sentiu depois com o registro do mesmo dia.',
+    columns: {
+      content: 'Conteúdo',
+      people: 'Pessoas',
+      starts: 'Inícios',
+      completions: 'Conclusões',
+      rate: 'Taxa',
+      median: 'Mediana (min)',
+      better: 'Melhor',
+      same: 'Igual',
+      worse: 'Pior',
+    },
+    kinds: {
+      meditation: 'Meditação',
+      sound: 'Som',
+      breathing: 'Respiração',
+      reading: 'Leitura',
+      track: 'Trilha',
     },
   },
 }

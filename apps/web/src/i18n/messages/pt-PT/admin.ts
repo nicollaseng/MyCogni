@@ -6,6 +6,7 @@ export const admin: AdminMessages = {
     navigation: 'Áreas da equipa',
     professionals: 'Profissionais',
     support: 'Apoio',
+    zen: 'Zen',
   },
   professionals: {
     title: 'Profissionais',
@@ -118,6 +119,30 @@ export const admin: AdminMessages = {
       closed: 'Pedido {ticket} fechado. A pessoa foi avisada.',
       final: 'Este pedido está fechado.',
       error: 'Não foi possível atualizar o pedido agora. Tente novamente dentro de instantes.',
+    },
+  },
+  zen: {
+    title: 'Zen',
+    description:
+      'Números agregados e sem identificação, por conteúdo. Grupos com menos de {minimum} pessoas aparecem como —.',
+    note: 'Os inícios contam sessões a partir de 60 segundos (10 nas leituras). Melhor, igual e pior comparam como a pessoa se sentiu depois com o registo do mesmo dia.',
+    columns: {
+      content: 'Conteúdo',
+      people: 'Pessoas',
+      starts: 'Inícios',
+      completions: 'Conclusões',
+      rate: 'Taxa',
+      median: 'Mediana (min)',
+      better: 'Melhor',
+      same: 'Igual',
+      worse: 'Pior',
+    },
+    kinds: {
+      meditation: 'Meditação',
+      sound: 'Som',
+      breathing: 'Respiração',
+      reading: 'Leitura',
+      track: 'Percurso',
     },
   },
 }
