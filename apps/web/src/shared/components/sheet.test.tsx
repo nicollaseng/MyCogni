@@ -93,4 +93,31 @@ describe('Sheet', () => {
       expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
     })
   })
+  it('leaves the header to the content in bare mode and skips hidden parts when tabbing', async () => {
+    render(
+      <Sheet bare onClose={() => undefined}>
+        {(close, titleId) => (
+          <div>
+            <h2 id={titleId}>Conversas</h2>
+            <button type="button" onClick={close}>
+              Voltar
+            </button>
+            <div hidden>
+              <button type="button">Escondido</button>
+            </div>
+            <div inert>
+              <button type="button">Inerte</button>
+            </div>
+          </div>
+        )}
+      </Sheet>,
+    )
+
+    expect(screen.getByRole('dialog', { name: 'Conversas' })).toHaveFocus()
+    expect(screen.queryByRole('button', { name: 'Fechar' })).toBeNull()
+    await userEvent.tab()
+    expect(screen.getByRole('button', { name: 'Voltar' })).toHaveFocus()
+    await userEvent.tab()
+    expect(screen.getByRole('button', { name: 'Voltar' })).toHaveFocus()
+  })
 })

@@ -65,7 +65,9 @@ export function useModalPanel<T extends HTMLElement>(
     if (event.key !== 'Tab' || panel.current === null) {
       return
     }
-    const items = Array.from(panel.current.querySelectorAll<HTMLElement>(focusable))
+    const items = Array.from(panel.current.querySelectorAll<HTMLElement>(focusable)).filter(
+      (item) => item.closest('[inert], [hidden]') === null,
+    )
     const first = items[0]
     const last = items.at(-1)
     if (first === undefined || last === undefined) {
