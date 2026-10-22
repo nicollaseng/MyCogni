@@ -63,10 +63,12 @@ function Header({ chooseLocale }: { chooseLocale: (locale: Locale) => Promise<vo
     <header className="flex items-center justify-between gap-4 py-5">
       <div className="flex items-baseline gap-2.5">
         <Wordmark />
-        <span className="text-[13px] text-muted-foreground max-sm:hidden">{t('badge')}</span>
+        <span className="text-[13px] whitespace-nowrap text-muted-foreground max-sm:hidden">
+          {t('badge')}
+        </span>
       </div>
-      <nav aria-label={t('nav.label')} className="hidden lg:block">
-        <ul className="flex items-center gap-7 text-[15px] text-muted-foreground">
+      <nav aria-label={t('nav.label')} className="hidden xl:block">
+        <ul className="flex items-center gap-6 text-[15px] whitespace-nowrap text-muted-foreground">
           {anchorKeys.map((key) => (
             <li key={key}>
               <a href={`#${anchors[key]}`} className="transition-colors hover:text-foreground">
@@ -82,10 +84,13 @@ function Header({ chooseLocale }: { chooseLocale: (locale: Locale) => Promise<vo
           href={entry('sign-in')}
           className="text-[15px] whitespace-nowrap text-muted-foreground transition-colors hover:text-foreground"
         >
-          {t('signIn')}
+          {t('header.signIn')}
         </a>
-        <a href={entry('sign-up')} className={cn(primary, 'h-9 px-3.5 text-sm max-sm:hidden')}>
-          {t('signUp')}
+        <a
+          href={entry('sign-up')}
+          className={cn(primary, 'h-9 px-3.5 text-sm whitespace-nowrap max-sm:hidden')}
+        >
+          {t('header.signUp')}
         </a>
       </div>
     </header>

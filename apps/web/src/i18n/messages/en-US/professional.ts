@@ -28,6 +28,7 @@ export const professional: ProfessionalMessages = {
     badge: 'For professionals',
     signUp: 'Create a professional account',
     signIn: 'I already have an account',
+    header: { signIn: 'Sign in', signUp: 'Create account' },
     nav: {
       label: 'Page sections',
       features: 'What you see',

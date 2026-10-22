@@ -26,6 +26,7 @@ export const professional = {
     badge: 'Para profissionais',
     signUp: 'Criar conta profissional',
     signIn: 'Já tenho conta',
+    header: { signIn: 'Entrar', signUp: 'Criar conta' },
     nav: {
       label: 'Seções da página',
       features: 'O que você vê',
