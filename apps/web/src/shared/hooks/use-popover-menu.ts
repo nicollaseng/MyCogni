@@ -1,7 +1,7 @@
 'use client'
 
 import { usePathname } from 'next/navigation'
-import { useEffect, useId, useRef, useState, type KeyboardEvent } from 'react'
+import { useEffect, useId, useRef, useState, type KeyboardEvent, type RefObject } from 'react'
 import { usePresence } from './use-animated-dialog'
 
 const popoverMotion = 150
@@ -12,9 +12,10 @@ function menuItems(element: HTMLElement | null): HTMLElement[] {
   )
 }
 
-export function usePopoverMenu() {
+export function usePopoverMenu(external?: RefObject<HTMLButtonElement | null>) {
   const [open, setOpen] = useState(false)
-  const trigger = useRef<HTMLButtonElement>(null)
+  const own = useRef<HTMLButtonElement>(null)
+  const trigger = external ?? own
   const panel = useRef<HTMLDivElement>(null)
   const panelId = useId()
   const pathname = usePathname()
@@ -53,7 +54,7 @@ export function usePopoverMenu() {
     return () => {
       document.removeEventListener('pointerdown', onPointer)
     }
-  }, [open])
+  }, [open, trigger])
 
   function onPanelKeyDown(event: KeyboardEvent<HTMLElement>) {
     const list = menuItems(panel.current)

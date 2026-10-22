@@ -1,11 +1,18 @@
 'use server'
 
 import type { Memory } from '@mycogni/contracts'
-import { isMemoryContent, memoryLimits, normalizeMemory } from '@mycogni/domain'
+import {
+  isMemoryContent,
+  isMemoryKind,
+  memoryLimits,
+  normalizeMemory,
+  type MemoryKind,
+} from '@mycogni/domain'
 import { revalidatePath } from 'next/cache'
 import { getTranslations } from 'next-intl/server'
 import { z } from 'zod'
 import { attempt, failure, type ActionResult } from '@/shared/lib/actions/result'
+import { ApiError } from '@/shared/lib/api/client'
 import {
   createMemory,
   deleteAllMemories,
@@ -32,12 +39,16 @@ function refresh(): void {
   revalidatePath('/me', 'layout')
 }
 
-export async function addMemory(content: string): Promise<ActionResult<Memory>> {
+export async function addMemory(content: string, kind: MemoryKind): Promise<ActionResult<Memory>> {
   const problem = await contentProblem(content)
   if (problem !== null) {
     return failure(problem)
   }
-  const result = await attempt(() => createMemory({ content }), (await feedback())('error'))
+  const t = await feedback()
+  if (!isMemoryKind(kind)) {
+    return failure(t('error'))
+  }
+  const result = await attempt(() => createMemory({ content, kind }), t('error'))
   if (result.ok) {
     refresh()
   }
@@ -60,15 +71,22 @@ export async function editMemory(id: string, content: string): Promise<ActionRes
   return result
 }
 
+function alreadyGone(cause: unknown): null {
+  if (cause instanceof ApiError && cause.status === 404) {
+    return null
+  }
+  throw cause
+}
+
 export async function removeMemory(id: string): Promise<ActionResult<null>> {
   const t = await feedback()
   if (!memoryId.safeParse(id).success) {
-    return failure(t('error'))
+    return failure(t('removeError'))
   }
   const result = await attempt(async () => {
-    await deleteMemory(id)
+    await deleteMemory(id).catch(alreadyGone)
     return null
-  }, t('error'))
+  }, t('removeError'))
   if (result.ok) {
     refresh()
   }
@@ -81,7 +99,7 @@ export async function clearMemories(): Promise<ActionResult<null>> {
       await deleteAllMemories()
       return null
     },
-    (await feedback())('error'),
+    (await feedback())('removeError'),
   )
   if (result.ok) {
     refresh()

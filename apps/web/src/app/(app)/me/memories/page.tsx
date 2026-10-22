@@ -1,6 +1,5 @@
 import type { Metadata } from 'next'
 import { getTranslations } from 'next-intl/server'
-import { SettingsPage } from '@/features/account/components/settings-page'
 import {
   addMemory,
   clearMemories,
@@ -11,7 +10,6 @@ import {
 import { MemoriesSwitch } from '@/features/memories/components/memories-switch'
 import { MemoryBoard } from '@/features/memories/components/memory-board'
 import { shownMemories } from '@/features/memories/shown-memories'
-import { Panel } from '@/shared/components/section'
 import { fetchMemories } from '@/shared/lib/api/memories'
 import { requireOnboardedProfile } from '@/shared/lib/auth/session'
 import { guarded } from '@/shared/lib/settled'
@@ -28,22 +26,21 @@ export default async function MemoriesPage() {
   )
 
   return (
-    <SettingsPage title={t('meta.title')}>
-      <div className="space-y-4">
-        <p className="max-w-xl text-[15px] leading-relaxed text-pretty text-muted-foreground">
-          {t('lead')}
-        </p>
-        <Panel>
+    <MemoryBoard
+      title={t('meta.title')}
+      intro={
+        <div className="space-y-3">
+          <p className="text-[15px] leading-relaxed text-pretty text-muted-foreground">
+            {t('lead')}
+          </p>
           <MemoriesSwitch
             enabled={profile.memoriesEnabled}
             setMemoriesEnabled={setMemoriesEnabled}
           />
-        </Panel>
-      </div>
-      <MemoryBoard
-        initial={await shownMemories(memories, profile.timezone)}
-        actions={{ add: addMemory, edit: editMemory, remove: removeMemory, clear: clearMemories }}
-      />
-    </SettingsPage>
+        </div>
+      }
+      initial={await shownMemories(memories, profile.timezone)}
+      actions={{ add: addMemory, edit: editMemory, remove: removeMemory, clear: clearMemories }}
+    />
   )
 }
