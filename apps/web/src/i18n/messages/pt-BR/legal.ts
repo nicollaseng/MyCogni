@@ -50,7 +50,7 @@ export const legal = {
     lead: 'Agora o Cogni pode guardar memórias do que você conta, para conversar melhor com você. Você vê, edita ou apaga cada uma em Perfil e configurações → Memórias e pode desligar quando quiser.',
     accept:
       'Li e aceito os <terms>Termos de uso</terms> e a <privacy>Política de privacidade</privacy>.',
-    continue: 'Aceitar e continuar',
+    continue: 'Aceitar',
     signOut: 'Sair',
   },
   terms: {

@@ -23,7 +23,7 @@ test('asks a returning person to accept the updated terms once', async ({ page }
   await expect(page.getByRole('heading', { level: 1, name: 'Atualizamos os termos' })).toBeVisible()
   await page.goto('/me/memories')
   await expect(page).toHaveURL('/accept-terms')
-  const accept = page.getByRole('button', { name: 'Aceitar e continuar' })
+  const accept = page.getByRole('button', { name: 'Aceitar', exact: true })
   await expect(accept).toBeDisabled()
   await page.getByRole('checkbox').check()
   await accept.click()
