@@ -14,7 +14,7 @@ const transport = {
 const onPhotoSaved = jest.fn<() => Promise<void>>()
 
 describe('ProfileHeader', () => {
-  it('shows the photo with its controls', () => {
+  it('shows the name next to the photo button', () => {
     renderWithIntl(
       <ProfileHeader
         name="Marina Alves"
@@ -25,10 +25,11 @@ describe('ProfileHeader', () => {
       />,
     )
 
-    expect(screen.getByRole('heading', { level: 1, name: 'Marina Alves' })).toBeInTheDocument()
-    expect(screen.getByRole('img', { name: 'Sua foto' })).toBeInTheDocument()
-    expect(screen.getByLabelText('Trocar foto')).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: 'Remover foto' })).toBeInTheDocument()
+    expect(screen.getByText('Marina Alves')).toBeInTheDocument()
+    expect(screen.getByText('marina@exemplo.com')).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Foto do perfil' })).toBeInTheDocument()
+    expect(screen.queryByLabelText('Trocar foto')).not.toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: 'Remover foto' })).not.toBeInTheDocument()
   })
 
   it('falls back to the initials and the page name in European Portuguese', () => {
@@ -43,9 +44,8 @@ describe('ProfileHeader', () => {
       { locale: 'pt-PT' },
     )
 
-    expect(screen.getByRole('heading', { level: 1, name: 'Perfil' })).toBeInTheDocument()
+    expect(screen.getByText('Perfil')).toBeInTheDocument()
     expect(screen.getByText('M')).toBeInTheDocument()
-    expect(screen.getByLabelText('Adicionar fotografia')).toBeInTheDocument()
-    expect(screen.queryByRole('button', { name: 'Remover fotografia' })).not.toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Fotografia do perfil' })).toBeInTheDocument()
   })
 })

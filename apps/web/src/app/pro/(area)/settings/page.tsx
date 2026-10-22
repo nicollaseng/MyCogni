@@ -4,8 +4,8 @@ import { registrationProofOf } from '@mycogni/domain'
 import { getLocale, getTranslations } from 'next-intl/server'
 import type { ReactNode } from 'react'
 import { changeEmail, changePassword, refreshAfterUpload } from '@/features/account/actions'
-import { PhotoField } from '@/features/account/components/photo-field'
 import { EmailForm } from '@/features/account/components/email-form'
+import { ProfilePhoto } from '@/features/account/components/profile-photo'
 import { PasswordForm } from '@/features/account/components/password-form'
 import { SettingsRow } from '@/features/account/components/settings-row'
 import { signOut } from '@/features/auth/actions'
@@ -114,7 +114,7 @@ export default async function ProfessionalSettingsPage() {
       <WorkspaceSection title={t('profile.title')}>
         <Surface className="max-w-3xl px-4 py-1 sm:px-5">
           <div className="py-4">
-            <PhotoField
+            <ProfilePhoto
               photoUrl={photoUrl}
               initials={initialsOf(professional.fullName)}
               alt={common('photoOf', { name: professional.fullName })}
@@ -123,7 +123,7 @@ export default async function ProfessionalSettingsPage() {
             >
               <p className="text-sm text-muted-foreground">{t('profile.photo')}</p>
               <p className="text-sm text-pretty">{t('profile.photoHint')}</p>
-            </PhotoField>
+            </ProfilePhoto>
           </div>
           <SettingsRow label={t('profile.name')} value={professional.fullName}>
             <ProfessionalNameForm initialName={professional.fullName} rename={renameProfessional} />

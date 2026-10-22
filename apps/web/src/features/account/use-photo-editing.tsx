@@ -68,11 +68,31 @@ export function usePhotoEditing({
       fail(problem)
       return
     }
+    open(source)
+  }
+
+  function open(source: File) {
     setFeedback(null)
     if (draft !== null) {
       URL.revokeObjectURL(draft.preview)
     }
     setDraft({ source, preview: URL.createObjectURL(source) })
+  }
+
+  async function adjust() {
+    if (url === null) {
+      return
+    }
+    try {
+      const response = await fetch(url)
+      if (!response.ok) {
+        throw new Error(`Photo answered ${String(response.status)}`)
+      }
+      const blob = await response.blob()
+      open(new File([blob], 'photo', { type: blob.type || 'image/jpeg' }))
+    } catch {
+      fail('failed')
+    }
   }
 
   function closeEditor(preview: string) {
@@ -122,6 +142,7 @@ export function usePhotoEditing({
         onClose={() => {
           closeEditor(draft.preview)
         }}
+        onChooseAnother={choose}
       />
     )
 
@@ -131,6 +152,9 @@ export function usePhotoEditing({
     feedback,
     editor,
     choose,
+    adjust: () => {
+      void adjust()
+    },
     remove: () => {
       void remove()
     },

@@ -127,3 +127,11 @@ export function ChevronRightIcon({ className }: IconProps) {
     </svg>
   )
 }
+
+export function PencilIcon({ className }: IconProps) {
+  return (
+    <svg aria-hidden viewBox="0 0 20 20" className={className}>
+      <path d="M12.5 4.5l3 3-8.5 8.5H4v-3l8.5-8.5ZM11 6l3 3" {...stroke} />
+    </svg>
+  )
+}
