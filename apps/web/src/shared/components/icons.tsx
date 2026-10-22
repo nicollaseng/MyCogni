@@ -138,3 +138,54 @@ export function PencilIcon({ className }: IconProps) {
     </svg>
   )
 }
+
+export function SparklesIcon({ className }: IconProps) {
+  return (
+    <svg aria-hidden viewBox="0 0 20 20" className={className}>
+      <path d="M8.5 3.5 9.8 7.2 13.5 8.5 9.8 9.8 8.5 13.5 7.2 9.8 3.5 8.5 7.2 7.2Z" {...stroke} />
+      <path
+        d="M14.5 12.5 15.1 14.4 17 15 15.1 15.6 14.5 17.5 13.9 15.6 12 15 13.9 14.4Z"
+        {...stroke}
+      />
+      <path d="M15 3v3M13.5 4.5h3" {...stroke} />
+    </svg>
+  )
+}
+
+export function HistoryIcon({ className }: IconProps) {
+  return (
+    <svg aria-hidden viewBox="0 0 20 20" className={className}>
+      <path d="M3.5 10a6.5 6.5 0 1 0 1.9-4.6" {...stroke} />
+      <path d="M3.5 3.5v3h3" {...stroke} />
+      <path d="M10 6.5V10l2.5 1.5" {...stroke} />
+    </svg>
+  )
+}
+
+export function ComposeIcon({ className }: IconProps) {
+  return (
+    <svg aria-hidden viewBox="0 0 20 20" className={className}>
+      <path
+        d="M9 4H5.5A1.5 1.5 0 0 0 4 5.5v9A1.5 1.5 0 0 0 5.5 16h9a1.5 1.5 0 0 0 1.5-1.5V11"
+        {...stroke}
+      />
+      <path d="M14.2 3.3a1.5 1.5 0 0 1 2.1 2.1L10 11.7 7.5 12.5l.8-2.5Z" {...stroke} />
+    </svg>
+  )
+}
+
+export function ArrowBackIcon({ className }: IconProps) {
+  return (
+    <svg aria-hidden viewBox="0 0 20 20" className={className}>
+      <path d="M16 10H4.5M9 5.5 4.5 10 9 14.5" {...stroke} />
+    </svg>
+  )
+}
+
+export function MoreIcon({ className }: IconProps) {
+  return (
+    <svg aria-hidden viewBox="0 0 20 20" className={className}>
+      <path d="M5 10h.01M10 10h.01M15 10h.01" {...stroke} strokeWidth={2.4} />
+    </svg>
+  )
+}

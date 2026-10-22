@@ -19,7 +19,13 @@ describe('PatientAssistant', () => {
 
     await userEvent.click(screen.getByRole('button', { name: 'Perguntar sobre este paciente' }))
 
-    expect(screen.getByRole('dialog', { name: 'Perguntar sobre Ana Lima' })).toBeInTheDocument()
+    const chat = screen.getByRole('dialog', { name: 'Perguntar' })
+    expect(chat).toHaveTextContent('Sobre Ana Lima')
+    expect(screen.getByRole('button', { name: 'Conversas' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Nova conversa' })).toHaveAttribute(
+      'aria-disabled',
+      'true',
+    )
     expect(await screen.findByText('Como o humor mudou nas últimas semanas?')).toBeInTheDocument()
     expect(actions.open).toHaveBeenCalledWith({ mode: 'professional', patientId: conversationId })
   })
@@ -37,6 +43,7 @@ describe('PatientAssistant', () => {
 
     await userEvent.click(screen.getByRole('button', { name: 'Ask about this patient' }))
 
-    expect(screen.getByRole('dialog', { name: 'Ask about Ana Lima' })).toBeInTheDocument()
+    expect(screen.getByRole('dialog', { name: 'Ask' })).toHaveTextContent('About Ana Lima')
+    expect(screen.getByRole('button', { name: 'Conversations' })).toBeInTheDocument()
   })
 })

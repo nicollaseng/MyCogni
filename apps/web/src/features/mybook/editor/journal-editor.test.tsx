@@ -198,7 +198,7 @@ describe('JournalEditor assistant', () => {
     )
 
     await userEvent.type(titleField(), ' de sol')
-    await userEvent.click(screen.getByRole('button', { name: 'Perguntar' }))
+    await userEvent.click(screen.getByRole('button', { name: 'Conversar com o Cogni' }))
     await userEvent.click(await screen.findByRole('button', { name: 'Resuma esta página' }))
 
     expect(await screen.findByText('Fala de um domingo.')).toBeVisible()
@@ -214,7 +214,7 @@ describe('JournalEditor assistant', () => {
   it('stays out of the editor when the assistant is not available', () => {
     clientSaving(() => Promise.resolve({ kind: 'saved', updatedAt: savedAt, safety: null }))
 
-    expect(screen.queryByRole('button', { name: 'Perguntar' })).not.toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: 'Conversar com o Cogni' })).not.toBeInTheDocument()
   })
 })
 

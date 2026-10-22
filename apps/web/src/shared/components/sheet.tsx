@@ -7,14 +7,51 @@ import { ClientPortal } from './client-portal'
 
 export const sheetDuration = 240
 
-interface SheetProps {
+interface TitledSheetProps {
+  bare?: false
   title: string
   closeLabel: string
   onClose: () => void
   children: (close: () => void) => ReactNode
 }
 
-function SheetPanel({ title, closeLabel, onClose, children }: SheetProps) {
+interface BareSheetProps {
+  bare: true
+  onClose: () => void
+  children: (close: () => void, titleId: string) => ReactNode
+}
+
+type SheetProps = TitledSheetProps | BareSheetProps
+
+interface SheetHeaderProps {
+  titleId: string
+  title: string
+  closeLabel: string
+  onClose: () => void
+}
+
+function SheetHeader({ titleId, title, closeLabel, onClose }: SheetHeaderProps) {
+  return (
+    <div className="flex items-start justify-between gap-4 px-5 pt-5 pb-4 sm:px-6 sm:pt-7">
+      <h2 id={titleId} className="font-serif text-[23px] leading-tight tracking-[-0.01em]">
+        {title}
+      </h2>
+      <button
+        type="button"
+        onClick={onClose}
+        aria-label={closeLabel}
+        className="-mt-1 -mr-2 inline-flex size-9 shrink-0 items-center justify-center rounded-[6px] text-muted-foreground transition-colors hover:bg-surface hover:text-foreground"
+      >
+        <span aria-hidden className="text-[26px] leading-none font-light">
+          ×
+        </span>
+      </button>
+    </div>
+  )
+}
+
+function SheetPanel(props: SheetProps) {
+  const { onClose } = props
   const titleId = useId()
   const { panel, closing, close, onKeyDown } = useModalPanel<HTMLDivElement>(onClose, sheetDuration)
 
@@ -40,22 +77,19 @@ function SheetPanel({ title, closeLabel, onClose, children }: SheetProps) {
           closing && 'translate-y-full sm:translate-x-full sm:translate-y-0',
         )}
       >
-        <div className="flex items-start justify-between gap-4 px-5 pt-5 pb-4 sm:px-6 sm:pt-7">
-          <h2 id={titleId} className="font-serif text-[23px] leading-tight tracking-[-0.01em]">
-            {title}
-          </h2>
-          <button
-            type="button"
-            onClick={close}
-            aria-label={closeLabel}
-            className="-mt-1 -mr-2 inline-flex size-9 shrink-0 items-center justify-center rounded-[6px] text-muted-foreground transition-colors hover:bg-surface hover:text-foreground"
-          >
-            <span aria-hidden className="text-[26px] leading-none font-light">
-              ×
-            </span>
-          </button>
-        </div>
-        {children(close)}
+        {props.bare === true ? (
+          props.children(close, titleId)
+        ) : (
+          <>
+            <SheetHeader
+              titleId={titleId}
+              title={props.title}
+              closeLabel={props.closeLabel}
+              onClose={close}
+            />
+            {props.children(close)}
+          </>
+        )}
       </div>
     </div>
   )

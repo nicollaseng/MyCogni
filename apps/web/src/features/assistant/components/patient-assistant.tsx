@@ -38,17 +38,19 @@ export function PatientAssistant({
       </button>
       {open && (
         <Sheet
-          title={t('professionalTitle', { name })}
-          closeLabel={t('close')}
+          bare
           onClose={() => {
             setOpen(false)
           }}
         >
-          {() => (
+          {(close, titleId) => (
             <AssistantChat
               target={{ mode: 'professional', patientId }}
               actions={actions}
               timeZone={timeZone}
+              titleId={titleId}
+              onClose={close}
+              patientName={name}
             />
           )}
         </Sheet>
