@@ -32,9 +32,10 @@ export function VoiceBar({ voice }: { voice: VoiceInput }) {
       aria-label={t('recording')}
       data-testid="voice-bar"
       onKeyDown={onKeyDown}
-      className="flex min-h-12 min-w-0 flex-1 items-center gap-2 rounded-[6px] border border-rule bg-background px-1.5"
+      className="-ml-2 flex min-h-9 min-w-0 flex-1 items-center gap-2"
     >
       <RoundButton
+        tone="ghost"
         label={t('cancel')}
         className="size-9"
         disabled={transcribing}
@@ -52,7 +53,7 @@ export function VoiceBar({ voice }: { voice: VoiceInput }) {
       <RoundButton
         ref={stop}
         label={t('stop')}
-        className="size-9"
+        className="size-8"
         disabled={transcribing}
         onClick={() => void voice.finish('review')}
       >

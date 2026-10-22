@@ -110,7 +110,7 @@ export function ChatComposer({
       <label htmlFor={id} className="sr-only">
         {t('label')}
       </label>
-      <div className="flex items-end gap-2">
+      <div className="flex min-h-12 items-end gap-1 rounded-[8px] border border-rule bg-background py-1.5 pr-1.5 pl-3.5 transition-colors duration-150 focus-within:border-foreground/50 motion-reduce:transition-none">
         {active ? (
           <VoiceBar
             voice={{
@@ -136,20 +136,21 @@ export function ChatComposer({
                 setFocus(null)
               }}
               onKeyDown={onKeyDown}
-              className="max-h-36 min-h-12 min-w-0 flex-1 resize-none rounded-[6px] border border-rule bg-background px-3.5 py-3 text-base leading-snug outline-none field-sizing-content placeholder:text-muted-foreground focus:border-foreground"
+              className="max-h-36 min-h-9 min-w-0 flex-1 resize-none bg-transparent py-1.5 text-base leading-snug outline-none field-sizing-content placeholder:text-muted-foreground"
             />
             {showMic && (
               <RoundButton
                 ref={mic}
+                tone="ghost"
                 label={tv('speak')}
-                className="size-12"
+                className="size-9"
                 disabled={pending || voice.status === 'opening'}
                 onClick={() => {
                   setFocus(null)
                   void voice.start()
                 }}
               >
-                <MicIcon className="size-5" />
+                <MicIcon className="size-[19px]" />
               </RoundButton>
             )}
           </>
@@ -158,10 +159,10 @@ export function ChatComposer({
           type="submit"
           tone="accent"
           label={t('send')}
-          className="size-12"
+          className="mb-0.5 size-8"
           disabled={!canSend}
         >
-          <ArrowUpIcon className="size-5" />
+          <ArrowUpIcon className="size-4" />
         </RoundButton>
       </div>
       <p aria-live="polite" data-testid="voice-announcer" className="sr-only">
