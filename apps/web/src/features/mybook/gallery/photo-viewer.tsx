@@ -3,7 +3,7 @@
 import { isCaptionText } from '@mycogni/domain'
 import Image from 'next/image'
 import { useTranslations } from 'next-intl'
-import { useId, useRef, useState, type KeyboardEvent, type PointerEvent } from 'react'
+import { useEffect, useId, useRef, useState, type KeyboardEvent, type PointerEvent } from 'react'
 import { ClientPortal } from '@/shared/components/client-portal'
 import { ConfirmDialog } from '@/shared/components/confirm-dialog'
 import { useModalPanel } from '@/shared/hooks/use-modal-panel'
@@ -101,6 +101,22 @@ export function PhotoViewer({ photos, start, actions, onClose }: PhotoViewerProp
     setIndex(Math.min(photos.length - 1, Math.max(0, shownIndex + step)))
   }
 
+  useEffect(() => {
+    if (confirming) {
+      return
+    }
+    function closeFromOutside(event: globalThis.KeyboardEvent) {
+      const inside = event.target instanceof Node && panel.current?.contains(event.target)
+      if (event.key === 'Escape' && inside !== true) {
+        close()
+      }
+    }
+    document.addEventListener('keydown', closeFromOutside)
+    return () => {
+      document.removeEventListener('keydown', closeFromOutside)
+    }
+  }, [confirming, close, panel])
+
   async function run(task: () => Promise<boolean>, failure: Status): Promise<boolean> {
     setBusy(true)
     setStatus(null)
@@ -108,6 +124,12 @@ export function PhotoViewer({ photos, start, actions, onClose }: PhotoViewerProp
     setBusy(false)
     if (!done) {
       setStatus(failure)
+    }
+    if (
+      !(document.activeElement instanceof HTMLElement) ||
+      document.activeElement === document.body
+    ) {
+      panel.current?.focus()
     }
     return done
   }

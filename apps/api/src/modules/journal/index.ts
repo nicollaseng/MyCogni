@@ -6,6 +6,7 @@ import type { JournalImageStore } from '../../storage/journal-images.ts'
 import { createCareLinkRepository } from '../care-links/care-link.repository.ts'
 import { createProfessionalRepository } from '../professionals/professional.repository.ts'
 import { createNoteSafety } from '../safety/note-safety.ts'
+import { createJournalPhotoRepository, createJournalPhotoService } from './journal-photos.ts'
 import { createJournalRepository } from './journal.repository.ts'
 import { journalRoutes } from './journal.routes.ts'
 import { createJournalService } from './journal.service.ts'
@@ -40,5 +41,6 @@ export function journalModule({
       professionals: createProfessionalRepository(db),
       images,
     }),
+    createJournalPhotoService(createJournalPhotoRepository(db), images),
   )
 }

@@ -11,6 +11,8 @@ import {
   plainTextOf,
   storedBodyOf,
   withImageSources,
+  withoutPhoto,
+  withPhotoCaption,
   withoutImageSources,
 } from './document'
 import { sampleDocument } from './test-data'
@@ -225,5 +227,25 @@ describe('galleries', () => {
     expect(
       flattenGalleries({ type: 'doc', content: [{ type: 'gallery', attrs: { photos: 'x' } }] }),
     ).toEqual({ type: 'doc', content: [] })
+  })
+})
+
+describe('changing one photo of a stored page', () => {
+  it('changes the caption of the photo with that path only', () => {
+    const changed = withPhotoCaption(captioned, 'user/entry/two.webp', 'Ondas')
+
+    expect(plainTextOf(changed)).toBe('Praia\nPôr do sol\nOndas\nAreia quente\nVoltamos cedo.')
+    expect(imagePathsOf(changed)).toEqual(imagePathsOf(captioned))
+  })
+
+  it('removes the photo with that path, wherever it is', () => {
+    expect(imagePathsOf(withoutPhoto(captioned, 'user/entry/three.webp'))).toEqual([
+      'user/entry/one.webp',
+      'user/entry/two.webp',
+      'user/entry/four.webp',
+    ])
+    expect(imagePathsOf(withoutPhoto(sampleDocument, 'user/entry/two.png'))).toEqual([
+      'user/entry/one.png',
+    ])
   })
 })

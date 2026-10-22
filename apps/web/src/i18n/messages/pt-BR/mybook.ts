@@ -111,6 +111,20 @@ export const mybook = {
       add: 'Adicionar',
     },
   },
+  photoGrid: {
+    meta: 'Fotos do MyBook',
+    views: {
+      label: 'Ver o MyBook por',
+      pages: 'Páginas',
+      photos: 'Fotos',
+    },
+    grid: 'Fotos do MyBook',
+    tile: 'Foto de {date}',
+    empty: 'As fotos que você colocar nas páginas aparecem aqui.',
+    loadMore: 'Carregar mais',
+    loading: 'Carregando…',
+    loadError: 'Não conseguimos carregar as fotos agora. Tente de novo.',
+  },
   gallery: {
     region: '{count, plural, =0 {Nenhuma foto} one {# foto} other {Galeria com # fotos}}',
     tile: 'Foto {index} de {total}',

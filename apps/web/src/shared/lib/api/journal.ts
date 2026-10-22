@@ -2,6 +2,7 @@ import {
   journalAccessListSchema,
   journalEntryPageSchema,
   journalEntrySchema,
+  journalPhotoPageSchema,
   journalShareListSchema,
   journalShareSchema,
   savedJournalEntrySchema,
@@ -9,6 +10,8 @@ import {
   type JournalAccess,
   type JournalEntry,
   type JournalEntryPage,
+  type JournalPhotoPage,
+  type JournalPhotoQuery,
   type JournalShare,
   type SavedJournalEntry,
   type UpdateJournalEntryInput,
@@ -51,6 +54,17 @@ export function fetchJournal(filter: JournalFilter): Promise<JournalEntryPage> {
   return apiRequest({
     path: `/v1/journal?${journalQuery(filter)}`,
     schema: journalEntryPageSchema,
+  })
+}
+
+export function fetchJournalPhotos({
+  offset,
+  limit,
+}: JournalPhotoQuery): Promise<JournalPhotoPage> {
+  const query = new URLSearchParams({ offset: String(offset), limit: String(limit) })
+  return apiRequest({
+    path: `/v1/journal/photos?${query.toString()}`,
+    schema: journalPhotoPageSchema,
   })
 }
 

@@ -115,6 +115,20 @@ export const mybook: MybookMessages = {
       add: 'Adicionar',
     },
   },
+  photoGrid: {
+    meta: 'Fotografias do MyBook',
+    views: {
+      label: 'Ver o MyBook por',
+      pages: 'Páginas',
+      photos: 'Fotografias',
+    },
+    grid: 'Fotografias do MyBook',
+    tile: 'Fotografia de {date}',
+    empty: 'As fotografias que colocar nas páginas aparecem aqui.',
+    loadMore: 'Carregar mais',
+    loading: 'A carregar…',
+    loadError: 'Não foi possível carregar as fotografias agora. Tente novamente.',
+  },
   gallery: {
     region:
       '{count, plural, =0 {Nenhuma fotografia} one {# fotografia} other {Galeria com # fotografias}}',
