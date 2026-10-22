@@ -16,14 +16,23 @@ import { reportOutdatedApp } from '@/shared/lib/actions/outdated'
 import { failure, type ActionResult } from '@/shared/lib/actions/result'
 import { Icon } from '../components/icon'
 import { formatWritten } from '../dates'
-import { draftOf, isBlankDraft, journalDocumentOf, withImageSources } from '../document'
+import {
+  draftOf,
+  isBlankDraft,
+  journalDocumentOf,
+  storedBodyOf,
+  withImageSources,
+} from '../document'
+import { GalleryContext } from '../gallery/gallery-context'
+import { PagePhotoViewer } from '../gallery/page-photo-viewer'
+import { PhotoCompose } from '../gallery/photo-compose'
+import { usePhotoViewing } from '../gallery/use-photo-viewing'
 import { browserPageClient, type PageClient } from '../page-client'
 import { EditorToolbar } from './editor-toolbar'
 import { editorContentOf, journalExtensions } from './extensions'
 import { PageMenu } from './page-menu'
 import { browserPhotoTools, type PhotoTools } from './photo-canvas'
 import { PhotoNotice } from './photo-notice'
-import { PhotoSizeSheet } from './photo-size-sheet'
 import { SaveIndicator } from './save-indicator'
 import { usePagePhotos } from './use-page-photos'
 import { usePageSaving, type PageContent } from './use-page-saving'
@@ -62,10 +71,11 @@ export function JournalEditor({
   const chromeRef = useRef<HTMLDivElement>(null)
   const docRef = useRef<DocumentNode | null>(null)
   const addPhotosRef = useRef<(files: File[]) => void>(() => undefined)
+  const photoViewing = usePhotoViewing()
 
   const read = useCallback((): PageContent => {
     const body: unknown = docRef.current?.toJSON()
-    return { title: titleRef.current, body: body ?? entry.body }
+    return { title: titleRef.current, body: body === undefined ? entry.body : storedBodyOf(body) }
   }, [entry.body])
   const saving = usePageSaving(entry, client, read)
   const { autosave } = saving
@@ -86,7 +96,6 @@ export function JournalEditor({
     immediatelyRender: false,
     extensions: journalExtensions({
       placeholder: t('placeholder'),
-      photo: t('photo.alt'),
       task: (text) => (text === '' ? t('emptyTask') : t('task', { text })),
     }),
     content: editorContentOf(withImageSources(entry.body, entry.imageUrls)),
@@ -284,10 +293,21 @@ export function JournalEditor({
         />
       </div>
 
-      <EditorContent editor={editor} />
+      <GalleryContext value={photoViewing.actions}>
+        <EditorContent editor={editor} />
+      </GalleryContext>
+
+      {photoViewing.viewing !== null && editor !== null && (
+        <PagePhotoViewer
+          editor={editor}
+          start={photoViewing.viewing}
+          owner={{ writtenAt: new Date(entry.createdAt), timeZone }}
+          onClose={photoViewing.close}
+        />
+      )}
 
       {photos.choosing !== null && (
-        <PhotoSizeSheet
+        <PhotoCompose
           photos={photos.choosing}
           tools={photoTools}
           onAdd={photos.add}

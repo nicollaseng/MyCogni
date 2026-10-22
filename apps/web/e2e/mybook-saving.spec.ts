@@ -1,6 +1,14 @@
 import { randomUUID } from 'node:crypto'
 import { expect, test, type Page } from '@playwright/test'
-import { choosePhotos, draftsKept, pageBody, saveStatus, startPage, unique } from './support/mybook'
+import {
+  choosePhotos,
+  draftsKept,
+  pageBody,
+  photoTiles,
+  saveStatus,
+  startPage,
+  unique,
+} from './support/mybook'
 import { signedOut } from './support/session'
 
 const content = '**/mybook/*/content'
@@ -55,6 +63,7 @@ test('adds a large photo at the medium size without breaking the page', async ({
     mimeType: 'image/jpeg',
     buffer: photo,
   })
+  await sheet.getByRole('button', { name: 'Qualidade: Média' }).click()
   const medium = sheet.getByRole('radio', { name: /^Média/ })
   await expect(medium).toBeChecked()
   await expect(medium).toHaveAccessibleName(/Até 1600 px ≈ \d+ kB/)
@@ -64,9 +73,8 @@ test('adds a large photo at the medium size without breaking the page', async ({
   await sheet.getByRole('button', { name: 'Adicionar', exact: true }).click()
   await expect(sheet).toBeHidden()
 
-  const image = pageBody(page).locator('img[data-path]')
-  await expect(image).toHaveAttribute('width', '1600')
-  await expect(image).toHaveAttribute('height', '1200')
+  const image = photoTiles(page).locator('img')
+  await expect(photoTiles(page)).toHaveAttribute('style', /aspect-ratio: 1\.333/)
   await expect(image).toHaveAttribute('loading', 'lazy')
   await page.keyboard.type('Depois da foto, um café.')
   await expect(image).toHaveCount(1)
@@ -80,8 +88,10 @@ test('adds a large photo at the medium size without breaking the page', async ({
   await image.scrollIntoViewIfNeeded()
   await expect(image).toBeVisible()
   await expect
-    .poll(() => image.evaluate((element: HTMLImageElement) => element.naturalWidth))
-    .toBe(1600)
+    .poll(() =>
+      image.evaluate((element: HTMLImageElement) => [element.naturalWidth, element.naturalHeight]),
+    )
+    .toEqual([1600, 1200])
   const shown = await image.boundingBox()
   const text = await pageBody(page).boundingBox()
   expect(shown?.width).toBeLessThanOrEqual(text?.width ?? 0)

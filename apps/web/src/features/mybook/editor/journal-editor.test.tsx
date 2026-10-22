@@ -295,3 +295,86 @@ describe('JournalEditor on a phone keyboard', () => {
     viewport.remove()
   })
 })
+
+describe('JournalEditor photos', () => {
+  const photographed: JournalEntry = {
+    ...entry,
+    body: {
+      type: 'doc',
+      content: [
+        { type: 'paragraph', content: [{ type: 'text', text: 'Fui ao parque.' }] },
+        { type: 'image', attrs: { path: 'u/e/one.webp', width: 800, height: 1000 } },
+        {
+          type: 'image',
+          attrs: { path: 'u/e/two.webp', width: 800, height: 1000, caption: 'Lago' },
+        },
+      ],
+    },
+    imagePaths: ['u/e/one.webp', 'u/e/two.webp'],
+    imageUrls: {
+      'u/e/one.webp': 'https://storage.local/one.webp',
+      'u/e/two.webp': 'https://storage.local/two.webp',
+    },
+  }
+
+  function renderPhotos() {
+    const client = {
+      create: jest.fn<PageClient['create']>(),
+      save: jest.fn<Save>(() =>
+        Promise.resolve({ kind: 'saved', updatedAt: '2026-10-15T15:01:00.000Z', safety: null }),
+      ),
+      remove: jest.fn<(id: string) => Promise<RemoveOutcome>>(() => Promise.resolve('removed')),
+    }
+    renderWithIntl(
+      <WithRouter router={fakeRouter()}>
+        <JournalEditor entry={photographed} timeZone="America/Sao_Paulo" client={client} />
+      </WithRouter>,
+    )
+    return client
+  }
+
+  it('saves a caption edited in the viewer as part of the page text', async () => {
+    const client = renderPhotos()
+
+    await userEvent.click(await screen.findByRole('button', { name: 'Foto 1 de 2' }))
+    await userEvent.click(screen.getByRole('button', { name: 'Editar legenda' }))
+    await userEvent.type(screen.getByRole('textbox', { name: 'Legenda' }), 'Banco da praça')
+    await userEvent.click(screen.getByRole('button', { name: 'Salvar' }))
+
+    await waitFor(() => {
+      expect(client.save).toHaveBeenCalledWith(
+        entry.id,
+        expect.objectContaining({
+          plainText: 'Fui ao parque.\nBanco da praça\nLago',
+          imagePaths: ['u/e/one.webp', 'u/e/two.webp'],
+        }),
+      )
+    }, patience)
+  })
+
+  it('removes a photo deleted in the viewer from the saved page', async () => {
+    const client = renderPhotos()
+
+    await userEvent.click(await screen.findByRole('button', { name: 'Foto 2 de 2: Lago' }))
+    await userEvent.click(screen.getByRole('button', { name: 'Apagar' }))
+    await userEvent.click(
+      within(screen.getByRole('alertdialog')).getByRole('button', { name: 'Apagar' }),
+    )
+
+    await waitFor(() => {
+      expect(client.save).toHaveBeenCalledWith(
+        entry.id,
+        expect.objectContaining({
+          plainText: 'Fui ao parque.',
+          imagePaths: ['u/e/one.webp'],
+          body: expect.objectContaining({
+            content: expect.arrayContaining([
+              { type: 'image', attrs: { path: 'u/e/one.webp', width: 800, height: 1000 } },
+            ]),
+          }),
+        }),
+      )
+    }, patience)
+    expect(screen.getByRole('button', { name: 'Foto 1 de 1' })).toBeInTheDocument()
+  })
+})

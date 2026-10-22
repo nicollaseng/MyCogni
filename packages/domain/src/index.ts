@@ -184,6 +184,13 @@ export { crisisLinesFor, type CrisisLine } from './i18n/crisis-lines.ts'
 export { moodNames, type LabelSet, type MoodName } from './i18n/labels/label-set.ts'
 export { labelsFor } from './i18n/labels/labels.ts'
 export {
+  captionOf,
+  isCaptionText,
+  journalCaptions,
+  journalImageNode,
+  type JournalTree,
+} from './journal/captions.ts'
+export {
   excerptOf,
   isJournalImageType,
   isOwnJournalPath,

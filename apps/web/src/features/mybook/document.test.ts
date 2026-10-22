@@ -1,11 +1,15 @@
 import { describe, expect, it } from '@jest/globals'
 import {
   draftOf,
+  flattenGalleries,
+  galleryPhotosOf,
+  groupGalleries,
   imagePathsOf,
   imageSizeOf,
   isBlankDraft,
   journalDocumentOf,
   plainTextOf,
+  storedBodyOf,
   withImageSources,
   withoutImageSources,
 } from './document'
@@ -128,5 +132,98 @@ describe('journalDocumentOf', () => {
     expect(journalDocumentOf({ type: 'doc', content: [] })).toEqual({ type: 'doc', content: [] })
     expect(journalDocumentOf({ type: 'paragraph' })).toBeNull()
     expect(journalDocumentOf('texto')).toBeNull()
+  })
+})
+
+const captioned = {
+  type: 'doc',
+  content: [
+    { type: 'paragraph', content: [{ type: 'text', text: 'Praia' }] },
+    {
+      type: 'image',
+      attrs: { path: 'user/entry/one.webp', width: 800, height: 1000, caption: 'Pôr do sol' },
+    },
+    { type: 'image', attrs: { path: 'user/entry/two.webp', caption: '  ' } },
+    { type: 'image', attrs: { path: 'user/entry/three.webp', caption: 'Areia quente' } },
+    { type: 'paragraph', content: [{ type: 'text', text: 'Voltamos cedo.' }] },
+    { type: 'image', attrs: { path: 'user/entry/four.webp' } },
+  ],
+}
+
+describe('photo captions', () => {
+  it('reads captions as part of the page text, where each photo stands', () => {
+    expect(plainTextOf(captioned)).toBe('Praia\nPôr do sol\nAreia quente\nVoltamos cedo.')
+  })
+
+  it('keeps the photo paths exactly as before', () => {
+    expect(imagePathsOf(captioned)).toEqual([
+      'user/entry/one.webp',
+      'user/entry/two.webp',
+      'user/entry/three.webp',
+      'user/entry/four.webp',
+    ])
+  })
+
+  it('stores a caption without the signed address and drops empty ones', () => {
+    const saved = withoutImageSources(
+      withImageSources(captioned, { 'user/entry/one.webp': 'https://x.y/one.webp?token=t' }),
+    )
+
+    expect(saved.content?.[1]?.attrs).toEqual({
+      path: 'user/entry/one.webp',
+      width: 800,
+      height: 1000,
+      caption: 'Pôr do sol',
+    })
+    expect(saved.content?.[2]?.attrs).toEqual({ path: 'user/entry/two.webp' })
+  })
+})
+
+describe('galleries', () => {
+  it('shows each run of photos as one gallery and leaves the rest alone', () => {
+    const grouped = groupGalleries(withImageSources(captioned, {}))
+
+    expect(grouped.content?.map((node) => node.type)).toEqual([
+      'paragraph',
+      'gallery',
+      'paragraph',
+      'gallery',
+    ])
+    expect(galleryPhotosOf(grouped.content?.[1]?.attrs?.photos)).toEqual([
+      { path: 'user/entry/one.webp', src: null, width: 800, height: 1000, caption: 'Pôr do sol' },
+      { path: 'user/entry/two.webp', src: null, width: null, height: null, caption: '' },
+      {
+        path: 'user/entry/three.webp',
+        src: null,
+        width: null,
+        height: null,
+        caption: 'Areia quente',
+      },
+    ])
+  })
+
+  it('groups photos inside lists too', () => {
+    const grouped = groupGalleries(sampleDocument)
+    const item = grouped.content?.[4]?.content?.[0]
+
+    expect(item?.content?.map((node) => node.type)).toEqual(['paragraph', 'gallery'])
+  })
+
+  it('saves galleries back as the same photos, so older pages and clients still read them', () => {
+    const stored = withoutImageSources(captioned)
+
+    expect(withoutImageSources(flattenGalleries(groupGalleries(stored)))).toEqual(stored)
+    expect(draftOf('Praia', groupGalleries(withImageSources(captioned, {})))).toEqual(
+      draftOf('Praia', captioned),
+    )
+    expect(storedBodyOf(groupGalleries(stored))).toEqual(flattenGalleries(groupGalleries(stored)))
+    expect(storedBodyOf('texto')).toBe('texto')
+  })
+
+  it('ignores gallery data that is not a list of photos', () => {
+    expect(galleryPhotosOf([{ path: 1 }])).toEqual([])
+    expect(
+      flattenGalleries({ type: 'doc', content: [{ type: 'gallery', attrs: { photos: 'x' } }] }),
+    ).toEqual({ type: 'doc', content: [] })
   })
 })

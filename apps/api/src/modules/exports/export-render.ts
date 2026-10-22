@@ -1,5 +1,5 @@
 import { journalNodeSchema, type JournalNode } from '@mycogni/contracts'
-import { csvDocument, dayKey, escapeHtml, fileSlug, uniqueName } from '@mycogni/domain'
+import { captionOf, csvDocument, dayKey, escapeHtml, fileSlug, uniqueName } from '@mycogni/domain'
 import type { MemoryRecord } from '../memories/memory.repository.ts'
 import type { ExportCopy } from './export-copy.ts'
 import type {
@@ -134,6 +134,22 @@ function textHtml(node: JournalNode): string {
   )
 }
 
+export function photoCaptions(body: unknown): ReadonlyMap<string, string> {
+  const parsed = journalNodeSchema.safeParse(body)
+  const captions = new Map<string, string>()
+  const visit = (node: JournalNode) => {
+    const path = node.attrs?.path
+    if (node.type === 'image' && typeof path === 'string') {
+      captions.set(path, captionOf(node.attrs))
+    }
+    node.content?.forEach(visit)
+  }
+  if (parsed.success) {
+    visit(parsed.data)
+  }
+  return captions
+}
+
 function nodeHtml(node: JournalNode, photos: ReadonlyMap<string, string>, alt: string): string {
   const children = (node.content ?? []).map((child) => nodeHtml(child, photos, alt)).join('')
   switch (node.type) {
@@ -153,9 +169,14 @@ function nodeHtml(node: JournalNode, photos: ReadonlyMap<string, string>, alt: s
     case 'image': {
       const path = node.attrs?.path
       const file = typeof path === 'string' ? photos.get(path) : undefined
-      return file === undefined
-        ? ''
-        : `<figure><img src="../${escapeHtml(file)}" alt="${escapeHtml(alt)}"></figure>`
+      const caption = captionOf(node.attrs)
+      if (file === undefined) {
+        return ''
+      }
+      const image = `<img src="../${escapeHtml(file)}" alt="${escapeHtml(caption === '' ? alt : caption)}">`
+      return caption === ''
+        ? `<figure>${image}</figure>`
+        : `<figure>${image}<figcaption>${escapeHtml(caption)}</figcaption></figure>`
     }
   }
   const tag = blockTags[node.type]
@@ -190,6 +211,7 @@ h1, h2, h3, h4 { line-height: 1.2; }
 p.meta { font: 13px/1.5 Arial, sans-serif; color: #5b6762; }
 img { max-width: 100%; height: auto; border-radius: 6px; }
 figure { margin: 1.5rem 0; }
+figcaption { margin-top: 0.5rem; font: 14px/1.5 Arial, sans-serif; color: #5b6762; }
 blockquote { margin: 1rem 0; padding-left: 1rem; border-left: 2px solid #c9d1c8; color: #3d4a45; }
 </style>
 </head>

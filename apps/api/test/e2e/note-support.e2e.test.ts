@@ -153,6 +153,34 @@ describe('support signal on saved notes', () => {
     })
   })
 
+  it('answers for a crisis written only in a photo caption', async () => {
+    async function saveCaptioned(id: string, caption: string): Promise<SavedJournalEntry> {
+      const response = await call('PUT', `/v1/journal/${id}`, {
+        title: null,
+        body: {
+          type: 'doc',
+          content: [
+            { type: 'paragraph', content: [{ type: 'text', text: calm }] },
+            { type: 'image', attrs: { path: null, caption } },
+          ],
+        },
+        plainText: calm,
+        imagePaths: [],
+      })
+      expect(response.statusCode).toBe(200)
+      return response.json<SavedJournalEntry>()
+    }
+    const page = await newPage()
+    await queue.take()
+
+    expect((await saveCaptioned(page, 'Praia no domingo')).support).toEqual({ level: 'none' })
+    expect((await saveCaptioned(page, urgent)).support).toEqual({ level: 'urgent' })
+    expect((await saveCaptioned(await newPage(), watch)).support).toEqual({ level: 'watch' })
+    expect((await queue.take()).map(({ trigger }) => trigger)).toEqual([
+      { kind: 'note', note: { kind: 'journal', patientId: marina.id, entryId: page } },
+    ])
+  })
+
   it('never echoes what was written in the support signal', async () => {
     const recorded = await checkIn(`${urgent}, de verdade`)
     const added = await addendum(recorded.id, 'quero me cortar')

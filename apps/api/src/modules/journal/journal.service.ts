@@ -8,7 +8,7 @@ import type {
   SavedJournalEntry,
   UpdateJournalEntryInput,
 } from '@mycogni/contracts'
-import { isOwnJournalPath, raisedRisk } from '@mycogni/domain'
+import { isOwnJournalPath, journalCaptions, raisedRisk } from '@mycogni/domain'
 import type { FastifyBaseLogger } from 'fastify'
 import type { AuthenticatedUser } from '../../auth/token-verifier.ts'
 import type { JobScheduler } from '../../jobs/scheduler.ts'
@@ -92,7 +92,10 @@ export function createJournalService({
       }
       const support = await safety.review(
         { kind: 'journal', patientId: user.id, entryId: id },
-        raisedRisk(outcome.previousText, outcome.entry.plainText),
+        raisedRisk(
+          outcome.previousText,
+          [outcome.entry.plainText, ...journalCaptions(input.body)].join('\n'),
+        ),
       )
       return { ...(await toEntry(outcome.entry, images)), support }
     },

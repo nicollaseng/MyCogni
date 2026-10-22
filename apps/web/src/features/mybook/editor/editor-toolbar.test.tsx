@@ -23,7 +23,6 @@ function Harness({ content, onReady, onPhotos }: HarnessProps) {
     immediatelyRender: true,
     extensions: journalExtensions({
       placeholder: 'Comece a escrever…',
-      photo: 'Foto',
       task: (text) => `Tarefa: ${text}`,
     }),
     content,

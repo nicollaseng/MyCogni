@@ -15,6 +15,7 @@ import {
   conversationMarkdown,
   memoriesCsv,
   pageHtml,
+  photoCaptions,
   type ArchivePlan,
 } from './export-render.ts'
 
@@ -54,13 +55,20 @@ function dataDocument(
     checkIns: rest.checkIns,
     assessments: rest.assessments,
     mybook: {
-      pages: plan.pages.map(({ page, file }) => ({
-        ...page,
-        file,
-        photos: plan.photos
-          .filter((photo) => photo.page === page.id)
-          .map(({ path, file: photo }) => ({ path, file: photo })),
-      })),
+      pages: plan.pages.map(({ page, file }) => {
+        const captions = photoCaptions(page.body)
+        return {
+          ...page,
+          file,
+          photos: plan.photos
+            .filter((photo) => photo.page === page.id)
+            .map(({ path, file: photo }) => ({
+              path,
+              file: photo,
+              caption: captions.get(path) ?? '',
+            })),
+        }
+      }),
       shares: rest.shares,
     },
     care: { links: careLinks, invitations },

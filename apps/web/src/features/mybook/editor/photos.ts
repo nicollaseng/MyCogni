@@ -21,6 +21,10 @@ export interface ReadyPhoto extends PhotoDimensions {
   file: File
 }
 
+export interface ComposedPhoto extends ReadyPhoto {
+  caption: string
+}
+
 const uploadedSchema = z.object({ path: z.string().min(1), url: z.url() })
 
 const extensions: Readonly<Record<string, string>> = {

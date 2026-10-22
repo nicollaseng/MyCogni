@@ -1,4 +1,4 @@
-import { journalLimits } from '@mycogni/domain'
+import { isCaptionText, journalImageNode, journalLimits } from '@mycogni/domain'
 import { z } from 'zod'
 import { pageQueryFields, pageSchemaOf } from './pagination.ts'
 import { professionalKindSchema } from './professionals.ts'
@@ -16,17 +16,27 @@ export interface JournalNode {
   text?: string
 }
 
+function hasValidCaption(node: JournalNode): boolean {
+  const caption = node.attrs?.caption
+  return node.type !== journalImageNode || caption === undefined || isCaptionText(caption)
+}
+
 export const journalNodeSchema: z.ZodType<JournalNode> = z.lazy(() =>
-  z.object({
-    type: z.string().min(1).max(40),
-    attrs: attributesSchema.optional(),
-    content: z.array(journalNodeSchema).max(5000).optional(),
-    marks: z
-      .array(z.object({ type: z.string().min(1).max(40), attrs: attributesSchema.optional() }))
-      .max(20)
-      .optional(),
-    text: z.string().max(journalLimits.plainText).optional(),
-  }),
+  z
+    .object({
+      type: z.string().min(1).max(40),
+      attrs: attributesSchema.optional(),
+      content: z.array(journalNodeSchema).max(5000).optional(),
+      marks: z
+        .array(z.object({ type: z.string().min(1).max(40), attrs: attributesSchema.optional() }))
+        .max(20)
+        .optional(),
+      text: z.string().max(journalLimits.plainText).optional(),
+    })
+    .refine(hasValidCaption, {
+      message: `A photo caption is plain text of at most ${String(journalLimits.caption)} characters`,
+      path: ['attrs', 'caption'],
+    }),
 )
 
 export const journalDocumentSchema = journalNodeSchema.refine((node) => node.type === 'doc', {
