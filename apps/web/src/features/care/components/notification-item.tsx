@@ -7,10 +7,13 @@ import { notificationHref } from '../notification-href'
 
 export function NotificationMessage({ notification }: { notification: Notification }) {
   const t = useTranslations('care.notifications')
-  const { invitation, kind, supportTicket } = notification
+  const { invitation, kind, supportTicket, questionnaire } = notification
 
   if (invitation !== null) {
     return t('invitation', { name: invitation.professional.name })
+  }
+  if (kind === 'questionnaire_completed' && questionnaire?.patientName != null) {
+    return t('questionnaireCompleted', { name: questionnaire.patientName })
   }
   return supportTicket === null
     ? t(`kinds.${kind}`)

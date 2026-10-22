@@ -13,6 +13,7 @@ export const account: AccountMessages = {
     back: 'Settings',
     profile: 'Profile',
     wellbeing: 'Mood and anxiety',
+    questionnaires: 'Questionnaires',
     professionals: 'Professionals',
     memories: 'Memories',
     reminders: 'Reminders',

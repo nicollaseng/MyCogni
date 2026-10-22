@@ -15,7 +15,13 @@ async function notificationsOrNone(): Promise<NotificationList> {
   }
 }
 
-export async function NotificationBell({ timeZone }: { timeZone: string }) {
+interface NotificationBellProps {
+  timeZone: string
+  feed?: boolean
+  align?: 'start' | 'end'
+}
+
+export async function NotificationBell({ timeZone, feed, align }: NotificationBellProps) {
   const { items, unread } = previewOf(await notificationsOrNone())
 
   return (
@@ -25,6 +31,8 @@ export async function NotificationBell({ timeZone }: { timeZone: string }) {
       timeZone={timeZone}
       markRead={readNotifications}
       latest={latestNotifications}
+      feed={feed}
+      align={align}
     />
   )
 }

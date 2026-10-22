@@ -21,6 +21,8 @@ export interface NotificationPopoverProps {
   markRead: (ids: string[]) => Promise<ActionResult<null>>
   latest: () => Promise<ActionResult<NotificationList>>
   navigate: (href: NotificationHref) => void
+  feed?: boolean
+  align?: 'start' | 'end'
 }
 
 interface FreshList {
@@ -31,6 +33,7 @@ interface FreshList {
 interface NotificationRowsProps {
   notifications: readonly Notification[]
   timeZone: string
+  feed: boolean
   isUnread: (notification: Notification) => boolean
   onOpen: (event: MouseEvent<HTMLAnchorElement>, notification: Notification) => void
   onSeeAll: () => void
@@ -39,6 +42,7 @@ interface NotificationRowsProps {
 function NotificationRows({
   notifications,
   timeZone,
+  feed: showFeed,
   isUnread,
   onOpen,
   onSeeAll,
@@ -96,17 +100,19 @@ function NotificationRows({
           )
         })}
       </div>
-      <div className="border-t border-rule p-1">
-        <Link
-          href="/notifications"
-          role="menuitem"
-          tabIndex={-1}
-          onClick={onSeeAll}
-          className={menuItemStyle}
-        >
-          {t('seeAll')}
-        </Link>
-      </div>
+      {showFeed && (
+        <div className="border-t border-rule p-1">
+          <Link
+            href="/notifications"
+            role="menuitem"
+            tabIndex={-1}
+            onClick={onSeeAll}
+            className={menuItemStyle}
+          >
+            {t('seeAll')}
+          </Link>
+        </div>
+      )}
     </div>
   )
 }
@@ -118,6 +124,8 @@ export function NotificationPopover({
   markRead,
   latest,
   navigate,
+  feed: showFeed = true,
+  align = 'end',
 }: NotificationPopoverProps) {
   const t = useTranslations('care.bell')
   const feed = useTranslations('care.notifications')
@@ -186,7 +194,10 @@ export function NotificationPopover({
           {...panelProps}
           className={headerDropdownStyle(
             closing,
-            'flex max-h-[calc(100dvh-6rem)] flex-col sm:w-[22rem]',
+            cn(
+              'flex max-h-[calc(100dvh-6rem)] flex-col sm:w-[22rem]',
+              align === 'start' && 'sm:right-auto sm:left-0 sm:origin-top-left',
+            ),
           )}
         >
           <div className="flex items-baseline justify-between gap-4 px-4 pt-3.5 pb-2">
@@ -198,6 +209,7 @@ export function NotificationPopover({
           <NotificationRows
             notifications={notifications}
             timeZone={timeZone}
+            feed={showFeed}
             isUnread={isUnread}
             onOpen={openNotification}
             onSeeAll={() => {

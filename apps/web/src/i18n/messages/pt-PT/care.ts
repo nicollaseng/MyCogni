@@ -116,6 +116,7 @@ export const care: CareMessages = {
     respond: 'Responder',
   },
   notifications: {
+    questionnaireCompleted: '{name} respondeu a um questionário.',
     meta: { title: 'Notificações' },
     title: 'Notificações',
     empty: 'Ainda não há nada por aqui.',
@@ -136,6 +137,8 @@ export const care: CareMessages = {
       reminder: 'Abrir o Zen',
       export_ready: 'Descarregar dados',
       export_failed: 'Tentar novamente',
+      questionnaire_assigned: 'Responder',
+      questionnaire_completed: 'Ver resultado',
     },
     kinds: {
       invitation: 'Convite de um profissional',
@@ -147,6 +150,8 @@ export const care: CareMessages = {
       reminder: 'Hora da sua pausa. Que tal alguns minutos para si?',
       export_ready: 'Os seus dados estão prontos para descarregar.',
       export_failed: 'Não foi possível preparar os seus dados. Tente novamente.',
+      questionnaire_assigned: 'O seu profissional disponibilizou-lhe um questionário.',
+      questionnaire_completed: 'Um paciente respondeu a um questionário.',
     },
     support:
       '{status, select, in_progress {O seu pedido {ticket} está em curso.} closed {O seu pedido {ticket} foi fechado.} other {O seu pedido {ticket} foi atualizado.}}',

@@ -1,7 +1,9 @@
 import type { AlertCount, ProfessionalProfile } from '@mycogni/contracts'
 import { useTranslations } from 'next-intl'
-import type { ReactNode } from 'react'
+import { Suspense, type ReactNode } from 'react'
 import { signOut } from '@/features/auth/actions'
+import { BellGlyph, bellStyle } from '@/features/care/components/bell-link'
+import { NotificationBell } from '@/features/care/components/notification-bell'
 import { FreshOnReturn } from '@/features/shell/components/fresh-on-return'
 import { Wordmark } from '@/shared/components/wordmark'
 import { cn } from '@/shared/lib/utils'
@@ -15,13 +17,29 @@ interface ProfessionalShellProps {
   professional: ProfessionalProfile
   photoUrl: string | null
   alerts: AlertCount | null
+  timeZone: string
   children: ReactNode
+}
+
+function Bell({ timeZone, align }: { timeZone: string; align: 'start' | 'end' }) {
+  return (
+    <Suspense
+      fallback={
+        <span className={bellStyle}>
+          <BellGlyph unread={0} />
+        </span>
+      }
+    >
+      <NotificationBell timeZone={timeZone} feed={false} align={align} />
+    </Suspense>
+  )
 }
 
 export function ProfessionalShell({
   professional,
   photoUrl,
   alerts,
+  timeZone,
   children,
 }: ProfessionalShellProps) {
   const t = useTranslations('professional.shell')
@@ -46,9 +64,12 @@ export function ProfessionalShell({
       <FreshOnReturn />
       <aside className="hidden bg-surface lg:block">
         <div className="sticky top-0 flex h-dvh flex-col px-3 pt-6 pb-4">
-          <div className="space-y-1 px-3">
-            <Wordmark />
-            <p className="text-sm text-muted-foreground">{t('area')}</p>
+          <div className="relative flex items-start justify-between gap-2 pl-3">
+            <div className="space-y-1">
+              <Wordmark />
+              <p className="text-sm text-muted-foreground">{t('area')}</p>
+            </div>
+            <Bell timeZone={timeZone} align="start" />
           </div>
           <div className="mt-8">
             <ProfessionalNavigation variant="sidebar" alerts={alerts} />
@@ -74,6 +95,9 @@ export function ProfessionalShell({
           />
           <Wordmark className="text-[20px]" />
           <span className="truncate pl-1 text-[13px] text-muted-foreground">{t('area')}</span>
+          <div className="ml-auto">
+            <Bell timeZone={timeZone} align="end" />
+          </div>
         </div>
       </header>
 

@@ -417,7 +417,7 @@ export const professional = {
       empty: 'Nenhum registro de humor nos últimos {days} dias.',
     },
     screenings: {
-      title: 'Questionários',
+      title: 'Triagens no app',
       empty: 'Nenhum questionário respondido no período compartilhado.',
       note: 'Os questionários mostram a intensidade de sinais. Não fazem diagnóstico.',
       date: 'Data',

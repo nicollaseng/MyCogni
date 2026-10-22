@@ -420,7 +420,7 @@ export const professional: ProfessionalMessages = {
       empty: 'No mood entries in the last {days} days.',
     },
     screenings: {
-      title: 'Questionnaires',
+      title: 'In-app screenings',
       empty: 'No questionnaires answered in the shared period.',
       note: 'Questionnaires show how intense the signs are. They do not give a diagnosis.',
       date: 'Date',

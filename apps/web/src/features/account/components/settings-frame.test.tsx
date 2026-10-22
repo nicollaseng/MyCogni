@@ -67,6 +67,7 @@ describe('SettingsFrame', () => {
         .map((link) => [link.textContent, link.getAttribute('href')]),
     ).toEqual([
       ['Ânimo e ansiedade', '/me/wellbeing'],
+      ['Questionários', '/me/questionnaires'],
       ['Profissionais', '/me/professionals'],
       ['Lembretes', '/me/reminders'],
       ['Som e voz', '/me/sound'],
@@ -92,8 +93,8 @@ describe('SettingsFrame', () => {
     const current = within(nav).getByRole('link', { current: 'page' })
     expect(current).toHaveTextContent('Ânimo e ansiedade')
     expect(current).toHaveAttribute('href', '/me/wellbeing')
-    expect(within(nav).getAllByRole('link')).toHaveLength(9)
-    expect(within(nav).getAllByRole('link', { current: false })).toHaveLength(8)
+    expect(within(nav).getAllByRole('link')).toHaveLength(10)
+    expect(within(nav).getAllByRole('link', { current: false })).toHaveLength(9)
     expect(nav.parentElement).toHaveClass('hidden', 'lg:block')
     expect(content).not.toHaveClass('hidden')
   })

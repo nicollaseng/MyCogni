@@ -1,5 +1,6 @@
 import { account } from './account'
 import { alerts } from './alerts'
+import { assignments } from './assignments'
 import { assistant } from './assistant'
 import { admin } from './admin'
 import { audio } from './audio'
@@ -18,6 +19,7 @@ import { onboarding } from './onboarding'
 import { patterns } from './patterns'
 import { reminders } from './reminders'
 import { professional } from './professional'
+import { questionnaires } from './questionnaires'
 import { report } from './report'
 import { safety } from './safety'
 import { screening } from './screening'
@@ -57,4 +59,6 @@ export const messages: Messages = {
   voice,
   reminders,
   exports: exportMessages,
+  questionnaires,
+  assignments,
 }
