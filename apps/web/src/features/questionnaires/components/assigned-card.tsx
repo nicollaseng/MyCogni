@@ -22,7 +22,7 @@ export function AssignedCard({ open }: { open: readonly PatientAssignment[] }) {
         <h2 className="font-serif text-[22px] leading-tight tracking-[-0.01em] text-balance">
           {t('card.title')}
         </h2>
-        <p className="text-[15px] text-muted-foreground">
+        <p className="text-[15px] text-pretty text-muted-foreground">
           {t(`areas.${first.area}`)} ·{' '}
           {t('size', { count: first.itemCount, minutes: first.minutes })}
         </p>

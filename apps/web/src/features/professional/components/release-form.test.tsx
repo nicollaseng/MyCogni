@@ -70,6 +70,21 @@ describe('ReleaseForm', () => {
     expect(screen.getByText('Status SATEPSI verificado em 22 de out. de 2026.')).toBeInTheDocument()
   })
 
+  it('shows the mandatory ASRS notice next to the option', async () => {
+    renderWithIntl(
+      <ReleaseForm
+        catalog={catalogFor('psychologist', 'pt-BR')}
+        release={releaseResult({ ok: true, value: assignment({}) })}
+        onReleased={jest.fn()}
+      />,
+    )
+
+    await userEvent.click(screen.getByRole('radio', { name: 'TDAH em adultos' }))
+    expect(
+      screen.getByText('© New York University and the President and Fellows of Harvard College'),
+    ).toBeInTheDocument()
+  })
+
   it('disables instruments without an official text in the patient language', async () => {
     renderWithIntl(
       <ReleaseForm

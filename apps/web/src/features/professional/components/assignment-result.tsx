@@ -52,6 +52,7 @@ export function AssignmentResult({ detail, patientName, timeZone }: AssignmentRe
   const entry = catalogEntryOf(assignment.variant)
   const name = assignment.variant === 'asrs6' ? t('names.asrs6') : entry.name
   const text = response === null ? null : questionnaireText(assignment.variant, response.locale)
+  const notice = questionnaireText(assignment.variant, response?.locale ?? 'en-US')?.notice ?? null
   const date = (value: string) => formatShortDate(new Date(value), timeZone, locale)
 
   return (
@@ -68,7 +69,9 @@ export function AssignmentResult({ detail, patientName, timeZone }: AssignmentRe
           </Link>
         }
         description={`${t(`areas.${entry.area}`)} · ${t(`statuses.${assignment.status}`)}`}
-      />
+      >
+        {notice !== null && <p className="text-[13px] text-muted-foreground">{notice}</p>}
+      </WorkspaceHeader>
       <Notices complementary={detail.complementarySource} />
 
       {response === null || text === null ? (

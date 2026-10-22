@@ -8,6 +8,7 @@ import type {
 } from '@mycogni/contracts'
 import {
   assignmentNoteMaxLength,
+  questionnaireText,
   repeatIntervals,
   type QuestionnaireArea,
   type QuestionnaireVariant,
@@ -61,6 +62,7 @@ function InstrumentOption({
   const t = useTranslations('assignments')
   const disabled = option.unavailableReason !== null
   const descriptionId = useId()
+  const notice = questionnaireText(option.variant, 'en-US')?.notice ?? null
   return (
     <label
       className={cn(
@@ -97,6 +99,7 @@ function InstrumentOption({
             {t('dialog.minutes', { minutes: option.minutes })} ·{' '}
             {option.uses.map((use) => t(`dialog.uses.${use}`)).join(', ')}
           </span>
+          {notice !== null && <span className="block text-[12px]">{notice}</span>}
           {option.unavailableReason !== null ? (
             <span className="block font-medium text-foreground">
               {t(`dialog.reasons.${option.unavailableReason}`)}

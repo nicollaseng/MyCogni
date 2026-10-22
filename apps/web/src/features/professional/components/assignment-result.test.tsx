@@ -75,8 +75,8 @@ describe('AssignmentResult', () => {
     expect(screen.getAllByText('Positivo baixo').length).toBeGreaterThan(0)
     expect(screen.getByText(/6 de 6 respostas na faixa sombreada/)).toBeInTheDocument()
     expect(
-      screen.getByText('© New York University and the President and Fellows of Harvard College'),
-    ).toBeInTheDocument()
+      screen.getAllByText('© New York University and the President and Fellows of Harvard College'),
+    ).toHaveLength(2)
   })
 
   it('labels the K10 bands as not universal', () => {
