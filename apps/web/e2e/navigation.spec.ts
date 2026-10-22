@@ -94,7 +94,10 @@ test('highlights Zen in the middle of the navigation and marks it when open', as
   const zen = mainNavigation(page).getByRole('link', { name: 'Zen' })
 
   await expect(zen).toHaveAttribute('data-zen-tab')
+  await expect(zen.locator('svg[data-icon="lotus"]')).toBeVisible()
   await expect(zen).not.toHaveAttribute('aria-current')
+  const brand = page.getByRole('banner').getByRole('link', { name: 'MyCogniAI' })
+  await expect(brand.getByTestId('brand-mark')).toBeVisible()
   const zenBox = await zen.boundingBox()
   const navigationBox = await mainNavigation(page).getByRole('list').boundingBox()
   if (zenBox === null || navigationBox === null) {
@@ -108,4 +111,5 @@ test('highlights Zen in the middle of the navigation and marks it when open', as
   await expect(page).toHaveURL('/zen')
   await expect(zen).toHaveAttribute('aria-current', 'page')
   await expect(page.getByRole('heading', { level: 1, name: 'Zen Space' })).toBeVisible()
+  await expect(brand.getByTestId('brand-mark')).toBeVisible()
 })

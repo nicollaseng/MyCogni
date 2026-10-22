@@ -75,6 +75,7 @@ describe('NavigationLinks', () => {
 
       expect(zen).toHaveAttribute('data-zen-tab')
       expect(zen.querySelector('svg')).toHaveAttribute('aria-hidden')
+      expect(zen.querySelector('svg')).toHaveAttribute('data-icon', 'lotus')
       expect(zen).not.toHaveAttribute('aria-current')
       expect(container.querySelectorAll('[data-zen-tab]')).toHaveLength(1)
 

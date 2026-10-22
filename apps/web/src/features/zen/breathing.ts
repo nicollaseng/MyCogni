@@ -6,7 +6,7 @@ export const phaseSeconds = 4
 
 export const breathingRounds = 4
 
-const phaseMs = phaseSeconds * 1000
+export const phaseMs = phaseSeconds * 1000
 
 export const roundMs = phaseMs * breathingPhases.length
 

@@ -11,10 +11,10 @@
   --animate-breathe: breathe 1.6s ease-in-out infinite;
   --animate-zen-breath: zen-breath 16s ease-in-out infinite;
   --animate-zen-swell: zen-swell 4s ease-in-out infinite alternate;
-  --animate-box-idle: box-idle 4s ease-in-out infinite alternate;
-  --animate-box-dot: box-dot 16s linear infinite;
-  --animate-box-trail: box-trail 16s linear infinite;
-  --animate-box-fill: box-fill 16s linear infinite;
+  --animate-relief-idle: relief-idle 5s ease-in-out infinite alternate;
+  --animate-relief-breath: relief-breath 16s linear infinite;
+  --animate-relief-fill: relief-fill 16s linear infinite;
+  --animate-relief-sweep: relief-sweep 4s linear infinite;
 
   @keyframes rise {
     from {
@@ -59,53 +59,58 @@
     }
   }
 
-  @keyframes box-idle {
+  @keyframes relief-idle {
     from {
-      transform: scale(0.62);
+      transform: scale(0.89);
     }
     to {
-      transform: scale(0.74);
+      transform: scale(0.92);
     }
   }
 
-  @keyframes box-dot {
-    0%,
-    100% {
-      transform: translate(0, 100%);
-    }
-    25% {
-      transform: translate(0, 0);
-    }
-    50% {
-      transform: translate(100%, 0);
-    }
-    75% {
-      transform: translate(100%, 100%);
-    }
-  }
-
-  @keyframes box-trail {
-    from {
-      stroke-dashoffset: 4;
-    }
-    to {
-      stroke-dashoffset: 0;
-    }
-  }
-
-  @keyframes box-fill {
+  @keyframes relief-breath {
     0% {
-      transform: scale(0.62);
-      animation-timing-function: cubic-bezier(0.37, 0, 0.63, 1);
+      transform: scale(0.86);
+      animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1);
     }
     25%,
     50% {
       transform: scale(1);
-      animation-timing-function: cubic-bezier(0.37, 0, 0.63, 1);
+      animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1);
     }
     75%,
     100% {
-      transform: scale(0.62);
+      transform: scale(0.86);
+    }
+  }
+
+  @keyframes relief-fill {
+    0% {
+      fill-opacity: 0.06;
+      animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1);
+    }
+    25%,
+    50% {
+      fill-opacity: 0.2;
+      animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1);
+    }
+    75%,
+    100% {
+      fill-opacity: 0.06;
+    }
+  }
+
+  @keyframes relief-sweep {
+    0% {
+      stroke-dashoffset: 1;
+      opacity: 1;
+    }
+    88% {
+      opacity: 1;
+    }
+    100% {
+      stroke-dashoffset: 0;
+      opacity: 0;
     }
   }
 }
