@@ -7,17 +7,18 @@ import {
   crisisLinesFor,
   dayKey,
   frequentTags,
-  instrumentIds,
   instruments,
   isContextId,
   isEmotionId,
   labelsFor,
+  latestPerDomain,
   maxMoodLevel,
   maxScoreOf,
   moodDays,
   moodNames,
   patternRules,
   periodSummary,
+  screeningDomains,
   severityRanges,
   type InstrumentId,
   type LabelSet,
@@ -294,19 +295,20 @@ function screeningRowsOf(
   format: Formatters,
   showRisk: boolean,
 ): ScreeningRow[] {
-  return instrumentIds.flatMap((id) => {
-    const latest = screenings
-      .filter((screening) => screening.instrument === id && inPeriod(screening.completedAt))
-      .sort((first, second) => second.completedAt.getTime() - first.completedAt.getTime())[0]
+  const latestInPeriod = latestPerDomain(
+    screenings.filter((screening) => inPeriod(screening.completedAt)),
+  )
+  return screeningDomains.flatMap((domain) => {
+    const latest = latestInPeriod[domain]
     if (latest === undefined) {
       return []
     }
-    const instrument = instruments[id]
+    const instrument = instruments[latest.instrument]
     const total = maxScoreOf(instrument) + 1
     return [
       {
         name: instrument.name,
-        topic: labels.instruments[id],
+        topic: labels.topics[domain],
         score: messages.screenings.score(latest.totalScore, maxScoreOf(instrument)),
         severity: labels.severities[latest.severity],
         date: messages.screenings.answeredOn(format.longDate(latest.completedAt)),

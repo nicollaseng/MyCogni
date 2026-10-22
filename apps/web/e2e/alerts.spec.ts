@@ -26,9 +26,20 @@ async function signIn(page: Page, email: string): Promise<void> {
 async function answerPhq9WithRisk(page: Page): Promise<void> {
   await page.goto('/questionnaires')
   await page.getByRole('button', { name: 'Começar' }).click()
-  for (let index = 1; index <= 9; index++) {
-    await expect(page.getByText(`Desânimo · ${String(index)} de 9`)).toBeVisible()
-    const choice = index === 9 ? 'Vários dias' : 'Mais da metade dos dias'
+  const screen = [
+    'Mais da metade dos dias',
+    'Mais da metade dos dias',
+    'Nenhuma vez',
+    'Nenhuma vez',
+  ]
+  for (const [index, choice] of screen.entries()) {
+    await expect(page.getByText(`Pergunta ${String(index + 1)} de 5`)).toBeVisible()
+    await page.getByRole('button', { name: choice, exact: true }).click()
+  }
+  await page.getByRole('button', { name: 'Continuar' }).click()
+  for (let index = 5; index <= 11; index++) {
+    await expect(page.getByText(`Pergunta ${String(index)} de 11`)).toBeVisible()
+    const choice = index === 11 ? 'Vários dias' : 'Mais da metade dos dias'
     await page.getByRole('button', { name: choice, exact: true }).click()
   }
   await expect(page.getByRole('heading', { name: 'Obrigado por contar.' })).toBeVisible()

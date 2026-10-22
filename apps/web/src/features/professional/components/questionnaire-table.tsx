@@ -1,7 +1,7 @@
 'use client'
 
 import type { Assessment } from '@mycogni/contracts'
-import { instruments } from '@mycogni/domain'
+import { domainOf, instruments } from '@mycogni/domain'
 import { useLocale, useTranslations } from 'next-intl'
 import { useState } from 'react'
 import { cn } from '@/shared/lib/utils'
@@ -23,7 +23,7 @@ const columns = ['date', 'instrument', 'score', 'severity', 'item9'] as const
 
 function RiskItem({ assessment }: { assessment: Assessment }) {
   const t = useTranslations('professional.patient.screenings')
-  if (assessment.instrument !== 'phq9') {
+  if (instruments[assessment.instrument].riskItemIndex === null) {
     return (
       <span className="text-muted-foreground">
         <span aria-hidden>—</span>
@@ -88,7 +88,7 @@ export function QuestionnaireTable({ assessments, timeZone }: QuestionnaireTable
                 <td className={table.cell}>
                   <span className="font-medium">{instruments[assessment.instrument].name}</span>
                   <span className="block text-[13px] text-muted-foreground">
-                    {screening(`topics.${assessment.instrument}`)}
+                    {screening(`topics.${domainOf(assessment.instrument)}`)}
                   </span>
                 </td>
                 <td className={cn(table.cell, table.numeric)}>

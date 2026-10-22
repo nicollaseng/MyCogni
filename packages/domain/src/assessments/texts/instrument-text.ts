@@ -1,4 +1,4 @@
-import type { InstrumentId } from '../instrument.ts'
+import type { ScreeningDomain } from '../instrument.ts'
 
 export interface InstrumentText {
   prompt: string
@@ -6,4 +6,4 @@ export interface InstrumentText {
   options: readonly [string, string, string, string]
 }
 
-export type InstrumentTexts = Readonly<Record<InstrumentId, InstrumentText>>
+export type InstrumentTexts = Readonly<Record<ScreeningDomain, InstrumentText>>

@@ -9,13 +9,26 @@ export {
 export { answerValues, isAnswer, type Answer } from './assessments/frequency.ts'
 export {
   instrumentIds,
+  screeningDomains,
   severities,
   type Instrument,
   type InstrumentId,
+  type ScreeningDomain,
   type Severity,
   type SeverityBand,
 } from './assessments/instrument.ts'
+export { gad2 } from './assessments/gad2.ts'
 export { gad7 } from './assessments/gad7.ts'
+export { latestPerDomain, type DomainRecord, type LatestPerDomain } from './assessments/latest.ts'
+export { phq2 } from './assessments/phq2.ts'
+export {
+  isPositiveScreen,
+  isShortScreen,
+  twoStepScreens,
+  type TwoStepScreen,
+} from './assessments/screens.ts'
+export * from './assessments/screening-rules.ts'
+export * from './assessments/two-step.ts'
 export {
   plainLevelOf,
   plainLevelRank,
@@ -39,9 +52,12 @@ export { phq9 } from './assessments/phq9.ts'
 export type { InstrumentText } from './assessments/texts/instrument-text.ts'
 export { instrumentText } from './assessments/texts/texts.ts'
 export {
+  domainOf,
   instruments,
   InvalidAnswersError,
+  isStorable,
   maxScoreOf,
+  PositiveScreenError,
   scoreAssessment,
   type AssessmentScore,
 } from './assessments/scoring.ts'

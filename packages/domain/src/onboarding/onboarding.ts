@@ -1,4 +1,5 @@
-import { instrumentIds, type InstrumentId } from '../assessments/instrument.ts'
+import { screeningDomains, type InstrumentId } from '../assessments/instrument.ts'
+import { domainOf } from '../assessments/scoring.ts'
 import { missingConsents, type ConsentKind } from '../consents/consents.ts'
 
 export interface OnboardingProgress {
@@ -12,6 +13,6 @@ export function isOnboardingReady({
 }: OnboardingProgress): boolean {
   return (
     missingConsents(grantedConsents).length === 0 &&
-    instrumentIds.every((id) => completedInstruments.includes(id))
+    screeningDomains.every((domain) => completedInstruments.some((id) => domainOf(id) === domain))
   )
 }

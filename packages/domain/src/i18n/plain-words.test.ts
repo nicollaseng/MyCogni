@@ -6,6 +6,7 @@ describe('plainWordsOf', () => {
   it('names the depression questionnaire desânimo and folds the two highest bands into alto', () => {
     expect(plainWordsOf('pt-BR', 'phq9', 'severe')).toEqual({ topic: 'desânimo', level: 'alto' })
     expect(plainWordsOf('pt-BR', 'gad7', 'mild')).toEqual({ topic: 'ansiedade', level: 'leve' })
+    expect(plainWordsOf('pt-BR', 'phq2', 'minimal')).toEqual({ topic: 'desânimo', level: 'baixo' })
   })
 
   it('speaks each language with its own words', () => {

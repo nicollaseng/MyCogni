@@ -4,6 +4,7 @@ import {
   consistencyOf,
   contextEffects,
   dayKey,
+  domainOf,
   frequentTags,
   instruments,
   isContextId,
@@ -19,6 +20,7 @@ import {
   plainWordsOf,
   weekSummary,
   type AssistantMode,
+  type InstrumentId,
   type LabelSet,
   type Locale,
 } from '@mycogni/domain'
@@ -268,6 +270,10 @@ export function createAssistantToolbox({
     }
   }
 
+  function asksSafetyItem(id: InstrumentId): boolean {
+    return instruments[id].riskItemIndex !== null
+  }
+
   async function readQuestionnaires(subject: ToolSubject): Promise<unknown> {
     const labels = labelsFor(subject.locale)
     const records = (await assessments.list(subject.viewerId, subject.ownerId)).slice(0, 6)
@@ -278,18 +284,20 @@ export function createAssistantToolbox({
           topic: words.topic,
           signs: words.level,
           day: dayKey(record.completedAt, subject.timeZone),
-          ...(record.instrument === 'phq9' ? { selfHarmItemPositive: record.hasRiskFlag } : {}),
+          ...(asksSafetyItem(record.instrument)
+            ? { selfHarmItemPositive: record.hasRiskFlag }
+            : {}),
         }
       })
     }
     return records.map((record) => ({
-      questionnaire: record.instrument === 'phq9' ? 'PHQ-9' : 'GAD-7',
-      about: labels.instruments[record.instrument],
+      questionnaire: instruments[record.instrument].name,
+      about: labels.topics[domainOf(record.instrument)],
       score: record.totalScore,
       maxScore: maxScoreOf(instruments[record.instrument]),
       band: labels.severities[record.severity],
       day: dayKey(record.completedAt, subject.timeZone),
-      ...(record.instrument === 'phq9' ? { selfHarmItemPositive: record.hasRiskFlag } : {}),
+      ...(asksSafetyItem(record.instrument) ? { selfHarmItemPositive: record.hasRiskFlag } : {}),
     }))
   }
 

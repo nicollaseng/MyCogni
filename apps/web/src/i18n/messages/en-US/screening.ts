@@ -5,7 +5,7 @@ const labels = labelsFor('en-US')
 
 export const screening: ScreeningMessages = {
   title: 'Questionnaires',
-  topics: labels.instruments,
+  topics: labels.topics,
   severity: labels.severities,
   guidance: {
     minimal: 'Nothing that needs attention right now. Keep noticing how your days go.',
@@ -27,9 +27,18 @@ export const screening: ScreeningMessages = {
   },
   questionnaire: {
     back: 'Back',
-    progress: '{name} · {current} of {total}',
+    progress: 'Question {current} of {total}',
+    reminder: 'Over the last 2 weeks',
     saving: 'Saving your answers…',
     retry: 'Try again',
+  },
+  more: {
+    title: {
+      depression: 'A few more questions about your mood',
+      anxiety: 'A few more questions about anxiety',
+    },
+    body: '{count, plural, one {# more question, one per screen. It helps us understand how you are.} other {# more questions, one per screen. They help us understand how you are.}}',
+    continue: 'Continue',
   },
   results: {
     risk: 'If you think about hurting yourself again, call:',
@@ -44,7 +53,8 @@ export const screening: ScreeningMessages = {
   retake: {
     close: 'Close',
     title: 'How have the last two weeks been?',
-    firstTime: 'There are 16 questions about mood and anxiety, one per screen.',
+    firstTime:
+      'It starts with 5 questions about mood and anxiety, one per screen. Sometimes a few more follow.',
     since: 'Last time you answered on {date}. At the end, you’ll see what has changed since then.',
     honest: 'There are no right answers. Answer based on how things have really been.',
     start: 'Start',

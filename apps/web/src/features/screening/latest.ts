@@ -1,40 +1,34 @@
 import type { Assessment } from '@mycogni/contracts'
 import {
-  instrumentIds,
+  latestPerDomain,
   plainLevelOf,
   plainTrendOf,
-  type InstrumentId,
+  screeningDomains,
   type PlainLevel,
   type PlainTrend,
+  type ScreeningDomain,
 } from '@mycogni/domain'
 
-export type LatestResults = Partial<Record<InstrumentId, Assessment>>
+export type LatestResults = Partial<Record<ScreeningDomain, Assessment>>
 
 export interface PlainResult {
+  domain: ScreeningDomain
   assessment: Assessment
   level: PlainLevel
   trend: PlainTrend | null
 }
 
-export function latestByInstrument(assessments: readonly Assessment[]): LatestResults {
-  const results: LatestResults = {}
-  for (const assessment of newestFirst(assessments)) {
-    results[assessment.instrument] ??= assessment
-  }
-  return results
-}
-
-function newestFirst(assessments: readonly Assessment[]): Assessment[] {
-  return [...assessments].sort((first, second) =>
-    second.completedAt.localeCompare(first.completedAt),
-  )
+export function latestByDomain(assessments: readonly Assessment[]): LatestResults {
+  return { ...latestPerDomain(assessments) }
 }
 
 export function plainResultOf(
+  domain: ScreeningDomain,
   assessment: Assessment,
   previous: Assessment | undefined,
 ): PlainResult {
   return {
+    domain,
     assessment,
     level: plainLevelOf(assessment.severity),
     trend: previous === undefined ? null : plainTrendOf(assessment.severity, previous.severity),
@@ -43,14 +37,14 @@ export function plainResultOf(
 
 export function latestPlainResults(
   assessments: readonly Assessment[],
-): Partial<Record<InstrumentId, PlainResult>> {
-  const results: Partial<Record<InstrumentId, PlainResult>> = {}
-  for (const id of instrumentIds) {
-    const [latest, previous] = newestFirst(assessments).filter(
-      (assessment) => assessment.instrument === id,
-    )
-    if (latest !== undefined) {
-      results[id] = plainResultOf(latest, previous)
+): Partial<Record<ScreeningDomain, PlainResult>> {
+  const latest = latestPerDomain(assessments)
+  const results: Partial<Record<ScreeningDomain, PlainResult>> = {}
+  for (const domain of screeningDomains) {
+    const current = latest[domain]
+    if (current !== undefined) {
+      const previous = latestPerDomain(assessments.filter((item) => item.id !== current.id))[domain]
+      results[domain] = plainResultOf(domain, current, previous)
     }
   }
   return results

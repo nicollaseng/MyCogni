@@ -283,14 +283,16 @@ describe('scores', () => {
     expect(severityRanges(phq9).at(-1)).toEqual({ severity: 'severe', min: 20, max: 27 })
   })
 
-  it('keeps the scores of one questionnaire, oldest first', () => {
+  it('keeps the scores of one area, short screens included, oldest first', () => {
     const scores = [
+      { id: 'd', instrument: 'phq2', totalScore: 1, completedAt: at('2026-10-20') },
       { id: 'c', instrument: 'phq9', totalScore: 8, completedAt: at('2026-10-10') },
       { id: 'b', instrument: 'gad7', totalScore: 6, completedAt: at('2026-10-01') },
       { id: 'a', instrument: 'phq9', totalScore: 12, completedAt: at('2026-09-20') },
     ] as const
 
-    expect(scoreTimeline(scores, 'phq9').map((score) => score.id)).toEqual(['a', 'c'])
+    expect(scoreTimeline(scores, 'depression').map((score) => score.id)).toEqual(['a', 'c', 'd'])
+    expect(scoreTimeline(scores, 'anxiety').map((score) => score.id)).toEqual(['b'])
   })
 })
 

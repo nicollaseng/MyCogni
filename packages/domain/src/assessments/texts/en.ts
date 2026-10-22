@@ -8,7 +8,7 @@ const options = [
 ] as const
 
 export const english: InstrumentTexts = {
-  phq9: {
+  depression: {
     prompt:
       'Over the last 2 weeks, how often have you been bothered by any of the following problems?',
     items: [
@@ -24,7 +24,7 @@ export const english: InstrumentTexts = {
     ],
     options,
   },
-  gad7: {
+  anxiety: {
     prompt: 'Over the last 2 weeks, how often have you been bothered by the following problems?',
     items: [
       'Feeling nervous, anxious or on edge',

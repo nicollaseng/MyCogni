@@ -1,4 +1,4 @@
-import { instrumentIds, type InstrumentId } from '@mycogni/domain'
+import { screeningDomains, type ScreeningDomain } from '@mycogni/domain'
 import type { ReactNode } from 'react'
 import { useLocale, useTranslations } from 'next-intl'
 import { Section } from '@/shared/components/section'
@@ -7,7 +7,7 @@ import type { PlainResult } from '../latest'
 import { PlainScale } from './plain-scale'
 
 interface LatestScreeningProps {
-  results: Partial<Record<InstrumentId, PlainResult>>
+  results: Partial<Record<ScreeningDomain, PlainResult>>
   timeZone: string
   children?: ReactNode
 }
@@ -16,7 +16,7 @@ function Row({ result }: { result: PlainResult }) {
   const t = useTranslations('screening.plain')
   return (
     <li className="space-y-1.5">
-      <p className="text-sm text-muted-foreground">{t(`names.${result.assessment.instrument}`)}</p>
+      <p className="text-sm text-muted-foreground">{t(`names.${result.domain}`)}</p>
       <p className="font-serif text-[28px] leading-none">{t(`levels.${result.level}`)}</p>
       <PlainScale level={result.level} className="max-w-40 pt-1" />
       {result.trend !== null && <p className="text-sm">{t(`trend.${result.trend}`)}</p>}
@@ -27,8 +27,8 @@ function Row({ result }: { result: PlainResult }) {
 export function LatestScreening({ results, timeZone, children }: LatestScreeningProps) {
   const t = useTranslations('screening.latest')
   const locale = useLocale()
-  const answered = instrumentIds.flatMap((id) => {
-    const result = results[id]
+  const answered = screeningDomains.flatMap((domain) => {
+    const result = results[domain]
     return result === undefined ? [] : [result]
   })
   const latest = answered.reduce<PlainResult | undefined>(

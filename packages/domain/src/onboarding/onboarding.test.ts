@@ -12,6 +12,21 @@ describe('isOnboardingReady', () => {
     ).toBe(true)
   })
 
+  it('is ready when a short screen answered an area', () => {
+    expect(
+      isOnboardingReady({
+        grantedConsents: requiredConsentKinds,
+        completedInstruments: ['phq2', 'gad7'],
+      }),
+    ).toBe(true)
+    expect(
+      isOnboardingReady({
+        grantedConsents: requiredConsentKinds,
+        completedInstruments: ['phq2', 'gad2'],
+      }),
+    ).toBe(true)
+  })
+
   it('is not ready while a required consent is missing', () => {
     expect(
       isOnboardingReady({
@@ -24,6 +39,12 @@ describe('isOnboardingReady', () => {
   it('is not ready while a screening is unanswered', () => {
     expect(
       isOnboardingReady({ grantedConsents: requiredConsentKinds, completedInstruments: ['phq9'] }),
+    ).toBe(false)
+    expect(
+      isOnboardingReady({
+        grantedConsents: requiredConsentKinds,
+        completedInstruments: ['phq2', 'phq9'],
+      }),
     ).toBe(false)
   })
 })

@@ -1,4 +1,4 @@
-import type { AttentionSignals } from '@mycogni/domain'
+import { latestPerDomain, type AttentionSignals } from '@mycogni/domain'
 import type {
   CheckInStatsRecord,
   LastCheckInRecord,
@@ -19,10 +19,6 @@ export interface PatientSignals<L extends LinkedPatient> {
   signals: AttentionSignals
 }
 
-function latestOf(screenings: ScreeningRecord[], instrument: ScreeningRecord['instrument']) {
-  return screenings.find((screening) => screening.instrument === instrument) ?? null
-}
-
 export async function loadPatientSignals<L extends LinkedPatient>(
   metrics: PatientMetricsRepository,
   professionalId: string,
@@ -39,9 +35,10 @@ export async function loadPatientSignals<L extends LinkedPatient>(
     const last = lastCheckIns.find((checkIn) => checkIn.patientId === link.patientId)
     const own = screenings.filter((screening) => screening.patientId === link.patientId)
     const patientStats = stats.get(link.patientId)
+    const latest = latestPerDomain(own)
     const signals: AttentionSignals = {
-      latestPhq9: latestOf(own, 'phq9'),
-      latestGad7: latestOf(own, 'gad7'),
+      latestDepression: latest.depression ?? null,
+      latestAnxiety: latest.anxiety ?? null,
       moodAverage: patientStats?.moodAverage ?? null,
       previousMoodAverage: patientStats?.previousMoodAverage ?? null,
       lastCheckInAt: last?.recordedAt ?? null,

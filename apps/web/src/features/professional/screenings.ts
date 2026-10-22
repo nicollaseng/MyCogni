@@ -1,15 +1,13 @@
 import type { ScreeningSummary } from '@mycogni/contracts'
-import type { InstrumentId } from '@mycogni/domain'
+import { latestPerDomain, type ScreeningDomain } from '@mycogni/domain'
 
-export type LatestScreenings = Partial<Record<InstrumentId, ScreeningSummary>>
+export type LatestScreenings = Partial<Record<ScreeningDomain, ScreeningSummary>>
+
+export const screeningColumns = {
+  phq9: 'depression',
+  gad7: 'anxiety',
+} as const satisfies Readonly<Record<string, ScreeningDomain>>
 
 export function latestScreenings(screenings: readonly ScreeningSummary[]): LatestScreenings {
-  const latest: LatestScreenings = {}
-  for (const screening of screenings) {
-    const current = latest[screening.instrument]
-    if (current === undefined || screening.completedAt > current.completedAt) {
-      latest[screening.instrument] = screening
-    }
-  }
-  return latest
+  return { ...latestPerDomain(screenings) }
 }

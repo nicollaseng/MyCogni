@@ -1,5 +1,11 @@
 import type { PatientSummary, ScreeningSummary } from '@mycogni/contracts'
-import { instruments, maxMoodLevel, maxScoreOf, type InstrumentId } from '@mycogni/domain'
+import {
+  instruments,
+  maxMoodLevel,
+  maxScoreOf,
+  twoStepScreens,
+  type ScreeningDomain,
+} from '@mycogni/domain'
 import { useFormatter, useLocale, useTranslations } from 'next-intl'
 import { formatShortDate } from '../dates'
 import { latestScreenings } from '../screenings'
@@ -13,22 +19,24 @@ interface PatientKpisProps {
 }
 
 function ScreeningTile({
-  instrument,
+  domain,
   screening,
   timeZone,
 }: {
-  instrument: InstrumentId
+  domain: ScreeningDomain
   screening: ScreeningSummary | undefined
   timeZone: string
 }) {
   const t = useTranslations('professional')
   const severity = useTranslations('screening.severity')
   const locale = useLocale()
-  const label = t(`patient.kpis.${instrument}`)
+  const instrument =
+    screening === undefined ? twoStepScreens[domain].full : instruments[screening.instrument]
+  const label = t('patient.kpis.latest', { name: instrument.name })
   if (screening === undefined) {
     return <Stat label={label} value="—" caption={t('screening.notAnswered')} />
   }
-  const max = maxScoreOf(instruments[instrument])
+  const max = maxScoreOf(instrument)
   return (
     <Stat
       label={label}
@@ -113,8 +121,8 @@ export function PatientKpis({ patient, timeZone }: PatientKpisProps) {
         value={format.number(patient.checkInsLast30Days)}
         caption={t('patient.kpis.week', { count: patient.checkInsLastWeek })}
       />
-      <ScreeningTile instrument="phq9" screening={latest.phq9} timeZone={timeZone} />
-      <ScreeningTile instrument="gad7" screening={latest.gad7} timeZone={timeZone} />
+      <ScreeningTile domain="depression" screening={latest.depression} timeZone={timeZone} />
+      <ScreeningTile domain="anxiety" screening={latest.anxiety} timeZone={timeZone} />
     </StatStrip>
   )
 }

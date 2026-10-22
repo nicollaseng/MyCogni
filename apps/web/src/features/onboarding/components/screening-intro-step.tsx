@@ -4,8 +4,8 @@ import { Button } from '@/shared/ui/button'
 import { StepHeading } from '@/shared/components/step-heading'
 
 const facts = [
-  { figure: '16', key: 'questions' },
-  { figure: '3', key: 'minutes' },
+  { figure: '5', key: 'questions' },
+  { figure: '2', key: 'minutes' },
   { figure: '2', key: 'weeks' },
 ] as const
 

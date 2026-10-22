@@ -19,7 +19,7 @@ interface PatientHeaderProps {
 export function PatientHeader({ patient, timeZone, actions }: PatientHeaderProps) {
   const t = useTranslations('professional')
   const locale = useLocale()
-  const flagged = latestScreenings(patient.screenings).phq9
+  const flagged = latestScreenings(patient.screenings).depression
 
   return (
     <div className="space-y-4">

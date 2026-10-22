@@ -5,7 +5,7 @@ const labels = labelsFor('pt-PT')
 
 export const screening: ScreeningMessages = {
   title: 'Questionários',
-  topics: labels.instruments,
+  topics: labels.topics,
   severity: labels.severities,
   guidance: {
     minimal: 'Nada que peça atenção agora. Continue a observar os seus dias.',
@@ -27,9 +27,18 @@ export const screening: ScreeningMessages = {
   },
   questionnaire: {
     back: 'Voltar',
-    progress: '{name} · {current} de {total}',
+    progress: 'Pergunta {current} de {total}',
+    reminder: 'Nas últimas 2 semanas',
     saving: 'A guardar as suas respostas…',
     retry: 'Tentar novamente',
+  },
+  more: {
+    title: {
+      depression: 'Mais algumas perguntas sobre o ânimo',
+      anxiety: 'Mais algumas perguntas sobre a ansiedade',
+    },
+    body: '{count, plural, =0 {Nenhuma pergunta a mais.} one {Mais # pergunta, uma por ecrã. Ajuda a perceber melhor como está.} other {Mais # perguntas, uma por ecrã. Ajudam a perceber melhor como está.}}',
+    continue: 'Continuar',
   },
   results: {
     risk: 'Se voltar a pensar em magoar-se, ligue:',
@@ -44,7 +53,8 @@ export const screening: ScreeningMessages = {
   retake: {
     close: 'Fechar',
     title: 'Como correram as últimas duas semanas?',
-    firstTime: 'São 16 perguntas sobre ânimo e ansiedade, uma por ecrã.',
+    firstTime:
+      'Começa com 5 perguntas sobre o ânimo e a ansiedade, uma por ecrã. Por vezes seguem-se mais algumas.',
     since: 'Da última vez respondeu em {date}. No fim, vê o que mudou desde então.',
     honest: 'Não há respostas certas. Responda a pensar em como as coisas correram de verdade.',
     start: 'Começar',

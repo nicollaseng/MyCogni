@@ -1,37 +1,47 @@
 'use client'
 
 import type { Assessment } from '@mycogni/contracts'
-import { gad7, phq9 } from '@mycogni/domain'
 import Link from 'next/link'
 import { useLocale, useTranslations } from 'next-intl'
-import { useState } from 'react'
+import { useState, useSyncExternalStore } from 'react'
 import { StepActions } from '@/shared/components/step-actions'
 import { StepHeading } from '@/shared/components/step-heading'
 import { formatLongDate } from '@/shared/lib/time'
 import { cn } from '@/shared/lib/utils'
 import { Button, buttonVariants } from '@/shared/ui/button'
-import type { LatestResults } from '../latest'
-import type { SubmitScreening } from '../model'
-import { Questionnaire } from './questionnaire'
+import { hasScreeningDraft } from '../draft'
+import { latestByDomain } from '../latest'
+import type { ScreeningResults as Results, SubmitScreening } from '../model'
+import { resultsBefore } from '../session'
+import { ScreeningFlow } from './screening-flow'
 import { ScreeningResults } from './screening-results'
-import { SupportStep } from './support-step'
 
-type Step = 'intro' | 'phq9' | 'support' | 'gad7' | 'results'
+type Step = 'intro' | 'questions' | 'results'
 
 interface RetakeFlowProps {
-  previous: LatestResults
+  userId: string
+  assessments: readonly Assessment[]
   timeZone: string
   send: SubmitScreening
 }
 
-export function RetakeFlow({ previous: initial, timeZone, send }: RetakeFlowProps) {
+function subscribeToNothing(): () => void {
+  return () => undefined
+}
+
+export function RetakeFlow({ userId, assessments, timeZone, send }: RetakeFlowProps) {
   const t = useTranslations('screening')
   const locale = useLocale()
-  const [previous] = useState(initial)
-  const [step, setStep] = useState<Step>('intro')
-  const [depression, setDepression] = useState<Assessment>()
-  const [anxiety, setAnxiety] = useState<Assessment>()
-  const last = previous.phq9 ?? previous.gad7
+  const resumable = useSyncExternalStore(
+    subscribeToNothing,
+    () => hasScreeningDraft(userId),
+    () => false,
+  )
+  const [chosen, setChosen] = useState<Step | null>(null)
+  const [results, setResults] = useState<Results | null>(null)
+  const step = chosen ?? (resumable ? 'questions' : 'intro')
+  const latest = latestByDomain(assessments)
+  const last = latest.depression ?? latest.anxiety
 
   return (
     <div className="flex h-dvh flex-col">
@@ -57,9 +67,8 @@ export function RetakeFlow({ previous: initial, timeZone, send }: RetakeFlowProp
               <StepActions>
                 <Button
                   size="lg"
-
                   onClick={() => {
-                    setStep('phq9')
+                    setChosen('questions')
                   }}
                 >
                   {t('retake.start')}
@@ -67,38 +76,27 @@ export function RetakeFlow({ previous: initial, timeZone, send }: RetakeFlowProp
               </StepActions>
             </section>
           )}
-          {step === 'phq9' && (
-            <Questionnaire
-              instrument={phq9}
+          {step === 'questions' && (
+            <ScreeningFlow
+              userId={userId}
+              scope="retake"
+              assessments={assessments}
               send={send}
-              onDone={(assessment) => {
-                setDepression(assessment)
-                setStep(assessment.hasRiskFlag ? 'support' : 'gad7')
+              onComplete={(done) => {
+                setResults(done)
+                setChosen('results')
               }}
             />
           )}
-          {step === 'support' && (
-            <SupportStep
-              onContinue={() => {
-                setStep('gad7')
-              }}
-            />
-          )}
-          {step === 'gad7' && (
-            <Questionnaire
-              instrument={gad7}
-              send={send}
-              onDone={(assessment) => {
-                setAnxiety(assessment)
-                setStep('results')
-              }}
-            />
-          )}
-          {step === 'results' && depression !== undefined && anxiety !== undefined && (
+          {step === 'results' && results !== null && (
             <section className="flex min-h-0 flex-1 flex-col overflow-y-auto [scrollbar-width:none]">
               <StepHeading title={t('retake.resultsTitle')} />
               <div className="mt-6">
-                <ScreeningResults depression={depression} anxiety={anxiety} previous={previous} />
+                <ScreeningResults
+                  depression={results.depression}
+                  anxiety={results.anxiety}
+                  previous={resultsBefore(assessments, results)}
+                />
               </div>
               <StepActions>
                 <p className="mb-3 text-center text-sm text-balance text-muted-foreground">

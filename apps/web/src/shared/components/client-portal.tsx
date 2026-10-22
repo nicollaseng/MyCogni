@@ -1,19 +1,8 @@
 'use client'
 
-import { useSyncExternalStore, type ReactNode } from 'react'
+import type { ReactNode } from 'react'
 import { createPortal } from 'react-dom'
-
-function subscribeToNothing(): () => void {
-  return () => undefined
-}
-
-function useIsClient(): boolean {
-  return useSyncExternalStore(
-    subscribeToNothing,
-    () => true,
-    () => false,
-  )
-}
+import { useIsClient } from '@/shared/hooks/use-is-client'
 
 export function ClientPortal({ children }: { children: ReactNode }) {
   const client = useIsClient()

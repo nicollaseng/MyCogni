@@ -20,8 +20,8 @@ function plainWordsIn(locale: Locale) {
   const labels = labelsFor(locale)
   const lower = (text: string) => text.toLocaleLowerCase(locale)
   return {
-    feelingDown: lower(labels.plainNames.phq9),
-    anxiety: lower(labels.plainNames.gad7),
+    feelingDown: lower(labels.plainNames.depression),
+    anxiety: lower(labels.plainNames.anxiety),
     levels: plainLevels.map((level) => lower(labels.plainLevels[level])),
   }
 }

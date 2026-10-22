@@ -1,6 +1,6 @@
 import type { PatientSummary } from '@mycogni/contracts'
-import { attentionReasons, type InstrumentId, type Severity } from '@mycogni/domain'
-import { latestScreenings } from './screenings'
+import { attentionReasons, type Severity } from '@mycogni/domain'
+import { latestScreenings, screeningColumns } from './screenings'
 
 export const patientFilters = ['all', 'attention', 'inactive', 'phq9', 'gad7'] as const
 
@@ -54,8 +54,11 @@ export function matchesSearch(patient: PatientSummary, query: string): boolean {
   return wanted === '' || normalizeText(patient.name ?? '').includes(wanted)
 }
 
-function screenedAtLeastModerate(patient: PatientSummary, instrument: InstrumentId): boolean {
-  const severity = latestScreenings(patient.screenings)[instrument]?.severity
+function screenedAtLeastModerate(
+  patient: PatientSummary,
+  column: keyof typeof screeningColumns,
+): boolean {
+  const severity = latestScreenings(patient.screenings)[screeningColumns[column]]?.severity
   return severity !== undefined && moderateOrWorse.includes(severity)
 }
 
@@ -95,7 +98,7 @@ function sortValue(patient: PatientSummary, key: SortKey): number | string | nul
       return patient.moodAverage
     case 'phq9':
     case 'gad7':
-      return latestScreenings(patient.screenings)[key]?.totalScore ?? null
+      return latestScreenings(patient.screenings)[screeningColumns[key]]?.totalScore ?? null
   }
 }
 

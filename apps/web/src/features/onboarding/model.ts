@@ -1,10 +1,10 @@
 import type { Assessment, Consent, Profile } from '@mycogni/contracts'
 import { missingConsents, type ConsentKind } from '@mycogni/domain'
-import { latestByInstrument, type LatestResults } from '@/features/screening/latest'
+import { latestByDomain, type LatestResults } from '@/features/screening/latest'
 import type { SubmitScreening } from '@/features/screening/model'
 import type { ActionResult } from '@/shared/lib/actions/result'
 
-export type Step = 'consents' | 'name' | 'photo' | 'intro' | 'phq9' | 'support' | 'gad7' | 'results'
+export type Step = 'consents' | 'name' | 'photo' | 'intro' | 'screening' | 'results'
 
 export type Phase = 'consents' | 'name' | 'screening' | 'results'
 
@@ -14,8 +14,10 @@ export type Results = LatestResults
 
 export interface OnboardingStart {
   step: Step
+  userId: string
   displayName: string
   results: Results
+  assessments: readonly Assessment[]
 }
 
 export interface NameInput {
@@ -45,11 +47,11 @@ function firstStep(consents: readonly Consent[], results: Results): Step {
   if (missingConsents(consents.map((consent) => consent.kind)).length > 0) {
     return 'consents'
   }
-  if (results.phq9 === undefined) {
+  if (results.depression === undefined && results.anxiety === undefined) {
     return 'name'
   }
-  if (results.gad7 === undefined) {
-    return 'gad7'
+  if (results.depression === undefined || results.anxiety === undefined) {
+    return 'screening'
   }
   return 'results'
 }
@@ -59,10 +61,12 @@ export function resumeFrom(
   consents: readonly Consent[],
   assessments: readonly Assessment[],
 ): OnboardingStart {
-  const results = latestByInstrument(assessments)
+  const results = latestByDomain(assessments)
   return {
     step: firstStep(consents, results),
+    userId: profile.id,
     displayName: profile.displayName ?? '',
     results,
+    assessments,
   }
 }

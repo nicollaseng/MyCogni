@@ -1,5 +1,5 @@
 import { describe, expect, it } from '@jest/globals'
-import { instrumentIds, severities } from '../../assessments/instrument.ts'
+import { screeningDomains, severities } from '../../assessments/instrument.ts'
 import { contextIds, emotionIds } from '../../check-ins/catalog.ts'
 import { crisisLinesFor } from '../crisis-lines.ts'
 import { locales } from '../locales.ts'
@@ -12,7 +12,8 @@ describe('labelsFor', () => {
     const names = [
       ...emotionIds.map((id) => labels.emotions[id]),
       ...contextIds.map((id) => labels.contexts[id]),
-      ...instrumentIds.map((id) => labels.instruments[id]),
+      ...screeningDomains.map((domain) => labels.topics[domain]),
+      ...screeningDomains.map((domain) => labels.plainNames[domain]),
       ...severities.map((severity) => labels.severities[severity]),
       ...moodNames.map((mood) => labels.moods[mood]),
     ]

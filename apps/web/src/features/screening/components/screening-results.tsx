@@ -6,7 +6,7 @@ import { PlainScale } from './plain-scale'
 
 function Result({ result }: { result: PlainResult }) {
   const t = useTranslations('screening')
-  const name = t(`plain.names.${result.assessment.instrument}`)
+  const name = t(`plain.names.${result.domain}`)
   return (
     <section aria-label={name}>
       <h2 className="text-sm text-muted-foreground">{name}</h2>
@@ -52,8 +52,8 @@ interface ScreeningResultsProps {
 export function ScreeningResults({ depression, anxiety, previous = {} }: ScreeningResultsProps) {
   return (
     <div className="space-y-8">
-      <Result result={plainResultOf(depression, previous.phq9)} />
-      <Result result={plainResultOf(anxiety, previous.gad7)} />
+      <Result result={plainResultOf('depression', depression, previous.depression)} />
+      <Result result={plainResultOf('anxiety', anxiety, previous.anxiety)} />
       {depression.hasRiskFlag && <RiskNote />}
     </div>
   )

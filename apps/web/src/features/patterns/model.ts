@@ -3,13 +3,14 @@ import {
   consistencyOf,
   contextEffects,
   frequentTags,
-  instrumentIds,
+  domainOf,
   moodByWeekday,
   moodDays,
   notableEffects,
   patternRules,
   patternUnlocks,
   periodSummary,
+  screeningDomains,
   withinDays,
   type ContextEffect,
   type MoodDay,
@@ -78,8 +79,9 @@ export function buildPatterns(input: PatternsInput): PatternsModel {
   )
   const assessments = input.assessments.filter(({ id }) => answered.has(id))
   const scoreSessions = Math.max(
-    ...instrumentIds.map(
-      (id) => assessments.filter((assessment) => assessment.instrument === id).length,
+    ...screeningDomains.map(
+      (domain) =>
+        assessments.filter((assessment) => domainOf(assessment.instrument) === domain).length,
     ),
   )
 

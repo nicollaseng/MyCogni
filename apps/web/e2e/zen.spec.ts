@@ -208,14 +208,20 @@ test('answers the questionnaires again and sees the suggestion change', async ({
   await today(page).getByRole('link', { name: 'Refazer os questionários' }).click()
   await expect(page).toHaveURL('/questionnaires')
   await page.getByRole('button', { name: 'Começar' }).click()
-  for (const [form, total, choice] of [
-    ['Desânimo', 9, 'Nenhuma vez'],
-    ['Ansiedade', 7, 'Mais da metade dos dias'],
-  ] as const) {
-    for (let index = 1; index <= total; index++) {
-      await expect(page.getByText(`${form} · ${String(index)} de ${String(total)}`)).toBeVisible()
-      await page.getByRole('button', { name: choice, exact: true }).click()
-    }
+  const screen = [
+    'Nenhuma vez',
+    'Nenhuma vez',
+    'Mais da metade dos dias',
+    'Mais da metade dos dias',
+  ]
+  for (const [index, choice] of [...screen, 'Nenhuma vez'].entries()) {
+    await expect(page.getByText(`Pergunta ${String(index + 1)} de 5`)).toBeVisible()
+    await page.getByRole('button', { name: choice, exact: true }).click()
+  }
+  await page.getByRole('button', { name: 'Continuar' }).click()
+  for (let index = 6; index <= 10; index++) {
+    await expect(page.getByText(`Pergunta ${String(index)} de 10`)).toBeVisible()
+    await page.getByRole('button', { name: 'Mais da metade dos dias', exact: true }).click()
   }
   await expect(page.getByRole('heading', { name: 'Seus resultados de hoje.' })).toBeVisible()
 

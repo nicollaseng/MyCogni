@@ -18,7 +18,7 @@ import type { Metadata } from 'next'
 import { getLocale, getTranslations } from 'next-intl/server'
 import { fetchNarrationManifest } from '@/features/audio/narration'
 import { SafetyPanel } from '@/features/safety/components/safety-panel'
-import { latestByInstrument } from '@/features/screening/latest'
+import { latestByDomain } from '@/features/screening/latest'
 import { ReadingRows, TrackRows } from '@/features/zen/components/library'
 import { TodayCard } from '@/features/zen/components/today-card'
 import { TopicTiles } from '@/features/zen/components/topic-tiles'
@@ -60,7 +60,7 @@ export default async function ZenPage() {
   const language = contentLanguageOf(locale)
   const night = isNight(now, timezone)
   const suggestion = zenSuggestion({
-    latest: Object.values(latestByInstrument(assessments)),
+    latest: Object.values(latestByDomain(assessments)),
     ...recentRecords(checkIns, now),
     night,
   })

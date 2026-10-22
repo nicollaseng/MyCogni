@@ -135,7 +135,9 @@ export function PatientShot() {
           <dd className="font-medium">{patient.checkInsLast30Days}</dd>
         </div>
         <div className="space-y-1 max-sm:hidden">
-          <dt className="text-[12px] text-muted-foreground">{t('patient.kpis.phq9')}</dt>
+          <dt className="text-[12px] text-muted-foreground">
+            {t('patient.kpis.latest', { name: 'PHQ-9' })}
+          </dt>
           <dd>
             <ScreeningScore screening={phq9} />
           </dd>

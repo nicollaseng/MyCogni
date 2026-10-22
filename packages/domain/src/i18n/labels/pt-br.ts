@@ -94,9 +94,9 @@ export const brazilianPortuguese: LabelSet = {
     faith: 'fé',
     therapy: 'terapia',
   },
-  instruments: {
-    phq9: 'Sinais de depressão',
-    gad7: 'Sinais de ansiedade',
+  topics: {
+    depression: 'Sinais de depressão',
+    anxiety: 'Sinais de ansiedade',
   },
   severities: {
     minimal: 'Mínima',
@@ -106,8 +106,8 @@ export const brazilianPortuguese: LabelSet = {
     severe: 'Grave',
   },
   plainNames: {
-    phq9: 'Desânimo',
-    gad7: 'Ansiedade',
+    depression: 'Desânimo',
+    anxiety: 'Ansiedade',
   },
   plainLevels: {
     low: 'Baixo',

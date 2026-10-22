@@ -410,8 +410,7 @@ export const professional: ProfessionalMessages = {
       noPrevious: 'Sem registos nos 7 dias anteriores',
       checkIns: 'Registos em 30 dias',
       week: '{count, plural, =0 {Nenhum nos últimos 7 dias} other {# nos últimos 7 dias}}',
-      phq9: 'Último PHQ-9',
-      gad7: 'Último GAD-7',
+      latest: 'Último {name}',
       screening: '{severity} · {date}',
     },
     mood: {

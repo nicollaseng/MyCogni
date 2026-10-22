@@ -1,5 +1,11 @@
 import type { PatientSummary, ScreeningSummary } from '@mycogni/contracts'
-import { instruments, maxMoodLevel, maxScoreOf, type AttentionReason } from '@mycogni/domain'
+import {
+  instruments,
+  isShortScreen,
+  maxMoodLevel,
+  maxScoreOf,
+  type AttentionReason,
+} from '@mycogni/domain'
 import { useFormatter, useLocale, useTranslations } from 'next-intl'
 import { isMoodLevel, moodColor, moodKeyOf, valenceOf } from '@/features/mood/mood-levels'
 import { cn } from '@/shared/lib/utils'
@@ -175,7 +181,11 @@ export function ScreeningScore({ screening }: { screening: ScreeningSummary | un
         </span>
         <span className="sr-only">{t('score', { score: screening.totalScore, max })}</span>
       </span>
-      <span className="text-sm text-muted-foreground">{severity(screening.severity)}</span>
+      <span className="text-sm text-muted-foreground">
+        {isShortScreen(instruments[screening.instrument])
+          ? `${instruments[screening.instrument].name} · ${severity(screening.severity)}`
+          : severity(screening.severity)}
+      </span>
     </span>
   )
 }
