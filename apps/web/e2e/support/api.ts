@@ -1,5 +1,5 @@
 import { randomUUID } from 'node:crypto'
-import { requiredConsentKinds, sharingConsentVersion } from '@mycogni/domain'
+import { requiredConsentKinds, sharingConsentVersion, type MemoryKind } from '@mycogni/domain'
 import { z } from 'zod'
 import {
   createUser,
@@ -288,14 +288,19 @@ export async function acceptInvitation(
   })
 }
 
+export interface MemorySeed {
+  content: string
+  kind?: MemoryKind
+}
+
 export async function addMemories(
   email: string,
   password: string,
-  contents: readonly string[],
+  memories: readonly (string | MemorySeed)[],
 ): Promise<void> {
   const post = await poster(email, password)
-  for (const content of contents) {
-    await post('/v1/memories', { content })
+  for (const memory of memories) {
+    await post('/v1/memories', typeof memory === 'string' ? { content: memory } : memory)
   }
 }
 

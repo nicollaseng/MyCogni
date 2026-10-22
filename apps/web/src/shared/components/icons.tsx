@@ -216,3 +216,11 @@ export function ArrowUpIcon({ className }: IconProps) {
     </svg>
   )
 }
+
+export function PlusIcon({ className }: IconProps) {
+  return (
+    <svg aria-hidden viewBox="0 0 20 20" className={className}>
+      <path d="M10 4.5v11M4.5 10h11" {...stroke} />
+    </svg>
+  )
+}

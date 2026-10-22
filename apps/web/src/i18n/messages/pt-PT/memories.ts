@@ -2,20 +2,32 @@ import type { MemoriesMessages } from '../pt-BR/memories'
 
 export const memories: MemoriesMessages = {
   meta: { title: 'Memórias' },
-  lead: 'O que o Cogni guarda do que conta, para conversar melhor consigo.',
+  lead: 'O que o Cogni guarda para conversar melhor consigo.',
+  more: 'Mais opções',
   switch: {
     label: 'Lembrar o que conto',
     hint: {
       on: 'Ligado, o Cogni aprende com o que escreve.',
-      off: 'Desligado, o Cogni não guarda nada de novo.',
+      off: 'Desligado, o Cogni não guarda nada de novo. O que já está aqui mantém-se.',
     },
   },
   add: {
     open: 'Adicionar memória',
     label: 'Nova memória',
     placeholder: 'Ex.: Caminhar ajuda-me a abrandar.',
+    kind: 'Tipo',
     save: 'Guardar',
     cancel: 'Cancelar',
+  },
+  kinds: {
+    coping: 'O que ajuda',
+    routine: 'Rotina',
+    relationship: 'Pessoas',
+    goal: 'Objetivos',
+    preference: 'Do que gosta',
+    trigger: 'O que pesa',
+    event: 'Momentos',
+    fact: 'Sobre si',
   },
   empty: 'Ainda não há nada guardado.',
   source: {
@@ -25,14 +37,18 @@ export const memories: MemoriesMessages = {
     journal: 'Do MyBook',
   },
   item: {
+    options: 'Opções: {content}',
     edit: 'Editar',
     remove: 'Apagar',
     save: 'Guardar',
     cancel: 'Cancelar',
     label: 'Memória',
   },
-  saved: 'Memórias guardadas',
   archived: 'Memórias antigas',
+  undo: {
+    message: 'Memória apagada',
+    action: 'Anular',
+  },
   clear: {
     open: 'Apagar todas',
     title: 'Apagar todas as memórias?',
@@ -43,12 +59,12 @@ export const memories: MemoriesMessages = {
   feedback: {
     added: 'Memória guardada.',
     updated: 'Memória atualizada.',
-    removed: 'Memória apagada.',
     cleared: 'Memórias apagadas.',
     on: 'O Cogni volta a lembrar o que conta.',
     off: 'O Cogni não vai guardar nada de novo.',
     tooLong: 'Use até {max} caracteres.',
     empty: 'Escreva a memória.',
     error: 'Não foi possível guardar agora. Tente novamente dentro de momentos.',
+    removeError: 'Não foi possível apagar agora. Tente novamente dentro de momentos.',
   },
 }

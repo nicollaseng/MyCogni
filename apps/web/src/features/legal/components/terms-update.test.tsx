@@ -22,7 +22,7 @@ describe('TermsUpdate', () => {
       'href',
       '/privacy',
     )
-    const button = screen.getByRole('button', { name: 'Aceitar e continuar' })
+    const button = screen.getByRole('button', { name: 'Aceitar' })
     expect(button).toBeDisabled()
 
     await user.click(screen.getByRole('checkbox'))
@@ -42,7 +42,7 @@ describe('TermsUpdate', () => {
     const user = userEvent.setup()
 
     await user.click(screen.getByRole('checkbox'))
-    await user.click(screen.getByRole('button', { name: 'Accept and continue' }))
+    await user.click(screen.getByRole('button', { name: 'Accept' }))
 
     expect(await screen.findByRole('alert')).toHaveTextContent('Tente de novo.')
     expect(screen.getByRole('button', { name: 'Sign out' })).toBeInTheDocument()

@@ -20,7 +20,9 @@ describe('MemoriesSwitch', () => {
     expect(save).toHaveBeenLastCalledWith(false)
     expect(await screen.findByRole('status')).toHaveTextContent('Desligado.')
     expect(control).toHaveAttribute('aria-checked', 'false')
-    expect(control).toHaveAccessibleDescription('Desligado, o Cogni não guarda nada novo.')
+    expect(control).toHaveAccessibleDescription(
+      'Desligado, o Cogni não guarda nada novo. O que já está aqui continua.',
+    )
   })
 
   it('goes back when the change could not be saved', async () => {

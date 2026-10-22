@@ -52,7 +52,7 @@ export const legal: LegalMessages = {
     lead: 'Agora o Cogni pode guardar memórias do que conta, para conversar melhor consigo. Vê, edita ou apaga cada uma em Perfil e definições → Memórias e pode desligá-las quando quiser.',
     accept:
       'Li e aceito os <terms>Termos de utilização</terms> e a <privacy>Política de privacidade</privacy>.',
-    continue: 'Aceitar e continuar',
+    continue: 'Aceitar',
     signOut: 'Terminar sessão',
   },
   terms: {

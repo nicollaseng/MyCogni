@@ -13,6 +13,7 @@ export async function shownMemories(
     return {
       id: memory.id,
       content: memory.content,
+      kind: memory.kind,
       status: memory.status,
       hint:
         hint === null

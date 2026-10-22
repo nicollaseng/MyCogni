@@ -1,19 +1,31 @@
 export const memories = {
   meta: { title: 'Memórias' },
-  lead: 'O que o Cogni lembra do que você conta, para conversar melhor com você.',
+  lead: 'O que o Cogni lembra para conversar melhor com você.',
+  more: 'Mais opções',
   switch: {
     label: 'Lembrar do que eu conto',
     hint: {
       on: 'Ligado, o Cogni aprende com o que você escreve.',
-      off: 'Desligado, o Cogni não guarda nada novo.',
+      off: 'Desligado, o Cogni não guarda nada novo. O que já está aqui continua.',
     },
   },
   add: {
     open: 'Adicionar memória',
     label: 'Nova memória',
     placeholder: 'Ex.: Caminhar me ajuda a desacelerar.',
+    kind: 'Tipo',
     save: 'Salvar',
     cancel: 'Cancelar',
+  },
+  kinds: {
+    coping: 'O que ajuda',
+    routine: 'Rotina',
+    relationship: 'Pessoas',
+    goal: 'Objetivos',
+    preference: 'Do que você gosta',
+    trigger: 'O que pesa',
+    event: 'Momentos',
+    fact: 'Sobre você',
   },
   empty: 'Nada guardado ainda.',
   source: {
@@ -23,14 +35,18 @@ export const memories = {
     journal: 'Do MyBook',
   },
   item: {
+    options: 'Opções: {content}',
     edit: 'Editar',
     remove: 'Apagar',
     save: 'Salvar',
     cancel: 'Cancelar',
     label: 'Memória',
   },
-  saved: 'Memórias guardadas',
   archived: 'Memórias antigas',
+  undo: {
+    message: 'Memória apagada',
+    action: 'Desfazer',
+  },
   clear: {
     open: 'Apagar todas',
     title: 'Apagar todas as memórias?',
@@ -41,13 +57,13 @@ export const memories = {
   feedback: {
     added: 'Memória salva.',
     updated: 'Memória atualizada.',
-    removed: 'Memória apagada.',
     cleared: 'Memórias apagadas.',
     on: 'O Cogni volta a lembrar do que você conta.',
     off: 'O Cogni não vai guardar nada novo.',
     tooLong: 'Use até {max} caracteres.',
     empty: 'Escreva a memória.',
     error: 'Não conseguimos salvar agora. Tente de novo em instantes.',
+    removeError: 'Não conseguimos apagar agora. Tente de novo em instantes.',
   },
 }
 

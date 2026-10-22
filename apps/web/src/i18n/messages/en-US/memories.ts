@@ -2,20 +2,32 @@ import type { MemoriesMessages } from '../pt-BR/memories'
 
 export const memories: MemoriesMessages = {
   meta: { title: 'Memories' },
-  lead: 'What Cogni remembers from what you share, to talk with you better.',
+  lead: 'What Cogni remembers to talk with you better.',
+  more: 'More options',
   switch: {
     label: 'Remember what I share',
     hint: {
       on: 'On, Cogni learns from what you write.',
-      off: 'Off, Cogni keeps nothing new.',
+      off: 'Off, Cogni keeps nothing new. What’s already here stays.',
     },
   },
   add: {
     open: 'Add a memory',
     label: 'New memory',
     placeholder: 'E.g. Walking helps me slow down.',
+    kind: 'Type',
     save: 'Save',
     cancel: 'Cancel',
+  },
+  kinds: {
+    coping: 'What helps',
+    routine: 'Routine',
+    relationship: 'People',
+    goal: 'Goals',
+    preference: 'What you like',
+    trigger: 'What weighs on you',
+    event: 'Moments',
+    fact: 'About you',
   },
   empty: 'Nothing kept yet.',
   source: {
@@ -25,14 +37,18 @@ export const memories: MemoriesMessages = {
     journal: 'From MyBook',
   },
   item: {
+    options: 'Options: {content}',
     edit: 'Edit',
     remove: 'Delete',
     save: 'Save',
     cancel: 'Cancel',
     label: 'Memory',
   },
-  saved: 'Saved memories',
   archived: 'Older memories',
+  undo: {
+    message: 'Memory deleted',
+    action: 'Undo',
+  },
   clear: {
     open: 'Delete all',
     title: 'Delete all memories?',
@@ -43,12 +59,12 @@ export const memories: MemoriesMessages = {
   feedback: {
     added: 'Memory saved.',
     updated: 'Memory updated.',
-    removed: 'Memory deleted.',
     cleared: 'Memories deleted.',
     on: 'Cogni remembers what you share again.',
     off: 'Cogni won’t keep anything new.',
     tooLong: 'Use up to {max} characters.',
     empty: 'Write the memory.',
     error: 'We couldn’t save right now. Try again in a moment.',
+    removeError: 'We couldn’t delete right now. Try again in a moment.',
   },
 }

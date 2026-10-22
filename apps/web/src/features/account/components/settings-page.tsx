@@ -6,13 +6,17 @@ import { cn } from '@/shared/lib/utils'
 interface SettingsPageProps {
   title: string
   ownTitles?: 'shown' | 'hidden'
+  actions?: ReactNode
   children: ReactNode
 }
 
 const ownTitleHidden = '[&>div>section>h2]:sr-only [&>section>h2]:sr-only'
 
-export function SettingsPage({ title, ownTitles = 'shown', children }: SettingsPageProps) {
+export function SettingsPage({ title, ownTitles = 'shown', actions, children }: SettingsPageProps) {
   const t = useTranslations('account.nav')
+  const heading = (
+    <h1 className="font-serif text-[32px] leading-[1.08] tracking-[-0.02em]">{title}</h1>
+  )
 
   return (
     <div className="space-y-8">
@@ -23,7 +27,14 @@ export function SettingsPage({ title, ownTitles = 'shown', children }: SettingsP
         <span aria-hidden>←</span>
         {t('back')}
       </Link>
-      <h1 className="font-serif text-[32px] leading-[1.08] tracking-[-0.02em]">{title}</h1>
+      {actions === undefined ? (
+        heading
+      ) : (
+        <div className="flex items-center justify-between gap-4">
+          {heading}
+          <div className="-mr-2 flex shrink-0 items-center gap-1">{actions}</div>
+        </div>
+      )}
       <div className={cn('space-y-10', ownTitles === 'hidden' && ownTitleHidden)}>{children}</div>
     </div>
   )
