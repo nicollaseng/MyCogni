@@ -133,6 +133,7 @@ export const care = {
       professional: 'Ver profissionais',
       insight: 'Ver resumo',
       support: 'Ver chamado',
+      reminder: 'Abrir o Zen',
     },
     kinds: {
       invitation: 'Convite de um profissional',
@@ -141,6 +142,7 @@ export const care = {
       system: 'Aviso do MyCogniAI',
       insight: 'Seu resumo da semana está pronto.',
       support: 'Atualização do suporte',
+      reminder: 'Hora da sua pausa. Que tal alguns minutos para você?',
     },
     support:
       '{status, select, in_progress {Seu chamado {ticket} está em andamento.} closed {Seu chamado {ticket} foi fechado.} other {Seu chamado {ticket} foi atualizado.}}',

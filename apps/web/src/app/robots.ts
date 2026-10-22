@@ -13,6 +13,7 @@ const privateAreas = [
   '/questionnaires',
   '/notifications',
   '/support',
+  '/reminders/',
   '/invites',
   '/invite/',
   '/pro/',

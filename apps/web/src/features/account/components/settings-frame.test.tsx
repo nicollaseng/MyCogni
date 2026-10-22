@@ -68,8 +68,9 @@ describe('SettingsFrame', () => {
     ).toEqual([
       ['Ânimo e ansiedade', '/me/wellbeing'],
       ['Profissionais', '/me/professionals'],
-      ['Memórias', '/me/memories'],
+      ['Lembretes', '/me/reminders'],
       ['Som e voz', '/me/sound'],
+      ['Memórias', '/me/memories'],
       ['Privacidade e dados', '/me/privacy'],
       ['Conta', '/me/account'],
       ['Suporte', '/me/support'],
@@ -91,8 +92,8 @@ describe('SettingsFrame', () => {
     const current = within(nav).getByRole('link', { current: 'page' })
     expect(current).toHaveTextContent('Ânimo e ansiedade')
     expect(current).toHaveAttribute('href', '/me/wellbeing')
-    expect(within(nav).getAllByRole('link')).toHaveLength(8)
-    expect(within(nav).getAllByRole('link', { current: false })).toHaveLength(7)
+    expect(within(nav).getAllByRole('link')).toHaveLength(9)
+    expect(within(nav).getAllByRole('link', { current: false })).toHaveLength(8)
     expect(nav.parentElement).toHaveClass('hidden', 'lg:block')
     expect(content).not.toHaveClass('hidden')
   })

@@ -20,6 +20,8 @@ export function notificationHref({
       return insightId === null ? feed : `/patterns#reading-${insightId}`
     case 'support':
       return supportTicket === null ? feed : `/support/${supportTicket.id}`
+    case 'reminder':
+      return '/zen'
     case 'system':
     case 'marketing':
       return feed

@@ -37,6 +37,7 @@ describe('notificationHref', () => {
 
   it('opens the professionals of the person for link events', () => {
     expect(notificationHref(notification({ kind: 'professional' }))).toBe('/me/professionals')
+    expect(notificationHref(notification({ kind: 'reminder' }))).toBe('/zen')
   })
 
   it('opens the reading of the weekly summary on Padrões', () => {

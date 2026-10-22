@@ -15,6 +15,7 @@ import { memories } from './memories'
 import { mybook } from './mybook'
 import { onboarding } from './onboarding'
 import { patterns } from './patterns'
+import { reminders } from './reminders'
 import { professional } from './professional'
 import { report } from './report'
 import { safety } from './safety'
@@ -52,6 +53,7 @@ export const messages = {
   safety,
   memories,
   voice,
+  reminders,
 }
 
 export type Messages = typeof messages
