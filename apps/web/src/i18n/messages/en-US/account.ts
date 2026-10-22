@@ -15,6 +15,7 @@ export const account: AccountMessages = {
     wellbeing: 'Mood and anxiety',
     professionals: 'Professionals',
     memories: 'Memories',
+    reminders: 'Reminders',
     sound: 'Sound and voice',
     privacy: 'Privacy and data',
     account: 'Account',

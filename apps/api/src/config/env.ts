@@ -40,6 +40,13 @@ const envSchema = z.object({
     .enum(['true', 'false'])
     .default('false')
     .transform((value) => value === 'true'),
+  VAPID_PUBLIC_KEY: z.string().min(1).optional(),
+  VAPID_PRIVATE_KEY: z.string().min(1).optional(),
+  VAPID_SUBJECT: z
+    .string()
+    .regex(/^(mailto:|https:)/)
+    .default('mailto:support@mycogniapp.com'),
+  REMINDER_EVERY_MS: z.coerce.number().int().min(1_000).default(300_000),
 })
 
 export interface AppConfig {
@@ -60,6 +67,14 @@ export interface AppConfig {
   assistantModel: 'claude' | 'scripted'
   elevenLabsApiKey: string | null
   zeroRetentionTranscription: boolean
+  push: PushConfig | null
+  reminderEveryMs: number
+}
+
+export interface PushConfig {
+  publicKey: string
+  privateKey: string
+  subject: string
 }
 
 export type MailConfig =
@@ -101,6 +116,15 @@ export function loadConfig(source: Record<string, string | undefined>): AppConfi
     assistantModel: env.ASSISTANT_MODEL,
     elevenLabsApiKey: env.ELEVENLABS_API_KEY ?? null,
     zeroRetentionTranscription: env.ELEVENLABS_ZERO_RETENTION,
+    push:
+      env.VAPID_PUBLIC_KEY === undefined || env.VAPID_PRIVATE_KEY === undefined
+        ? null
+        : {
+            publicKey: env.VAPID_PUBLIC_KEY,
+            privateKey: env.VAPID_PRIVATE_KEY,
+            subject: env.VAPID_SUBJECT,
+          },
+    reminderEveryMs: env.REMINDER_EVERY_MS,
   }
 }
 

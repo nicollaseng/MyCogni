@@ -28,7 +28,23 @@ describe('loadConfig', () => {
       assistantModel: 'claude',
       elevenLabsApiKey: null,
       zeroRetentionTranscription: false,
+      push: null,
+      reminderEveryMs: 300_000,
     })
+  })
+
+  it('turns web push on only with both VAPID keys', () => {
+    expect(loadConfig({ ...required, VAPID_PUBLIC_KEY: 'public' }).push).toBeNull()
+    expect(
+      loadConfig({ ...required, VAPID_PUBLIC_KEY: 'public', VAPID_PRIVATE_KEY: 'private' }).push,
+    ).toEqual({
+      publicKey: 'public',
+      privateKey: 'private',
+      subject: 'mailto:support@mycogniapp.com',
+    })
+    expect(() => loadConfig({ ...required, VAPID_SUBJECT: 'support@mycogniapp.com' })).toThrow(
+      InvalidConfigError,
+    )
   })
 
   it('allows the scripted assistant only outside production', () => {

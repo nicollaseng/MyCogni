@@ -3,6 +3,7 @@
 import { useTranslations } from 'next-intl'
 import { useEffect, useReducer } from 'react'
 import { usePrefersReducedMotion } from '@/shared/hooks/use-prefers-reduced-motion'
+import { ReminderOffer } from '@/features/reminders/components/reminder-offer'
 import { Button } from '@/shared/ui/button'
 import {
   advance,
@@ -102,6 +103,7 @@ export function BreathingExercise({ onClose }: { onClose: () => void }) {
           </Button>
         )}
       </div>
+      {finished && <ReminderOffer />}
     </div>
   )
 }

@@ -6,6 +6,7 @@ import type { AssessmentRecord } from '../assessments/assessment.repository.ts'
 import type { CheckInRecord } from '../check-ins/check-in.repository.ts'
 import type { ConsentRecord } from '../consents/consent.repository.ts'
 import { memoriesOf, type MemoryRecord } from '../memories/memory.repository.ts'
+import { reminderExportOf, type ReminderExport } from '../reminders/reminder.repository.ts'
 import { profileColumns, type ProfileRecord } from '../profile/profile.repository.ts'
 
 export interface AccountData {
@@ -14,6 +15,7 @@ export interface AccountData {
   assessments: (AssessmentRecord & { answers: number[] })[]
   checkIns: CheckInRecord[]
   memories: MemoryRecord[]
+  reminders: ReminderExport
 }
 
 export interface AccountRepository {
@@ -66,6 +68,7 @@ export function createAccountRepository(db: Database): AccountRepository {
             .where(eq(checkIns.userId, userId))
             .orderBy(desc(checkIns.recordedAt)),
           memories: await memoriesOf(tx, userId),
+          reminders: await reminderExportOf(tx, userId),
         }
       })
     },

@@ -27,6 +27,10 @@ export async function generateMetadata(): Promise<Metadata> {
     metadataBase: new URL(serverEnv().siteUrl),
     title: { default: 'MyCogniAI', template: '%s · MyCogniAI' },
     description: t('description'),
+    icons: {
+      icon: [{ url: '/icon-192.png', sizes: '192x192', type: 'image/png' }],
+      apple: '/apple-touch-icon.png',
+    },
   }
 }
 

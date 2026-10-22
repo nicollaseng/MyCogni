@@ -283,6 +283,22 @@ export {
 } from './assistant/voice.ts'
 export { filterReply, repeatsPassage, type ReplyFilterOptions } from './assistant/reply-filter.ts'
 export { consistencyOf, type Consistency } from './patterns/consistency.ts'
+export {
+  dueReminderDay,
+  isReminderTime,
+  isWeekDay,
+  localDayOf,
+  minutesOf,
+  reminderChannels,
+  reminderDefaults,
+  reminderWindowMinutes,
+  scheduledAt,
+  weekDays,
+  type LocalDay,
+  type ReminderChannel,
+  type ReminderSchedule,
+  type WeekDay,
+} from './reminders/reminders.ts'
 export { averageOf, moodDays, weekdayOf, type MoodDay } from './patterns/days.ts'
 export {
   defaultPatternPeriod,

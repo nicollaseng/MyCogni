@@ -135,6 +135,7 @@ export const care: CareMessages = {
       professional: 'View professionals',
       insight: 'View summary',
       support: 'View ticket',
+      reminder: 'Open Zen',
     },
     kinds: {
       invitation: 'An invitation from a professional',
@@ -143,6 +144,7 @@ export const care: CareMessages = {
       system: 'A notice from MyCogniAI',
       insight: 'Your weekly summary is ready.',
       support: 'A support update',
+      reminder: 'Time for your pause. How about a few minutes for yourself?',
     },
     support:
       '{status, select, in_progress {Your ticket {ticket} is in progress.} closed {Your ticket {ticket} was closed.} other {Your ticket {ticket} was updated.}}',

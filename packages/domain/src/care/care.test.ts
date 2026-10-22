@@ -79,6 +79,7 @@ describe('notifications', () => {
       'system',
       'insight',
       'support',
+      'reminder',
     ])
   })
 })

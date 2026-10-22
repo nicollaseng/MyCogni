@@ -31,6 +31,7 @@ import { notificationModule } from './modules/notifications/index.ts'
 import { onboardingModule } from './modules/onboarding/index.ts'
 import { professionalModule } from './modules/professionals/index.ts'
 import { profileModule } from './modules/profile/index.ts'
+import { reminderModule, reminderPublicModule } from './modules/reminders/index.ts'
 import type { Fetcher } from './modules/profile/photo-download.ts'
 import { reportModule } from './modules/reports/index.ts'
 import { supportModule } from './modules/support/index.ts'
@@ -68,7 +69,12 @@ function publicRoutes(
     await api.register(
       invitationPublicModule({ db, photos: profileFiles.photos, mailer, webUrl: config.webUrl }),
     )
+    await api.register(reminderPublicModule(reminderOptions(config, db)))
   }
+}
+
+function reminderOptions(config: AppConfig, db: Database) {
+  return { db, tokenSecret: config.supabaseSecretKey, pushKey: config.push?.publicKey ?? null }
 }
 
 interface Services {
@@ -141,6 +147,7 @@ function authenticatedRoutes(
     )
     await api.register(memoryModule(db))
     await api.register(transcriptionModule({ transcriber, limiter, log: api.log }))
+    await api.register(reminderModule(reminderOptions(config, db)))
     await api.register(
       supportModule({
         db,

@@ -60,7 +60,7 @@ export default defineConfig({
       command: 'node src/worker.ts',
       cwd: '../api',
       wait: { stdout: /Worker started/ },
-      env: services,
+      env: { ...services, REMINDER_EVERY_MS: '3000' },
     },
     {
       command: production

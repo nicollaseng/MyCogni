@@ -51,4 +51,8 @@ export default defineConfig(
     files: ['**/*.{js,mjs,cjs}'],
     extends: [tseslint.configs.disableTypeChecked],
   },
+  {
+    files: ['apps/web/public/**/*.js'],
+    languageOptions: { globals: { self: 'readonly', URL: 'readonly' } },
+  },
 )
