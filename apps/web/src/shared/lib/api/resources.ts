@@ -5,6 +5,7 @@ import {
   checkInCountSchema,
   checkInDetailSchema,
   checkInListSchema,
+  checkInPageSchema,
   consentListSchema,
   patientInsightListSchema,
   profileSchema,
@@ -14,6 +15,7 @@ import {
   type Assessment,
   type CheckIn,
   type CheckInDetail,
+  type CheckInPage,
   type Consent,
   type CreateCheckInAddendumInput,
   type CreateCheckInInput,
@@ -41,9 +43,14 @@ export interface CheckInFilter {
   hasNote?: boolean
 }
 
-export interface CheckInPage extends CheckInFilter {
+export interface CheckInWindow extends CheckInFilter {
   before?: string
   limit?: number
+}
+
+export interface CheckInPageRequest extends CheckInFilter {
+  page: number
+  size: number
 }
 
 const pageLimit = 200
@@ -99,6 +106,8 @@ function checkInQuery({
   since,
   before,
   limit,
+  page,
+  size,
   q,
   qTags,
   emotions,
@@ -106,12 +115,14 @@ function checkInQuery({
   minMood,
   maxMood,
   hasNote,
-}: CheckInPage): string {
+}: CheckInWindow & Partial<CheckInPageRequest>): string {
   const query = new URLSearchParams()
   const entries: [string, string | undefined][] = [
     ['since', since?.toISOString()],
     ['before', before],
     ['limit', limit === undefined ? undefined : String(limit)],
+    ['page', page === undefined ? undefined : String(page)],
+    ['size', size === undefined ? undefined : String(size)],
     ['q', q === undefined || q === '' ? undefined : q],
     ['qTags', listOf(qTags)],
     ['emotions', listOf(emotions)],
@@ -128,8 +139,15 @@ function checkInQuery({
   return query.toString()
 }
 
-export function fetchCheckIns(page: CheckInPage): Promise<CheckIn[]> {
-  return apiRequest({ path: `/v1/check-ins?${checkInQuery(page)}`, schema: checkInListSchema })
+export function fetchCheckIns(window: CheckInWindow): Promise<CheckIn[]> {
+  return apiRequest({ path: `/v1/check-ins?${checkInQuery(window)}`, schema: checkInListSchema })
+}
+
+export function fetchCheckInPage(request: CheckInPageRequest): Promise<CheckInPage> {
+  return apiRequest({
+    path: `/v1/check-ins/page?${checkInQuery(request)}`,
+    schema: checkInPageSchema,
+  })
 }
 
 export async function countCheckIns(filter: CheckInFilter): Promise<number> {

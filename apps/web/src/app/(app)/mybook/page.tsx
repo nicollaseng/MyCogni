@@ -2,6 +2,7 @@ import type { JournalShare } from '@mycogni/contracts'
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { getLocale, getTranslations } from 'next-intl/server'
+import { bookHref } from '@/features/mybook/book-href'
 import { RefreshAfterPageVisit } from '@/features/mybook/components/book-freshness'
 import { Icon } from '@/features/mybook/components/icon'
 import { NewPageButton } from '@/features/mybook/components/new-page-button'
@@ -9,16 +10,16 @@ import { PageList } from '@/features/mybook/components/page-list'
 import { PageSearch } from '@/features/mybook/components/page-search'
 import { groupByMonth } from '@/features/mybook/months'
 import { isLive } from '@/features/mybook/sharing'
+import { ListPager } from '@/shared/components/list-pager'
 import { fetchJournal, fetchJournalShares } from '@/shared/lib/api/journal'
 import { requireOnboardedProfile } from '@/shared/lib/auth/session'
+import { listPageOf } from '@/shared/lib/list-page'
 import { guarded } from '@/shared/lib/settled'
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations('mybook.meta')
   return { title: t('title') }
 }
-
-const pageSize = 50
 
 function sharedWith(shares: readonly JournalShare[], now: Date): string[] {
   return [
@@ -29,30 +30,26 @@ function sharedWith(shares: readonly JournalShare[], now: Date): string[] {
 }
 
 async function bookOf(searchParams: PageProps<'/mybook'>['searchParams']) {
-  const { q, before } = await searchParams
-  const query = typeof q === 'string' ? q.trim().slice(0, 100) : ''
-  const [pages, shares, t, locale] = await Promise.all([
-    fetchJournal({
-      q: query,
-      before: typeof before === 'string' ? before : undefined,
-      limit: pageSize,
-    }),
+  const params = await searchParams
+  const query = typeof params.q === 'string' ? params.q.trim().slice(0, 100) : ''
+  const { page, size } = listPageOf(params)
+  const [book, shares, t, locale] = await Promise.all([
+    fetchJournal({ q: query, page, size }),
     fetchJournalShares(),
     getTranslations('mybook.list'),
     getLocale(),
   ])
-  return { query, before, pages, shares, t, locale }
+  return { query, size, book, shares, t, locale }
 }
 
 export default async function MybookPage({ searchParams }: PageProps<'/mybook'>) {
-  const [{ timezone }, { query, before, pages, shares, t, locale }] = await guarded(
+  const [{ timezone }, { query, size, book, shares, t, locale }] = await guarded(
     requireOnboardedProfile(),
     bookOf(searchParams),
   )
   const now = new Date()
   const names = sharedWith(shares, now)
-  const oldest = pages.at(-1)
-  const blankBook = pages.length === 0 && query === '' && before === undefined
+  const blankBook = book.total === 0 && query === ''
 
   return (
     <>
@@ -99,31 +96,23 @@ export default async function MybookPage({ searchParams }: PageProps<'/mybook'>)
         </section>
       ) : (
         <div className="space-y-8">
-          <PageSearch query={query} />
-          {pages.length === 0 ? (
+          <PageSearch query={query} size={size} />
+          {book.items.length === 0 ? (
             <p className="px-1 text-muted-foreground">{t('noResults', { query })}</p>
           ) : (
             <PageList
-              groups={groupByMonth(pages, timezone)}
+              groups={groupByMonth(book.items, timezone)}
               now={now}
               timeZone={timezone}
               hrefOf={(id) => `/mybook/${id}`}
             />
           )}
-          {pages.length === pageSize && oldest !== undefined && (
-            <Link
-              href={{
-                pathname: '/mybook',
-                query:
-                  query === ''
-                    ? { before: oldest.updatedAt }
-                    : { q: query, before: oldest.updatedAt },
-              }}
-              className="inline-block px-1 text-sm underline decoration-1 underline-offset-4"
-            >
-              {t('older')}
-            </Link>
-          )}
+          <ListPager
+            page={book.page}
+            size={size}
+            total={book.total}
+            hrefOf={(target) => bookHref(query, target)}
+          />
         </div>
       )}
     </>

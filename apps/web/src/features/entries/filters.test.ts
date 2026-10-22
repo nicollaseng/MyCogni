@@ -56,7 +56,7 @@ describe('entry filters', () => {
     expect(filters.contexts).toEqual(['t0', 't1'])
   })
 
-  it('writes back only the filters in use, keeping the page cursor', () => {
+  it('writes back only the filters in use, with the page and its size', () => {
     const filters = {
       ...noFilters,
       q: 'café',
@@ -65,16 +65,20 @@ describe('entry filters', () => {
       withNote: true,
     }
 
-    expect(entryQuery(filters, '2026-10-01T12:00:00.000Z')).toEqual({
+    expect(entryQuery(filters, { page: 3, size: 25 })).toEqual({
       q: 'café',
       mood: '4-6',
       context: 'work,sleep',
       note: '1',
-      before: '2026-10-01T12:00:00.000Z',
+      page: '3',
+      size: '25',
     })
     expect(entriesHref(filters)).toBe('/entries?q=caf%C3%A9&mood=4-6&context=work%2Csleep&note=1')
     expect(entriesHref(noFilters)).toBe('/entries')
+    expect(entriesHref(noFilters, { page: 1, size: 10 })).toBe('/entries')
+    expect(entriesHref(noFilters, { page: 2, size: 50 })).toBe('/entries?page=2&size=50')
     expect(entryHref('abc', { ...noFilters, period: '7' })).toBe('/entries/abc?period=7')
+    expect(entryHref('abc', noFilters, { page: 4, size: 10 })).toBe('/entries/abc?page=4')
     expect(entryHref('abc', noFilters)).toBe('/entries/abc')
   })
 

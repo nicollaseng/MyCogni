@@ -18,7 +18,6 @@ export const mybook = {
     searchPlaceholder: 'Buscar',
     noResults: 'Nenhuma página com “{query}”.',
     blank: 'Página em branco',
-    older: 'Páginas anteriores',
     empty: {
       title: 'Sua primeira página está em branco.',
       body: 'Conte como foi o dia, guarde uma foto, faça uma lista. Ninguém mais lê, a não ser que você escolha compartilhar.',

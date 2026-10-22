@@ -10,7 +10,6 @@ export const entries: EntriesMessages = {
     'Every check-in is kept here, with the date, your mood and anything you want to note.',
   empty: 'Your first entry will show up here.',
   emptyAction: 'Do your first check-in',
-  older: 'Earlier entries',
   days: {
     today: 'Today',
     yesterday: 'Yesterday',

@@ -9,7 +9,6 @@ export const entries: EntriesMessages = {
   description: 'Cada check-in fica guardado aqui, com a data, o humor e o que quiser anotar.',
   empty: 'O seu primeiro registo aparece aqui.',
   emptyAction: 'Fazer o primeiro check-in',
-  older: 'Registos anteriores',
   days: {
     today: 'Hoje',
     yesterday: 'Ontem',

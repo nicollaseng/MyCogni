@@ -20,7 +20,6 @@ export const mybook: MybookMessages = {
     searchPlaceholder: 'Pesquisar',
     noResults: 'Nenhuma página com «{query}».',
     blank: 'Página em branco',
-    older: 'Páginas anteriores',
     empty: {
       title: 'A sua primeira página está em branco.',
       body: 'Conte como foi o dia, guarde uma fotografia, faça uma lista. Mais ninguém lê, a não ser que escolha partilhar.',

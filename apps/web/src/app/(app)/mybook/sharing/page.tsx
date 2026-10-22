@@ -30,10 +30,10 @@ async function accessLogs(
 export default async function MybookSharingPage({ searchParams }: PageProps<'/mybook/sharing'>) {
   const { timezone } = await requireOnboardedProfile()
   const { page } = await searchParams
-  const [links, shares, pages, t] = await Promise.all([
+  const [links, shares, { items: pages }, t] = await Promise.all([
     fetchCareLinks(),
     fetchJournalShares(),
-    fetchJournal({ limit: pickerSize }),
+    fetchJournal({ size: pickerSize }),
     getTranslations('mybook.sharing'),
   ])
   const access = await accessLogs(shares)

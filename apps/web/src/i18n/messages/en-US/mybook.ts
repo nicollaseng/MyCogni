@@ -20,7 +20,6 @@ export const mybook: MybookMessages = {
     searchPlaceholder: 'Search',
     noResults: 'No pages with “{query}”.',
     blank: 'Blank page',
-    older: 'Older pages',
     empty: {
       title: 'Your first page is blank.',
       body: 'Tell how your day went, keep a photo, make a list. Nobody else reads it unless you choose to share.',
