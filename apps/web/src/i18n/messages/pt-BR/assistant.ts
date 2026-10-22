@@ -5,9 +5,9 @@ export const assistant = {
   professionalAction: 'Perguntar sobre este paciente',
   close: 'Fechar',
   disclaimer: {
-    mistakes: 'IA pode cometer erros.',
-    personal: 'Essa conversa não substitui um aconselhamento de saúde profissional.',
-    professional: 'Não substitui o seu julgamento clínico.',
+    mistakes: 'IA pode cometer erros',
+    personal: 'MyCogniAI não substitui um aconselhamento de saúde profissional.',
+    professional: 'MyCogniAI não substitui o seu julgamento clínico.',
   },
   toolbar: {
     new: 'Nova conversa',
