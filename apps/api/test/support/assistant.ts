@@ -1,4 +1,4 @@
-import type { RiskLevel } from '@mycogni/domain'
+import type { ProposedAction, RiskLevel } from '@mycogni/domain'
 import { sql } from 'drizzle-orm'
 import type {
   AssistantAnswer,
@@ -16,6 +16,7 @@ export class FakeAssistantModel implements AssistantModel {
   calls: ToolCall[] = []
   reply = 'Resposta de teste.'
   risk: RiskLevel = 'none'
+  actions: ProposedAction[] = []
   outcome: 'answer' | 'refusal' | 'error' = 'answer'
 
   async answer(request: AssistantRequest): Promise<AssistantAnswer> {
@@ -28,7 +29,7 @@ export class FakeAssistantModel implements AssistantModel {
     }
     return this.outcome === 'refusal'
       ? { kind: 'refusal' }
-      : { kind: 'answer', text: this.reply, risk: this.risk }
+      : { kind: 'answer', text: this.reply, risk: this.risk, actions: this.actions }
   }
 
   reset(): void {
@@ -37,6 +38,7 @@ export class FakeAssistantModel implements AssistantModel {
     this.calls = []
     this.reply = 'Resposta de teste.'
     this.risk = 'none'
+    this.actions = []
     this.outcome = 'answer'
   }
 

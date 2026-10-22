@@ -108,6 +108,7 @@ describe('/v1/professional/patients/:patientId/assistant', () => {
 
   it('reads nothing while the patient has not allowed AI processing', async () => {
     model.calls = [{ name: 'read_check_ins', input: {} }]
+    model.actions = [{ type: 'breathe', id: null }]
 
     const response = await ask(helena, ana.id, 'Como foi a semana?')
     const overview = (
@@ -118,6 +119,7 @@ describe('/v1/professional/patients/:patientId/assistant', () => {
     expect(model.lastRequest().tools).toEqual([])
     expect(model.lastRequest().notes.join(' ')).toContain('has not allowed AI processing')
     expect(model.results[0]).toBe('{"error":"not_allowed"}')
+    expect(response.json<AssistantExchange>().messages.at(-1)).not.toHaveProperty('actions')
     expect(overview.access.records).toBe(false)
   })
 

@@ -16,6 +16,8 @@ import {
   mergeRisk,
   repeatsPassage,
   riskForMode,
+  validActions,
+  type AssistantAction,
   type AssistantRole,
   type Locale,
   type NoticeKind,
@@ -77,6 +79,7 @@ interface Outcome {
   text: string
   risk: RiskLevel
   tools: number
+  actions: AssistantAction[]
 }
 
 interface Question {
@@ -91,6 +94,8 @@ interface Question {
 }
 
 const dayInMilliseconds = 24 * 60 * 60 * 1000
+
+const reopenedAfterMilliseconds = 6 * 60 * 60 * 1000
 
 const conversationMessages = 200
 
@@ -118,6 +123,11 @@ function toSummary(record: ConversationRecord): AssistantConversationSummary {
 
 function toTurn(record: MessageRecord): AssistantTurn {
   return { role: record.role === 'user' ? 'user' : 'assistant', text: record.content }
+}
+
+function reopenedAfterGap(history: readonly MessageRecord[], at: Date): boolean {
+  const last = history.at(-1)
+  return last !== undefined && at.getTime() - last.createdAt.getTime() >= reopenedAfterMilliseconds
 }
 
 function ownerOf(user: AuthenticatedUser, scope: AssistantScope): string {
@@ -254,6 +264,7 @@ export function createAssistantService({
       text: assistantNotice(question.locale, question.scope.mode, kind),
       risk: kind === 'crisis' ? 'urgent' : 'none',
       tools,
+      actions: [],
     }
   }
 
@@ -289,6 +300,7 @@ export function createAssistantService({
           journal: access.journal,
           watch: question.watch,
           page: question.pageId !== null,
+          reopened: reopenedAfterGap(question.history, now()),
         }),
         tools: toolbox.definitions(access, scope.mode, question.pageId !== null),
         runTool: (call) => {
@@ -307,9 +319,12 @@ export function createAssistantService({
         hiddenTerms: assistantToolNames,
         maxLength: assistantLimits.replyLength,
       })
-      return text === ''
-        ? notice(question, 'unavailable', tools)
-        : { kind: 'answer', role: 'assistant', text, risk: answer.risk, tools }
+      if (text === '') {
+        return notice(question, 'unavailable', tools)
+      }
+      const actions =
+        answer.risk === 'urgent' ? [] : validActions(answer.actions, question.scope.mode)
+      return { kind: 'answer', role: 'assistant', text, risk: answer.risk, tools, actions }
     } catch (error) {
       log.error(errorKind(error), 'Assistant model failed')
       return notice(question, 'unavailable', tools)
@@ -391,7 +406,13 @@ export function createAssistantService({
         },
         'Assistant message answered',
       )
-      return { conversationId: conversation.id, messages: saved.map(toMessage), risk }
+      const actions = risk === 'urgent' ? [] : outcome.actions
+      const messages = saved.map((record) =>
+        record.role === 'assistant' && actions.length > 0
+          ? { ...toMessage(record), actions }
+          : toMessage(record),
+      )
+      return { conversationId: conversation.id, messages, risk }
     },
     async remove(user, id) {
       if (!(await conversations.remove(user.id, id))) {

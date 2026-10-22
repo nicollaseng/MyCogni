@@ -1,6 +1,12 @@
 import Anthropic from '@anthropic-ai/sdk'
 import { zodOutputFormat } from '@anthropic-ai/sdk/helpers/zod'
-import { assistantLimits, riskLevels, type RiskLevel } from '@mycogni/domain'
+import {
+  assistantActionTypes,
+  assistantLimits,
+  riskLevels,
+  type ProposedAction,
+  type RiskLevel,
+} from '@mycogni/domain'
 import { z } from 'zod'
 
 export interface AssistantToolDefinition {
@@ -30,7 +36,8 @@ export interface AssistantRequest {
 }
 
 export type AssistantAnswer =
-  { kind: 'answer'; text: string; risk: RiskLevel } | { kind: 'refusal' }
+  | { kind: 'answer'; text: string; risk: RiskLevel; actions: readonly ProposedAction[] }
+  | { kind: 'refusal' }
 
 export interface AssistantModel {
   readonly model: string
@@ -49,6 +56,12 @@ export const assistantModelId = 'claude-haiku-5-5'
 export const assistantReplySchema = z.object({
   reply: z.string(),
   risk: z.enum(riskLevels),
+  actions: z.array(
+    z.object({
+      type: z.enum(assistantActionTypes),
+      id: z.string().nullable(),
+    }),
+  ),
 })
 
 const roundLimitNote = 'Tool limit reached for this message. Answer now with what you already have.'
@@ -75,7 +88,12 @@ function parseReply(text: string): AssistantAnswer {
   if (!parsed.success || parsed.data.reply.trim() === '') {
     throw new AssistantModelError('unexpected shape')
   }
-  return { kind: 'answer', text: parsed.data.reply, risk: parsed.data.risk }
+  return {
+    kind: 'answer',
+    text: parsed.data.reply,
+    risk: parsed.data.risk,
+    actions: parsed.data.actions,
+  }
 }
 
 function opening({ history, notes }: AssistantRequest): Anthropic.MessageParam[] {

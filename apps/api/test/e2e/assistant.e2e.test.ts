@@ -1,8 +1,10 @@
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from '@jest/globals'
 import type { AssistantExchange, AssistantOverview } from '@mycogni/contracts'
 import { assistantNotice } from '@mycogni/domain'
+import { eq, sql } from 'drizzle-orm'
 import { personalAssistantPrompt } from '../../src/ai/assistant-prompts.ts'
 import { connectDatabase, type DatabaseConnection } from '../../src/db/client.ts'
+import { assistantMessages } from '../../src/db/schema/index.ts'
 import type { App } from '../../src/shared/http.ts'
 import { FakeAssistantModel, seedRecords } from '../support/assistant.ts'
 import { testDatabaseUrl } from '../support/database.ts'
@@ -175,6 +177,49 @@ describe('/v1/assistant', () => {
       'user',
     ])
     expect(model.lastRequest().history.at(-1)?.text).toBe('o que eu faço agora?')
+  })
+
+  it('attaches at most two catalog actions to an answer and none to an urgent one', async () => {
+    model.actions = [
+      { type: 'link', id: 'https://example.com' },
+      { type: 'article', id: 'https://example.com' },
+      { type: 'breathe', id: null },
+      { type: 'breathe', id: null },
+      { type: 'track', id: 'low-mood' },
+      { type: 'check_in', id: null },
+    ]
+
+    const result = await exchange(ana, 'Como posso descansar hoje?')
+
+    expect(result.messages[0]).not.toHaveProperty('actions')
+    expect(result.messages[1]?.actions).toEqual([
+      { type: 'breathe' },
+      { type: 'track', id: 'low-mood' },
+    ])
+    const reopened = await app.inject({
+      method: 'GET',
+      url: `/v1/assistant/conversations/${result.conversationId}`,
+      headers: bearer(ana),
+    })
+    expect(reopened.json<{ messages: unknown[] }>().messages[1]).not.toHaveProperty('actions')
+
+    model.risk = 'urgent'
+    const urgent = await exchange(ana, 'Como posso descansar hoje?')
+    expect(urgent.messages[1]).not.toHaveProperty('actions')
+  })
+
+  it('lets the model follow up gently on a conversation reopened after a while', async () => {
+    const first = await exchange(ana, 'Tenho uma entrevista amanhã')
+    await exchange(ana, 'Obrigada', first.conversationId)
+    expect(model.lastRequest().notes.join(' ')).not.toContain('reopened after a while')
+
+    await connection.db
+      .update(assistantMessages)
+      .set({ createdAt: sql`now() - interval '7 hours'` })
+      .where(eq(assistantMessages.conversationId, first.conversationId))
+    await exchange(ana, 'Voltei', first.conversationId)
+
+    expect(model.lastRequest().notes.join(' ')).toContain('reopened after a while')
   })
 
   it('falls back to a safe notice on a refusal or a failure', async () => {
