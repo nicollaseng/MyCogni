@@ -6,6 +6,7 @@ export type IconName =
   | 'bullets'
   | 'checklist'
   | 'chevron'
+  | 'close'
   | 'dashes'
   | 'forward'
   | 'image'
@@ -39,6 +40,7 @@ const shapes: Readonly<Record<IconName, ReactNode>> = {
     </>
   ),
   chevron: <path d="m7 10 5 5 5-5" />,
+  close: <path d="M6.5 6.5l11 11M17.5 6.5l-11 11" />,
   dashes: <path d="M2.5 7h4.5M2.5 12h4.5M2.5 17h4.5M10 7h10M10 12h10M10 17h10" />,
   forward: <path d="m9.5 5.5 6.5 6.5-6.5 6.5" />,
   image: (

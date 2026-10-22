@@ -21,9 +21,16 @@ interface TextStyleOptionsProps {
   current: TextStyle
   layout: 'row' | 'column'
   onChosen: () => void
+  refocus?: boolean
 }
 
-export function TextStyleOptions({ editor, current, layout, onChosen }: TextStyleOptionsProps) {
+export function TextStyleOptions({
+  editor,
+  current,
+  layout,
+  onChosen,
+  refocus = true,
+}: TextStyleOptionsProps) {
   const t = useTranslations('mybook.editor.toolbar')
 
   return (
@@ -43,7 +50,7 @@ export function TextStyleOptions({ editor, current, layout, onChosen }: TextStyl
           aria-pressed={current === style}
           onMouseDown={keepEditorFocus}
           onClick={() => {
-            applyTextStyle(editor, style)
+            applyTextStyle(editor, style, refocus)
             onChosen()
           }}
           className={cn(

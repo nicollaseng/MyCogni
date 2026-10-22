@@ -27,6 +27,8 @@ import { PhotoSizeSheet } from './photo-size-sheet'
 import { SaveIndicator } from './save-indicator'
 import { usePagePhotos } from './use-page-photos'
 import { usePageSaving, type PageContent } from './use-page-saving'
+import { bottomSpace, useWritingChrome } from './use-writing-chrome'
+import { useWideScreen } from './viewport'
 import './journal.css'
 
 interface JournalEditorProps {
@@ -56,6 +58,8 @@ export function JournalEditor({
   const [leaving, startLeaving] = useTransition()
   const titleRef = useRef(title)
   const titleField = useRef<HTMLTextAreaElement>(null)
+  const pageRef = useRef<HTMLDivElement>(null)
+  const chromeRef = useRef<HTMLDivElement>(null)
   const docRef = useRef<DocumentNode | null>(null)
   const addPhotosRef = useRef<(files: File[]) => void>(() => undefined)
 
@@ -137,6 +141,8 @@ export function JournalEditor({
     onUploaded: saving.addImage,
   })
   const { choose } = photos
+  const wide = useWideScreen()
+  const chrome = useWritingChrome(editor, pageRef, chromeRef, !wide)
 
   useEffect(() => {
     addPhotosRef.current = choose
@@ -181,7 +187,11 @@ export function JournalEditor({
   }
 
   return (
-    <div className="space-y-6 pb-28 sm:pb-0">
+    <div
+      ref={pageRef}
+      className="space-y-6"
+      style={wide ? undefined : { paddingBottom: bottomSpace(chrome) }}
+    >
       <div className="flex items-center justify-between gap-3">
         <Link
           href="/mybook"
@@ -235,7 +245,14 @@ export function JournalEditor({
       )}
 
       {editor !== null && (
-        <EditorToolbar editor={editor} onPhotos={choose} photosDisabled={photos.uploading} />
+        <EditorToolbar
+          editor={editor}
+          chrome={chrome}
+          surface={chromeRef}
+          wide={wide}
+          onPhotos={choose}
+          photosDisabled={photos.uploading}
+        />
       )}
 
       <div className="space-y-2">

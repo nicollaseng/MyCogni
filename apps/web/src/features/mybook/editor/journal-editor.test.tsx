@@ -4,6 +4,7 @@ import { screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { renderWithIntl } from '@/test/render'
 import { fakeRouter, WithRouter } from '@/test/router'
+import { installVisualViewport } from '@/test/visual-viewport'
 import { exchange, fakeActions, message, overview } from '@/features/assistant/test-data'
 import { readDraft, writeDraft } from '../drafts'
 import type { PageClient, RemoveOutcome, SaveOutcome } from '../page-client'
@@ -271,5 +272,26 @@ describe('JournalEditor drafts', () => {
       'Fui ao parque.',
     )
     expect(client.save).not.toHaveBeenCalled()
+  })
+})
+
+describe('JournalEditor on a phone keyboard', () => {
+  it('makes room for the bar and the keyboard and hides the tab bar while writing', async () => {
+    const viewport = installVisualViewport()
+    clientSaving(() => Promise.resolve({ kind: 'saved', updatedAt: savedAt, safety: null }))
+    const page = screen.getByRole('toolbar', { name: 'Formatação' }).parentElement
+
+    await userEvent.click(titleField())
+    viewport.showKeyboard(300)
+
+    expect(page).toHaveStyle({ paddingBottom: `${String(48 + 300 + 24)}px` })
+    expect(document.documentElement).toHaveAttribute('data-tab-bar', 'hidden')
+    expect(screen.getByRole('toolbar', { name: 'Formatação' })).toHaveStyle({ bottom: '300px' })
+
+    viewport.hideKeyboard()
+    await userEvent.tab()
+
+    expect(document.documentElement).not.toHaveAttribute('data-tab-bar')
+    viewport.remove()
   })
 })

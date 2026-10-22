@@ -1,168 +1,30 @@
 'use client'
 
-import { useEditorState, type Editor } from '@tiptap/react'
+import type { Editor } from '@tiptap/react'
 import { useTranslations } from 'next-intl'
-import { useRef, useState, type ReactNode } from 'react'
+import { useRef, type RefObject } from 'react'
 import { cn } from '@/shared/lib/utils'
-import { Icon, type IconName } from '../components/icon'
-import {
-  canIndent,
-  canOutdent,
-  indent,
-  listKinds,
-  markNames,
-  outdent,
-  textStyleOf,
-  toggleListKind,
-  toggleMarkNamed,
-  type ListKind,
-  type MarkName,
-  type TextStyle,
-} from './commands'
-import { dashListName } from './extensions'
-import { TextStyleMenu, TextStyleOptions } from './text-styles'
-import { ToolbarButton, ToolbarGroup } from './toolbar-button'
-import { useKeyboardHeight, useWideScreen } from './viewport'
+import { Icon } from '../components/icon'
+import { listKinds } from './commands'
+import { IndentButtons, ListButtons, MarkButtons, useToolbarState } from './format-controls'
+import { FormatPanel } from './format-panel'
+import { TextStyleMenu } from './text-styles'
+import { ToolbarButton } from './toolbar-button'
+import { barHeight, type WritingChrome } from './use-writing-chrome'
 
-interface ToolbarState {
-  style: TextStyle
-  marks: Readonly<Record<MarkName, boolean>>
-  lists: Readonly<Record<ListKind, boolean>>
-  canIndent: boolean
-  canOutdent: boolean
-}
-
-interface EditorToolbarProps {
-  editor: Editor
+interface PhotoProps {
   onPhotos: (files: File[]) => void
   photosDisabled: boolean
 }
 
-interface ControlsProps {
+interface EditorToolbarProps extends PhotoProps {
   editor: Editor
-  state: ToolbarState
-  className?: string
-  stretch?: boolean
+  chrome: WritingChrome
+  surface: RefObject<HTMLDivElement | null>
+  wide: boolean
 }
 
-const markGlyphs: Readonly<Record<MarkName, ReactNode>> = {
-  bold: <span className="text-[17px] font-bold">B</span>,
-  italic: <span className="font-serif text-[20px] italic">I</span>,
-  underline: <span className="text-[17px] underline underline-offset-[3px]">U</span>,
-  strike: <span className="text-[17px] line-through">S</span>,
-}
-
-const listIcons: Readonly<Record<ListKind, IconName>> = {
-  bulletList: 'bullets',
-  dashList: 'dashes',
-  orderedList: 'numbers',
-  taskList: 'checklist',
-}
-
-const compactLists: readonly ListKind[] = ['bulletList', 'dashList', 'orderedList']
-
-const segment = 'rounded-[6px] bg-background p-0.5'
-
-function useToolbarState(editor: Editor): ToolbarState {
-  return useEditorState({
-    editor,
-    selector: ({ editor: current }) => ({
-      style: textStyleOf(current),
-      marks: {
-        bold: current.isActive('bold'),
-        italic: current.isActive('italic'),
-        underline: current.isActive('underline'),
-        strike: current.isActive('strike'),
-      },
-      lists: {
-        bulletList: current.isActive('bulletList'),
-        dashList: current.isActive(dashListName),
-        orderedList: current.isActive('orderedList'),
-        taskList: current.isActive('taskList'),
-      },
-      canIndent: canIndent(current),
-      canOutdent: canOutdent(current),
-    }),
-  })
-}
-
-function MarkButtons({ editor, state, className, stretch = false }: ControlsProps) {
-  const t = useTranslations('mybook.editor.toolbar')
-  return (
-    <ToolbarGroup className={className}>
-      {markNames.map((mark) => (
-        <ToolbarButton
-          key={mark}
-          label={t(mark)}
-          pressed={state.marks[mark]}
-          onPress={() => {
-            toggleMarkNamed(editor, mark)
-          }}
-          className={cn(stretch && 'flex-1')}
-        >
-          {markGlyphs[mark]}
-        </ToolbarButton>
-      ))}
-    </ToolbarGroup>
-  )
-}
-
-function ListButtons({
-  editor,
-  state,
-  kinds,
-  className,
-  stretch = false,
-}: ControlsProps & { kinds: readonly ListKind[] }) {
-  const t = useTranslations('mybook.editor.toolbar')
-  return (
-    <ToolbarGroup className={className}>
-      {kinds.map((kind) => (
-        <ToolbarButton
-          key={kind}
-          label={t(kind)}
-          pressed={state.lists[kind]}
-          onPress={() => {
-            toggleListKind(editor, kind)
-          }}
-          className={cn(stretch && 'flex-1')}
-        >
-          <Icon name={listIcons[kind]} />
-        </ToolbarButton>
-      ))}
-    </ToolbarGroup>
-  )
-}
-
-function IndentButtons({ editor, state, className, stretch = false }: ControlsProps) {
-  const t = useTranslations('mybook.editor.toolbar')
-  return (
-    <ToolbarGroup className={className}>
-      <ToolbarButton
-        label={t('outdent')}
-        disabled={!state.canOutdent}
-        onPress={() => {
-          outdent(editor)
-        }}
-        className={cn(stretch && 'flex-1')}
-      >
-        <Icon name="outdent" />
-      </ToolbarButton>
-      <ToolbarButton
-        label={t('indent')}
-        disabled={!state.canIndent}
-        onPress={() => {
-          indent(editor)
-        }}
-        className={cn(stretch && 'flex-1')}
-      >
-        <Icon name="indent" />
-      </ToolbarButton>
-    </ToolbarGroup>
-  )
-}
-
-function PhotoButton({ onPhotos, photosDisabled }: Omit<EditorToolbarProps, 'editor'>) {
+function PhotoButton({ onPhotos, photosDisabled }: PhotoProps) {
   const t = useTranslations('mybook.editor.toolbar')
   const input = useRef<HTMLInputElement>(null)
   return (
@@ -220,72 +82,44 @@ function WideToolbar({ editor, onPhotos, photosDisabled }: EditorToolbarProps) {
   )
 }
 
-function CompactToolbar({ editor, onPhotos, photosDisabled }: EditorToolbarProps) {
+function FormatBar({ editor, chrome, surface, onPhotos, photosDisabled }: EditorToolbarProps) {
   const t = useTranslations('mybook.editor.toolbar')
   const state = useToolbarState(editor)
-  const keyboard = useKeyboardHeight()
-  const [formatting, setFormatting] = useState(false)
-
+  const writing = chrome.mode === 'writing'
   return (
     <div
-      className="fixed inset-x-0 bottom-[calc(3.5rem+env(safe-area-inset-bottom))] z-20 px-3 pb-2"
-      style={keyboard > 0 ? { bottom: keyboard } : undefined}
+      ref={surface}
+      role="toolbar"
+      aria-label={t('label')}
+      data-placement={chrome.mode}
+      style={writing ? { height: barHeight, bottom: chrome.keyboard } : { height: barHeight }}
+      className={cn(
+        'fixed inset-x-0 m-0 flex justify-center bg-surface px-3',
+        writing
+          ? 'z-20'
+          : 'bottom-[calc(var(--spacing-tab-bar)+env(safe-area-inset-bottom))] z-[5]',
+      )}
     >
-      <div className="mx-auto max-w-md space-y-2">
-        {formatting && (
-          <div
-            role="group"
-            aria-label={t('format')}
-            className="space-y-2 rounded-[10px] bg-surface p-2 shadow-[0_0_0_1px_var(--rule),0_4px_14px_rgb(0_0_0/0.06)]"
-          >
-            <TextStyleOptions
-              editor={editor}
-              current={state.style}
-              layout="row"
-              onChosen={() => undefined}
-            />
-            <MarkButtons editor={editor} state={state} className={segment} stretch />
-            <div className="flex gap-2">
-              <ListButtons
-                editor={editor}
-                state={state}
-                kinds={compactLists}
-                className={cn(segment, 'flex-[3]')}
-                stretch
-              />
-              <IndentButtons
-                editor={editor}
-                state={state}
-                className={cn(segment, 'flex-[2]')}
-                stretch
-              />
-            </div>
-          </div>
-        )}
-        <div
-          role="toolbar"
-          aria-label={t('label')}
-          className="flex items-center justify-around rounded-[10px] bg-surface px-3 py-1 shadow-[0_0_0_1px_var(--rule),0_4px_14px_rgb(0_0_0/0.06)]"
-        >
-          <ToolbarButton
-            label={t('format')}
-            expanded={formatting}
-            onPress={() => {
-              setFormatting((value) => !value)
-            }}
-          >
-            <span aria-hidden className="font-serif text-[19px] leading-none">
-              Aa
-            </span>
-          </ToolbarButton>
-          <ListButtons editor={editor} state={state} kinds={['taskList']} />
-          <PhotoButton onPhotos={onPhotos} photosDisabled={photosDisabled} />
-        </div>
+      <div className="flex w-full max-w-md items-center justify-around">
+        <ToolbarButton label={t('format')} onPress={chrome.openFormatting}>
+          <span aria-hidden className="font-serif text-[19px] leading-none">
+            Aa
+          </span>
+        </ToolbarButton>
+        <ListButtons editor={editor} state={state} kinds={['taskList']} />
+        <PhotoButton onPhotos={onPhotos} photosDisabled={photosDisabled} />
       </div>
     </div>
   )
 }
 
 export function EditorToolbar(props: EditorToolbarProps) {
-  return useWideScreen() ? <WideToolbar {...props} /> : <CompactToolbar {...props} />
+  if (props.wide) {
+    return <WideToolbar {...props} />
+  }
+  return props.chrome.mode === 'formatting' ? (
+    <FormatPanel editor={props.editor} chrome={props.chrome} surface={props.surface} />
+  ) : (
+    <FormatBar {...props} />
+  )
 }

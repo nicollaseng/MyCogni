@@ -18,10 +18,13 @@ async function signIn(page: Page, email: string): Promise<void> {
 
 async function format(page: Page, name: string): Promise<void> {
   const button = page.getByRole('button', { name, exact: true })
-  if (!(await button.isVisible())) {
-    await page.getByRole('button', { name: 'Formatar texto' }).click()
+  if (await button.isVisible()) {
+    await button.click()
+    return
   }
+  await page.getByRole('button', { name: 'Formatar texto' }).click()
   await button.click()
+  await page.getByRole('button', { name: 'Fechar formatação' }).click()
 }
 
 test('writes a page with formatting, a checklist and a photo, finds it and deletes it', async ({

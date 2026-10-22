@@ -1,5 +1,5 @@
 import { NodeSelection, TextSelection } from '@tiptap/pm/state'
-import type { Editor } from '@tiptap/react'
+import type { ChainedCommands, Editor } from '@tiptap/react'
 import { imageNodeName } from '../document'
 import { dashListName } from './extensions'
 
@@ -28,8 +28,12 @@ export function textStyleOf(editor: Editor): TextStyle {
   return 'body'
 }
 
-export function applyTextStyle(editor: Editor, style: TextStyle): void {
-  const chain = editor.chain().focus()
+function commandsOf(editor: Editor, refocus: boolean): ChainedCommands {
+  return refocus ? editor.chain().focus() : editor.chain()
+}
+
+export function applyTextStyle(editor: Editor, style: TextStyle, refocus = true): void {
+  const chain = commandsOf(editor, refocus)
   if (style === 'body') {
     chain.setParagraph().run()
   } else {
@@ -37,12 +41,12 @@ export function applyTextStyle(editor: Editor, style: TextStyle): void {
   }
 }
 
-export function toggleMarkNamed(editor: Editor, mark: MarkName): void {
-  editor.chain().focus().toggleMark(mark).run()
+export function toggleMarkNamed(editor: Editor, mark: MarkName, refocus = true): void {
+  commandsOf(editor, refocus).toggleMark(mark).run()
 }
 
-export function toggleListKind(editor: Editor, kind: ListKind): void {
-  const chain = editor.chain().focus()
+export function toggleListKind(editor: Editor, kind: ListKind, refocus = true): void {
+  const chain = commandsOf(editor, refocus)
   switch (kind) {
     case 'bulletList':
       chain.toggleBulletList().run()
@@ -80,17 +84,17 @@ export function canOutdent(editor: Editor): boolean {
   return type !== null && editor.can().liftListItem(type)
 }
 
-export function indent(editor: Editor): void {
+export function indent(editor: Editor, refocus = true): void {
   const type = listItemTypeAt(editor)
   if (type !== null) {
-    editor.chain().focus().sinkListItem(type).run()
+    commandsOf(editor, refocus).sinkListItem(type).run()
   }
 }
 
-export function outdent(editor: Editor): void {
+export function outdent(editor: Editor, refocus = true): void {
   const type = listItemTypeAt(editor)
   if (type !== null) {
-    editor.chain().focus().liftListItem(type).run()
+    commandsOf(editor, refocus).liftListItem(type).run()
   }
 }
 

@@ -74,6 +74,8 @@ export const mybook = {
       indent: 'Aumentar recuo',
       outdent: 'Diminuir recuo',
       photo: 'Adicionar foto',
+      panelTitle: 'Formatar',
+      closePanel: 'Fechar formatação',
     },
     photo: {
       alt: 'Foto',
