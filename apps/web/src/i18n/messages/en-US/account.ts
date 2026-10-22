@@ -98,7 +98,7 @@ export const account: AccountMessages = {
     },
     granted: 'Granted on {date}',
     notGranted: 'Not granted',
-    note: 'Required consents can only be withdrawn by deleting your account, under Your data.',
+    note: 'Required consents can only be withdrawn by deleting your account, under Account.',
   },
   journal: {
     label: 'Include MyBook in my summaries',

@@ -98,7 +98,7 @@ export const account: AccountMessages = {
     },
     granted: 'Autorizado em {date}',
     notGranted: 'Não autorizado',
-    note: 'Os consentimentos obrigatórios só podem ser retirados eliminando a conta, em Os seus dados.',
+    note: 'Os consentimentos obrigatórios só podem ser retirados eliminando a conta, em Conta.',
   },
   journal: {
     label: 'Incluir o MyBook nos meus resumos',

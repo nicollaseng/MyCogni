@@ -41,6 +41,14 @@ export function DataExportPanel({
   const [error, setError] = useState<string | null>(null)
   const [pending, startTransition] = useTransition()
   const preparing = current !== null && isActiveExport(current.status)
+  const sizeOf = (bytes: number) =>
+    bytes < 1_000_000
+      ? format.number(Math.max(1, Math.round(bytes / 1000)), { style: 'unit', unit: 'kilobyte' })
+      : format.number(bytes / 1_000_000, {
+          style: 'unit',
+          unit: 'megabyte',
+          maximumFractionDigits: 1,
+        })
   const ready =
     current?.status === 'ready' &&
     current.expiresAt !== null &&
@@ -99,11 +107,7 @@ export function DataExportPanel({
         <div className="flex flex-wrap items-center justify-between gap-3">
           <p role="status" className="text-[15px]">
             {t('ready', {
-              size: format.number((current.sizeBytes ?? 0) / 1_000_000, {
-                style: 'unit',
-                unit: 'megabyte',
-                maximumFractionDigits: 1,
-              }),
+              size: sizeOf(current.sizeBytes ?? 0),
               date: format.dateTime(new Date(current.expiresAt ?? 0), {
                 day: 'numeric',
                 month: 'short',

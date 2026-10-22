@@ -123,4 +123,9 @@ describe('DataExportPanel', () => {
     await user.click(screen.getByRole('button', { name: 'Prepare again' }))
     expect(await screen.findByRole('alert')).toHaveTextContent('Você já pediu 3 vezes hoje.')
   })
+
+  it('shows small files in kilobytes', () => {
+    renderPanel({ ...ready, sizeBytes: 48_200 })
+    expect(screen.getByText('Pronto · 48 kB · disponível até 29 de out.')).toBeInTheDocument()
+  })
 })
