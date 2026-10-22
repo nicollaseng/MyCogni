@@ -3,6 +3,8 @@ import {
   journalAccessListSchema,
   journalEntryPageSchema,
   journalEntrySchema,
+  journalPhotoPageSchema,
+  journalPhotoQuerySchema,
   journalQuerySchema,
   journalShareListSchema,
   journalShareSchema,
@@ -13,6 +15,7 @@ import type { FastifyPluginCallbackZod } from 'fastify-type-provider-zod'
 import { z } from 'zod'
 import { forPatients, forProfessionals } from '../../plugins/account-type.ts'
 import { currentUser } from '../../plugins/authentication.ts'
+import type { JournalPhotoService } from './journal-photos.ts'
 import type { JournalService } from './journal.service.ts'
 import type { SharedJournalService } from './shared-journal.service.ts'
 
@@ -23,8 +26,20 @@ const byPatient = z.object({ patientId: z.uuid() })
 export function journalRoutes(
   journal: JournalService,
   shared: SharedJournalService,
+  photos: JournalPhotoService,
 ): FastifyPluginCallbackZod {
   return (app, _options, done) => {
+    app.get(
+      '/journal/photos',
+      {
+        config: forPatients,
+        schema: {
+          querystring: journalPhotoQuerySchema,
+          response: { 200: journalPhotoPageSchema },
+        },
+      },
+      (request) => photos.page(currentUser(request), request.query),
+    )
     app.get(
       '/journal',
       {

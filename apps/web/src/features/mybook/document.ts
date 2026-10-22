@@ -156,6 +156,24 @@ export function withImageSources(
   })
 }
 
+export function withPhotoCaption(doc: JournalNode, path: string, caption: string): JournalNode {
+  return mapImages(doc, (image) =>
+    pathOf(image) === path ? { ...image, attrs: { ...image.attrs, caption } } : image,
+  )
+}
+
+export function withoutPhoto(doc: JournalNode, path: string): JournalNode {
+  if (doc.content === undefined) {
+    return doc
+  }
+  return {
+    ...doc,
+    content: doc.content
+      .filter((child) => child.type !== imageNodeName || pathOf(child) !== path)
+      .map((child) => withoutPhoto(child, path)),
+  }
+}
+
 function groupedContent(content: readonly JournalNode[]): JournalNode[] {
   return content.reduce<JournalNode[]>((grouped, child) => {
     if (child.type !== imageNodeName) {

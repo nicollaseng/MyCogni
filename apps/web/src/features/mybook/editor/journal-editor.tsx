@@ -26,6 +26,7 @@ import {
 import { GalleryContext } from '../gallery/gallery-context'
 import { PagePhotoViewer } from '../gallery/page-photo-viewer'
 import { PhotoCompose } from '../gallery/photo-compose'
+import { useRevealPhotoFromHash } from '../gallery/use-photo-hash'
 import { usePhotoViewing } from '../gallery/use-photo-viewing'
 import { browserPageClient, type PageClient } from '../page-client'
 import { EditorToolbar } from './editor-toolbar'
@@ -150,6 +151,7 @@ export function JournalEditor({
     onUploaded: saving.addImage,
   })
   const { choose } = photos
+  useRevealPhotoFromHash(editor)
   const wide = useWideScreen()
   const chrome = useWritingChrome(editor, pageRef, chromeRef, !wide)
 

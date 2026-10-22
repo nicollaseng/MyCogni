@@ -113,6 +113,20 @@ export const mybook: MybookMessages = {
       add: 'Add',
     },
   },
+  photoGrid: {
+    meta: 'MyBook photos',
+    views: {
+      label: 'View MyBook by',
+      pages: 'Pages',
+      photos: 'Photos',
+    },
+    grid: 'MyBook photos',
+    tile: 'Photo from {date}',
+    empty: 'The photos you add to your pages show up here.',
+    loadMore: 'Load more',
+    loading: 'Loading…',
+    loadError: 'We couldn’t load the photos right now. Try again.',
+  },
   gallery: {
     region: '{count, plural, one {# photo} other {Gallery of # photos}}',
     tile: 'Photo {index} of {total}',

@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { getLocale, getTranslations } from 'next-intl/server'
 import { bookHref } from '@/features/mybook/book-href'
 import { RefreshAfterPageVisit } from '@/features/mybook/components/book-freshness'
+import { BookViews } from '@/features/mybook/components/book-views'
 import { Icon } from '@/features/mybook/components/icon'
 import { NewPageButton } from '@/features/mybook/components/new-page-button'
 import { PageList } from '@/features/mybook/components/page-list'
@@ -96,7 +97,10 @@ export default async function MybookPage({ searchParams }: PageProps<'/mybook'>)
         </section>
       ) : (
         <div className="space-y-8">
-          <PageSearch query={query} size={size} />
+          <div className="space-y-3">
+            <BookViews current="pages" />
+            <PageSearch query={query} size={size} />
+          </div>
           {book.items.length === 0 ? (
             <p className="px-1 text-muted-foreground">{t('noResults', { query })}</p>
           ) : (

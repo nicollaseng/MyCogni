@@ -91,6 +91,34 @@ export const journalQuerySchema = z.object({
 
 export type JournalQuery = z.infer<typeof journalQuerySchema>
 
+export const journalPhotoQuerySchema = z.object({
+  offset: z.coerce.number().int().min(0).max(100_000).default(0),
+  limit: z.coerce.number().int().min(1).max(60).default(30),
+})
+
+export type JournalPhotoQuery = z.infer<typeof journalPhotoQuerySchema>
+
+export const journalPhotoSchema = z.object({
+  entryId: z.uuid(),
+  entryTitle: z.string().nullable(),
+  writtenAt: timestamp,
+  position: z.int().min(1),
+  path: z.string(),
+  url: z.url().nullable(),
+  caption: z.string(),
+  width: z.int().nullable(),
+  height: z.int().nullable(),
+})
+
+export type JournalPhoto = z.infer<typeof journalPhotoSchema>
+
+export const journalPhotoPageSchema = z.object({
+  photos: z.array(journalPhotoSchema),
+  nextOffset: z.int().nullable(),
+})
+
+export type JournalPhotoPage = z.infer<typeof journalPhotoPageSchema>
+
 const shareBase = {
   careLinkId: z.uuid(),
   expiresAt: timestamp.nullable(),
