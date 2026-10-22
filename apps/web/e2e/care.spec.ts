@@ -38,7 +38,7 @@ test('accepts an invitation by link, keeps one link per professional and ends it
   await expect(history).toHaveAttribute('aria-checked', 'false')
   await page.getByRole('button', { name: 'Aceitar', exact: true }).click()
 
-  await expect(page).toHaveURL('/me#professionals')
+  await expect(page).toHaveURL('/me/professionals')
   const professionals = page.getByRole('region', { name: 'Profissionais' })
   const link = professionals.getByRole('listitem').filter({ hasText: name })
   await expect(link).toContainText('Só registros a partir do vínculo')
@@ -52,7 +52,7 @@ test('accepts an invitation by link, keeps one link per professional and ends it
     `Você já compartilha seus registros com ${name}.`,
   )
 
-  await page.goto('/me')
+  await page.goto('/me/professionals')
   await link.getByRole('button', { name: 'Encerrar vínculo' }).click()
   await expect(link).toContainText(`${name} deixa de ver seus registros a partir de agora.`)
   await link.getByRole('button', { name: 'Encerrar vínculo' }).click()

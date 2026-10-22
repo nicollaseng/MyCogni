@@ -41,7 +41,9 @@ test('opens the account menu from the header and goes to the settings', async ({
   await menu.getByRole('menuitem', { name: 'Perfil e configurações' }).click()
 
   await expect(page).toHaveURL('/me')
-  await expect(page.getByRole('region', { name: 'Preferências' })).toBeVisible()
+  await expect(
+    page.getByRole('navigation', { name: 'Seções de perfil e configurações' }),
+  ).toBeVisible()
   await expect(menu).toHaveCount(0)
 })
 

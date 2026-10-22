@@ -122,8 +122,8 @@ test('explains the first reading and counts the records toward it', async ({ pag
 test('lets the person include MyBook in the readings', async ({ page }) => {
   const person = await readyPerson('mybook-resumo')
   await signIn(page, person.email)
-  await page.goto('/me')
-  const privacy = page.getByRole('region', { name: 'Privacidade' })
+  await page.goto('/me/privacy')
+  const privacy = page.getByRole('main')
   const toggle = privacy.getByRole('switch', { name: 'Incluir o MyBook nos meus resumos' })
 
   await expect(privacy).toContainText('os resumos para o profissional nunca usam o MyBook')

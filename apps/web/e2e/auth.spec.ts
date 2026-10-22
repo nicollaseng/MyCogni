@@ -80,8 +80,9 @@ test('signs in and out', async ({ page }) => {
   await signIn(page, email, password)
   await expect(page).toHaveURL('/today')
 
-  await page.goto('/me')
-  await expect(page.getByText(email).first()).toBeVisible()
+  await page.goto('/me/profile')
+  await expect(page.getByRole('main').getByText(email).first()).toBeVisible()
+  await page.goto('/me/account')
   await page.getByRole('button', { name: 'Sair' }).click()
 
   await expect(page).toHaveURL('/')
@@ -129,7 +130,7 @@ test('creates a new password with the code sent by email', async ({ page }) => {
   await page.getByRole('button', { name: 'Salvar nova senha' }).click()
   await expect(page).toHaveURL('/today')
 
-  await page.goto('/me')
+  await page.goto('/me/account')
   await page.getByRole('button', { name: 'Sair' }).click()
   await expect(page).toHaveURL('/')
   await signIn(page, email, 'nova-senha-2026')

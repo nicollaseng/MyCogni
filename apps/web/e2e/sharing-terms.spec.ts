@@ -53,7 +53,7 @@ test('a patient reviews the updated sharing terms from Hoje and confirms them', 
   await expect(page).toHaveURL('/today')
   await expect(page.getByText(notice)).toBeVisible()
 
-  await page.goto('/me')
+  await page.goto('/me/professionals')
   const professionals = page.getByRole('region', { name: 'Profissionais' })
   const link = professionals.getByRole('listitem').filter({ hasText: name })
   await expect(link.getByRole('link', { name: 'Confirme os novos termos' })).toHaveAttribute(
@@ -76,7 +76,7 @@ test('a patient reviews the updated sharing terms from Hoje and confirms them', 
   )
   await page.getByRole('button', { name: 'Confirmar', exact: true }).click()
 
-  await expect(page).toHaveURL('/me#professionals')
+  await expect(page).toHaveURL('/me/professionals')
   await expect(link).toContainText('Inclui registros anteriores')
   await expect(link.getByRole('link', { name: 'Confirme os novos termos' })).toHaveCount(0)
 

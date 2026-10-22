@@ -102,7 +102,9 @@ test('a professional who already sent the document resumes at the photo and adds
   await page.getByRole('button', { name }).click()
   await page.getByRole('menuitem', { name: 'Configurações' }).click()
   await expect(page).toHaveURL('/pro/settings')
-  await expect(page.getByRole('main').getByRole('img', { name: `Foto de ${name}` })).toBeVisible()
+  await expect(
+    page.getByRole('main').getByRole('button', { name: 'Foto do perfil' }).locator('img'),
+  ).toBeVisible()
   await page.getByRole('link', { name: 'Voltar ao cadastro' }).click()
   await expectStep(page, 3, 'Seu cadastro está em verificação.')
 })
