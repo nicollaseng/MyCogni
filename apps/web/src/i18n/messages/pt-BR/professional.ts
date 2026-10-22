@@ -23,7 +23,8 @@ export const professional = {
   },
   join: {
     kicker: 'Para profissionais de saúde',
-    badge: 'Para profissionais',
+    badge: 'PRO',
+    badgeLabel: 'Para profissionais',
     signUp: 'Criar conta profissional',
     signIn: 'Já tenho conta',
     header: { signIn: 'Entrar', signUp: 'Criar conta' },

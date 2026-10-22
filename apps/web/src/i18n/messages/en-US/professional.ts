@@ -25,7 +25,8 @@ export const professional: ProfessionalMessages = {
   },
   join: {
     kicker: 'For health professionals',
-    badge: 'For professionals',
+    badge: 'PRO',
+    badgeLabel: 'For professionals',
     signUp: 'Create a professional account',
     signIn: 'I already have an account',
     header: { signIn: 'Sign in', signUp: 'Create account' },

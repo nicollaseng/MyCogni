@@ -61,10 +61,11 @@ function Header({ chooseLocale }: { chooseLocale: (locale: Locale) => Promise<vo
   const t = useTranslations('professional.join')
   return (
     <header className="flex items-center justify-between gap-4 py-5">
-      <div className="flex items-baseline gap-2.5">
+      <div className="flex items-center gap-2">
         <Wordmark />
-        <span className="text-[13px] whitespace-nowrap text-muted-foreground max-sm:hidden">
-          {t('badge')}
+        <span className="rounded-[4px] border border-foreground/25 px-1.5 py-px text-[11px] leading-4 font-semibold tracking-[0.08em] text-foreground/80">
+          <span aria-hidden>{t('badge')}</span>
+          <span className="sr-only">{t('badgeLabel')}</span>
         </span>
       </div>
       <nav aria-label={t('nav.label')} className="hidden xl:block">
