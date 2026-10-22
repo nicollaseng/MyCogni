@@ -77,6 +77,8 @@ export const mybook: MybookMessages = {
       indent: 'Aumentar avanço',
       outdent: 'Diminuir avanço',
       photo: 'Adicionar fotografia',
+      panelTitle: 'Formatar',
+      closePanel: 'Fechar formatação',
     },
     photo: {
       alt: 'Fotografia',
