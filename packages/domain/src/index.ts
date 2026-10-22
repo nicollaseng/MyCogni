@@ -284,6 +284,21 @@ export {
 export { filterReply, repeatsPassage, type ReplyFilterOptions } from './assistant/reply-filter.ts'
 export { consistencyOf, type Consistency } from './patterns/consistency.ts'
 export {
+  csvDocument,
+  csvField,
+  dataExportLimits,
+  dataExportStatuses,
+  escapeHtml,
+  exportExpiry,
+  exportSchemaVersion,
+  fileSlug,
+  isActiveExport,
+  isDownloadable,
+  uniqueName,
+  type CsvValue,
+  type DataExportStatus,
+} from './exports/exports.ts'
+export {
   dueReminderDay,
   isReminderTime,
   isWeekDay,

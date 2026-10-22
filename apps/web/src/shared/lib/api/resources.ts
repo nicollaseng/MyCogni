@@ -1,5 +1,4 @@
 import {
-  accountExportSchema,
   assessmentListSchema,
   assessmentSchema,
   checkInCountSchema,
@@ -11,7 +10,6 @@ import {
   profileSchema,
   recordedAddendumSchema,
   recordedCheckInSchema,
-  type AccountExport,
   type Assessment,
   type CheckIn,
   type CheckInDetail,
@@ -200,10 +198,6 @@ export function appendToCheckIn(
 
 export function fetchInsights(): Promise<PatientInsight[]> {
   return apiRequest({ path: '/v1/insights', schema: patientInsightListSchema })
-}
-
-export function fetchAccountExport(): Promise<AccountExport> {
-  return apiRequest({ path: '/v1/me/export', schema: accountExportSchema })
 }
 
 export async function deleteAccount(): Promise<void> {

@@ -1,4 +1,3 @@
-import { readFile } from 'node:fs/promises'
 import { fileURLToPath } from 'node:url'
 import { expect, test, type Page } from '@playwright/test'
 import { finishOnboarding } from './support/api'
@@ -117,26 +116,6 @@ test('adds a photo through the viewer, edits it and removes it', async ({ page }
   await page.keyboard.press('Escape')
   await expect(viewer).toHaveCount(0)
   await expect(avatar.locator('img')).toHaveCount(0)
-})
-
-test('downloads everything the person recorded', async ({ page }) => {
-  const email = await signInAsReadyPerson(page)
-  await page.goto('/me/privacy')
-
-  const [download] = await Promise.all([
-    page.waitForEvent('download'),
-    page.getByRole('link', { name: 'Baixar meus dados' }).click(),
-  ])
-  const file = await download.path()
-  const data: unknown = JSON.parse(await readFile(file, 'utf8'))
-
-  expect(download.suggestedFilename()).toMatch(/^mycogniai-meus-dados-\d{4}-\d{2}-\d{2}\.json$/)
-  expect(data).toEqual(
-    expect.objectContaining({
-      profile: expect.objectContaining({ email }),
-      assessments: expect.arrayContaining([expect.objectContaining({ instrument: 'phq9' })]),
-    }),
-  )
 })
 
 test('deletes the account for good', async ({ page }) => {

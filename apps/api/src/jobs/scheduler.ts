@@ -1,7 +1,13 @@
 import { Queue, type JobsOptions } from 'bullmq'
 import type { ErrorLog } from '../shared/log.ts'
 import type { AlertTrigger, SavedNote } from './alert-trigger.ts'
-import { alertQueueName, createRedis, insightQueueName, memoryQueueName } from './redis.ts'
+import {
+  alertQueueName,
+  createRedis,
+  dataExportQueueName,
+  insightQueueName,
+  memoryQueueName,
+} from './redis.ts'
 
 export interface JobScheduler {
   checkInRecorded(patientId: string): Promise<void>
@@ -10,6 +16,7 @@ export interface JobScheduler {
   noteSaved(note: SavedNote): Promise<void>
   memorySourceSaved(userId: string): Promise<void>
   memoryBacklog(userId: string): Promise<void>
+  exportRequested(exportId: string): Promise<void>
   close(): Promise<void>
 }
 
@@ -46,6 +53,7 @@ const idleScheduler: JobScheduler = {
   noteSaved: () => Promise.resolve(),
   memorySourceSaved: () => Promise.resolve(),
   memoryBacklog: () => Promise.resolve(),
+  exportRequested: () => Promise.resolve(),
   close: () => Promise.resolve(),
 }
 
@@ -60,6 +68,7 @@ export function createJobScheduler(
   const insights = new Queue(insightQueueName, { connection: redis, prefix })
   const alerts = new Queue(alertQueueName, { connection: redis, prefix })
   const memories = new Queue(memoryQueueName, { connection: redis, prefix })
+  const exports = new Queue(dataExportQueueName, { connection: redis, prefix })
 
   async function enqueue(what: string, work: () => Promise<unknown>): Promise<void> {
     try {
@@ -131,8 +140,17 @@ export function createJobScheduler(
     memoryBacklog(userId) {
       return remember('backlog', userId, `memories-backlog-${userId}`, memoryBacklogMs)
     },
+    exportRequested(exportId) {
+      return enqueue('Export', () =>
+        exports.add(
+          'export-requested',
+          { exportId },
+          { jobId: `export-${exportId}`, attempts: 1, removeOnComplete: true, removeOnFail: true },
+        ),
+      )
+    },
     async close() {
-      await Promise.all([insights.close(), alerts.close(), memories.close()])
+      await Promise.all([insights.close(), alerts.close(), memories.close(), exports.close()])
       await redis.quit()
     },
   }

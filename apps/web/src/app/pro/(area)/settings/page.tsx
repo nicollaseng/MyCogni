@@ -5,6 +5,8 @@ import { getLocale, getTranslations } from 'next-intl/server'
 import type { ReactNode } from 'react'
 import { changeEmail, changePassword, refreshAfterUpload } from '@/features/account/actions'
 import { EmailForm } from '@/features/account/components/email-form'
+import { downloadDataExport, latestDataExport, prepareDataExport } from '@/features/exports/actions'
+import { DataExportPanel } from '@/features/exports/components/data-export-panel'
 import { ProfilePhoto } from '@/features/account/components/profile-photo'
 import { PasswordForm } from '@/features/account/components/password-form'
 import { SettingsRow } from '@/features/account/components/settings-row'
@@ -31,6 +33,7 @@ import { teamEmail } from '@/features/professional/contact'
 import { formatDate } from '@/features/professional/dates'
 import { TicketTable } from '@/features/support/components/ticket-table'
 import { initialsOf } from '@/shared/lib/initials'
+import { fetchLatestExport } from '@/shared/lib/api/exports'
 import { fetchSupportTickets } from '@/shared/lib/api/support'
 import { requireProfile } from '@/shared/lib/auth/session'
 import { fetchMyPhotoUrl } from '@/shared/lib/photos'
@@ -62,6 +65,7 @@ export default async function ProfessionalSettingsPage() {
     steps,
     locale,
     support,
+    latestExport,
   ] = await Promise.all([
     requireProfessional(),
     requireProfile(),
@@ -74,6 +78,7 @@ export default async function ProfessionalSettingsPage() {
     getTranslations('verification.steps'),
     getLocale(),
     getTranslations('support.section'),
+    fetchLatestExport(),
   ])
   const mailLink = (chunks: ReactNode) => (
     <a
@@ -202,6 +207,20 @@ export default async function ProfessionalSettingsPage() {
           }
         >
           <TicketTable tickets={tickets} timeZone={profile.timezone} />
+        </WorkspaceSection>
+      </div>
+      <div id="data" className="scroll-mt-8">
+        <WorkspaceSection title={account('sections.data')} className="max-w-3xl">
+          <DataExportPanel
+            initial={latestExport}
+            timeZone={profile.timezone}
+            now={new Date().toISOString()}
+            actions={{
+              prepare: prepareDataExport,
+              latest: latestDataExport,
+              download: downloadDataExport,
+            }}
+          />
         </WorkspaceSection>
       </div>
       <WorkspaceSection title={t('session.title')} description={t('session.body')}>

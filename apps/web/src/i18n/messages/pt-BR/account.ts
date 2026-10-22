@@ -96,15 +96,11 @@ export const account = {
     },
     granted: 'Autorizado em {date}',
     notGranted: 'Não autorizado',
-    note: 'Os consentimentos obrigatórios só podem ser retirados com a exclusão da conta, em Seus dados.',
+    note: 'Os consentimentos obrigatórios só podem ser retirados com a exclusão da conta, em Conta.',
   },
   journal: {
     label: 'Incluir o MyBook nos meus resumos',
     hint: 'Ligado, o texto das páginas do MyBook escritas no período também é lido para escrever o seu resumo; os resumos para o profissional nunca usam o MyBook.',
-  },
-  data: {
-    export: 'Baixar meus dados',
-    fileName: 'mycogniai-meus-dados-{day}.json',
   },
   delete: {
     open: 'Excluir minha conta',

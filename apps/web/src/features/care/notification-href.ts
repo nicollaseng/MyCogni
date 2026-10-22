@@ -22,6 +22,9 @@ export function notificationHref({
       return supportTicket === null ? feed : `/support/${supportTicket.id}`
     case 'reminder':
       return '/zen'
+    case 'export_ready':
+    case 'export_failed':
+      return '/me/privacy#data'
     case 'system':
     case 'marketing':
       return feed

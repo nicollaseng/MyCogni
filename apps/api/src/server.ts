@@ -14,6 +14,7 @@ import { loadConfig } from './config/env.ts'
 import { connectDatabase } from './db/client.ts'
 import { createJournalImageStore } from './storage/journal-images.ts'
 import { createProfileFileStores } from './storage/profile-files.ts'
+import { createDataExportStore } from './storage/data-exports.ts'
 import { createSupportAttachmentStore } from './storage/support-attachments.ts'
 
 const config = loadConfig(process.env)
@@ -49,6 +50,7 @@ const app = await buildApp({
   profileFiles: createProfileFileStores(config.supabaseUrl, config.supabaseSecretKey),
   photoFetcher: fetch,
   supportAttachments: createSupportAttachmentStore(config.supabaseUrl, config.supabaseSecretKey),
+  exportFiles: createDataExportStore(config.supabaseUrl, config.supabaseSecretKey),
   assistantModel: assistantModel(),
   transcriber: transcriber(),
 })

@@ -84,15 +84,16 @@ test('emails the reminder at its time and the link in it turns email off', async
 
   const text = await reminderMail(email)
   expect(text).toContain('Que tal alguns minutos para você?')
-  const link = /(http:\/\/localhost:\d+\/reminders\/email-off\?token=\S+)/.exec(text)?.[1]
+  const link = /(https?:\/\/\S+\/reminders\/email-off\?token=\S+)/.exec(text)?.[1]
   expect(link).toBeDefined()
+  const { pathname, search } = new URL(link ?? 'http://localhost/')
 
   await page.goto('/notifications')
   await expect(
     page.getByText('Hora da sua pausa. Que tal alguns minutos para você?').first(),
   ).toBeVisible()
 
-  await page.goto(link ?? '/')
+  await page.goto(`${pathname}${search}`)
   await expect(
     page.getByRole('heading', { level: 1, name: 'Lembretes por email desligados' }),
   ).toBeVisible()

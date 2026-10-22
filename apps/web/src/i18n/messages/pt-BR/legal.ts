@@ -40,7 +40,7 @@ export const legal = {
       },
       rights: {
         heading: 'Seus direitos',
-        body: 'Você pode acessar, corrigir, exportar e apagar seus dados, além de revogar consentimentos, direto no app. Apagar a conta remove todos os seus registros.',
+        body: 'Você pode acessar, corrigir, exportar e apagar seus dados, além de revogar consentimentos, direto no app. Para exportar, peça seus dados em Privacidade e dados: preparamos um arquivo ZIP com tudo o que guardamos, em formato estruturado e em cópias fáceis de ler, com suas fotos. Avisamos por email e no app quando ele estiver pronto; o arquivo fica disponível por 7 dias e só pode ser baixado por você, dentro do app. Apagar a conta remove todos os seus registros e arquivos.',
       },
     },
   },

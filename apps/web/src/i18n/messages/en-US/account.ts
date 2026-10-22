@@ -98,15 +98,11 @@ export const account: AccountMessages = {
     },
     granted: 'Granted on {date}',
     notGranted: 'Not granted',
-    note: 'Required consents can only be withdrawn by deleting your account, under Your data.',
+    note: 'Required consents can only be withdrawn by deleting your account, under Account.',
   },
   journal: {
     label: 'Include MyBook in my summaries',
     hint: 'When on, the text of MyBook pages written during the period is also read to write your summary; summaries for your professional never use MyBook.',
-  },
-  data: {
-    export: 'Download my data',
-    fileName: 'mycogniai-my-data-{day}.json',
   },
   delete: {
     open: 'Delete my account',
