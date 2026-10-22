@@ -3,7 +3,9 @@ import type { AssistantMessages } from '../pt-BR/assistant'
 export const assistant: AssistantMessages = {
   launcher: 'Conversar',
   launcherLabel: 'Conversar com o Cogni',
-  title: 'Perguntar',
+  title: 'Cogni',
+  intro:
+    'Olá, eu sou o Cogni, o seu parceiro virtual. Posso olhar para os seus registos consigo ou só ouvir como correu o seu dia.',
   professionalAction: 'Perguntar sobre este paciente',
   professionalContext: 'Sobre {name}',
   close: 'Fechar',
@@ -69,7 +71,15 @@ export const assistant: AssistantMessages = {
   },
   roles: {
     user: 'Eu',
-    assistant: 'MyCogniAI',
+    assistant: 'Cogni',
+  },
+  actions: {
+    label: 'Sugestões do Cogni',
+    breathe: 'Respirar 1 minuto',
+    checkIn: 'Fazer um check-in',
+    mybook: 'Escrever no MyBook',
+    read: 'Ler: {title}',
+    track: 'Percurso: {title}',
   },
   pending: 'A escrever a resposta…',
   consent: {

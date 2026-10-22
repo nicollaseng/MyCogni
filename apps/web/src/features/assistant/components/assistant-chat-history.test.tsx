@@ -87,11 +87,11 @@ describe('AssistantChat header and history', () => {
   it('shows one header row with icon buttons and the new conversation title', async () => {
     const { onClosed, user } = renderSheet({ overview: overview(true, week), contacts: [] })
 
-    const chat = screen.getByRole('dialog', { name: 'Perguntar' })
+    const chat = screen.getByRole('dialog', { name: 'Cogni' })
     const history = await within(chat).findByRole('button', { name: 'Conversas' })
     expect(history).toHaveAttribute('title', 'Conversas')
     expect(history).toHaveClass('size-11', 'border')
-    expect(within(chat).getByRole('heading', { level: 2 })).toHaveTextContent('Perguntar')
+    expect(within(chat).getByRole('heading', { level: 2 })).toHaveTextContent('Cogni')
     const fresh = within(chat).getByRole('button', { name: 'Nova conversa' })
     expect(fresh).toHaveAttribute('aria-disabled', 'true')
     expect(fresh).toHaveAttribute('title', 'Nova conversa')
@@ -170,7 +170,7 @@ describe('AssistantChat header and history', () => {
 
     expect(screen.getByRole('button', { name: 'Conversas' })).toHaveFocus()
     expect(screen.getByRole('textbox', { name: 'Mensagem' })).toBeVisible()
-    expect(screen.getByText('Perguntar', { selector: '[aria-live]' })).toBeInTheDocument()
+    expect(screen.getByText('Cogni', { selector: '[aria-live]' })).toBeInTheDocument()
   })
 
   it('starts a new conversation from the history header', async () => {
@@ -189,7 +189,7 @@ describe('AssistantChat header and history', () => {
     const history = await openHistory(user)
     await user.click(within(history).getByRole('button', { name: 'Nova conversa' }))
 
-    expect(screen.getByRole('dialog', { name: 'Perguntar' })).toBeInTheDocument()
+    expect(screen.getByRole('dialog', { name: 'Cogni' })).toBeInTheDocument()
     expect(screen.queryByText('Bem.')).toBeNull()
     expect(screen.getByRole('textbox', { name: 'Mensagem' })).toHaveFocus()
   })
@@ -251,7 +251,7 @@ describe('AssistantChat header and history', () => {
     expect(screen.getByRole('dialog', { name: 'Conversas' })).toBeInTheDocument()
 
     await user.keyboard('{Escape}')
-    expect(screen.getByRole('dialog', { name: 'Perguntar' })).toBeInTheDocument()
+    expect(screen.getByRole('dialog', { name: 'Cogni' })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'Conversas' })).toHaveFocus()
     expect(onClosed).not.toHaveBeenCalled()
 
@@ -274,7 +274,7 @@ describe('AssistantChat header and history', () => {
       'Ana Lima',
     )
 
-    const chat = screen.getByRole('dialog', { name: 'Perguntar' })
+    const chat = screen.getByRole('dialog', { name: 'Cogni' })
     expect(await within(chat).findByText('Sobre Ana Lima')).toBeVisible()
     expect(within(chat).getByRole('button', { name: 'Nova conversa' })).toBeInTheDocument()
     expect(actions.open).toHaveBeenCalledWith(target)

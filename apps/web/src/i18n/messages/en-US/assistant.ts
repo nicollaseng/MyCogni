@@ -3,7 +3,9 @@ import type { AssistantMessages } from '../pt-BR/assistant'
 export const assistant: AssistantMessages = {
   launcher: 'Chat',
   launcherLabel: 'Chat with Cogni',
-  title: 'Ask',
+  title: 'Cogni',
+  intro:
+    'Hi, I’m Cogni, your virtual partner. I can look at your records with you or just hear how your day went.',
   professionalAction: 'Ask about this patient',
   professionalContext: 'About {name}',
   close: 'Close',
@@ -69,7 +71,15 @@ export const assistant: AssistantMessages = {
   },
   roles: {
     user: 'You',
-    assistant: 'MyCogniAI',
+    assistant: 'Cogni',
+  },
+  actions: {
+    label: 'Suggestions from Cogni',
+    breathe: 'Breathe for 1 minute',
+    checkIn: 'Check in',
+    mybook: 'Write in MyBook',
+    read: 'Read: {title}',
+    track: 'Track: {title}',
   },
   pending: 'Writing the answer…',
   consent: {

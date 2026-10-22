@@ -40,7 +40,7 @@ describe('AssistantEntry', () => {
 
     await userEvent.click(screen.getByRole('button', { name: 'Conversar com o Cogni' }))
 
-    expect(screen.getByRole('dialog', { name: 'Perguntar' })).toBeInTheDocument()
+    expect(screen.getByRole('dialog', { name: 'Cogni' })).toBeInTheDocument()
     expect(await screen.findByText('IA pode cometer erros')).toBeInTheDocument()
     expect(
       screen.getByText('MyCogniAI não substitui um aconselhamento de saúde profissional.'),

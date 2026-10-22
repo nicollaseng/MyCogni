@@ -1,7 +1,9 @@
 export const assistant = {
   launcher: 'Conversar',
   launcherLabel: 'Conversar com o Cogni',
-  title: 'Perguntar',
+  title: 'Cogni',
+  intro:
+    'Oi, eu sou o Cogni, seu parceiro virtual. Posso olhar seus registros com você ou só ouvir como foi o seu dia.',
   professionalAction: 'Perguntar sobre este paciente',
   professionalContext: 'Sobre {name}',
   close: 'Fechar',
@@ -67,7 +69,15 @@ export const assistant = {
   },
   roles: {
     user: 'Você',
-    assistant: 'MyCogniAI',
+    assistant: 'Cogni',
+  },
+  actions: {
+    label: 'Sugestões do Cogni',
+    breathe: 'Respirar 1 minuto',
+    checkIn: 'Fazer um check-in',
+    mybook: 'Escrever no MyBook',
+    read: 'Ler: {title}',
+    track: 'Trilha: {title}',
   },
   pending: 'Escrevendo a resposta…',
   consent: {

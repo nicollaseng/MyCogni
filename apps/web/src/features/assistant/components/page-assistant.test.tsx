@@ -39,7 +39,7 @@ describe('PageAssistant', () => {
 
     await user.click(screen.getByRole('button', { name: 'Conversar com o Cogni' }))
 
-    const chat = screen.getByRole('dialog', { name: 'Perguntar' })
+    const chat = screen.getByRole('dialog', { name: 'Cogni' })
     expect(await within(chat).findByText('Sobre esta página')).toBeVisible()
     const suggestions = within(chat).getByRole('list', { name: 'Sugestões para esta página' })
     expect(

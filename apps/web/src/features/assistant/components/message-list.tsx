@@ -4,6 +4,7 @@ import { useTranslations } from 'next-intl'
 import { cn } from '@/shared/lib/utils'
 import type { LinkedProfessional } from '@/shared/lib/emergency-contacts'
 import { paragraphsOf, showsCrisisCard } from '../model'
+import { ReplyActions } from './reply-actions'
 import { SupportCard } from './support-card'
 
 interface MessageListProps {
@@ -11,6 +12,7 @@ interface MessageListProps {
   pending: boolean
   mode: AssistantMode
   contacts: readonly LinkedProfessional[]
+  onLeave: () => void
 }
 
 const bubbles = {
@@ -19,7 +21,7 @@ const bubbles = {
   notice: 'max-w-[92%] border-l-2 border-help pl-3.5',
 } as const
 
-export function MessageList({ messages, pending, mode, contacts }: MessageListProps) {
+export function MessageList({ messages, pending, mode, contacts, onLeave }: MessageListProps) {
   const t = useTranslations('assistant')
 
   return (
@@ -36,6 +38,9 @@ export function MessageList({ messages, pending, mode, contacts }: MessageListPr
               </p>
             ))}
           </div>
+          {message.role === 'assistant' && (message.actions?.length ?? 0) > 0 && (
+            <ReplyActions actions={message.actions ?? []} onLeave={onLeave} />
+          )}
           {showsCrisisCard(message) && (
             <div className="pt-3">
               <SupportCard mode={mode} contacts={contacts} />
