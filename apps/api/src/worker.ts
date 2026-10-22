@@ -1,6 +1,8 @@
 import { Queue, Worker } from 'bullmq'
 import { z } from 'zod'
 import { createClaudeInsightWriter } from './ai/insight-writer.ts'
+import { createClaudeMemoryExtractor, type MemoryExtractor } from './ai/memory-extractor.ts'
+import { createScriptedMemoryExtractor } from './ai/scripted-memory-extractor.ts'
 import { loadConfig } from './config/env.ts'
 import { connectDatabase } from './db/client.ts'
 import { alertTriggerSchema } from './jobs/alert-trigger.ts'
@@ -10,6 +12,7 @@ import {
   createRedis,
   insightQueueName,
   maintenanceQueueName,
+  memoryQueueName,
 } from './jobs/redis.ts'
 import { createJobScheduler } from './jobs/scheduler.ts'
 import { createMailer } from './mail/mailer.ts'
@@ -20,6 +23,8 @@ import { createPatientMetricsRepository } from './modules/care-links/patient-met
 import { createCheckInRepository } from './modules/check-ins/check-in.repository.ts'
 import { createInsightJob } from './modules/insights/insight-job.ts'
 import { createInsightRepository } from './modules/insights/insight.repository.ts'
+import { createMemoryExtractionRepository } from './modules/memories/memory-extraction.repository.ts'
+import { createMemoryJob } from './modules/memories/memory-job.ts'
 import type { ErrorLog } from './shared/log.ts'
 
 const config = loadConfig(process.env)
@@ -57,9 +62,28 @@ const alertJob = createAlertJob({
   now: () => new Date(),
 })
 
+function memoryExtractor(): MemoryExtractor | null {
+  if (config.assistantModel === 'scripted') {
+    return createScriptedMemoryExtractor()
+  }
+  return config.anthropicApiKey === null
+    ? null
+    : createClaudeMemoryExtractor(config.anthropicApiKey)
+}
+const extractor = memoryExtractor()
+const memoryJob = createMemoryJob({
+  memories: createMemoryExtractionRepository(database.db),
+  extractor,
+  backlog: (userId) => scheduler.memoryBacklog(userId),
+  now: () => new Date(),
+})
+
 const insightPayload = z.object({ patientId: z.uuid() })
 
+const memoryPayload = z.object({ userId: z.uuid() })
+
 const connections = [
+  createRedis(redisUrl),
   createRedis(redisUrl),
   createRedis(redisUrl),
   createRedis(redisUrl),
@@ -102,7 +126,13 @@ const alertWorker = new Worker(
   { connection: connections[4], concurrency: 2, prefix },
 )
 
-const workers = [insightWorker, maintenanceWorker, alertWorker]
+const memoryWorker = new Worker(
+  memoryQueueName,
+  (job) => memoryJob.run(memoryPayload.parse(job.data).userId),
+  { connection: connections[5], concurrency: 2, prefix },
+)
+
+const workers = [insightWorker, maintenanceWorker, alertWorker, memoryWorker]
 
 for (const worker of workers) {
   worker.on('failed', (job, error) => {
@@ -117,6 +147,7 @@ console.info(
     level: 'info',
     msg: 'Worker started',
     ai: writer === null ? 'disabled' : writer.model,
+    memories: extractor === null ? 'disabled' : extractor.model,
     prefix,
   }),
 )

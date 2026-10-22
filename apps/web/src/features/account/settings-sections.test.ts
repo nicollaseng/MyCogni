@@ -14,6 +14,7 @@ describe('settings sections', () => {
       '/me/profile',
       '/me/wellbeing',
       '/me/professionals',
+      '/me/memories',
       '/me/sound',
       '/me/privacy',
       '/me/account',

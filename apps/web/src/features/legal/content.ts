@@ -14,8 +14,16 @@ export const privacySections = [
   'purpose',
   'legalBasis',
   'ai',
+  'memories',
   'sharing',
   'rights',
 ] as const
 
-export const termsSections = ['about', 'crisis', 'account', 'acceptableUse', 'changes'] as const
+export const termsSections = [
+  'about',
+  'cogni',
+  'crisis',
+  'account',
+  'acceptableUse',
+  'changes',
+] as const

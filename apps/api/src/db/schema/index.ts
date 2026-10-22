@@ -20,6 +20,13 @@ export {
   journalShares,
   journalShareScope,
 } from './journal.ts'
+export {
+  assistantMemories,
+  assistantMemorySources,
+  memoryKind,
+  memoryOrigin,
+  memoryStatus,
+} from './memories.ts'
 export { notificationKind, notifications } from './notifications.ts'
 export { professionalDocuments } from './professional-documents.ts'
 export { professionalKind, professionalProfiles, professionalStatus } from './professionals.ts'

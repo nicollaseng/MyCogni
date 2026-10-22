@@ -309,6 +309,13 @@
       "when": 1792498073965,
       "tag": "0043_assistant_page_binding",
       "breakpoints": true
+    },
+    {
+      "idx": 44,
+      "version": "7",
+      "when": 1792641072394,
+      "tag": "0044_memories_foundation",
+      "breakpoints": true
     }
   ]
 }

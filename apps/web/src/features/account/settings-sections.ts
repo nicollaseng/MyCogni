@@ -2,6 +2,7 @@ export const settingsSections = [
   'profile',
   'wellbeing',
   'professionals',
+  'memories',
   'sound',
   'privacy',
   'account',
@@ -15,7 +16,7 @@ export type SettingsHref = `/me/${SettingsSection}`
 export const settingsGroups: readonly (readonly SettingsSection[])[] = [
   ['profile'],
   ['wellbeing', 'professionals'],
-  ['sound', 'privacy'],
+  ['memories', 'sound', 'privacy'],
   ['account', 'support'],
 ]
 

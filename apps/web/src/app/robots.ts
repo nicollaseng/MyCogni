@@ -9,6 +9,7 @@ const privateAreas = [
   '/me',
   '/check-in',
   '/onboarding',
+  '/accept-terms',
   '/questionnaires',
   '/notifications',
   '/support',

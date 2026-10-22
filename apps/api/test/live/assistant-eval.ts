@@ -1,5 +1,10 @@
 import { randomUUID } from 'node:crypto'
-import { consentVersion, repeatsPassage, requiredConsentKinds, type Locale } from '@mycogni/domain'
+import {
+  consentVersionOf,
+  repeatsPassage,
+  requiredConsentKinds,
+  type Locale,
+} from '@mycogni/domain'
 import { eq, sql } from 'drizzle-orm'
 import { anthropicSender, createClaudeAssistantModel } from '../../src/ai/assistant-model.ts'
 import { personalAssistantPrompt } from '../../src/ai/assistant-prompts.ts'
@@ -161,7 +166,7 @@ async function seed(): Promise<void> {
     .insert(consents)
     .values(
       [...requiredConsentKinds, 'assistant_data' as const, 'assistant_journal' as const].map(
-        (kind) => ({ userId, kind, version: consentVersion }),
+        (kind) => ({ userId, kind, version: consentVersionOf(kind) }),
       ),
     )
   const now = Date.now()

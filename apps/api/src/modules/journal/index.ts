@@ -30,6 +30,7 @@ export function journalModule({
       journal,
       images,
       safety: createNoteSafety(jobs, log),
+      memories: jobs,
       log,
       now: () => new Date(),
     }),

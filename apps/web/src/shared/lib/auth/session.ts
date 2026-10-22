@@ -56,6 +56,9 @@ export async function requireOnboardedProfile(): Promise<Profile> {
   if (profile.onboardingCompletedAt === null) {
     redirect('/onboarding')
   }
+  if (profile.termsOutdated) {
+    redirect('/accept-terms')
+  }
   return profile
 }
 

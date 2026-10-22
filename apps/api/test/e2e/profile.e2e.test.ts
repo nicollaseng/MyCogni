@@ -63,6 +63,8 @@ describe('/v1/me', () => {
       timezone: 'America/Sao_Paulo',
       locale: null,
       journalInInsights: false,
+      memoriesEnabled: true,
+      termsOutdated: false,
       onboardingCompletedAt: null,
     })
   })
@@ -143,6 +145,26 @@ describe('/v1/me', () => {
     expect(saved.json()).toEqual(expect.objectContaining({ journalInInsights: true }))
     expect(others.json()).toEqual(expect.objectContaining({ journalInInsights: false }))
     expect(off.json()).toEqual(expect.objectContaining({ journalInInsights: false }))
+  })
+
+  it('turns the memories off and on again', async () => {
+    const off = await app.inject({
+      method: 'PATCH',
+      url: '/v1/me',
+      headers: bearer(carla),
+      payload: { memoriesEnabled: false },
+    })
+    const others = await app.inject({ method: 'GET', url: '/v1/me', headers: bearer(bruno) })
+    const on = await app.inject({
+      method: 'PATCH',
+      url: '/v1/me',
+      headers: bearer(carla),
+      payload: { memoriesEnabled: true },
+    })
+
+    expect(off.json()).toEqual(expect.objectContaining({ memoriesEnabled: false }))
+    expect(others.json()).toEqual(expect.objectContaining({ memoriesEnabled: true }))
+    expect(on.json()).toEqual(expect.objectContaining({ memoriesEnabled: true }))
   })
 
   it('rejects a MyBook choice that is not on or off', async () => {

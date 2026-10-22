@@ -11,6 +11,8 @@ const profile: Profile = {
   timezone: 'America/Sao_Paulo',
   locale: null,
   journalInInsights: false,
+  memoriesEnabled: true,
+  termsOutdated: false,
   onboardingCompletedAt: null,
 }
 

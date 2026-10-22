@@ -11,6 +11,7 @@ import { entries } from './entries'
 import { insights } from './insights'
 import { landing } from './landing'
 import { legal } from './legal'
+import { memories } from './memories'
 import { mybook } from './mybook'
 import { onboarding } from './onboarding'
 import { patterns } from './patterns'
@@ -49,4 +50,5 @@ export const messages: Messages = {
   support,
   assistant,
   safety,
+  memories,
 }

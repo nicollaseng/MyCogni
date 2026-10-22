@@ -1,4 +1,9 @@
-import type { AccountFootprint, AccountType } from '@mycogni/domain'
+import {
+  legalConsentKinds,
+  legalVersion,
+  type AccountFootprint,
+  type AccountType,
+} from '@mycogni/domain'
 import { and, eq, isNull, sql } from 'drizzle-orm'
 import type { Database, Transaction } from '../../db/client.ts'
 import { withUser } from '../../db/rls.ts'
@@ -12,6 +17,8 @@ export interface ProfileRecord {
   timezone: string
   locale: string | null
   journalInInsights: boolean
+  memoriesEnabled: boolean
+  termsOutdated: boolean
   onboardingCompletedAt: Date | null
 }
 
@@ -20,6 +27,7 @@ export interface ProfileChanges {
   timezone?: string
   locale?: string
   journalInInsights?: boolean
+  memoriesEnabled?: boolean
   avatarPath?: string | null
 }
 
@@ -36,6 +44,28 @@ export interface ProfileRepository {
   setAvatarIfEmpty(userId: string, avatarPath: string): Promise<boolean>
 }
 
+const legalKinds = sql.join(
+  legalConsentKinds.map((kind) => sql`${kind}`),
+  sql`, `,
+)
+
+const profileId = sql`${sql.identifier('profiles')}.${sql.identifier('id')}`
+
+const termsOutdated = sql<boolean>`exists (
+  select 1 from public.consents previous
+  where previous.user_id = ${profileId}
+    and previous.kind in (${legalKinds})
+    and previous.revoked_at is null
+    and previous.version <> ${legalVersion}
+    and not exists (
+      select 1 from public.consents accepted
+      where accepted.user_id = previous.user_id
+        and accepted.kind = previous.kind
+        and accepted.version = ${legalVersion}
+        and accepted.revoked_at is null
+    )
+)`
+
 export const profileColumns = {
   id: profiles.id,
   accountType: profiles.accountType,
@@ -44,6 +74,8 @@ export const profileColumns = {
   timezone: profiles.timezone,
   locale: profiles.locale,
   journalInInsights: profiles.journalInInsights,
+  memoriesEnabled: profiles.memoriesEnabled,
+  termsOutdated,
   onboardingCompletedAt: profiles.onboardingCompletedAt,
 }
 
@@ -89,9 +121,15 @@ export function createProfileRepository(db: Database): ProfileRepository {
     },
     update(userId, changes) {
       return withUser(db, userId, async (tx) => {
+        const resumed =
+          changes.memoriesEnabled === true
+            ? {
+                memoriesReadUntil: sql`case when ${profiles.memoriesEnabled} then ${profiles.memoriesReadUntil} else now() end`,
+              }
+            : {}
         const [row] = await tx
           .update(profiles)
-          .set(changes)
+          .set({ ...changes, ...resumed })
           .where(eq(profiles.id, userId))
           .returning(profileColumns)
         return row

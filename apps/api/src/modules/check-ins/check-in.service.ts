@@ -69,6 +69,9 @@ export function createCheckInService({
         note,
       })
       await jobs.checkInRecorded(user.id)
+      if (note !== null) {
+        await jobs.memorySourceSaved(user.id)
+      }
       const support = await safety.review(
         { kind: 'check_in', patientId: user.id, checkInId: record.id },
         noteRisk(note),
@@ -98,6 +101,7 @@ export function createCheckInService({
         throw new NotFoundError('Check-in not found')
       }
       const addendum = await addenda.create(user.id, id, input.text)
+      await jobs.memorySourceSaved(user.id)
       const support = await safety.review(
         { kind: 'addendum', patientId: user.id, checkInId: id, addendumId: addendum.id },
         noteRisk(input.text),

@@ -4,6 +4,7 @@ import Image from 'next/image'
 import { useTranslations } from 'next-intl'
 import { useEffect, useId, useState, type ChangeEvent } from 'react'
 import { ClientPortal } from '@/shared/components/client-portal'
+import { ConfirmDialog } from '@/shared/components/confirm-dialog'
 import { useModalPanel } from '@/shared/hooks/use-modal-panel'
 import { cn } from '@/shared/lib/utils'
 import type { PhotoFeedback } from '../use-photo-editing'
@@ -14,63 +15,6 @@ const barButton =
   'inline-flex h-11 shrink-0 cursor-pointer items-center rounded-md px-3 text-[15px] font-medium text-white/90 transition-colors duration-150 hover:bg-white/10 hover:text-white disabled:cursor-default disabled:opacity-50 motion-reduce:transition-none'
 
 const fileTypes = 'image/jpeg,image/png,image/webp'
-
-interface RemoveConfirmProps {
-  onCancel: () => void
-  onConfirm: () => void
-}
-
-function RemoveConfirm({ onCancel, onConfirm }: RemoveConfirmProps) {
-  const t = useTranslations('account.photoViewer')
-  const titleId = useId()
-  const { panel, closing, close, onKeyDown } = useModalPanel<HTMLDivElement>(onCancel, 150)
-
-  return (
-    <div className="fixed inset-0 z-[60] grid place-items-center bg-black/50 p-6">
-      <div
-        ref={panel}
-        role="alertdialog"
-        aria-modal="true"
-        aria-labelledby={titleId}
-        tabIndex={-1}
-        onKeyDown={(event) => {
-          event.stopPropagation()
-          onKeyDown(event)
-        }}
-        className={cn(
-          'w-full max-w-sm space-y-5 rounded-[8px] bg-background p-6 text-foreground outline-none transition-[opacity,scale] duration-150 starting:scale-[0.98] starting:opacity-0 motion-reduce:transition-none',
-          closing && 'scale-[0.98] opacity-0',
-        )}
-      >
-        <h2 id={titleId} className="text-[17px] font-medium">
-          {t('confirmTitle')}
-        </h2>
-        <p className="text-sm leading-relaxed text-pretty text-muted-foreground">
-          {t('confirmBody')}
-        </p>
-        <div className="flex justify-end gap-2.5">
-          <button
-            type="button"
-            onClick={close}
-            className="inline-flex h-10 cursor-pointer items-center rounded-md border border-rule px-4 text-[15px] hover:bg-sage"
-          >
-            {t('cancel')}
-          </button>
-          <button
-            type="button"
-            onClick={() => {
-              onConfirm()
-              close()
-            }}
-            className="inline-flex h-10 cursor-pointer items-center rounded-md bg-danger px-4 text-[15px] font-medium text-background hover:bg-danger/90"
-          >
-            {t('confirm')}
-          </button>
-        </div>
-      </div>
-    </div>
-  )
-}
 
 interface PhotoViewerProps {
   url: string | null
@@ -221,7 +165,11 @@ export function PhotoViewer({
           {status}
         </p>
         {confirming && (
-          <RemoveConfirm
+          <ConfirmDialog
+            title={t('photoViewer.confirmTitle')}
+            body={t('photoViewer.confirmBody')}
+            confirmLabel={t('photoViewer.confirm')}
+            cancelLabel={t('photoViewer.cancel')}
             onCancel={() => {
               setConfirming(false)
             }}

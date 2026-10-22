@@ -26,6 +26,24 @@ export const patientConsentKinds: readonly ConsentKind[] = [
 
 export const consentVersion = '2026-10'
 
+export const legalConsentKinds: readonly ConsentKind[] = ['terms', 'privacy']
+
+export const legalVersion = '2026-10-22'
+
+export function consentVersionOf(kind: ConsentKind): string {
+  return legalConsentKinds.includes(kind) ? legalVersion : consentVersion
+}
+
+export function isCurrentConsent({
+  kind,
+  version,
+}: {
+  kind: ConsentKind
+  version: string
+}): boolean {
+  return consentVersionOf(kind) === version
+}
+
 export function missingConsents(granted: readonly ConsentKind[]): ConsentKind[] {
   return requiredConsentKinds.filter((kind) => !granted.includes(kind))
 }
