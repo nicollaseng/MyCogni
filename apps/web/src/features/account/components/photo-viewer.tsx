@@ -62,7 +62,7 @@ function RemoveConfirm({ onCancel, onConfirm }: RemoveConfirmProps) {
               onConfirm()
               close()
             }}
-            className="inline-flex h-10 cursor-pointer items-center rounded-md bg-danger px-4 text-[15px] font-medium text-white hover:bg-danger/90"
+            className="inline-flex h-10 cursor-pointer items-center rounded-md bg-danger px-4 text-[15px] font-medium text-background hover:bg-danger/90"
           >
             {t('confirm')}
           </button>
