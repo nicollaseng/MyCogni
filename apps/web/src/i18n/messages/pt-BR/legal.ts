@@ -8,7 +8,7 @@ export const legal = {
     sections: {
       collected: {
         heading: 'O que coletamos',
-        body: 'Email, nome e foto, se você quiser informar. Seus registros de humor, emoções, contexto e notas. Suas respostas ao PHQ-9, ao GAD-7 e ao WHO-5. As conversas com o Cogni e as memórias que ele guarda.',
+        body: 'Email, nome e foto, se você quiser informar. Seus registros de humor, emoções, contexto e notas. Suas respostas ao PHQ-9, ao GAD-7 e ao WHO-5 e aos questionários que um profissional liberar para você. As conversas com o Cogni e as memórias que ele guarda.',
       },
       purpose: {
         heading: 'Por que coletamos',
@@ -17,6 +17,10 @@ export const legal = {
       legalBasis: {
         heading: 'Base legal',
         body: 'Registros de humor e respostas a questionários são dados pessoais sensíveis de saúde, nos termos do artigo 11 da LGPD. Tratamos esses dados com o seu consentimento específico, que você pode revogar quando quiser.',
+      },
+      questionnaires: {
+        heading: 'Questionários liberados por profissionais',
+        body: 'Um profissional vinculado a você pode liberar questionários validados para você responder no app. Antes de cada um, mostramos quem verá as respostas, e ele só começa quando você toca em Começar; guardamos a data desse aceite junto com as respostas. O profissional que liberou vê as respostas completas, a pontuação e as faixas do instrumento enquanto o vínculo estiver ativo. Você vê um resumo simples, sem pontuação. Nada disso é diagnóstico. Os avisos por email e no app não citam o nome do questionário. As respostas entram na exportação dos seus dados e são apagadas com a sua conta. Se o vínculo terminar, os questionários em aberto são cancelados e o profissional deixa de ver os resultados.',
       },
       ai: {
         heading: 'Inteligência artificial',
@@ -68,6 +72,10 @@ export const legal = {
       crisis: {
         heading: 'Em caso de crise',
         body: 'O MyCogniAI não é um serviço de emergência. Se você está em crise ou pensando em se machucar, ligue para o CVV no 188 ou para o SAMU no 192.',
+      },
+      questionnaires: {
+        heading: 'Questionários de profissionais',
+        body: 'Os questionários que um profissional libera são instrumentos de rastreio autoaplicados. O resultado não é diagnóstico e precisa de avaliação clínica. Responder é sempre uma escolha sua: você pode deixar para depois ou não responder. Se uma resposta indicar risco, o app mostra contatos de apoio e avisa o profissional, mas o MyCogniAI não é serviço de emergência.',
       },
       account: {
         heading: 'Sua conta',

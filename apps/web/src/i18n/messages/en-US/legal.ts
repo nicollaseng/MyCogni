@@ -10,7 +10,7 @@ export const legal: LegalMessages = {
     sections: {
       collected: {
         heading: 'What we collect',
-        body: 'Your email, name and photo, if you choose to provide them. Your mood check-ins, emotions, context and notes. Your answers to the PHQ-9, GAD-7 and WHO-5. Your conversations with Cogni and the memories it keeps.',
+        body: 'Your email, name and photo, if you choose to provide them. Your mood check-ins, emotions, context and notes. Your answers to the PHQ-9, GAD-7 and WHO-5 and to questionnaires a professional shares with you. Your conversations with Cogni and the memories it keeps.',
       },
       purpose: {
         heading: 'Why we collect it',
@@ -19,6 +19,10 @@ export const legal: LegalMessages = {
       legalBasis: {
         heading: 'Legal basis',
         body: 'Mood check-ins and questionnaire answers are sensitive personal health data under Article 11 of the LGPD (Brazil’s General Personal Data Protection Law). We process this data with your specific consent, which you can withdraw whenever you want.',
+      },
+      questionnaires: {
+        heading: 'Questionnaires shared by professionals',
+        body: 'A professional linked to you can share validated questionnaires for you to answer in the app. Before each one, we show who will see your answers, and it only starts when you tap Start; we keep the date of that acceptance with your answers. The professional who shared it sees your full answers, the score and the bands of the instrument while the link is active. You see a simple summary, without scores. None of this is a diagnosis. Email and in-app notices never name the questionnaire. Your answers are included when you export your data and are deleted with your account. If the link ends, open questionnaires are cancelled and the professional no longer sees the results.',
       },
       ai: {
         heading: 'Artificial intelligence',
@@ -70,6 +74,10 @@ export const legal: LegalMessages = {
       crisis: {
         heading: 'In a crisis',
         body: 'MyCogniAI is not an emergency service. If you are in crisis or thinking about hurting yourself, call or text 988 or call 911.',
+      },
+      questionnaires: {
+        heading: 'Questionnaires from professionals',
+        body: 'The questionnaires a professional shares are self-administered screening instruments. The result is not a diagnosis and needs a clinical assessment. Answering is always your choice: you can leave it for later or not answer. If an answer suggests risk, the app shows support contacts and alerts the professional, but MyCogniAI is not an emergency service.',
       },
       account: {
         heading: 'Your account',

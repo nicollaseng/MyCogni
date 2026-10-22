@@ -10,7 +10,7 @@ export const legal: LegalMessages = {
     sections: {
       collected: {
         heading: 'O que recolhemos',
-        body: 'Email, nome e fotografia, se os quiser indicar. Os seus registos de humor, emoções, contexto e notas. As suas respostas ao PHQ-9, ao GAD-7 e ao WHO-5. As conversas com o Cogni e as memórias que ele guarda.',
+        body: 'Email, nome e fotografia, se os quiser indicar. Os seus registos de humor, emoções, contexto e notas. As suas respostas ao PHQ-9, ao GAD-7 e ao WHO-5 e aos questionários que um profissional disponibilizar para si. As conversas com o Cogni e as memórias que ele guarda.',
       },
       purpose: {
         heading: 'Porque recolhemos',
@@ -19,6 +19,10 @@ export const legal: LegalMessages = {
       legalBasis: {
         heading: 'Base legal',
         body: 'Os registos de humor e as respostas a questionários são dados pessoais sensíveis relativos à saúde, nos termos do artigo 11 da LGPD (Lei Geral de Proteção de Dados Pessoais do Brasil). Tratamos estes dados com o seu consentimento específico, que pode revogar quando quiser.',
+      },
+      questionnaires: {
+        heading: 'Questionários disponibilizados por profissionais',
+        body: 'Um profissional ligado a si pode disponibilizar questionários validados para responder na app. Antes de cada um, mostramos quem verá as respostas, e ele só começa quando toca em Começar; guardamos a data dessa aceitação com as respostas. O profissional que o disponibilizou vê as respostas completas, a pontuação e as faixas do instrumento enquanto a ligação estiver ativa. Vê um resumo simples, sem pontuação. Nada disto é um diagnóstico. Os avisos por email e na app não indicam o nome do questionário. As respostas entram na exportação dos seus dados e são apagadas com a sua conta. Se a ligação terminar, os questionários em aberto são cancelados e o profissional deixa de ver os resultados.',
       },
       ai: {
         heading: 'Inteligência artificial',
@@ -70,6 +74,10 @@ export const legal: LegalMessages = {
       crisis: {
         heading: 'Em caso de crise',
         body: 'O MyCogniAI não é um serviço de emergência. Se está em crise ou a pensar em magoar-se, ligue para o SNS\u00a024 através do 808\u00a024\u00a024\u00a024 (opção 4) ou para o 112.',
+      },
+      questionnaires: {
+        heading: 'Questionários de profissionais',
+        body: 'Os questionários que um profissional disponibiliza são instrumentos de rastreio autoaplicados. O resultado não é um diagnóstico e precisa de avaliação clínica. Responder é sempre uma escolha sua: pode deixar para depois ou não responder. Se uma resposta indicar risco, a app mostra contactos de apoio e avisa o profissional, mas o MyCogniAI não é um serviço de emergência.',
       },
       account: {
         heading: 'A sua conta',
