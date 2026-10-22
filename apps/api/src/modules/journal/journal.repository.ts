@@ -1,7 +1,8 @@
 import type { JournalNode } from '@mycogni/contracts'
 import type { JournalShareScope, ProfessionalKind } from '@mycogni/domain'
-import { and, desc, eq, ilike, inArray, isNull, lt, max, or, sql } from 'drizzle-orm'
+import { and, count, desc, eq, ilike, inArray, isNull, max, or, sql } from 'drizzle-orm'
 import type { Database, Transaction } from '../../db/client.ts'
+import { pageOf, type PageWindow, type RecordPage } from '../../db/paging.ts'
 import { withUser } from '../../db/rls.ts'
 import {
   careLinks,
@@ -41,8 +42,11 @@ export interface JournalChanges {
 
 export interface JournalSearch {
   q?: string
-  before?: Date
   limit: number
+}
+
+export interface JournalPageSearch extends PageWindow {
+  q?: string
 }
 
 export interface JournalShareRecord {
@@ -80,6 +84,11 @@ export interface JournalRepository {
     ownerId: string,
     search: JournalSearch,
   ): Promise<JournalEntrySummaryRecord[]>
+  page(
+    viewerId: string,
+    ownerId: string,
+    search: JournalPageSearch,
+  ): Promise<RecordPage<JournalEntrySummaryRecord>>
   create(userId: string): Promise<JournalEntryRecord>
   find(viewerId: string, entryId: string): Promise<JournalEntryRecord | undefined>
   update(userId: string, entryId: string, changes: JournalChanges): Promise<UpdateOutcome>
@@ -114,6 +123,18 @@ const entryColumns = {
 function escapeLike(value: string): string {
   return value.replace(/[\\%_]/g, (character) => `\\${character}`)
 }
+
+function writtenBy(ownerId: string, q: string | undefined) {
+  const pattern = q === undefined || q === '' ? undefined : `%${escapeLike(q)}%`
+  return and(
+    eq(journalEntries.userId, ownerId),
+    pattern === undefined
+      ? undefined
+      : or(ilike(journalEntries.title, pattern), ilike(journalEntries.plainText, pattern)),
+  )
+}
+
+const newestFirst = [desc(journalEntries.updatedAt), desc(journalEntries.id)]
 
 const activeShare = and(
   isNull(journalShares.revokedAt),
@@ -159,27 +180,30 @@ async function sharesOf(tx: Transaction, patientId: string): Promise<JournalShar
 
 export function createJournalRepository(db: Database): JournalRepository {
   return {
-    list(viewerId, ownerId, { q, before, limit }) {
-      const pattern = q === undefined || q === '' ? undefined : `%${escapeLike(q)}%`
+    list(viewerId, ownerId, { q, limit }) {
       return withUser(db, viewerId, (tx) =>
         tx
           .select(summaryColumns)
           .from(journalEntries)
-          .where(
-            and(
-              eq(journalEntries.userId, ownerId),
-              pattern === undefined
-                ? undefined
-                : or(
-                    ilike(journalEntries.title, pattern),
-                    ilike(journalEntries.plainText, pattern),
-                  ),
-              before === undefined ? undefined : lt(journalEntries.updatedAt, before),
-            ),
-          )
-          .orderBy(desc(journalEntries.updatedAt))
+          .where(writtenBy(ownerId, q))
+          .orderBy(...newestFirst)
           .limit(limit),
       )
+    },
+    page(viewerId, ownerId, { q, ...window }) {
+      const matching = writtenBy(ownerId, q)
+      return withUser(db, viewerId, async (tx) => {
+        const [counted] = await tx.select({ total: count() }).from(journalEntries).where(matching)
+        return pageOf(window, counted?.total ?? 0, (offset) =>
+          tx
+            .select(summaryColumns)
+            .from(journalEntries)
+            .where(matching)
+            .orderBy(...newestFirst)
+            .limit(window.size)
+            .offset(offset),
+        )
+      })
     },
     create(userId) {
       return withUser(db, userId, async (tx) => {
