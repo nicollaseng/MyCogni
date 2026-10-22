@@ -14,6 +14,7 @@ export const account: AccountMessages = {
     profile: 'Perfil',
     wellbeing: 'Ânimo e ansiedade',
     professionals: 'Profissionais',
+    memories: 'Memórias',
     sound: 'Som e voz',
     privacy: 'Privacidade e dados',
     account: 'Conta',

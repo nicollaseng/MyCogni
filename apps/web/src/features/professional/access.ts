@@ -11,6 +11,9 @@ export async function requireProfessional(): Promise<ProfessionalProfile> {
   if (profile.accountType !== 'professional' || professional === null) {
     redirect('/pro/join')
   }
+  if (profile.termsOutdated) {
+    redirect('/accept-terms')
+  }
   return professional
 }
 

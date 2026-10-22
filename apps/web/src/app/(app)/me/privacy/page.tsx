@@ -4,6 +4,8 @@ import { setConsent, setJournalInInsights } from '@/features/account/actions'
 import { ConsentList } from '@/features/account/components/consent-list'
 import { JournalInsightsSwitch } from '@/features/account/components/journal-insights-switch'
 import { SettingsPage } from '@/features/account/components/settings-page'
+import { setMemoriesEnabled } from '@/features/memories/actions'
+import { MemoriesSwitch } from '@/features/memories/components/memories-switch'
 import { Panel, Section } from '@/shared/components/section'
 import { fetchConsents } from '@/shared/lib/api/resources'
 import { requireOnboardedProfile } from '@/shared/lib/auth/session'
@@ -28,6 +30,10 @@ export default async function PrivacyPage() {
           <JournalInsightsSwitch
             enabled={profile.journalInInsights}
             setJournalInInsights={setJournalInInsights}
+          />
+          <MemoriesSwitch
+            enabled={profile.memoriesEnabled}
+            setMemoriesEnabled={setMemoriesEnabled}
           />
         </Panel>
         <p className="text-sm text-pretty text-muted-foreground">{t('consents.note')}</p>

@@ -1,6 +1,6 @@
 export const legal = {
   draftNotice:
-    'Versão preliminar de outubro de 2026. O texto final passa por revisão jurídica antes do lançamento.',
+    'Versão preliminar de 22 de outubro de 2026. O texto final passa por revisão jurídica antes do lançamento.',
   privacy: {
     title: 'Política de privacidade',
     summary:
@@ -8,7 +8,7 @@ export const legal = {
     sections: {
       collected: {
         heading: 'O que coletamos',
-        body: 'Email, nome e foto, se você quiser informar. Seus registros de humor, emoções, contexto e notas. Suas respostas ao PHQ-9, ao GAD-7 e ao WHO-5.',
+        body: 'Email, nome e foto, se você quiser informar. Seus registros de humor, emoções, contexto e notas. Suas respostas ao PHQ-9, ao GAD-7 e ao WHO-5. As conversas com o Cogni e as memórias que ele guarda.',
       },
       purpose: {
         heading: 'Por que coletamos',
@@ -22,6 +22,10 @@ export const legal = {
         heading: 'Inteligência artificial',
         body: 'Os resumos são escritos a partir de estatísticas calculadas sobre os seus registros, sem seu nome ou email. A IA é opcional e pode ser desligada a qualquer momento. Seus dados não são usados para treinar modelos.',
       },
+      memories: {
+        heading: 'Memórias do Cogni',
+        body: 'O Cogni, o parceiro virtual do app, guarda frases curtas sobre o que você conta nas notas dos registros, nos complementos, nas conversas com ele e, se você permitir que ele leia o MyBook, nas páginas do MyBook. Elas servem para personalizar as conversas e para perceber tendências e sinais de risco, nunca para fazer diagnóstico. As memórias vêm ligadas por padrão e você pode desligar em Privacidade e dados. Em Perfil e configurações → Memórias você vê, edita, adiciona e apaga cada uma ou todas, e elas entram na exportação dos seus dados. Apagar um registro apaga o que foi aprendido só com ele. Profissionais só verão memórias que você escolher compartilhar.',
+      },
       sharing: {
         heading: 'Com quem compartilhamos',
         body: 'Apenas com os fornecedores que operam o serviço, como hospedagem, banco de dados, envio de email e, se você ativar, IA, sempre sob contrato e só no necessário. Nunca vendemos seus dados nem usamos para anúncios.',
@@ -32,6 +36,15 @@ export const legal = {
       },
     },
   },
+  update: {
+    meta: { title: 'Termos atualizados' },
+    title: 'Atualizamos os termos',
+    lead: 'Agora o Cogni pode guardar memórias do que você conta, para conversar melhor com você. Você vê, edita ou apaga cada uma em Perfil e configurações → Memórias e pode desligar quando quiser.',
+    accept:
+      'Li e aceito os <terms>Termos de uso</terms> e a <privacy>Política de privacidade</privacy>.',
+    continue: 'Aceitar e continuar',
+    signOut: 'Sair',
+  },
   terms: {
     title: 'Termos de uso',
     summary: 'As regras para usar o MyCogniAI, escritas para serem lidas.',
@@ -39,6 +52,10 @@ export const legal = {
       about: {
         heading: 'O que o MyCogniAI é',
         body: 'Uma ferramenta de autoconhecimento e de rastreio de sinais de ansiedade e depressão. Não é serviço de saúde, não faz diagnóstico e não substitui acompanhamento profissional.',
+      },
+      cogni: {
+        heading: 'O Cogni',
+        body: 'O Cogni é um parceiro virtual com inteligência artificial, não um psicólogo nem um serviço de saúde. Ele pode guardar memórias do que você conta para conversar melhor com você, como explica a Política de privacidade. Você controla essas memórias e pode desligá-las quando quiser.',
       },
       crisis: {
         heading: 'Em caso de crise',

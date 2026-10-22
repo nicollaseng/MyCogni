@@ -37,6 +37,7 @@ export const config = {
     '/me/:path*',
     '/check-in/:path*',
     '/onboarding/:path*',
+    '/accept-terms',
     '/questionnaires/:path*',
     '/invite/:path*',
     '/invites/:path*',
