@@ -5,7 +5,10 @@ export const memories: MemoriesMessages = {
   lead: 'What Cogni remembers from what you share, to talk with you better.',
   switch: {
     label: 'Remember what I share',
-    hint: 'When off, Cogni keeps nothing new.',
+    hint: {
+      on: 'On, Cogni learns from what you write.',
+      off: 'Off, Cogni keeps nothing new.',
+    },
   },
   add: {
     open: 'Add a memory',

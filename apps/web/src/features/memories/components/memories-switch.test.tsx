@@ -14,12 +14,13 @@ describe('MemoriesSwitch', () => {
     const control = screen.getByRole('switch', { name: 'Lembrar do que eu conto' })
 
     expect(control).toHaveAttribute('aria-checked', 'true')
-    expect(control).toHaveAccessibleDescription('Desligado, o Cogni não guarda nada novo.')
+    expect(control).toHaveAccessibleDescription('Ligado, o Cogni aprende com o que você escreve.')
 
     await userEvent.click(control)
     expect(save).toHaveBeenLastCalledWith(false)
     expect(await screen.findByRole('status')).toHaveTextContent('Desligado.')
     expect(control).toHaveAttribute('aria-checked', 'false')
+    expect(control).toHaveAccessibleDescription('Desligado, o Cogni não guarda nada novo.')
   })
 
   it('goes back when the change could not be saved', async () => {

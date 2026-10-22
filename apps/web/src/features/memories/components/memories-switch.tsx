@@ -31,7 +31,7 @@ export function MemoriesSwitch({ enabled, setMemoriesEnabled }: MemoriesSwitchPr
       <div className="space-y-1">
         <p>{t('label')}</p>
         <p id={hintId} className="max-w-md text-sm text-pretty text-muted-foreground">
-          {t('hint')}
+          {t(checked ? 'hint.on' : 'hint.off')}
         </p>
         <FormMessage error={error} notice={notice} />
       </div>
