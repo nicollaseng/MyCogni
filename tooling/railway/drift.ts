@@ -93,7 +93,7 @@ function describe(verdict: Verdict): string {
     case 'settling':
       return `settling (${verdict.reason})`
     case 'failed':
-      return `head ${verdict.commit.slice(0, 8)} already failed, not retrying`
+      return `head ${verdict.commit.slice(0, 8)} failed twice, not retrying`
     case 'behind':
       return 'behind'
   }
