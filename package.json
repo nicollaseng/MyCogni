@@ -16,9 +16,11 @@
     "format:check": "prettier --check .",
     "typecheck": "tsc --noEmit && turbo run typecheck",
     "test": "turbo run test",
+    "test:tooling": "node --test 'tooling/**/*.test.ts'",
     "prepare": "husky",
     "redis:start": "docker compose up -d redis",
-    "redis:stop": "docker compose stop redis"
+    "redis:stop": "docker compose stop redis",
+    "railway:drift": "node tooling/railway/drift.ts"
   },
   "devDependencies": {
     "@commitlint/cli": "21.2.3",
