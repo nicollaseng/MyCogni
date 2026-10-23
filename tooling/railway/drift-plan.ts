@@ -22,6 +22,8 @@ const inProgress = new Set(['QUEUED', 'WAITING', 'INITIALIZING', 'BUILDING', 'DE
 
 const broken = new Set(['FAILED', 'CRASHED'])
 
+const attemptsPerHead = 2
+
 export function deployedCommit(deployments: Deployment[]): string | null {
   return deployments.find((deployment) => deployment.status === 'SUCCESS')?.commit ?? null
 }
@@ -36,10 +38,10 @@ export function verdictOf(snapshot: ServiceSnapshot, graceMs: number): Verdict {
   if (snapshot.relevantCommitAgeMs < graceMs) {
     return { kind: 'settling', reason: 'recent-commit' }
   }
-  const failedHead = snapshot.deployments.some(
+  const failedAttempts = snapshot.deployments.filter(
     (deployment) => deployment.commit === snapshot.head && broken.has(deployment.status),
-  )
-  if (failedHead) {
+  ).length
+  if (failedAttempts >= attemptsPerHead) {
     return { kind: 'failed', commit: snapshot.head }
   }
   return { kind: 'behind', deployed: deployedCommit(snapshot.deployments) }

@@ -50,8 +50,20 @@ await test('verdictOf leaves a fresh push to the regular auto deploy', () => {
   })
 })
 
-await test('verdictOf does not retry a head that already failed', () => {
+await test('verdictOf retries a head whose build failed once', () => {
   const deployments = [
+    { id: 'd2', status: 'FAILED', commit: 'head' },
+    { id: 'd1', status: 'SUCCESS', commit: 'old' },
+  ]
+  assert.deepEqual(verdictOf(snapshot({ deployments }), grace), {
+    kind: 'behind',
+    deployed: 'old',
+  })
+})
+
+await test('verdictOf stops retrying a head that failed twice', () => {
+  const deployments = [
+    { id: 'd3', status: 'CRASHED', commit: 'head' },
     { id: 'd2', status: 'FAILED', commit: 'head' },
     { id: 'd1', status: 'SUCCESS', commit: 'old' },
   ]
