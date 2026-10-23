@@ -13,27 +13,50 @@ on:
 permissions:
   contents: read
 
-concurrency:
-  group: railway-drift-staging
-  cancel-in-progress: false
-
 jobs:
-  staging:
+  drift:
+    name: ${{ matrix.environment }}
     runs-on: ubuntu-latest
     timeout-minutes: 50
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - environment: staging
+            branch: staging
+            token: RAILWAY_TOKEN_STAGING
+          - environment: production
+            branch: main
+            token: RAILWAY_TOKEN_PRODUCTION
+    concurrency:
+      group: railway-drift-${{ matrix.environment }}
+      cancel-in-progress: false
     env:
-      RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
-      RAILWAY_ENVIRONMENT: staging
+      RAILWAY_TOKEN: ${{ secrets[matrix.token] }}
+      RAILWAY_ENVIRONMENT: ${{ matrix.environment }}
     steps:
-      - uses: actions/checkout@v5
+      - id: gate
+        run: |
+          if [ -n "$RAILWAY_TOKEN" ]; then
+            echo "enabled=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "::notice::${{ matrix.token }} is not set, skipping ${{ matrix.environment }}"
+          fi
+      - if: steps.gate.outputs.enabled == 'true'
+        uses: actions/checkout@v5
         with:
-          ref: staging
+          ref: ${{ matrix.branch }}
           fetch-depth: 0
-      - uses: pnpm/action-setup@v4
-      - uses: actions/setup-node@v5
+      - if: steps.gate.outputs.enabled == 'true'
+        uses: pnpm/action-setup@v4
+      - if: steps.gate.outputs.enabled == 'true'
+        uses: actions/setup-node@v5
         with:
           node-version: 24
           cache: pnpm
-      - run: pnpm install --frozen-lockfile --ignore-scripts
-      - run: npm install --global @railway/cli@5.71.0
-      - run: pnpm railway:drift ${{ inputs.dry_run && '--dry-run' || '' }}
+      - if: steps.gate.outputs.enabled == 'true'
+        run: pnpm install --frozen-lockfile --ignore-scripts
+      - if: steps.gate.outputs.enabled == 'true'
+        run: npm install --global @railway/cli@5.71.0
+      - if: steps.gate.outputs.enabled == 'true'
+        run: pnpm railway:drift ${{ inputs.dry_run && '--dry-run' || '' }}
